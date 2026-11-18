@@ -83,11 +83,14 @@ async function signed(auth,member,role,root=ROOT){
     try{
       observed=await page.evaluate(({uid,revision})=>{
         const ctx=window.CX?.backendAuth?.context?.()||{};
+        const currentRevision=String(window.CX?.data?.previewMeta?.sourceRevision||'');
         return {documentReady:document.readyState,authSdkReady:!!window.firebase?.auth,
           userMatches:window.firebase?.auth?.()?.currentUser?.uid===uid,
           contextAuthenticated:ctx.authenticated===true,role:String(ctx.role||''),
           hrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
-          hrRevisionMatches:String(window.CX?.data?.previewMeta?.sourceRevision||'')===revision};
+          observedHrRevision:/^[a-f0-9]{64}$/.test(currentRevision)?currentRevision:'UNSET_OR_INVALID',
+          observedHrRevisionLength:currentRevision.length,
+          hrRevisionMatches:currentRevision===revision};
       },{uid:member.uid,revision:EXPECTED_HR});
     }catch{}
     result.sessionReadinessFailures.push({
