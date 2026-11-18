@@ -29,6 +29,52 @@ test('current aliases agree with descriptor-selected ledger and current DEV seal
   const r=validateCurrentAuthorityAliases(fixture());assert.equal(r.pass,true,JSON.stringify(r));
 });
 
+function acceptedAcademyFixture(){
+  const v=fixture();
+  v.pointer.latestRun2391B7CancelRescheduleAcademyRepeatScopedQa={academiaD08ProviderRepeat:'PASS',workflowRunId:42927850644,workflowRunNumber:2391,sourceSha:'a'.repeat(40),receiptPath:'accepted-academy.json'};
+  const residual={status:'HISTORICAL_PROVIDER_PASS_PRESERVED_CURRENT_UI_ROLE_RESIDUAL',roleSessionsPending:['Admin','Shopper','Cliente'],providerEvidence:{runId:42927850644,runNumber:2391,sourceSha:'a'.repeat(40),receiptPath:'accepted-academy.json',historicalProviderOnly:true,decision:'PASS'}};
+  v.descriptor.d08AcademyProgressResidual=structuredClone(residual);v.pointer.d08AcademyProgressResidual=structuredClone(residual);
+  return v;
+}
+test('historical D08 provider PASS is preserved without pretending it certifies the current source UI',()=>{
+  const v=acceptedAcademyFixture();assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+  assert.notEqual(v.descriptor.d08AcademyProgressResidual.providerEvidence.sourceSha,v.descriptor.productSourceSha);
+});
+test('dropping a previously accepted D08 provider receipt fails closed',()=>{
+  const v=acceptedAcademyFixture();delete v.descriptor.d08AcademyProgressResidual.providerEvidence;
+  v.pointer.d08AcademyProgressResidual=structuredClone(v.descriptor.d08AcademyProgressResidual);
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_D08_ACCEPTED_PROVIDER_EVIDENCE_DROPPED'));
+});
+test('the old blanket D08 real ACK pending alias is rejected after accepted provider evidence',()=>{
+  const v=acceptedAcademyFixture();for(const o of [v.descriptor,v.pointer])o.d08AcademyProgressResidual.status='SOURCE_CI_EXACT_DEV_AND_READ_ONLY_UI_PASS_REAL_ACK_ROLE_SESSION_PENDING';
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_D08_ACCEPTED_PROVIDER_EVIDENCE_DROPPED'));
+});
+test('D08 descriptor and current residuals must agree',()=>{
+  const v=acceptedAcademyFixture();v.pointer.d08AcademyProgressResidual.roleSessionsPending=[];
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_D08_RESIDUAL_ALIAS_DESYNC'));
+});
+test('a future separately supported UI closure need not keep every role pending',()=>{
+  const v=acceptedAcademyFixture();for(const o of [v.descriptor,v.pointer]){o.d08AcademyProgressResidual.status='CURRENT_UI_SEPARATELY_PROVEN';o.d08AcademyProgressResidual.roleSessionsPending=[];}
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+});
+test('financial readonly evidence cannot be converted into settlement or domain credit',()=>{
+  const v=fixture(),r={sourceSha:v.descriptor.productSourceSha,sourceTree:v.descriptor.productSourceTree,decision:'PASS_FINANCE_READONLY_CURRENT_MANIFEST',completeRead:true,sameDocumentsStable:true,providerCommandsExecuted:0,newDomainMatches:0,financeSettlementCertified:false,production:false};
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence=structuredClone(r);
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence.financeSettlementCertified=true;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FINANCE_READONLY_SCOPE_OR_CREDIT_INVALID'));
+});
+test('financial readonly evidence must have the same receipt in all current pointers',()=>{
+  const v=fixture(),r={sourceSha:v.descriptor.productSourceSha,sourceTree:v.descriptor.productSourceTree,decision:'PASS_FINANCE_READONLY_CURRENT_MANIFEST',completeRead:true,sameDocumentsStable:true,providerCommandsExecuted:0,newDomainMatches:0,financeSettlementCertified:false,production:false};
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence=structuredClone(r);
+  v.pointer.currentFinanceReadonlyEvidence.runId=1;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FINANCE_READONLY_EVIDENCE_DESYNC'));
+});
+test('an explicitly current matrix ledger alias cannot point at a predecessor ledger',()=>{
+  const v=fixture();v.matrix={findingsLedgerPath:'previous-ledger.json'};
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_MATRIX_LEDGER_PATH_DESYNC'));
+});
+
 const pendingFixture=()=>{
   const v=fixture(),predecessor='a'.repeat(40),predecessorTree='e'.repeat(40);
   v.descriptor.postDeployRunSeal={mode:'PREDECESSOR_SERVING_PENDING_SOURCE',sourceSha:predecessor,sourceTree:predecessorTree};

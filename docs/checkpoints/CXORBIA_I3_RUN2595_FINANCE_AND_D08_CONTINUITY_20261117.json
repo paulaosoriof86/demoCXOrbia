@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "cxorbia.i3.finance-readonly-and-d08-continuity.v1",
+  "dateLocal": "2026-11-17",
+  "timezone": "America/Guatemala",
+  "recordedAt": "2026-11-18T00:46:52Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParentSha": "392bd5b7b916d535fa7e5890aa3a46052b8b1530",
+  "controlParentTree": "2b39de5ca40cd7901cccb667237dbc81278a378f",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "financeReadOnly": {
+    "runId": 44209067488,
+    "runNumber": 2595,
+    "headSha": "392bd5b7b916d535fa7e5890aa3a46052b8b1530",
+    "conclusion": "success",
+    "canonicalJobId": 134482464058,
+    "financeJobId": 134482842839,
+    "decision": "PASS_FINANCE_READONLY_CURRENT_MANIFEST",
+    "artifactId": 14384054508,
+    "artifactDigest": "sha256:1a2f3a123a72451dd842dfd4060d2d263bcea670fdfd0f46e79af3de93536592",
+    "encryptedEvidenceSha256": "582abbdf017c5945f46cec93ca65a525d461c0a604bbee01e2cfff7b8b1d44c1",
+    "privateEvidenceSha256": "fa27333ecaa77469270a91aae4026dd745c9d89f253c79b1ab0519ee6594798f",
+    "privateArtifactDownloaded": true,
+    "zipDigestVerified": true,
+    "authenticatedDecryptionVerified": true,
+    "privateRawDataPublished": false,
+    "completeRead": true,
+    "sameDocumentsStable": true,
+    "atomicSnapshotClaimed": false,
+    "freshExternalHrVerified": false,
+    "providerCommandsExecuted": 0,
+    "financeSettlementCertified": false,
+    "newDomainMatches": 0,
+    "exactCollections": {
+      "movements": "financialMovements",
+      "accounts": "financeAccounts",
+      "lots": "paymentLots",
+      "reconciliations": "paymentReconciliations"
+    },
+    "closedReadOnlyClauses": [
+      "OWNER_DESCRIBED_TWO_ADVANCE_DOCUMENT_IDENTITIES_LOCATED",
+      "ADVANCE_APPLICATION_LINK_PRESENCE_CHECKED",
+      "SEPTEMBER_VISIT_RECONCILIATION_INVENTORY_OBTAINED",
+      "IDENTITY_REVIEW_SET_ENUMERATED"
+    ],
+    "remaining": [
+      "Use the already-recorded owner directive and exact private movement identity; verify the existing safe edit contract before changing only the November record metadata.",
+      "Resolve historical/current shopper links per exact visit before any reconciliation. Do not apply a global alias mapping where one historical identity has multiple current identities.",
+      "Verify amount/source and per-visit reconciliation authority; historical exact totals alone do not establish current payability or external bank confirmation.",
+      "No inferred advance allocation, new income, fabricated reference, bulk payment or bank transfer."
+    ],
+    "ownerDirectivePath": "docs/checkpoints/CXORBIA_FINANCE_SEPT2026_PAULA_SETTLEMENT_DIRECTIVE_OCTNOV_CXP_20261109.json",
+    "writes": {
+      "firestore": 0,
+      "auth": 0,
+      "hr": 0,
+      "finance": 0,
+      "bank": 0
+    },
+    "production": false
+  },
+  "devIdentity": {
+    "decision": "PASS_CURRENT_FINANCE_DEV_IDENTITY_READBACK",
+    "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "runtimeTrafficExact": true,
+    "hostingBeforeAfterSame": true,
+    "deploys": 0,
+    "production": false
+  },
+  "b14Readback": {
+    "readPolicy": "external_live",
+    "writePolicy": "external_read_only",
+    "hrWritesEnabled": false,
+    "remoteWriteAckCertified": false,
+    "missing": "Concrete authorized isolated real-provider fixture and writer binding; do not treat capability or this readback as B14 completion."
+  },
+  "d08Evidence": {
+    "providerRunId": 42927850644,
+    "providerRunNumber": 2391,
+    "providerReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+    "providerReceiptGitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+    "providerSourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+    "historicalProviderOnly": true,
+    "providerProgressAck": "PASS",
+    "newSessionReadback": "PASS",
+    "replay": "PASS",
+    "otherLearnerUnchanged": "PASS",
+    "wrongAudienceDenied": "PASS",
+    "cleanup": "PASS",
+    "wholeCurrentUiCertified": false,
+    "currentBrowserObservation": {
+      "environment": "DEV",
+      "role": "Shopper",
+      "existingSession": true,
+      "catalogCourses": 7,
+      "catalogLessons": 27,
+      "courseOpened": true,
+      "lessonBodyVisible": true,
+      "evaluationQuestionsVisible": 3,
+      "saveOrCompleteClicked": false,
+      "reloadOrNewSessionVerified": false,
+      "progressWriteCommandsObserved": 0,
+      "perBrowserByteParityCertified": false
+    },
+    "residual": [
+      "Current Admin, Shopper and Cliente independent UI/session acceptance",
+      "Authorized content edit/provider ACK for content, distinct from historical learner progress",
+      "Current command integration proof for owners changed since the historical provider run",
+      "Resource display only where a real approved resource exists; do not fabricate a resource fixture"
+    ]
+  },
+  "mechanismCorrections": {
+    "wrongCollections": [
+      "Advance lookup now financialMovements, not paymentReconciliations",
+      "Payment lot lookup now paymentLots, not paymentBatches"
+    ],
+    "readonlyMode": "Current-source preflight; early exit before commands/Auth/browser; encrypted private evidence; same-document nanosecond readback",
+    "dependencies": "Isolated firebase-admin-only CI prefix; no Chromium in readonly mode; visible failure logs",
+    "workflowBudget": "Existing 510000-byte guard preserved; helper extraction leaves 509556 bytes",
+    "failedAttemptsPreserved": [
+      {
+        "runId": 44208320353,
+        "runNumber": 2593,
+        "classification": "ENVIRONMENT_FAILURE",
+        "cause": "New inline step exceeded workflow size guard",
+        "providerAccess": false
+      },
+      {
+        "runId": 44208578873,
+        "runNumber": 2594,
+        "classification": "ENVIRONMENT_FAILURE",
+        "cause": "Legacy dependency install failed with previously suppressed diagnostics",
+        "exactUnderlyingDependencyErrorKnown": false,
+        "providerAccess": false
+      }
+    ],
+    "sourceTests": {
+      "finance": 28,
+      "financeFailures": 0,
+      "authorityAndFinanceCombined": 214,
+      "combinedFailures": 0
+    },
+    "continuityDefectsCorrected": [
+      "Active D08 blanket ACK-pending alias contradicted accepted RUN2391 provider evidence",
+      "Active matrix ledger path selected predecessor V686 instead of the current ledger"
+    ]
+  },
+  "preEditAuthority": {
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V360.json",
+    "moduleTruthGitBlob": "8d7fbbedb3f5686a8426dee652f143a585aba11c",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V687_2026-11-17.json",
+    "ledgerGitBlob": "e53e0a8c514c9e7d62e74c62b4c8b85f67602ce8",
+    "findingCount": 359,
+    "matchModules": 6,
+    "productSourceChanged": false
+  },
+  "allowlist": [
+    "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  ],
+  "accounting": {
+    "matchModules": 6,
+    "totalModules": 21,
+    "sourceReadyModules": 21,
+    "humanBlocksPassed": 4,
+    "humanBlocksTotal": 9,
+    "executionBlocksClosed": 2,
+    "executionBlocksTotal": 7,
+    "newDomainMatches": 0,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "productSourceChanged": false,
+  "productDeployment": false,
+  "production": false
+}

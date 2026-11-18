@@ -169,12 +169,35 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     'CURRENT_C3_PROOF_DESYNC');
   for(const control of [d,p])check(control?.currentCanonicalControl?.sourceSha===c3Source&&control?.currentCanonicalControl?.sourceTree===c3Tree,'CURRENT_CANONICAL_C3_SOURCE_DESYNC');
   check(Boolean(d?.updatedAt)&&d.updatedAt===p?.updatedAt&&p.updatedAt===l?.updatedAt,'CURRENT_CONTROL_UPDATED_AT_DESYNC');
+  // Accepted provider evidence must survive control-only continuity updates.
+  // Its historical source is not a certificate for the current UI/role chain.
+  const academyAccepted=p?.latestRun2391B7CancelRescheduleAcademyRepeatScopedQa;
+  if(academyAccepted?.academiaD08ProviderRepeat==='PASS'){
+    const residual=d?.d08AcademyProgressResidual,proof=residual?.providerEvidence;
+    check(Boolean(residual)&&JSON.stringify(residual)===JSON.stringify(p?.d08AcademyProgressResidual),'CURRENT_D08_RESIDUAL_ALIAS_DESYNC');
+    check(proof?.runId===academyAccepted.workflowRunId&&proof?.runNumber===academyAccepted.workflowRunNumber&&
+      proof?.sourceSha===academyAccepted.sourceSha&&proof?.receiptPath===academyAccepted.receiptPath&&
+      proof?.historicalProviderOnly===true&&proof?.decision==='PASS'&&
+      residual?.status!=='SOURCE_CI_EXACT_DEV_AND_READ_ONLY_UI_PASS_REAL_ACK_ROLE_SESSION_PENDING',
+      'CURRENT_D08_ACCEPTED_PROVIDER_EVIDENCE_DROPPED');
+  }
+  const financeEvidence=d?.currentFinanceReadonlyEvidence;
+  if(financeEvidence){
+    check([p,l,...(m?[m]:[])].every(o=>JSON.stringify(o?.currentFinanceReadonlyEvidence)===JSON.stringify(financeEvidence)),
+      'CURRENT_FINANCE_READONLY_EVIDENCE_DESYNC');
+    check(financeEvidence.sourceSha===source&&financeEvidence.sourceTree===tree&&
+      financeEvidence.decision==='PASS_FINANCE_READONLY_CURRENT_MANIFEST'&&financeEvidence.completeRead===true&&
+      financeEvidence.sameDocumentsStable===true&&financeEvidence.providerCommandsExecuted===0&&
+      financeEvidence.newDomainMatches===0&&financeEvidence.financeSettlementCertified===false&&financeEvidence.production===false,
+      'CURRENT_FINANCE_READONLY_SCOPE_OR_CREDIT_INVALID');
+  }
   check(Boolean(d?.currentExecutionReceipt)&&JSON.stringify(d.currentExecutionReceipt)===JSON.stringify(p?.currentExecutionReceipt),'CURRENT_EXECUTION_RECEIPT_DESYNC');
   check(Boolean(d?.currentExecutionReceiptSemantics)&&d.currentExecutionReceiptSemantics===p?.currentExecutionReceiptSemantics,'CURRENT_EXECUTION_RECEIPT_SEMANTICS_DESYNC');
   check(d?.phaseAHumanAcceptanceCurrent20261111?.technicalDomainMatches===phaseLock.strictDomainMatches && phaseLock.strictDomainMatches===current.moduleMatch && current.moduleMatch===c3.matchModules,'CURRENT_TECHNICAL_DOMAIN_COUNT_DESYNC');
   check(Boolean(d?.moduleTruthExpectedGitBlob)&&current.moduleTruthGitBlob===d.moduleTruthExpectedGitBlob,'CURRENT_TRUTH_MATRIX_BLOB_DESYNC');
   for(const control of [d,p])check(control?.currentCanonicalControl?.matrix?.path===d.moduleTruthPath && control?.currentCanonicalControl?.matrix?.gitBlob===d.moduleTruthExpectedGitBlob && control?.currentCanonicalControl?.ledger?.path===d.findingsLedgerPath && control?.currentCanonicalControl?.ledger?.gitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_CANONICAL_CONTROL_POINTER_DESYNC');
   if(m){
+    if(Object.prototype.hasOwnProperty.call(m,'findingsLedgerPath'))check(m.findingsLedgerPath===ledgerPath,'CURRENT_MATRIX_LEDGER_PATH_DESYNC');
     // A successful current-source HR readback retires older failed-HR
     // instructions. A subsequent real failure must identify its newer run
     // and exact source; historical receipts never act as current blockers.
