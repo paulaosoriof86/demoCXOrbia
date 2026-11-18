@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {validateTenantReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.mjs';
@@ -136,6 +137,55 @@ const moduleEvidenceRequirements=(mod,sourceFiles,candidate)=>{
   return {required,covered,reasons};
 };
 
+// This is an evidence *consumer*, not another build/deploy/transport lane.
+// The historical job generated a two-entry index (Benefits and Tenant only).
+// Consume any other receipt produced in the very same canonical run as well,
+// but never promote an artifact until evaluateTerminalModuleTruth verifies its
+// frozen owners, source/runtime, contract, scope and operation semantics.
+export function discoverCanonicalDomainReceipts(indexPath){
+  const canonicalName='current-domain-receipts.json';
+  if(path.basename(String(indexPath||''))!==canonicalName)return {receipts:[],filesInspected:0};
+  const root=path.dirname(path.resolve(indexPath));
+  if(!fs.existsSync(root))return {receipts:[],filesInspected:0};
+  const receipts=[],seen=new Set();let filesInspected=0,objectsSeen=0;
+  const hasIdentity=r=>r&&typeof r==='object'&&
+    /^PASS_/.test(String(r.decision||'')) && /^[a-z][a-z0-9-]{2,80}$/.test(String(r.moduleDomain||'')) &&
+    /^[a-f0-9]{40}$/.test(String(r.sourceSha||'')) && /^[a-f0-9]{40}$/.test(String(r.sourceTree||'')) &&
+    typeof r.runtimeRevision==='string' && !!r.runtimeRevision && !!r.runtimeDigest && !!r.hostingVersion &&
+    r.production===false && Array.isArray(r.ownerPaths) && r.ownerPaths.length>0;
+  const examine=(value,depth=0)=>{
+    if(++objectsSeen>12000||depth>5||receipts.length>=500||!value||typeof value!=='object')return;
+    if(hasIdentity(value)){
+      const key=sha256(JSON.stringify(value));
+      if(!seen.has(key)){seen.add(key);receipts.push(value);}
+      return;
+    }
+    if(Array.isArray(value)){for(const v of value)examine(v,depth+1);return;}
+    for(const [key,v] of Object.entries(value)){
+      if(depth===0||/receipt|evidence|proof|result|domain/i.test(key))examine(v,depth+1);
+    }
+  };
+  const walk=(dir,depth)=>{
+    if(depth>7||filesInspected>=1600||receipts.length>=500)return;
+    for(const item of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      if(item.isSymbolicLink()||['node_modules','.git','.tmp'].includes(item.name))continue;
+      const full=path.join(dir,item.name);
+      if(item.isDirectory()){walk(full,depth+1);continue;}
+      if(!item.isFile()||!item.name.endsWith('.json')||full===path.resolve(indexPath))continue;
+      const stat=fs.statSync(full);
+      if(stat.size>2097152)continue;
+      filesInspected++;
+      try{
+        const body=fs.readFileSync(full,'utf8');
+        if(body.includes('"moduleDomain"')&&body.includes('"ownerPaths"'))examine(JSON.parse(body));
+      }catch{}
+      if(filesInspected>=1600||receipts.length>=500)break;
+    }
+  };
+  walk(root,0);
+  return {receipts,filesInspected};
+}
+
 // Pending functional proof produces a durable HOLD report. Identity corruption
 // still throws. Only the final 21-domain + global-proof conjunction yields GO.
 export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},parity={},identity,additionalReceipts=[]}){
@@ -266,9 +316,17 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const E=process.env,read=p=>p&&fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};
   for(const k of ['C3_PRETERMINAL','C3_LEDGER','C3_FINAL_MATRIX','C3_SOURCE','C3_TREE','C3_RUNTIME_REVISION','C3_RUNTIME_DIGEST','C3_HOSTING_VERSION'])if(!E[k])throw new Error('ENVIRONMENT_FAILURE:C3_FINALIZE_'+k);
-  const extra=read(E.C3_ADDITIONAL_RECEIPTS),additionalReceipts=Array.isArray(extra)?extra:extra.moduleDomain?[extra]:extra.ownerSpecificReceipts||[];
+  const extra=read(E.C3_ADDITIONAL_RECEIPTS),indexed=Array.isArray(extra)?extra:extra.moduleDomain?[extra]:extra.ownerSpecificReceipts||[];
+  const discovery=discoverCanonicalDomainReceipts(E.C3_ADDITIONAL_RECEIPTS);
+  const indexKeys=new Set(indexed.map(r=>sha256(JSON.stringify(r))));
+  const unique=new Map();
+  for(const r of [...indexed,...discovery.receipts])unique.set(sha256(JSON.stringify(r)),r);
+  const additionalReceipts=[...unique.values()];
   const out=evaluateTerminalModuleTruth({pre:read(E.C3_PRETERMINAL),ledger:read(E.C3_LEDGER),focal:read(E.C3_FOCAL),human:read(E.C3_HUMAN),qa:read(E.C3_QA),parity:read(E.C3_PARITY),additionalReceipts,
     identity:{sourceSha:E.C3_SOURCE,sourceTree:E.C3_TREE,runtimeRevision:E.C3_RUNTIME_REVISION,runtimeDigest:E.C3_RUNTIME_DIGEST,hostingVersion:E.C3_HOSTING_VERSION}});
+  out.terminalClosure.evidenceDiscovery={indexReceipts:indexed.length,sameRunFilesInspected:discovery.filesInspected,
+    sameRunAdditionalUniqueReceipts:discovery.receipts.filter(r=>!indexKeys.has(sha256(JSON.stringify(r)))).length,
+    discoveryOnly:true,noImplicitAccreditation:true};
   fs.writeFileSync(E.C3_FINAL_MATRIX,JSON.stringify(out,null,2)+'\n');
   console.log(JSON.stringify(out.terminalClosure,null,2));
   if(!out.phaseAComplete&&E.C3_MODE!=='progress'){console.error(out.terminalClosure.failures.join('\n'));process.exitCode=2;}

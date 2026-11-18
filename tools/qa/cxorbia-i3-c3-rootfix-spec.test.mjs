@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import {evaluateTerminalModuleTruth} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import {evaluateTerminalModuleTruth,discoverCanonicalDomainReceipts} from './cxorbia-i3-c3-finalize-module-truth.mjs';
 
 const SHA='a'.repeat(40), TREE='b'.repeat(40), HR='c'.repeat(64), DIGEST='sha256:'+'d'.repeat(64), HASH='e'.repeat(64);
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
@@ -165,4 +167,20 @@ test('no invented contract hash, cross-scope role or unknown operation-kind can 
   f.additionalReceipts[0].auth.role='shopper';
   f.additionalReceipts[0].operationKind='UNVERIFIED_EVENT';
   assert.equal(decision(f).matchModules,20);
+});
+test('canonical evidence consumer is not limited to the two hardcoded original domains',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-domain-consumer-'));
+  try{
+    const index=path.join(dir,'current-domain-receipts.json');
+    const folder=path.join(dir,'full-human-acceptance','module-results');
+    fs.mkdirSync(folder,{recursive:true});fs.writeFileSync(index,'[]');
+    const read=receipt('read'),ui=receipt('ui','UI_INTERACTION');
+    fs.writeFileSync(path.join(folder,'historical.json'),JSON.stringify({ownerSpecificReceipts:[read,read]}));
+    fs.writeFileSync(path.join(folder,'dashboard.json'),JSON.stringify({domainReceipts:[ui]}));
+    fs.writeFileSync(path.join(folder,'not-evidence.json'),JSON.stringify({moduleDomain:TYPES.write,decision:'PASS_FAKE',sourceSha:SHA}));
+    const got=discoverCanonicalDomainReceipts(index);
+    assert.equal(got.receipts.length,2);
+    assert.deepEqual(new Set(got.receipts.map(x=>x.moduleDomain)),new Set([TYPES.read,TYPES.ui]));
+    assert.equal(discoverCanonicalDomainReceipts(path.join(dir,'unapproved-index.json')).receipts.length,0);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
