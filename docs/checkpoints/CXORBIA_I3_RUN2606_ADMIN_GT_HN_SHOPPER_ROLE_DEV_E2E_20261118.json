@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-role-e2e-consumption.v1",
+  "id": "CXORBIA-I3-RUN2606-AUTHENTICATED-ADMIN-GT-HN-SHOPPER-DEV-E2E-20261118",
+  "generatedAt": "2026-11-18T21:10:01.621Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "planBlock": "I3-Q3",
+  "state": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+  "phaseAState": "HOLD",
+  "certificationScope": "Focal functional Admin + two authenticated country Shoppers + PDF read only; not full domain certificate, Gate20, Gate21, or production authorization",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "controlHeadAtProof": "af7215c145afcc94d53e34b0e50a41938d5f4fdc",
+  "dev": {
+    "hostingOrigin": "https://cxorbia-backend-dev.web.app",
+    "hostingAlias": "https://cxorbia-backend-dev.firebaseapp.com",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395",
+    "devMaterializationRunId": 44030019174,
+    "devMaterializationRunNumber": 2587
+  },
+  "workflow": {
+    "runNumber": 2606,
+    "runId": 44395309311,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44395309311",
+    "workflowConclusion": "success",
+    "canonicalCandidateAuthorityJob": "success",
+    "jobId": 135123961527,
+    "jobName": "i3-keeper-role-e2e-readonly",
+    "jobConclusion": "success",
+    "artifactId": 14470135617,
+    "artifactName": "cxorbia-i3-two-keepers-role-e2e-readonly-44395309311",
+    "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+    "artifactExpiresAt": "2026-12-18T20:52:57Z"
+  },
+  "providerAuthority": {
+    "method": "authenticated protected HR live metadata verified independently before composition",
+    "activeHrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "frozenDevSealReferenceRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "revisionChangedSinceDevSeal": true,
+    "sameActiveRevisionAcrossAuthenticatedRoles": true,
+    "note": "Historical DEV-seal HR revision is not the live provider revision; stale Admin.hrRevision display field in QA output refers to old expected baseline and must not be treated as live authority."
+  },
+  "observed": {
+    "adminAuthenticated": true,
+    "adminKeeperCanonicalRows": {
+      "GT": 1,
+      "HN": 1
+    },
+    "adminVisitsDataRows": 792,
+    "shoppers": [
+      {
+        "caseId": "GT_MURGA",
+        "ownerIdMatches": true,
+        "ownVisits": 15,
+        "uniqueVisitIds": 15,
+        "routes": [
+          "miperfil",
+          "misvisitas"
+        ],
+        "liveHrRevisionMatches": true
+      },
+      {
+        "caseId": "HN_VILCA",
+        "ownerIdMatches": true,
+        "ownVisits": 4,
+        "uniqueVisitIds": 4,
+        "routes": [
+          "miperfil",
+          "misvisitas"
+        ],
+        "liveHrRevisionMatches": true
+      }
+    ],
+    "sessionReadinessFailures": [],
+    "pdf": {
+      "decision": "PASS_BOTH_ORIGINS_PDF_READ",
+      "origins": [
+        {
+          "origin": "https://cxorbia-backend-dev.web.app",
+          "status": "PASS_PDF_READ",
+          "httpStatus": 200,
+          "bytesLength": 162335
+        },
+        {
+          "origin": "https://cxorbia-backend-dev.firebaseapp.com",
+          "status": "PASS_PDF_READ"
+        }
+      ]
+    }
+  },
+  "safety": {
+    "providerCommands": 0,
+    "directAuthWrites": 0,
+    "directFirestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "accounting": {
+    "strictDomainMatchesBefore": 6,
+    "strictDomainMatchesAfter": 6,
+    "strictDomainsTotal": 21,
+    "newWholeDomainsCertified": 0,
+    "sourceReadyBefore": 21,
+    "sourceReadyAfter": 21,
+    "frozenBlocksClosedBefore": 2,
+    "frozenBlocksClosedAfter": 2,
+    "totalBlocks": 7,
+    "preservedHumanBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ]
+  },
+  "creditedScopedEvidence": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "credit": "Admin and GT/HN authenticated owner sessions, no duplicates",
+      "remaining": "Three RUN2222 exact Auth exceptions, A08 negative API/Firestore/Storage role denials and full human acceptance"
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "credit": "Authenticated GT/HN country scoped positive routes",
+      "remaining": "Uncovered operation-by-role-by-project negatives and independent acceptance"
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "credit": "One independently verified live HR provider revision across Admin and Shopper in read-only session",
+      "remaining": "B14 authorized remote writer fixture, ACK, replay, conflict/echo, same revision and independent readback"
+    },
+    {
+      "domain": "documents-resources",
+      "credit": "Authenticated PDF read HTTP200 on both exact DEV origins",
+      "remaining": "D07 PDF create, metadata, versioning, retirement, foreign-doc denial, read ACK and visit binding"
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "credit": "Positive GT/HN role/session/HR scoped proof",
+      "remaining": "Independent isolated A/B multiproject source/period/permission/no-leakage contract"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "credit": "Two authenticated shopper profiles and own unique visits rendered",
+      "remaining": "A07 edit and remote ACK, Admin complete visibility, other shopper denial; B3 camera/GPS/Storage/UI negatives and acceptance"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "credit": "Admin visits and two shoppers existing visit read models",
+      "remaining": "B3 UI actions/negative cases and B11/B14 independent HR assignment remote ACK/replay/conflict"
+    }
+  ],
+  "nextExactAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization."
+}

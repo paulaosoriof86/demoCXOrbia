@@ -418,11 +418,11 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-          "gitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
+          "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
           "runId": 44034333358,
           "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
-          "scope": "RUN2588_COMPLETE_BENEFITS_ADDED_TO_FIVE_PRESERVED_COMPLETE_DOMAINS"
+          "scope": "SIX_COMPLETE_DOMAINS_BENEFITS_RUN2588_PRESERVED__RUN2606_ROLE_PDF_SCOPED_EVIDENCE_ADDED_NO_FULL_DOMAIN_PROMOTION"
         }
       },
       "historicV32": {
@@ -789,7 +789,7 @@
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-17T18:40:06Z",
+  "asOf": "2026-11-18T21:10:01.621Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -984,7 +984,7 @@
       }
     },
     "pendingCandidateSourceSha": null,
-    "immediateAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
+    "immediateAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -1026,13 +1026,32 @@
       "terminalCertified": false,
       "phaseAComplete": false,
       "i4Authorized": false
+    },
+    "latestScopedAdminShopperProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "runId": 44395309311,
+      "runNumber": 2606,
+      "jobId": 135123961527,
+      "artifactId": 14470135617,
+      "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "moduleMatches": 6,
+      "moduleTotal": 21,
+      "newDomainMatches": 0,
+      "devDeploys": 0,
+      "hrWrites": 0,
+      "production": false
     }
   },
   "continuityHandoff": {
-    "authority": "RUN2587_DEV_SEAL_PLUS_RUN2588_C3_AND_BENEFITS_CONSUMED",
+    "authority": "RUN2587_DEV_SEAL_PLUS_RUN2588_BENEFITS_MATCH6_PLUS_RUN2606_SCOPED_AUTH_ADMIN_GT_HN_SHOPPER_PDF_PASS",
     "path": "docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json",
     "gitBlob": "d2fcea3912e5aba9418037f742693e7a6c4b3899",
-    "asOf": "2026-11-17T18:33:14Z",
+    "asOf": "2026-11-18T21:10:01.621Z",
     "iteration": "I3",
     "status": "HOLD_I3_DEV_MATERIALIZED_RUN2588_BENEFITS_MATCH_6_OF_21_REMAINING_FROZEN_CONTRACTS",
     "productSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
@@ -1050,7 +1069,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
+    "immediateAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -1122,6 +1141,25 @@
       "terminalCertified": false,
       "phaseAComplete": false,
       "i4Authorized": false
+    },
+    "latestScopedAdminShopperProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "runId": 44395309311,
+      "runNumber": 2606,
+      "jobId": 135123961527,
+      "artifactId": 14470135617,
+      "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "moduleMatches": 6,
+      "moduleTotal": 21,
+      "newDomainMatches": 0,
+      "devDeploys": 0,
+      "hrWrites": 0,
+      "production": false
     }
   },
   "currentModuleEvidenceOverrides": {
@@ -1532,7 +1570,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
+  "nextExactAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -1575,7 +1613,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-17T19:41:38Z",
+  "lastUpdatedAt": "2026-11-18T21:10:01.621Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -2249,8 +2287,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-    "gitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
+    "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4250,8 +4288,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-    "matrixBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
+    "matrixBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 3,
       "MATCH": 6,
@@ -4261,8 +4299,8 @@
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 7,
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-17T19:41:38Z",
-    "meaning": "Six complete domains, including Benefits RUN2588; source836 already served in DEV RUN2587; fifteen domain receipts remain. No new deployment or human approval."
+    "derivedAt": "2026-11-18T21:10:01.621Z",
+    "meaning": "Six complete domains including Benefits RUN2588; RUN2606 Admin GT/HN Shopper PDF DEV scoped E2E PASS on source836 and independently verified live HR revision; seven domain owners received bounded focal evidence, zero whole-domain promotion. No DEV deploy or human approval."
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -6209,8 +6247,8 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
-      "gitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
+      "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
@@ -6242,7 +6280,26 @@
     "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
     "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
     "production": false,
-    "sourceSemantics": "SOURCE836_CURRENT_DEV_RUN2587_AND_C3_RUN2588_ALIGNED__BENEFITS_MATCH6__I3_HOLD"
+    "sourceSemantics": "SOURCE836_DEV_RUN2587__BENEFITS_MATCH6_RUN2588__RUN2606_ROLE_AND_PDF_SCOPED_PASS__I3_HOLD",
+    "latestScopedAdminShopperProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "runId": 44395309311,
+      "runNumber": 2606,
+      "jobId": 135123961527,
+      "artifactId": 14470135617,
+      "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "moduleMatches": 6,
+      "moduleTotal": 21,
+      "newDomainMatches": 0,
+      "devDeploys": 0,
+      "hrWrites": 0,
+      "production": false
+    }
   },
   "currentControlCorrection": {
     "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
@@ -6522,7 +6579,7 @@
     "i4Authorized": false
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
+  "exactNextAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6621,7 +6678,7 @@
   "nextPlannedBlock": {
     "plan": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
     "scope": "EXISTING_RESIDUAL_CLAUSES_ONLY_NOT_NEW_PLAN",
-    "exactPending": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Consume RUN2595 as READ_ONLY finance evidence, not settlement: the owner-described advance identities and September inventory are located in the authenticated private manifest. Resolve only the enumerated historical/current identity pairs and amount/source authority; verify the existing safe movement-edit contract for the owner-identified November record, with no third advance, inferred allocation or bank transfer. Preserve RUN2391 D08 provider progress ACK/new-session/replay/isolation/cleanup; finish only current UI/content/independent-role residuals. B14 remains external_read_only/hrWritesEnabled=false until a concrete authorized isolated real-provider fixture and exact writer binding exist; capability/readback is not remote ACK. Prepare that bounded existing-owner test for same external revision, ordering, ACK, independent readback, lost-response replay, concurrency/echo and no duplicates. No repeat of completed VRM358 deployment or generic C3 substitute. Credit complete domain receipts immediately; publish only proven product deltas serially to existing DEV. Then Gate20 -> Gate21. I4 requires I3 GO and explicit exact-artifact authorization.",
+    "exactPending": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
     "unmatchedDomainResiduals": {
       "auth-protected-data-runtime": {
         "pending": "Only three RUN2222 login exceptions require independent Auth proof, plus uncovered A08 role denials and integral acceptance; do not rerun population census or refusion.",
@@ -6711,6 +6768,25 @@
           "preserved": "C04/C05 13/13 ACK/readback/idempotent replay/cleanup/current HR parity; accepted July/August cuts; evidence gap is not automatically a defect."
         }
       }
+    },
+    "latestScopedAdminShopperProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "runId": 44395309311,
+      "runNumber": 2606,
+      "jobId": 135123961527,
+      "artifactId": 14470135617,
+      "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "moduleMatches": 6,
+      "moduleTotal": 21,
+      "newDomainMatches": 0,
+      "devDeploys": 0,
+      "hrWrites": 0,
+      "production": false
     }
   },
   "previousExecutionReceiptBeforeRun1992Serialization": {
@@ -8139,7 +8215,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10733,7 +10809,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "48ecd763897578bec2f2f3e0a3047fec930dea6e",
+  "moduleTruthExpectedGitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -11966,7 +12042,7 @@
       "nonMatchModules": 15,
       "scope": "C3_AND_BENEFITS_FOCAL_READBACK_NOT_A_DEPLOYMENT_OR_TERMINAL_CERTIFICATE"
     },
-    "nextExactAction": "I3-Q3: preserve source836/RUN2587 exact DEV and consume RUN2588 Benefits READ_ONLY PASS (6/21); after the existing canonical control CI verifies the artifact-consumer correction, execute only uncovered B14/Admin-Shopper-HR clauses on the approved real-provider fixture: same external HR revision, valid-event ordering, remote ACK, lost-response replay, conflict/echo handling and no duplicates. Reuse accepted source and B4/B5/B6/B7 evidence. Prepare C09/C10 finance and D08 Academy read-only in parallel, with one technical writer and serial DEV publication of each proven product delta. Credit complete domain receipts immediately without rebuilding unchanged served bytes. Then close frozen Q4/Q5 residuals and Gate20 -> Gate21; I4 remains blocked until I3 GO and explicit authorization for the exact certified artifact.",
+    "nextExactAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
     "production": false,
     "i4Authorized": false
   },
@@ -11998,7 +12074,7 @@
       "nonMatchModules": 15,
       "scope": "C3_AND_BENEFITS_FOCAL_READBACK_NOT_A_DEPLOYMENT_OR_TERMINAL_CERTIFICATE"
     },
-    "exactNextAction": "I3-Q3: preserve source836/RUN2587 exact DEV and consume RUN2588 Benefits READ_ONLY PASS (6/21); after the existing canonical control CI verifies the artifact-consumer correction, execute only uncovered B14/Admin-Shopper-HR clauses on the approved real-provider fixture: same external HR revision, valid-event ordering, remote ACK, lost-response replay, conflict/echo handling and no duplicates. Reuse accepted source and B4/B5/B6/B7 evidence. Prepare C09/C10 finance and D08 Academy read-only in parallel, with one technical writer and serial DEV publication of each proven product delta. Credit complete domain receipts immediately without rebuilding unchanged served bytes. Then close frozen Q4/Q5 residuals and Gate20 -> Gate21; I4 remains blocked until I3 GO and explicit authorization for the exact certified artifact.",
+    "exactNextAction": "I3-Q3: preserve RUN2606 proof. Execute only uncovered owner-specific negative authorization/profile/B3 or isolated B14 provider ACK test when fixture+binding are independently proven; then finance C09/C10 and D08 academy. No generic recertification or new source composition. Gate20/Gate21 only after complete domain evidence. I4 requires GO and Paula exact-artifact authorization.",
     "production": false
   },
   "run2263ExactDevContinuity": {
@@ -24188,5 +24264,53 @@
     "sourceOrDevSealChanged": false,
     "verificationAuthority": "GITHUB_ACTIONS_CANONICAL_JOB_FOR_CURRENT_CONTROL_HEAD",
     "production": false
+  },
+  "latestScopedAdminGtHnShopperE2E20261118": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+    "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+    "runId": 44395309311,
+    "runNumber": 2606,
+    "jobId": 135123961527,
+    "artifactId": 14470135617,
+    "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+    "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+    "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "moduleMatches": 6,
+    "moduleTotal": 21,
+    "newDomainMatches": 0,
+    "devDeploys": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "latestFocalRun2606Consumption": {
+    "classification": "MAPPING_FAILURE",
+    "before": "RUN2606 SUCCESS proof existed only in GitHub Actions and was not carried by current module truth authority V361",
+    "after": "Receipt in canonical checkpoints, V362 matrix seven owner-bound scoped evidence rows, CURRENT pointers and next action aligned atomically",
+    "proof": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "runId": 44395309311,
+      "runNumber": 2606,
+      "jobId": 135123961527,
+      "artifactId": 14470135617,
+      "artifactDigest": "sha256:019a83620f090cd9181923f4eafb6dc837d9b64eb1270105cfa665db6f920595",
+      "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+      "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+      "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "moduleMatches": 6,
+      "moduleTotal": 21,
+      "newDomainMatches": 0,
+      "devDeploys": 0,
+      "hrWrites": 0,
+      "production": false
+    },
+    "classificationCountsUnchanged": true,
+    "sourceUnchanged": true,
+    "devUnchanged": true,
+    "humanApprovalsUnchanged": true,
+    "noProduction": true
   }
 }
