@@ -1613,7 +1613,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-11-18T21:10:01.621Z",
+  "lastUpdatedAt": "2026-11-18T21:15:35.957Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -6251,8 +6251,8 @@
       "gitBlob": "d7dfe440a5fbe85f1ddb9e7996d0523856cf2faf"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
-      "gitBlob": "fc4c4183921a5fe943353ae90e42ae812d071ee2"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
+      "gitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -7194,8 +7194,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V688_2026-11-17.json",
-  "findingsLedgerExpectedGitBlob": "fc4c4183921a5fe943353ae90e42ae812d071ee2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
+  "findingsLedgerExpectedGitBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168",
   "nextFindingId": "VRM-360",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -9421,7 +9421,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-18T00:52:48Z",
+  "updatedAt": "2026-11-18T21:15:35.957Z",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -24285,7 +24285,7 @@
     "production": false
   },
   "latestFocalRun2606Consumption": {
-    "classification": "MAPPING_FAILURE",
+    "classification": "MAPPING_FAILURE_RECOVERY",
     "before": "RUN2606 SUCCESS proof existed only in GitHub Actions and was not carried by current module truth authority V361",
     "after": "Receipt in canonical checkpoints, V362 matrix seven owner-bound scoped evidence rows, CURRENT pointers and next action aligned atomically",
     "proof": {
@@ -24311,6 +24311,8 @@
     "sourceUnchanged": true,
     "devUnchanged": true,
     "humanApprovalsUnchanged": true,
-    "noProduction": true
+    "noProduction": true,
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V689_2026-11-18.json",
+    "ledgerBlob": "9d3e5a1d61027a1dadc6beffb823376de961e168"
   }
 }
