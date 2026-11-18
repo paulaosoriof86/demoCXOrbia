@@ -8,10 +8,10 @@ const SHA='a'.repeat(40), TREE='b'.repeat(40), HR='c'.repeat(64), DIGEST='sha256
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
 const registry=JSON.parse(fs.readFileSync('CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json','utf8'));
 const DOMAINS=[...registry.modules.map(x=>x.domain),'tenant-admin-config-branding'];
-const TYPES={read:'base-router-shell-cache',write:'finance-core-liquidation-costs',auth:'auth-protected-data-runtime',ui:'dashboard-operation'};
-const OWNERS={read:'app/core/shell-proof.js',write:'app/modules/finance-proof.js',auth:'app/core/auth-proof.js',ui:'app/modules/dashboard-proof.js'};
-const BLOBS=Object.fromEntries(Object.entries(OWNERS).map(([k])=>[k,(k==='read'?'1':k==='write'?'2':k==='auth'?'3':'4').repeat(40)]));
-const CONTRACTS={read:'Release/Visual/Security',write:'País/moneda/Persistencia/ACK',auth:'Auth/Identidad/Seguridad',ui:'Operación/HR/Visual'};
+const TYPES={read:'historical',shell:'base-router-shell-cache',write:'finance-core-liquidation-costs',auth:'auth-protected-data-runtime',ui:'dashboard-operation'};
+const OWNERS={read:'app/core/historical-proof.js',shell:'app/core/shell-proof.js',write:'app/modules/finance-proof.js',auth:'app/core/auth-proof.js',ui:'app/modules/dashboard-proof.js'};
+const BLOBS=Object.fromEntries(Object.entries(OWNERS).map(([k])=>[k,(k==='read'?'1':k==='shell'?'5':k==='write'?'2':k==='auth'?'3':'4').repeat(40)]));
+const CONTRACTS={read:'Historical/ProtectedRead',shell:'Release/Visual/Security',write:'País/moneda/Persistencia/ACK',auth:'Auth/Identidad/Seguridad',ui:'Operación/HR/Visual'};
 
 function fixture(type='read',options={}){
   const types=Array.isArray(type)?type:[type],requiredIds=options.requiredIds||null;
@@ -71,6 +71,19 @@ test('read-only proof without no-write evidence is not a pass',()=>{
 test('a readonly proof never settles a domain requiring durable financial writes',()=>{
   const out=decision(append(fixture('write'),receipt('write')));
   assert.equal(out.matchModules,20);assert.equal(out.status,'HOLD');
+});
+test('read-only inspection cannot replace real shell cold-login and browser-navigation proofs',()=>{
+  const f=append(fixture('shell'),receipt('shell'));
+  assert.equal(decision(f).matchModules,20);
+  f.additionalReceipts.push(receipt('shell','AUTH_SESSION'),receipt('shell','UI_INTERACTION'));
+  assert.equal(decision(f).matchModules,21);
+});
+test('an already approved MATCH retains owner-only reproof compatibility without opening another domain gate',()=>{
+  const f=fixture('read'),mod=f.pre.modules.find(x=>x.domain===TYPES.read);
+  mod.classification='MATCH';mod.pendingTerminalFiles=[OWNERS.read];
+  const r=receipt('read','PROVIDER_WRITE');delete r.operationKind;
+  append(f,r);
+  assert.equal(decision(f).matchModules,21);
 });
 test('real provider writes need remote ACK and replay, independent of functional UI proof',()=>{
   const f=append(fixture('write'),receipt('write','PROVIDER_WRITE'));

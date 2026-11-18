@@ -21,7 +21,9 @@ const SHA256=/^[a-f0-9]{64}$/;
 // fallbacks. Extra kinds can be imposed by the immutable module contract.
 const requiredKindByDomain={
   'auth-protected-data-runtime':['AUTH_SESSION'],
-  'base-router-shell-cache':['READ_ONLY'],
+  // Cold/warm boot, route restoration and role re-entry require real sessions
+  // and browser navigation; a passive read must not close this module.
+  'base-router-shell-cache':['AUTH_SESSION','UI_INTERACTION'],
   benefits:['READ_ONLY'],
   'canonical-hr-state-adapters':['PROVIDER_WRITE'],
   certifications:['PROVIDER_WRITE'],
@@ -108,8 +110,11 @@ const moduleEvidenceRequirements=(mod,sourceFiles,candidate)=>{
   if(!candidate.length)reasons.push('C3_OWNER_RECEIPT_MISSING:'+domain);
   if(uncovered.length)reasons.push('C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:'+domain+':'+uncovered.join(','));
   const actualKinds=new Set(candidate.map(x=>x.receipt.operationKind||'PROVIDER_WRITE'));
-  const requiredKinds=Array.isArray(mod.terminalRequiredOperationKinds)&&mod.terminalRequiredOperationKinds.length?
-    mod.terminalRequiredOperationKinds:(requiredKindByDomain[domain]||['PROVIDER_WRITE']);
+  // A previously approved MATCH needs reproof only for its changed owner,
+  // not a new full-domain ceremony. Non-MATCH domains need their real kind.
+  const requiredKinds=cls==='MATCH'?[]:
+    Array.isArray(mod.terminalRequiredOperationKinds)&&mod.terminalRequiredOperationKinds.length?
+      mod.terminalRequiredOperationKinds:(requiredKindByDomain[domain]||['PROVIDER_WRITE']);
   const missingKinds=requiredKinds.filter(kind=>!actualKinds.has(kind));
   if(missingKinds.length)reasons.push('C3_REQUIRED_OPERATION_PROOF_MISSING:'+domain+':'+missingKinds.join(','));
   // Evidence may be combined, but the inventory of obligations must be frozen
