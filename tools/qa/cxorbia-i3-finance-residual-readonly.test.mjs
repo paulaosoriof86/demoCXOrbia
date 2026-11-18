@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import {FINANCE_COLLECTIONS,IDENTITY_LINK_COLLECTION,identityLinkAssessment,summarizeIdentityPreflight,amountOf,advanceCandidate,paymentEvidence,buildFinanceManifest,encryptManifest,validateReadonlyScope,runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
+import {FINANCE_COLLECTIONS,IDENTITY_LINK_COLLECTION,identityLinkAssessment,identityAuthorityEligible,summarizeIdentityPreflight,amountOf,advanceCandidate,paymentEvidence,buildFinanceManifest,encryptManifest,validateReadonlyScope,runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
 const scope={tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09'};
 const movement={docId:'advance-a',id:'advance-a',tenantId:'tya',projectId:'cinepolis',tipo:'ingreso',tipoIngreso:'anticipo',amount:7300,country:'GT',currency:'Q'};
 test('public identity summary has counts only and no private IDs',()=>{
  const raw=[{visitId:'secret-a',candidateLinks:[{docId:'private-link'}]},{visitId:'secret-b',candidateLinks:[]},{visitId:'secret-c',candidateLinks:[{docId:'x'},{docId:'y'}]}];
  const result=summarizeIdentityPreflight(raw,25);
- assert.deepEqual(result,{identityLinkRecordsRead:25,identityConflictVisits:3,zeroLinkCandidates:1,oneLinkCandidate:1,multipleLinkCandidates:1,autoAdjudicated:0,privateIdsExposed:false});
+ assert.deepEqual(result,{identityLinkRecordsRead:25,identityConflictVisits:3,zeroLinkCandidates:1,oneLinkCandidate:1,multipleLinkCandidates:1,zeroStructurallyAuthorized:3,oneStructurallyAuthorized:0,multipleStructurallyAuthorized:0,autoAdjudicated:0,privateIdsExposed:false});
  assert(!JSON.stringify(result).includes('secret-')&&!JSON.stringify(result).includes('private-link'));
 });
 test('current durable collections, never old paymentBatches',()=>{assert.equal(FINANCE_COLLECTIONS.movements,'financialMovements');assert.equal(FINANCE_COLLECTIONS.lots,'paymentLots');});
@@ -27,6 +27,21 @@ test('ambiguous identity links remain unresolved, never auto-selected',()=>{
  const found=identityLinkAssessment([row],[{...link,docId:'a'},{...link,docId:'b'}]);
  assert.equal(found[0].candidateLinks.length,2);
  assert.equal(found[0].automaticAdjudication,false);
+});
+test('exact provider structural identity policy mirrors all mandatory supersession guards',()=>{
+ const link={docId:'irl_123456789',tenantId:'tya',projectScope:'cinepolis',canonicalShopperId:'new',sourceIdentityAliases:['old'],
+   sourceSystem:'hr-provider',status:'active',authorityType:'provider_exact',authorityRef:'provider-ack',periodIndependent:true,sourceSafe:true};
+ assert.equal(identityAuthorityEligible(link,'old','new','tya','cinepolis'),true);
+ for(const change of [{periodIndependent:false},{authorityRef:null},{sourceSystem:'internal'},{status:'draft'},
+   {tenantId:'other'},{projectScope:'other'},{sourceSafe:false},{periodId:'cinepolis-2026-09'},{docId:'fake'}]){
+   assert.equal(identityAuthorityEligible({...link,...change},'old','new','tya','cinepolis'),false);
+ }
+ assert.equal(identityAuthorityEligible(link,'other','new','tya','cinepolis'),false);
+ const row={docId:'v',shopperId:'new',priorReconciliations:[{shopperId:'old'}]};
+ const resolved=identityLinkAssessment([row],[link]);
+ assert.equal(resolved[0].candidateLinks[0].structurallyAuthorized,true);
+ const aggregated=summarizeIdentityPreflight(resolved,1);
+ assert.equal(aggregated.oneStructurallyAuthorized,1);
 });
 test('zero amount is not replaced by monto',()=>assert.deepEqual(amountOf({amount:0,monto:7300}),{amount:0,conflict:true}));
 test('amount field conflict is retained, not certified',()=>assert(advanceCandidate({...movement,monto:7200},'cinepolis').conflicts.includes('AMOUNT_FIELDS_CONFLICT')));
