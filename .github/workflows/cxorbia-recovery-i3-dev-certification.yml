@@ -6410,8 +6410,6 @@ jobs:
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
       test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
       test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      # I3 Package A: source/tree/HR derived from the single RUN2587 served DEV receipt.
-      # The old RUN2382 certificate must remain historical, never a live pointer.
       P=docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json
       test "$(jq -r '.decision' "$P")" = PASS_RUN2587_PRIVATE_HR_BINDING_EXACT_DEV_CONSUMED_C3_PENDING
       test "$(jq -r '.production' "$P")" = false
