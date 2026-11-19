@@ -1,0 +1,341 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.make-original-hr-both-country-headers-readonly.v1",
+  "observedDate": "2026-11-19",
+  "iteration": "I3",
+  "decision": "PASS_B14_ORIGINAL_HR_INVENTORY_AND_BOTH_COUNTRY_HEADERS_ONLY",
+  "supersedes": "docs/checkpoints/CXORBIA_I3_B14_MAKE_ORIGINAL_HR_GT_HEADERS_HN_INVENTORY_20261119.json",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "candidateProductSource": "836a498063987f0fc471599723b4c4772d1aba09",
+  "scenario": {
+    "id": 10196061,
+    "teamId": 1975919,
+    "lastEdit": "2026-11-19T19:11:27.717Z",
+    "state": "inactive",
+    "provider": "Microsoft Graph/OneDrive",
+    "oneDriveModuleIds": [
+      5,
+      6,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "oneDriveMethods": [
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET",
+      "GET"
+    ],
+    "permanentActivation": false
+  },
+  "providerExecutions": {
+    "completeTabLists": "3c6cf2adac674ecf989def98250c10c1",
+    "firstRowMetadataOnly": "325648206a34424b991ef2d930c8c3ba",
+    "countryTableMetadata": "c202b58ac5ae47e9bb8ecc9c08e0ec0f",
+    "guatemalaTableColumns": "c378d3b083194eeab2e52368bb8baa72",
+    "hondurasDefinedNameDiscovery": "da3eff93fedd42f7b7910e980c7bdca5",
+    "hondurasFilterReference": "8b1d88347945477b94ec223ee886aeed",
+    "hondurasExactHeaderRow": "cfc06ce4bb7340169ea0a6d57f29d6a7"
+  },
+  "countries": {
+    "GT": {
+      "worksheetCount": 35,
+      "currentOperationalTab": "NOVIEMBRE 26",
+      "headerSource": "Excel workbook table column metadata",
+      "tableName": "Tabla134678910111213141516171819_NOVIEMBRE_26",
+      "tableCount": 1,
+      "columnCount": 31,
+      "columns": [
+        {
+          "index": 1,
+          "label": "|"
+        },
+        {
+          "index": 2,
+          "label": "ID CINEMA"
+        },
+        {
+          "index": 3,
+          "label": "CIUDAD"
+        },
+        {
+          "index": 4,
+          "label": "DIRECCIÓN"
+        },
+        {
+          "index": 5,
+          "label": "Shopping"
+        },
+        {
+          "index": 6,
+          "label": "Franja Horaria"
+        },
+        {
+          "index": 7,
+          "label": "Formato de Cine"
+        },
+        {
+          "index": 8,
+          "label": "Tipo de Combo"
+        },
+        {
+          "index": 9,
+          "label": "Tipo de Compra"
+        },
+        {
+          "index": 10,
+          "label": "Método de Pago"
+        },
+        {
+          "index": 11,
+          "label": "Quincena"
+        },
+        {
+          "index": 12,
+          "label": "Shopper Asignado"
+        },
+        {
+          "index": 13,
+          "label": "Telefono"
+        },
+        {
+          "index": 14,
+          "label": "Mail"
+        },
+        {
+          "index": 15,
+          "label": "Disponible a partir de"
+        },
+        {
+          "index": 16,
+          "label": "Fecha programada"
+        },
+        {
+          "index": 17,
+          "label": "Control día s/ franja horaria"
+        },
+        {
+          "index": 18,
+          "label": "Fecha realizada"
+        },
+        {
+          "index": 19,
+          "label": "Control Realizada"
+        },
+        {
+          "index": 20,
+          "label": "Ccuestionario completado"
+        },
+        {
+          "index": 21,
+          "label": "Control Cuest completado"
+        },
+        {
+          "index": 22,
+          "label": "Precio de boleto"
+        },
+        {
+          "index": 23,
+          "label": "Precio de combo"
+        },
+        {
+          "index": 24,
+          "label": "N° Encuesta"
+        },
+        {
+          "index": 25,
+          "label": "Honorarios"
+        },
+        {
+          "index": 26,
+          "label": "Revisor"
+        },
+        {
+          "index": 27,
+          "label": "Control GT"
+        },
+        {
+          "index": 28,
+          "label": "Observaciones de revisión"
+        },
+        {
+          "index": 29,
+          "label": "Fecha submitido"
+        },
+        {
+          "index": 30,
+          "label": "Control Submitida"
+        },
+        {
+          "index": 31,
+          "label": "Obsevaciones a tener en cuenta en informe gerencial"
+        }
+      ]
+    },
+    "HN": {
+      "worksheetCount": 34,
+      "currentOperationalTab": "NOVIEMBRE 26",
+      "headerSource": "Excel _FilterDatabase named range metadata, exact header row",
+      "tableCount": 0,
+      "filterRange": "'NOVIEMBRE 26'!$A$4:$AD$21",
+      "headerRange": "'NOVIEMBRE 26'!A4:AD4",
+      "columnCount": 30,
+      "columns": [
+        {
+          "index": 1,
+          "label": "País"
+        },
+        {
+          "index": 2,
+          "label": "ID CINEMA"
+        },
+        {
+          "index": 3,
+          "label": "CIUDAD"
+        },
+        {
+          "index": 4,
+          "label": "DIRECCIÓN"
+        },
+        {
+          "index": 5,
+          "label": "Shopping"
+        },
+        {
+          "index": 6,
+          "label": "Franja Horaria"
+        },
+        {
+          "index": 7,
+          "label": "Formato de Cine"
+        },
+        {
+          "index": 8,
+          "label": "Tipo de Combo"
+        },
+        {
+          "index": 9,
+          "label": "Tipo de Compra"
+        },
+        {
+          "index": 10,
+          "label": "Método de Pago"
+        },
+        {
+          "index": 11,
+          "label": "Quincena"
+        },
+        {
+          "index": 12,
+          "label": "Shopper Asignado"
+        },
+        {
+          "index": 13,
+          "label": "Teléfono"
+        },
+        {
+          "index": 14,
+          "label": "Mail"
+        },
+        {
+          "index": 15,
+          "label": "Disponible a partir de"
+        },
+        {
+          "index": 16,
+          "label": "Fecha programada"
+        },
+        {
+          "index": 17,
+          "label": "Control día s/ franja horaria"
+        },
+        {
+          "index": 18,
+          "label": "Fecha realizada"
+        },
+        {
+          "index": 19,
+          "label": "Control Realizada"
+        },
+        {
+          "index": 20,
+          "label": "Fecha Cuestionario completado"
+        },
+        {
+          "index": 21,
+          "label": "Control Cuest completado"
+        },
+        {
+          "index": 22,
+          "label": "Precio de boleto"
+        },
+        {
+          "index": 23,
+          "label": "Precio de combo"
+        },
+        {
+          "index": 24,
+          "label": "N° Encuesta"
+        },
+        {
+          "index": 25,
+          "label": "Honorarios"
+        },
+        {
+          "index": 26,
+          "label": "Revisor HN"
+        },
+        {
+          "index": 27,
+          "label": "Revisor"
+        },
+        {
+          "index": 28,
+          "label": "Observaciones de revisión"
+        },
+        {
+          "index": 29,
+          "label": "Fecha submitido"
+        },
+        {
+          "index": 30,
+          "label": "Control Submitida"
+        }
+      ]
+    }
+  },
+  "countrySpecificDifferences": {
+    "GTHasExtraLastReportNotesColumn": true,
+    "HNHasCountryColumnAtIndex1": true,
+    "HNHasRevisorHNAtIndex26": true,
+    "identicalGlobalColumnLayout": false
+  },
+  "safety": {
+    "originalWorkbookCellWrites": 0,
+    "shopperOperationalRowsRead": 0,
+    "productionChanges": 0,
+    "scenarioFinalInactive": true,
+    "allProviderModulesGET": true,
+    "rawDriveItemIdsExcluded": true
+  },
+  "acceptanceScope": {
+    "inventory": "PASS_34_HN_35_GT",
+    "headers": "PASS_30_HN_31_GT",
+    "countryPeriodMapping": "SOURCE_CONFIGURATION_PENDING",
+    "liveReadRuntime": "PENDING",
+    "bidirectionalWriteRemoteAck": "PENDING",
+    "independentReadbackReplayConflictEcho": "PENDING",
+    "B14": "HOLD",
+    "strictDomains": {
+      "match": 6,
+      "total": 21,
+      "delta": 0
+    }
+  },
+  "nextExactAction": "Configure authorized per-project country and period Excel provider bindings using these distinct headers; execute isolated temp-tab provider ACK+independent readback/replay/conflict and same-artifact DEV role E2E; preserve original data and production."
+}
