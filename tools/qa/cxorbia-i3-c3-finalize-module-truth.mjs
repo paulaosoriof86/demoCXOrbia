@@ -23,6 +23,11 @@ const canonicalScopeRole=value=>{
   const role=String(value||'').trim().toLowerCase();
   return role==='cliente'?'client':role;
 };
+export const permitsModuleScopeRole=(declaredRoles,scopeRole)=>
+  Array.isArray(declaredRoles)&&declaredRoles.length>0&&
+  declaredRoles.every(role=>typeof role==='string'&&role.trim().length>0)&&
+  declaredRoles.some(role=>canonicalScopeRole(role)===canonicalScopeRole(scopeRole)||
+    (scopeRole==='super'&&canonicalScopeRole(role)==='admin'));
 // The kind required to close a domain is independent of the evidence used to
 // inspect its UI. In particular, a read-only screenshot is never a finance ACK.
 // Frozen, module-specific requirements take precedence over these conservative
@@ -66,10 +71,9 @@ const scopeErrors=(r,mod,sourceFiles,paths)=>{
     evidence.some(x=>x.path===p && validByteProof(x,currentBlobFor(p,mod,sourceFiles)))),'EXACT_CURRENT_OWNER_BYTE_PARITY');
   const s=r.scope||{},a=r.auth||{};
   need(typeof s==='object' && !!s.tenantId && !!s.projectId && !!s.periodId &&
-    ['admin','super','shopper','client'].includes(s.role) && a.authenticated===true &&
+    ['admin','super','shopper','client','cliente'].includes(s.role) && a.authenticated===true &&
     a.tenantExact===true && a.projectAuthorized===true && a.role===s.role,'AUTHENTICATED_CONTRACT_SCOPE');
-  if(Array.isArray(mod.roles)&&mod.roles.length&&mod.roles.every(x=>typeof x==='string'))
-    need(mod.roles.some(role=>canonicalScopeRole(role)===s.role),'MODULE_ROLE_AUTHORITY');
+  need(permitsModuleScopeRole(mod.roles,s.role),'MODULE_ROLE_AUTHORITY');
   const coverage=r.contractCoverage||{};
   need(Array.isArray(coverage.obligations) && coverage.obligations.length>0 &&
     coverage.obligations.every(x=>x?.id && x.observed===true && x.evidenceRef && SHA256.test(String(x.evidenceSha256||''))),'OBSERVED_CONTRACT_OBLIGATIONS');

@@ -4,11 +4,12 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
-import {evaluateTerminalModuleTruth,discoverCanonicalDomainReceipts} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import {evaluateTerminalModuleTruth,discoverCanonicalDomainReceipts,permitsModuleScopeRole} from './cxorbia-i3-c3-finalize-module-truth.mjs';
 
 const SHA='a'.repeat(40), TREE='b'.repeat(40), HR='c'.repeat(64), DIGEST='sha256:'+'d'.repeat(64), HASH='e'.repeat(64);
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
 const registry=JSON.parse(fs.readFileSync('CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json','utf8'));
+const currentMatrix=JSON.parse(fs.readFileSync('RECOVERY-I3-MODULE-TRUTH-MATRIX-20261118-V362.json','utf8'));
 const DOMAINS=[...registry.modules.map(x=>x.domain),'tenant-admin-config-branding'];
 const TYPES={read:'historical',shell:'base-router-shell-cache',write:'finance-core-liquidation-costs',auth:'auth-protected-data-runtime',ui:'dashboard-operation'};
 const OWNERS={read:'app/core/historical-proof.js',shell:'app/core/shell-proof.js',write:'app/modules/finance-proof.js',auth:'app/core/auth-proof.js',ui:'app/modules/dashboard-proof.js'};
@@ -127,6 +128,43 @@ test('frozen display roles map to authenticated scope roles without broadening a
   assert.equal(decision(f).matchModules,21); // Locale display label maps to client.
   r.scope.role='super';r.auth.role='super';
   assert.equal(decision(f).matchModules,20); // Super needs its own explicit authority.
+});
+test('missing or malformed module role authority cannot silently authorize a receipt',()=>{
+  const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
+  const module=f.pre.modules.find(m=>m.domain===TYPES.auth);
+  for(const malformed of [undefined,null,[],['Admin',null],['Admin',''],['Admin',{}]]){
+    module.roles=malformed;
+    const result=decision(f);
+    assert.equal(result.matchModules,20,'invalid authority: '+JSON.stringify(malformed));
+    assert.ok(result.rejectedReceipts.some(x=>x.reasons.includes('MODULE_ROLE_AUTHORITY')));
+  }
+});
+test('all 21 frozen module role authorities match exact credential roles and reject cross-role access',()=>{
+  const labels={Admin:'admin',Shopper:'shopper',Cliente:'client'};
+  assert.equal(currentMatrix.modules.length,21);
+  for(const mod of currentMatrix.modules){
+    assert.ok(Array.isArray(mod.roles)&&mod.roles.length>0,mod.domain);
+    for(const label of mod.roles)assert.ok(Object.hasOwn(labels,label),mod.domain+':'+label);
+    for(const scopedRole of ['admin','shopper','client','cliente','super']){
+      const expected=mod.roles.some(label=>labels[label]===scopedRole||
+        (scopedRole==='cliente'&&label==='Cliente')||(scopedRole==='super'&&label==='Admin'));
+      assert.equal(permitsModuleScopeRole(mod.roles,scopedRole),expected,mod.domain+':'+scopedRole);
+    }
+  }
+});
+test('actual super-admin and cliente session roles are accepted only within their authorized module class',()=>{
+  const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
+  const module=f.pre.modules.find(m=>m.domain===TYPES.auth),r=f.additionalReceipts[0];
+  module.roles=['Admin'];
+  r.scope.role='super';r.auth.role='super';
+  assert.equal(decision(f).matchModules,21); // Super is privileged within Admin, not Shopper.
+  module.roles=['Shopper'];
+  assert.equal(decision(f).matchModules,20);
+  module.roles=['Cliente'];
+  r.scope.role='cliente';r.auth.role='cliente';
+  assert.equal(decision(f).matchModules,21); // Real legacy session spelling is accepted.
+  module.roles=['Admin'];
+  assert.equal(decision(f).matchModules,20);
 });
 test('real browser UI proof is not forced to fabricate provider writes',()=>{
   const f=append(fixture('ui'),receipt('ui','UI_INTERACTION'));
