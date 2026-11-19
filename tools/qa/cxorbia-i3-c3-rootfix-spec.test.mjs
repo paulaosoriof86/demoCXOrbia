@@ -16,6 +16,19 @@ const OWNERS={read:'app/core/historical-proof.js',shell:'app/core/shell-proof.js
 const BLOBS=Object.fromEntries(Object.entries(OWNERS).map(([k])=>[k,(k==='read'?'1':k==='shell'?'5':k==='write'?'2':k==='auth'?'3':'4').repeat(40)]));
 const CONTRACTS={read:'Historical/ProtectedRead',shell:'Release/Visual/Security',write:'País/moneda/Persistencia/ACK',auth:'Auth/Identidad/Seguridad',ui:'Operación/HR/Visual'};
 
+test('A08 immutable-DEV read-only role proof does not inherit HEAD release-composition failure',()=>{
+  const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
+  const job=workflow.split('  i3-keeper-role-e2e-readonly:')[1]?.split('\n  i3-run2382-')[0]||'';
+  assert.ok(job.includes('always() && !cancelled()'));
+  assert.ok(job.includes("contains(github.event.head_commit.message, '[i3-a08-exceptions-negative-readonly]')"));
+  assert.ok(job.includes("contains(github.event.head_commit.message, '[i3-keeper-role-e2e-readonly]') && needs.canonical-candidate-authority.result == 'success'"));
+  assert.ok(job.includes('bash tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'));
+  const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
+  for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = 39'])
+    assert.ok(preflight.includes(required),`missing immutable DEV guard: ${required}`);
+  assert.ok(!/\b(gcloud run deploy|firebase deploy|PATCH|POST|PUT|DELETE)\b/.test(preflight));
+});
+
 function fixture(type='read',options={}){
   const types=Array.isArray(type)?type:[type],requiredIds=options.requiredIds||null;
   const modules=DOMAINS.map(domain=>{
