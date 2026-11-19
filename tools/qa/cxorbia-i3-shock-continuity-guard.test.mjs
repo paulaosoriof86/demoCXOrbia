@@ -340,12 +340,10 @@ test('premature production and stale progress authority fail closed', () => {
 
 test('the frozen shock status schedules the existing source proof after authority and has no cloud permissions', () => {
   const workflow = fs.readFileSync(new URL('../../.github/workflows/cxorbia-recovery-i3-dev-certification.yml', import.meta.url), 'utf8');
-  const sourceProofStart = workflow.match(/\n( {1,2})phasea-rejected-checkpoint-source-proof:\n/);
-  const jobIndent = sourceProofStart?.[1].length;
-  const block = sourceProofStart ? workflow.slice(sourceProofStart.index + sourceProofStart[0].length).split(new RegExp(`\\n {${jobIndent}}[a-z0-9-]+:\\n`))[0] : null;
+  const block = workflow.split('\n  phasea-rejected-checkpoint-source-proof:\n')[1]?.split(/\n  [a-z0-9-]+:\n/)[0];
   assert.ok(block, 'existing source-proof job must be present');
   assert.match(block, /needs: canonical-candidate-authority/);
-  const condition = block.match(new RegExp(`^ {${jobIndent + 1}}if: (.+)$`, 'm'))?.[1] || '';
+  const condition = block.match(/^   if: (.+)$/m)?.[1] || '';
   const values = condition.match(/fromJSON\('([^']+)'\)/)?.[1];
   assert.ok(values, 'source-proof routing must have an explicit accepted-status list');
   const allowed = JSON.parse(values);

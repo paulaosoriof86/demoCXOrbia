@@ -5,12 +5,6 @@ import fs from 'node:fs';
 import {FINANCE_COLLECTIONS,IDENTITY_LINK_COLLECTION,identityLinkAssessment,identityAuthorityEligible,summarizeIdentityPreflight,amountOf,advanceCandidate,paymentEvidence,buildFinanceManifest,encryptManifest,validateReadonlyScope,runFinanceResidualReadonly} from './cxorbia-i3-finance-residual-readonly.mjs';
 const scope={tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09'};
 const movement={docId:'advance-a',id:'advance-a',tenantId:'tya',projectId:'cinepolis',tipo:'ingreso',tipoIngreso:'anticipo',amount:7300,country:'GT',currency:'Q'};
-const financeWorkflowJobBody=(workflow)=>{
- const start=workflow.match(/\n {1,2}i3-finance-focal-reproof:\n/);
- const end=workflow.match(/\n {1,2}vrm085-postulation-sync-diagnostic:\n/);
- assert.ok(start&&end&&start.index<end.index,'existing finance job must remain delimited');
- return workflow.slice(start.index+start[0].length,end.index);
-};
 test('public identity summary has counts only and no private IDs',()=>{
  const raw=[{visitId:'secret-a',candidateLinks:[{docId:'private-link'}]},{visitId:'secret-b',candidateLinks:[]},{visitId:'secret-c',candidateLinks:[{docId:'x'},{docId:'y'}]}];
  const result=summarizeIdentityPreflight(raw,25);
@@ -93,7 +87,7 @@ test('reader has no remote write or HR refresh APIs',()=>{
 });
 test('public artifact excludes raw cloud runtime metadata',()=>{
  const src=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
- const finance=financeWorkflowJobBody(src);
+ const finance=src.slice(src.indexOf('  i3-finance-focal-reproof:'),src.indexOf('  vrm085-postulation-sync-diagnostic:'));
  assert(finance.includes("&& '.tmp/i3-finance-focal/readonly'"));
 });
 test('canonical workflow stays below its existing 510000-byte guard',()=>{
@@ -108,5 +102,5 @@ test('read-only branch resolves no browser and dependency failures are observabl
 });
 test('dependency helper belongs only to the finance job',()=>{
  const src=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');const target='bash tools/qa/cxorbia-i3-finance-dependencies.sh';
- assert.equal(src.split(target).length-1,1);assert(financeWorkflowJobBody(src).includes(target));
+ assert.equal(src.split(target).length-1,1);assert(src.slice(src.indexOf('  i3-finance-focal-reproof:'),src.indexOf('  vrm085-postulation-sync-diagnostic:')).includes(target));
 });
