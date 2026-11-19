@@ -185,7 +185,13 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   if(financeEvidence){
     check([p,l,...(m?[m]:[])].every(o=>JSON.stringify(o?.currentFinanceReadonlyEvidence)===JSON.stringify(financeEvidence)),
       'CURRENT_FINANCE_READONLY_EVIDENCE_DESYNC');
-    check(financeEvidence.sourceSha===source&&financeEvidence.sourceTree===tree&&
+    // During a source-only successor, preserve the exact immutable finance
+    // read-only receipt from the still-served predecessor. This never certifies
+    // settlement, provider ACK, or the successor source's real E2E.
+    const exactSource=financeEvidence.sourceSha===source&&financeEvidence.sourceTree===tree;
+    const predecessorServed=pendingServing&&financeEvidence.sourceSha===seal.sourceSha&&
+      financeEvidence.sourceTree===seal.sourceTree;
+    check((exactSource||predecessorServed)&&
       financeEvidence.decision==='PASS_FINANCE_READONLY_CURRENT_MANIFEST'&&financeEvidence.completeRead===true&&
       financeEvidence.sameDocumentsStable===true&&financeEvidence.providerCommandsExecuted===0&&
       financeEvidence.newDomainMatches===0&&financeEvidence.financeSettlementCertified===false&&financeEvidence.production===false,

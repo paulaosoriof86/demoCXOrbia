@@ -594,3 +594,23 @@ test('a successful predecessor HR read does not erase failure of a genuinely pen
   v.descriptor.currentMaterialization.sourceSha='a'.repeat(40);
   assert.ok(!validateCurrentAuthorityAliases(v).failures.includes('CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE'));
 });
+
+test('pending successor preserves predecessor finance read-only without granting settlement credit',()=>{
+  const v=pendingFixture(),prior=v.descriptor.postDeployRunSeal;
+  const receipt={sourceSha:prior.sourceSha,sourceTree:prior.sourceTree,
+    decision:'PASS_FINANCE_READONLY_CURRENT_MANIFEST',completeRead:true,
+    sameDocumentsStable:true,providerCommandsExecuted:0,newDomainMatches:0,
+    financeSettlementCertified:false,production:false};
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence=structuredClone(receipt);
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence.financeSettlementCertified=true;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FINANCE_READONLY_SCOPE_OR_CREDIT_INVALID'));
+});
+test('predecessor finance receipt fails closed without explicit pending-source seal',()=>{
+  const v=fixture(),receipt={sourceSha:'a'.repeat(40),sourceTree:'e'.repeat(40),
+    decision:'PASS_FINANCE_READONLY_CURRENT_MANIFEST',completeRead:true,
+    sameDocumentsStable:true,providerCommandsExecuted:0,newDomainMatches:0,
+    financeSettlementCertified:false,production:false};
+  for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence=structuredClone(receipt);
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FINANCE_READONLY_SCOPE_OR_CREDIT_INVALID'));
+});
