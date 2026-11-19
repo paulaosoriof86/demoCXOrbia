@@ -2789,7 +2789,7 @@ jobs:
       node --input-type=module -e 'import fs from "node:fs";const root=process.env.OUT;const files=["tenant-readonly/tenant-admin-config-branding-domain.json","benefits-readonly/benefits-domain.json"];const receipts=files.flatMap(p=>{const f=root+"/full-human-acceptance/"+p;if(!fs.existsSync(f))return [];const r=JSON.parse(fs.readFileSync(f));return Array.isArray(r)?r:[r];});fs.writeFileSync(root+"/current-domain-receipts.json",JSON.stringify(receipts,null,2)+"\n");'
       C3_MODE=progress C3_PRETERMINAL="$OUT/current-preterminal-matrix.json" C3_LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_ADDITIONAL_RECEIPTS="$OUT/current-domain-receipts.json" C3_FINAL_MATRIX="$OUT/module-truth-progress.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-progress.log"
       test "$(jq -r '.phaseAComplete' "$OUT/module-truth-progress.json")" = "false"
-   - if: env.CX_I3_BENEFITS_ONLY!='1'
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       C3_SEM_OUT="$OUT/semantic" C3_HR_FILE="$OUT/hr-current-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$CURRENT_LIVE_HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/semantic/oracle.log"
@@ -2802,7 +2802,7 @@ jobs:
       test "$(jq -r '.sourceSha' "$OUT/semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
       test "$(jq -r '.hrRevision' "$OUT/semantic/browser-focal.json")" = "$CURRENT_LIVE_HR_REVISION"
    - name: Execute current functional fixtures before strict certification
-     if: env.CX_I3_BENEFITS_ONLY!='1'
+     if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       PERIOD_ID="$(jq -er '.currentPeriodId' "$OUT/semantic/hr-contrast.json")"
@@ -2817,7 +2817,7 @@ jobs:
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs prepare "$OUT"
       I3_FIXTURE_STAGE=PRE_CERTIFICATION PRIOR_DIR="$OUT" PRIOR_RUN_ID="$GITHUB_RUN_ID" OUT="$OUT/live-fixtures" node "$GITHUB_WORKSPACE/.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-live "$OUT"
-   - if: env.CX_I3_BENEFITS_ONLY!='1'
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       if [[ "$(jq -r '.f09LiveVerificationPending // false' "$CANDIDATE_DESCRIPTOR")" == true ]]; then jq -e '.decision=="PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP"' "$OUT/f09/result.json" >/dev/null; fi
@@ -2857,7 +2857,7 @@ jobs:
       test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
       MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json"|awk '{print $1}')"
       echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
-   - if: env.CX_I3_BENEFITS_ONLY!='1'
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       test "$(sha256sum "$OUT/canonical-route-inventory.json"|awk '{print $1}')" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
@@ -2873,7 +2873,7 @@ jobs:
       HUMAN_SHA="$(sha256sum "$HUMAN"|awk '{print $1}')"; PROBES_SHA="$(sha256sum "$PROBES"|awk '{print $1}')"; FOCAL_SHA="$(sha256sum "$FOCAL"|awk '{print $1}')"; MATRIX_SHA="$(sha256sum "$MATRIX"|awk '{print $1}')"; ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json"|awk '{print $1}')"; SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_VISUAL",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
       jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_SEMANTIC",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
-   - if: env.CX_I3_BENEFITS_ONLY!='1'
+   - if: env.CX_I3_BENEFITS_ONLY != '1'
      run: |
       set -Eeuo pipefail
       test "$(sha256sum "$OUT/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$ARTIFACT_SHA256"
@@ -2894,7 +2894,7 @@ jobs:
       node tools/qa/cxorbia-i3-live-fixture-contract.mjs verify-sealed "$OUT" "$OUT/sealed-fixtures"
       cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
    - id: terminal_artifact
-     if: env.CX_I3_BENEFITS_ONLY!='1'
+     if: env.CX_I3_BENEFITS_ONLY != '1'
      uses: actions/upload-artifact@v4
      with: {name: 'cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}',path: '${{ env.OUT }}',if-no-files-found: error,retention-days: 30,compression-level: 6,include-hidden-files: true}
    - if: always()
@@ -6399,7 +6399,7 @@ jobs:
 
   i3-keeper-role-e2e-readonly:
    needs: canonical-candidate-authority
-   if: ${{always()&&!cancelled()&&(contains(github.event.head_commit.message,'[i3-a08-exceptions-negative-readonly]')||(contains(github.event.head_commit.message,'[i3-keeper-role-e2e-readonly]')&&needs.canonical-candidate-authority.result=='success'))}}
+   if: ${{always() && !cancelled()&&(contains(github.event.head_commit.message,'[i3-a08-exceptions-negative-readonly]')||(contains(github.event.head_commit.message,'[i3-keeper-role-e2e-readonly]')&&needs.canonical-candidate-authority.result=='success'))}}
    runs-on: ubuntu-24.04
    timeout-minutes: 40
    permissions:
