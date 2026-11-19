@@ -152,6 +152,20 @@ test('all 21 frozen module role authorities match exact credential roles and rej
     }
   }
 });
+test('all 21 current domains retain concrete contract, owner paths and byte identities',()=>{
+  const sourceByPath=new Map(currentMatrix.sourceFiles.map(f=>[f.path,f]));
+  assert.equal(currentMatrix.modules.length,21);
+  for(const mod of currentMatrix.modules){
+    assert.ok(String(mod.contractFunctional||mod.contract||'').length>0,mod.domain+':contract');
+    assert.ok(Array.isArray(mod.owners)&&mod.owners.length>0,mod.domain+':owners');
+    const required=new Set([...mod.owners,...currentMatrix.sourceFiles.filter(f=>f.domain===mod.domain&&f.phaseAAuthority!==false).map(f=>f.path)]);
+    for(const owner of required){
+      const fromModule=mod.currentOwnerBlobs?.[owner],fromSource=sourceByPath.get(owner)?.currentBlob;
+      assert.match(String(fromModule||fromSource||''),/^[a-f0-9]{40}$/,mod.domain+':'+owner);
+      if(fromModule&&fromSource)assert.equal(fromModule,fromSource,mod.domain+':'+owner+':blob-consistency');
+    }
+  }
+});
 test('actual super-admin and cliente session roles are accepted only within their authorized module class',()=>{
   const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
   const module=f.pre.modules.find(m=>m.domain===TYPES.auth),r=f.additionalReceipts[0];

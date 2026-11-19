@@ -6394,7 +6394,7 @@ jobs:
 
   i3-keeper-role-e2e-readonly:
    needs: canonical-candidate-authority
-   if: ${{ contains(github.event.head_commit.message, '[i3-keeper-role-e2e-readonly]') && needs.canonical-candidate-authority.result == 'success' }}
+   if: ${{ (contains(github.event.head_commit.message, '[i3-keeper-role-e2e-readonly]') || contains(github.event.head_commit.message, '[i3-a08-exceptions-negative-readonly]')) && needs.canonical-candidate-authority.result == 'success' }}
    runs-on: ubuntu-24.04
    timeout-minutes: 40
    permissions:
@@ -6425,25 +6425,91 @@ jobs:
       test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
       test "$SOURCE" = "$(jq -r '.currentMaterialization.sourceSha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json)"
       test "$HR" = "$(jq -r '.currentMaterialization.hrRevision' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json)"
-      git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+      # The certified DEV source is pinned above. Later source-only changes in
+      # unrelated owners must not suppress read-only proof of its served bytes.
+      # Changed owners/dependencies of the tested domains still fail closed.
+      MATRIX="$(jq -r '.moduleTruthPath' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+      test -f "$MATRIX"
+      test "$(jq -r '.productSource.sha' "$MATRIX")" = "$SOURCE"
+      mapfile -t FOCAL_OWNERS < <(jq -r '.modules[]|select(.domain=="auth-protected-data-runtime" or .domain=="base-router-shell-cache" or .domain=="core-config-data-router-permissions")|.owners[]' "$MATRIX" | sort -u)
+      test "${#FOCAL_OWNERS[@]}" -ge 15
+      git diff --quiet "$SOURCE" HEAD -- "${FOCAL_OWNERS[@]}" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-hr-source-bridge.js backend/runtime/hr-live-service/server.mjs
       node --check firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
+      node --check firebase/auth-dev-tools/cxorbia-i3-a08-exceptions-negative-readonly.mjs
       echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
       echo "CXORBIA_HR_REVISION=$HR" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
+   - uses: google-github-actions/setup-gcloud@v2
+     with: {project_id: cxorbia-backend-dev}
+   - name: Verify exact served DEV runtime and all 39 Hosting assets without any mutation
+     run: |
+      set -Eeuo pipefail
+      P=docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json
+      QA_OUT=.tmp/cxorbia-i3-two-keepers-role-e2e-readonly
+      mkdir -p "$QA_OUT"
+      SOURCE="$(jq -r '.sourceSha' "$P")"
+      TREE="$(jq -r '.sourceTree' "$P")"
+      REVISION="$(jq -r '.materialization.runtimeRevision' "$P")"
+      EXPECTED_DIGEST="$(jq -r '.materialization.runtimeDigest' "$P")"
+      HOSTING="$(jq -r '.materialization.hostingVersion' "$P")"
+      FIRESTORE_RULESET="$(jq -r '.materialization.firestoreRuleset' "$P")"
+      test "$SOURCE" = "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+      test "$TREE" = "$(git rev-parse "$SOURCE^{tree}")"
+      [[ "$EXPECTED_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+      TMP_JSON="$(mktemp)"
+      TMP_ASSET="$(mktemp)"
+      trap 'rm -f "$TMP_JSON" "$TMP_ASSET"' EXIT
+      gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$TMP_JSON"
+      jq -e --arg rev "$REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]?|select(.revisionName==$rev and .percent==100)]|length)==1' "$TMP_JSON" >/dev/null
+      gcloud run revisions describe "$REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$TMP_JSON"
+      jq -e --arg src "$SOURCE" 'any(.spec.containers[0].env[]?;.name=="CXORBIA_RECOVERY_SOURCE_SHA" and .value==$src)' "$TMP_JSON" >/dev/null
+      RAW_DIGEST="$(jq -r '.status.imageDigest // empty' "$TMP_JSON")"
+      if [[ "$RAW_DIGEST" == sha256:* ]]; then RUNTIME_DIGEST="$RAW_DIGEST";
+      elif [[ "$RAW_DIGEST" == *@sha256:* ]]; then RUNTIME_DIGEST="sha256:${RAW_DIGEST##*@sha256:}";
+      else exit 1; fi
+      test "$RUNTIME_DIGEST" = "$EXPECTED_DIGEST"
+      TOKEN="$(gcloud auth print-access-token)"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$TMP_JSON"
+      test "$(jq -r '.release.version.name // empty' "$TMP_JSON")" = "$HOSTING"
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING" > "$TMP_JSON"
+      test "$(jq -r '.status // empty' "$TMP_JSON")" = FINALIZED
+      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$TMP_JSON"
+      test "$(jq -r '.rulesetName // empty' "$TMP_JSON")" = "$FIRESTORE_RULESET"
+      COUNT=0
+      while IFS=$'\t' read -r ASSET EXPECTED_SHA; do
+        [[ "$ASSET" =~ ^[A-Za-z0-9_./-]+$ && "$ASSET" != *..* && "$ASSET" != /* ]]
+        [[ "$EXPECTED_SHA" =~ ^[a-f0-9]{64}$ ]]
+        SOURCE_SHA="$(git show "$SOURCE:app/$ASSET" | sha256sum | awk '{print $1}')"
+        test "$SOURCE_SHA" = "$EXPECTED_SHA"
+        curl -fsSL --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$ASSET?i3a08=$GITHUB_RUN_ID-$COUNT" -o "$TMP_ASSET"
+        SERVED_SHA="$(sha256sum "$TMP_ASSET" | awk '{print $1}')"
+        test "$SERVED_SHA" = "$EXPECTED_SHA"
+        printf '%s %s\n' "$ASSET" "$SERVED_SHA" >> "$QA_OUT/served-assets.sha256"
+        COUNT=$((COUNT+1))
+      done < <(jq -r '.servedSha256|to_entries[]|[.key,.value]|@tsv' "$P")
+      test "$COUNT" = 39
+      test "$(jq -r '.verifiedServedAssetCount' "$P")" = 39
+      jq -n --arg source "$SOURCE" --arg tree "$TREE" --arg revision "$REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING" --arg ruleset "$FIRESTORE_RULESET" --argjson count "$COUNT" '{decision:"PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hosting,firestoreRuleset:$ruleset,servedAssetsMatch:$count,builds:0,deploys:0,hrWrites:0,production:false}' > "$QA_OUT/same-artifact-preflight.json"
    - name: Install DEV-only read-only tooling
      run: |
       set -Eeuo pipefail
       npm install --prefix firebase/auth-dev-tools --no-save --no-package-lock --ignore-scripts firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
       ./firebase/auth-dev-tools/node_modules/.bin/playwright install chromium >/dev/null
-   - name: Prove one Admin plus both GT/HN keeper roles against the same HR revision
+   - name: Prove either preserved keeper sessions or exact A08 Firestore role denials
      run: |
       set -Eeuo pipefail
-      node firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
-      jq -e '(.decision=="PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E" or .decision=="PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE") and .safety.production==false and .safety.hrWrites==0 and .safety.directAuthWrites==0 and .safety.directFirestoreWrites==0' .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json >/dev/null
+      MESSAGE="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
+      if [[ "$MESSAGE" == *'[i3-a08-exceptions-negative-readonly]'* ]]; then
+        node firebase/auth-dev-tools/cxorbia-i3-a08-exceptions-negative-readonly.mjs
+        jq -e '.decision=="PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE" and .gate=="HOLD" and .safety.production==false and .safety.hrWrites==0 and .safety.directAuthWrites==0 and .safety.directFirestoreWrites==0 and (.keeperProof|length)==2 and (.exceptions|length)==3' .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json >/dev/null
+      else
+        node firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
+        jq -e '.decision=="PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E" and .safety.production==false and .safety.hrWrites==0 and .safety.directAuthWrites==0 and .safety.directFirestoreWrites==0' .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json >/dev/null
+      fi
    - uses: actions/upload-artifact@v4
      if: always()
-     with: {name: 'cxorbia-i3-two-keepers-role-e2e-readonly-${{ github.run_id }}', path: .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json, if-no-files-found: warn, retention-days: 30}
+     with: {name: 'cxorbia-i3-two-keepers-role-e2e-readonly-${{ github.run_id }}', path: .tmp/cxorbia-i3-two-keepers-role-e2e-readonly/, if-no-files-found: warn, retention-days: 30}
 
   i3-run2382-academy-b7-isolated-dev-qa:
    needs: canonical-candidate-authority
