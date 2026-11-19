@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scoped-source-proof.v1",
+  "id": "I3-B14-ORIGINAL-EXCEL-COUNTRY-BINDING",
+  "decision": "PASS_SOURCE_QA_16_B14_COUNTRY_21_ROLE_TESTS__DEV_AND_PROVIDER_INTEGRATION_PENDING",
+  "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "predecessorProductSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_B14_SOURCE_DELTA_SIX_OWNERS_SCOPE_20261119.json",
+  "scopeReceiptBlob": "4600cfeee650a944567e5426eb3833b37f7caa01",
+  "allowedProductFiles": [
+    "app/modules/hr-source.js",
+    "app/modules/proyecto-wizard.js",
+    "app/modules/proyectos.js",
+    "backend/contracts/cxorbia-project-source-contract-v1.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"
+  ],
+  "sourceTestsPass": 16,
+  "sourceTestsFail": 0,
+  "findings": [
+    {
+      "id": "B14",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owners": [
+        "app/modules/hr-source.js",
+        "app/modules/proyecto-wizard.js",
+        "app/modules/proyectos.js",
+        "backend/contracts/cxorbia-project-source-contract-v1.json",
+        "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+        "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+      ],
+      "decision": "PROVEN_SOURCE_DELTA_NOT_LIVE_PROVIDER_WRITE"
+    }
+  ],
+  "evidence": {
+    "runId": 44626095047,
+    "runNumber": 2632,
+    "jobId": 135920209808,
+    "focusedB14TestsPass": 16,
+    "roleNormalizerTestsPass": 21,
+    "focusedFail": 0,
+    "underlyingCIConclusion": "failure_due_to_expected_candidate_guard",
+    "b14ProviderDelayedReadbackCountryGT": "PASS",
+    "b14ProviderDelayedReadbackCountryHN": "PASS",
+    "operationalRowsWritten": 0
+  },
+  "safety": {
+    "production": false,
+    "devPublished": false,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "providerOperationalWriteAck": false,
+    "terminalDomainPromotion": 0
+  },
+  "production": false,
+  "devPublished": false,
+  "nextExactAction": "Use existing I3 P0 pendingDevSuccessor mechanism to register this exact six-owner source in the SAME canonical candidate, preserving current DEV predecessor seal until verified materialization. Do not mark I3 GO without 21/21 complete same-artifact receipts."
+}
