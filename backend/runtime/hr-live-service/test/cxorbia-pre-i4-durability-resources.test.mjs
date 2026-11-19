@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
+import {shopperResourceProjection} from '../certification-runtime.mjs';
 const root=fileURLToPath(new URL('../../../../',import.meta.url));
 const read=p=>fs.readFileSync(root+p,'utf8');
 
@@ -50,12 +51,15 @@ test('PRE-I4 canonical DEV entrypoint loads certification evidence and durable r
   assert.match(html,/core\/backend-resources\.js/);
 });
 
-test('PRE-I4 rules allow only targeted active project resources to shopper while writes remain operator-only',()=>{
+test('PRE-I4 VRM-297 rules deny direct Shopper resource reads and retain scoped operator authority',()=>{
   const src=read('firestore.rules');
-  assert.match(src,/match \/resources\/\{resourceId\}/);
-  assert.match(src,/resource\.data\.projectId in request\.auth\.token\.projectIds/);
-  assert.match(src,/role\(\) in resource\.data\.visibleRoles/);
-  assert.match(src,/allow create, update, delete: if tenantAllowed\(tenantId\) && isOperator\(\)/);
+  const block=src.match(/match \/resources\/\{resourceId\} \{([\s\S]*?)match \/auditLogs\/\{logId\}/)?.[1];
+  assert.ok(block,'exact tenant resources rule block missing');
+  assert.match(block,/allow read: if tenantAllowed\(tenantId\) && isOperator\(\);/);
+  assert.doesNotMatch(block,/allow (?:get|list|read):[^;]*isShopperRole\(\)/);
+  assert.match(block,/allow create: if tenantAllowed\(tenantId\) && isOperator\(\)/);
+  assert.match(block,/allow update: if tenantAllowed\(tenantId\) && isOperator\(\)/);
+  assert.match(block,/allow delete: if tenantAllowed\(tenantId\) && isOperator\(\)/);
 });
 
 test('PRE-I4 resource writes use async ACK handlers and content-derived idempotency',()=>{
@@ -66,19 +70,24 @@ test('PRE-I4 resource writes use async ACK handlers and content-derived idempote
   assert.match(core,/hash\(\[scope\.tenantId,scope\.projectId,scope\.periodId,clean\(item\)\]\)/);
 });
 
-test('PRE-I4 VRM-029 resource list rule is query-compatible without widening tenant project or role scope',()=>{
+test('PRE-I4 VRM-297 Shopper resource reads use authenticated sanitized server projection',()=>{
   const src=read('firestore.rules');
-  const m=src.match(/match \/resources\/\{resourceId\} \{([\s\S]*?)allow create, update, delete:/);
-  assert.ok(m,'resources rule block missing');
-  const block=m[1];
-  assert.match(block,/tenantAllowed\(tenantId\)/);
-  assert.match(block,/isShopperRole\(\)/);
-  assert.match(block,/resource\.data\.status == 'active'/);
-  assert.match(block,/resource\.data\.projectId in request\.auth\.token\.projectIds/);
-  assert.match(block,/role\(\) in resource\.data\.visibleRoles/);
-  assert.doesNotMatch(block,/resource\.data\.projectId is string/);
-  assert.doesNotMatch(block,/projectAssigned\(resource\.data\.projectId\)/);
-  assert.doesNotMatch(block,/resource\.data\.visibleRoles is list/);
+  const browser=read('app/core/backend-resources.js');
+  const runtime=read('backend/runtime/hr-live-service/certification-runtime.mjs');
+  assert.match(src,/allow read: if tenantAllowed\(tenantId\) && isOperator\(\);/);
+  assert.match(browser,/if\(role\(\)==='shopper'\)\s*\{/);
+  assert.match(browser,/CX\.backendCertifications\.loadShopperResources\(scope\.periodId\)/);
+  assert.match(runtime,/AUTH_FAILURE:CERT_SHOPPER_PROJECTION_REQUIRED/);
+  assert.match(runtime,/source:'verified_shopper_projection'/);
+  const row={id:'bank',tenantId:'t',projectId:'p',periodId:'period',resourceType:'certification_bank',
+    tipo:'certification_bank',status:'active',visibleRoles:['shopper'],bank:{estado:'published',
+      preguntas:[{q:'Pregunta',ops:['Sí','No'],correcta:'Sí',exp:'Secreto',fuente:'Doc interno'}]}};
+  const projected=shopperResourceProjection(row,{tenantId:'t',projectId:'p',periodId:'period'});
+  assert.ok(projected,'published, project-scoped bank should be visible');
+  assert.deepEqual(projected.bank.preguntas,[{q:'Pregunta',ops:['Sí','No']}]);
+  assert.doesNotMatch(JSON.stringify(projected),/Secreto|correcta|fuente/);
+  assert.equal(shopperResourceProjection({...row,projectId:'other'},{tenantId:'t',projectId:'p',periodId:'period'}),null);
+  assert.equal(shopperResourceProjection({...row,bank:{...row.bank,estado:'draft'}},{tenantId:'t',projectId:'p',periodId:'period'}),null);
 });
 
 test('PRE-I4 VRM-029 browser resource query proves the same project status and role constraints required by Rules',()=>{
