@@ -10,7 +10,7 @@ export const VERSION='cxorbia-project-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['project.create','project.update','period.create','period.state.update']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 const SOURCE_MODES=new Set(['internal','external']);
-const PROVIDERS=new Set(['internal_firestore','google_sheets','excel_import','external_api','external_platform','custom_adapter']);
+const PROVIDERS=new Set(['internal_firestore','google_sheets','excel_online','excel_import','external_api','external_platform','custom_adapter']);
 const READ_POLICIES=new Set(['internal_live','external_live','external_snapshot_import']);
 const WRITE_POLICIES=new Set(['platform_only','external_read_only','bidirectional_gated']);
 const FORBIDDEN_KEYS=new Set(['password','token','apiKey','credentials','privateUrl','workbookUrl','rawWorkbookUrl','secret']);
@@ -35,6 +35,29 @@ function forbiddenPath(value,path=[]){
   return null;
 }
 function sourceOf(payload){return clean(payload?.operationalSource||payload?.routeSource||{});}
+const opaqueRef=v=>/^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$/.test(str(v));
+
+// A live Excel workbook is owned by a country binding, never by a project-wide
+// fallback. The provider discovers newly added monthly worksheets independently.
+export function validateExcelCountryBindings(countries,source={}){
+  const errors=[],selected=arr(countries).map(str).map(v=>v.toUpperCase()),entries=source.countryBindings;
+  if(!Array.isArray(entries)||!entries.length)return ['PROJECT_COUNTRY_HR_BINDINGS_REQUIRED'];
+  const seen=new Set(),bindings=new Set();
+  for(const entry of entries){
+    const country=str(entry?.countryCode).toUpperCase(),binding=str(entry?.providerBindingId),mapping=str(entry?.mappingRef);
+    if(!/^[A-Z]{2}$/.test(country)||!selected.includes(country))errors.push('PROJECT_COUNTRY_HR_SCOPE_INVALID');
+    if(seen.has(country))errors.push('PROJECT_COUNTRY_HR_DUPLICATE_COUNTRY');
+    if(!opaqueRef(binding))errors.push('PROJECT_COUNTRY_HR_BINDING_INVALID');
+    if(!opaqueRef(mapping))errors.push('PROJECT_COUNTRY_HR_MAPPING_INVALID');
+    if(binding&&bindings.has(binding))errors.push('PROJECT_COUNTRY_HR_SHARED_BINDING_FORBIDDEN');
+    seen.add(country);if(binding)bindings.add(binding);
+    if(Object.keys(entry||{}).some(k=>!['countryCode','providerBindingId','mappingRef'].includes(k)))errors.push('PROJECT_COUNTRY_HR_UNSUPPORTED_FIELD');
+  }
+  if(selected.some(country=>!seen.has(country)))errors.push('PROJECT_COUNTRY_HR_MISSING_COUNTRY');
+  if(source.providerBindingId||source.integrationSettingId||source.providerRef||source.mappingRef)errors.push('PROJECT_COUNTRY_HR_GLOBAL_FALLBACK_FORBIDDEN');
+  if(source.periodDiscovery!=='provider_auto')errors.push('PROJECT_COUNTRY_HR_PERIOD_DISCOVERY_REQUIRED');
+  return [...new Set(errors)];
+}
 
 export function validateProjectPayload(payload={},mode='create'){
   const errors=[],warnings=[],source=sourceOf(payload),srcMode=str(source.mode),provider=str(source.providerType),read=str(source.readPolicy),write=str(source.writePolicy);
@@ -44,8 +67,14 @@ export function validateProjectPayload(payload={},mode='create'){
   if(!PROVIDERS.has(provider))errors.push('PROJECT_SOURCE_PROVIDER_TYPE_INVALID');
   if(!READ_POLICIES.has(read))errors.push('PROJECT_SOURCE_READ_POLICY_INVALID');
   if(!WRITE_POLICIES.has(write))errors.push('PROJECT_SOURCE_WRITE_POLICY_INVALID');
-  if(srcMode==='external'&&read==='external_live'&&!str(source.providerBindingId||source.integrationSettingId||source.providerRef))errors.push('PROJECT_SOURCE_BINDING_REQUIRED');
-  if(srcMode==='external'&&!str(source.mappingRef))errors.push('PROJECT_SOURCE_MAPPING_REQUIRED');
+  if(srcMode==='external'&&provider==='excel_online'){
+    if(read!=='external_live')errors.push('PROJECT_COUNTRY_HR_LIVE_READ_REQUIRED');
+    errors.push(...validateExcelCountryBindings(payload.countries,source));
+  }else{
+    if(srcMode==='external'&&read==='external_live'&&!str(source.providerBindingId||source.integrationSettingId||source.providerRef))errors.push('PROJECT_SOURCE_BINDING_REQUIRED');
+    if(srcMode==='external'&&!str(source.mappingRef))errors.push('PROJECT_SOURCE_MAPPING_REQUIRED');
+    if(source.countryBindings!==undefined)errors.push('PROJECT_COUNTRY_HR_PROVIDER_INVALID');
+  }
   if(srcMode==='internal'&&provider!=='internal_firestore')errors.push('PROJECT_INTERNAL_PROVIDER_MUST_BE_INTERNAL_FIRESTORE');
   if(srcMode==='internal'&&write!=='platform_only')errors.push('PROJECT_INTERNAL_WRITE_POLICY_INVALID');
   const forbidden=forbiddenPath(payload);if(forbidden)errors.push('PROJECT_CONFIG_SECRET_FORBIDDEN:'+forbidden);
@@ -182,4 +211,4 @@ export function createProjectCommandProvider({auth,db,policy}={}){
   });
 }
 
-export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,validateProjectPayload,validateProviderPolicy,createProjectCommandProvider};
+export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,validateProjectPayload,validateExcelCountryBindings,validateProviderPolicy,createProjectCommandProvider};

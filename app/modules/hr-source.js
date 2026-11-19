@@ -31,8 +31,9 @@ CX.hrSource = {
   _default(){return{tipo:'google_sheets',sourceRef:'',providerBindingId:'',mappingRef:'',maskedUrl:'',estado:'pendiente_backend',ultimaLectura:null,ultimoPreview:null,periodos:[],counts:{},incidencias:[],canImport:false,syncMode:'manual',mappingContract:'',visitLinkField:'',stableKeys:[],gobierna:{}};},
   _fromProject(pid){
     const p=this._projectRecord(pid)||{},src=p.operationalSource||p.routeSource||{},admin=p.hrSourceAdmin||{},binding=String(src.providerBindingId||src.integrationSettingId||src.providerRef||admin.providerBindingId||admin.sourceRef||''),mapping=String(src.mappingRef||admin.mappingRef||admin.mappingContract||'');
-    const tipo=admin.tipo||src.providerType||'google_sheets',estado=admin.estado||((binding&&mapping)?'connected':'pendiente_backend');
-    return Object.assign(this._default(),admin,{tipo,sourceRef:binding,providerBindingId:binding,mappingRef:mapping,mappingContract:mapping,estado,canImport:!!admin.canImport});
+    const multi=src.providerType==='excel_online',countryBindings=multi?(Array.isArray(src.countryBindings)?src.countryBindings:[]):[];
+    const tipo=multi?'excel_online':(admin.tipo||src.providerType||'google_sheets'),estado=multi?'pendiente_backend':(admin.estado||((binding&&mapping)?'connected':'pendiente_backend'));
+    return Object.assign(this._default(),admin,{tipo,sourceRef:binding,providerBindingId:binding,mappingRef:mapping,mappingContract:mapping,estado,canImport:multi?false:!!admin.canImport,countryBindings,countries:p.countries||[]});
   },
   operationalReadback(pid){
     // The Admin form's saved connection state describes its registration/preview
@@ -46,7 +47,7 @@ CX.hrSource = {
     const meta=CX.data?.previewMeta||{};
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
     const revision=String(meta.sourceRevision||'');
-    const verified=this._canonical()&&src.mode==='external'&&src.readPolicy==='external_live'&&
+    const verified=this._canonical()&&src.providerType!=='excel_online'&&src.mode==='external'&&src.readPolicy==='external_live'&&
       !!String(src.providerBindingId||src.integrationSettingId||src.providerRef||'').trim()&&
       !!String(src.mappingRef||'').trim()&&
       meta.hrAuthority===true&&String(meta.projectId||'')===pid&&
@@ -60,7 +61,7 @@ CX.hrSource = {
     try{return JSON.parse(localStorage.getItem(this.KEY)||'{}');}catch(e){return{};}
   },
   get(pid){pid=String(pid||this._projectId());if(this._canonical())return this._fromProject(pid);const a=this.all();return a[pid]||this._default();},
-  _providerType(tipo){return tipo==='excel_online'?'external_platform':tipo==='xlsx_manual'?'excel_import':'google_sheets';},
+  _providerType(tipo){return tipo==='excel_online'?'excel_online':tipo==='xlsx_manual'?'excel_import':'google_sheets';},
   _readPolicy(tipo){return tipo==='xlsx_manual'?'external_snapshot_import':'external_live';},
   _applyProjectReadback(row){
     if(!row?.id)return row;
@@ -72,6 +73,8 @@ CX.hrSource = {
   },
   async save(pid,cfg,meta){
     pid=String(pid||this._projectId());cfg=Object.assign(this.get(pid),cfg||{});
+    if(cfg.tipo==='excel_online'||this._projectRecord(pid)?.operationalSource?.providerType==='excel_online')
+      return{ok:false,status:'blocked',committed:false,providerAck:false,readbackVerified:false,code:'HR_COUNTRY_BINDING_REQUIRES_VERIFIED_BACKEND_REGISTRATION'};
     const safe={tipo:cfg.tipo||'google_sheets',sourceRef:cfg.sourceRef||cfg.providerBindingId||'',providerBindingId:cfg.providerBindingId||cfg.sourceRef||'',mappingRef:cfg.mappingRef||cfg.mappingContract||'',maskedUrl:cfg.maskedUrl||'',estado:cfg.estado||'pendiente_backend',ultimaLectura:cfg.ultimaLectura||null,ultimoPreview:cfg.ultimoPreview||null,periodos:cfg.periodos||[],counts:cfg.counts||{},incidencias:cfg.incidencias||[],canImport:!!cfg.canImport,syncMode:cfg.syncMode||'manual',mappingContract:cfg.mappingRef||cfg.mappingContract||'',visitLinkField:cfg.visitLinkField||'',stableKeys:cfg.stableKeys||[],gobierna:cfg.gobierna||{}};
     if(!this._canonical()){
       const a=this.all();a[pid]=safe;try{localStorage.setItem(this.KEY,JSON.stringify(a));}catch(e){}CX.bus&&CX.bus.emit('hr-source');return{ok:true,status:'preview',providerAck:false,readbackVerified:false};
@@ -92,6 +95,7 @@ CX.hrSource = {
   maskUrl(u){if(!u)return'—';try{const s=String(u);return s.length>28?s.slice(0,14)+'…'+s.slice(-8):s.slice(0,6)+'…';}catch(e){return'••••';}},
   async register(pid,rawUrl,cfg){
     pid=String(pid||this._projectId());const current=Object.assign(this.get(pid),cfg||{});
+    if(current.tipo==='excel_online')return{status:'blocked',providerAck:false,message:'Cada país requiere un registro privado independiente; la conexión global no puede sustituir las HR originales.'};
     if(!rawUrl||!String(rawUrl).trim())return{status:'blocked',providerAck:false,message:'URL requerida para registrar la fuente.'};
     if(!CX.backendHrSourceBridge?.handle)return{status:'pendiente_backend',providerAck:false,message:'Canal backend HR no disponible.'};
     return CX.backendHrSourceBridge.handle('register',{projectId:pid,sourceType:current.tipo,sourceRef:current.sourceRef||'',mappingRef:current.mappingRef||current.mappingContract||'',privateSourceUrl:String(rawUrl).trim(),requestedAt:new Date().toISOString()});
@@ -133,6 +137,15 @@ CX.module('hrsource', ({data, ui})=>{
         ${operational.verified?`<div style="margin-top:8px;font-size:11.5px;color:var(--t2)">La revisión protegida de HR coincide con el proyecto y la sesión autenticada (revisión ${operational.revision.slice(0,12)}…). La gestión de registro/vista previa es un canal independiente: ${registrationState.label.toLowerCase()}.</div>`:''}
         ${!st.canImport?`<div style="margin-top:8px;font-size:11.5px;color:var(--t2)">🔒 La importación está <b>bloqueada</b> hasta que la fuente quede lista y validada.</div>`:''}
       </div>
+
+      ${cfg.tipo==='excel_online'?`<div class="card card-p" style="margin-bottom:14px">
+        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">HR originales de Excel Online · por país</div>
+        <div style="font-size:11.5px;color:var(--t2);margin-bottom:8px">Cada país conserva su propio libro de OneDrive, con nuevas pestañas mensuales descubiertas por el proveedor. La vinculación declarada no equivale a lectura en vivo ni a permiso de escritura.</div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Conexión</th><th>Mapeo</th><th>Lectura y escritura</th></tr></thead><tbody>
+          ${(cfg.countries||[]).map(country=>{const ref=(cfg.countryBindings||[]).find(x=>x.countryCode===country)||{},declared=!!(ref.providerBindingId&&ref.mappingRef);return `<tr><td>${String(country).replace(/[^A-Z]/g,'')}</td><td>${declared?'Referencia declarada':'Falta referencia'}</td><td>${ref.mappingRef?'Declarado':'Pendiente'}</td><td><span class="bdg bdg-a">Pendiente de ACK del proveedor</span></td></tr>`;}).join('')}
+        </tbody></table></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">Para cambiar un vínculo por país se exige registro privado autorizado con readback; la opción de URL global no reemplaza ni mezcla libros.</div>
+      </div>`:''}
 
       <div class="card card-p" style="margin-bottom:14px">
         <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🚦 Etapas de activación</div>

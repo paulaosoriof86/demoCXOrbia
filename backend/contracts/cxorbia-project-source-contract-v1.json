@@ -19,6 +19,7 @@
     "providerType": [
       "internal_firestore",
       "google_sheets",
+      "excel_online",
       "excel_import",
       "external_api",
       "external_platform",
@@ -65,6 +66,20 @@
       "shopperStableKeys": ["shopperId", "protectedCrosswalkId"],
       "periodKeyRequired": true
     },
+    "excelOnlineCountryBindings": {
+      "requiredWhenProviderType": "excel_online",
+      "countryBindingFields": ["countryCode", "providerBindingId", "mappingRef"],
+      "onePrivateBindingPerConfiguredCountry": true,
+      "globalBindingFallbackForbidden": true,
+      "countryDerivedFromAuthorizedProjectScope": true,
+      "newMonthlyWorksheetsDiscoveredByProvider": true,
+      "worksheetsSelectedByStableIdsAndPeriodRegistry": true,
+      "multipleScenarioWorksheetsPerCountryPeriod": true,
+      "monthTitleParsingMustNotChooseAmbiguousScenario": true,
+      "rawWorkbookDriveIdAndItemIdPrivateToIntegrationSettings": true,
+      "missingOrAmbiguousWorksheet": "HOLD_MAPPING_FAILURE",
+      "writePolicyUntilRemoteAckGate": "external_read_only"
+    },
     "providerRef": {
       "requiredForExternalLive": true,
       "mustBeIndirectReference": true,
@@ -81,6 +96,7 @@
     "hrFuente.origen=nativa": "mode=internal/providerType=internal_firestore",
     "hrFuente.etiqueta=Google Sheets (online)": "mode=external/providerType=google_sheets",
     "hrFuente.etiqueta=Excel importado": "mode=external/providerType=excel_import",
+    "hrFuente.etiqueta=Excel Online / OneDrive (por país)": "mode=external/providerType=excel_online; countryBindings required",
     "legacyFieldsArePresentationOnly": true,
     "canonicalProjectSourceRequiredBeforeNewProductionProject": true
   },

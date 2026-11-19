@@ -65,7 +65,9 @@ test('VRM-036 runtime wiring exposes historical evidence separately from current
   assert.match(bridge,/certificationEligibilityGranted:0/);
   assert.match(c6,/historicalEvidenceStatus/);
   assert.match(c6,/eligibilityGranted:!!s\.certified/);
-  assert.match(cert,/no habilita la certificación vigente ni la elegibilidad para ejecutar visitas/);
+  assert.match(cert,/CX\.backendCertifications\?\.sessionDecision/);
+  assert.match(cert,/if\(carry\.eligibilityGranted===true\)/);
+  assert.match(c6,/pendiente de validación; no habilita elegibilidad vigente/);
 });
 
 
@@ -91,7 +93,9 @@ test('VRM-036 protected authenticated profile is an exact evidence owner without
 test('VRM-036 certification module prefers exact protected session profile for historical evidence',()=>{
   const cert=fs.readFileSync(root+'app/modules/cert.js','utf8');
   const bridge=fs.readFileSync(root+'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8');
-  assert.match(cert,/const protectedProfile=data\.__sessionShopperProfile/);
+  assert.match(cert,/const certification=CX\.backendCertifications\?\.sessionDecision\?\./);
+  assert.match(cert,/const shopper=certification\.shopper,shopperId=certification\.shopperId/);
   assert.match(bridge,/protectedCertProjection=certProjector\.project/);
-  assert.match(bridge,/profile=sessionProfile\(projectedState,c,result\)/);
+  assert.match(bridge,/profileInfo=sessionProfile\(projectedState,c,result,hr\.shoppers\)/);
+  assert.match(bridge,/const profile=shopperReady\.profile\|\|null/);
 });

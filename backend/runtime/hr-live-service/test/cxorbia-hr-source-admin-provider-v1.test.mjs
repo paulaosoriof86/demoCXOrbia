@@ -40,6 +40,26 @@ test('VRM-191 project config rejects raw private URL authority',()=>{
   assert.equal(v.ok,false);assert.ok(v.errors.some(x=>x.startsWith('PROJECT_CONFIG_SECRET_FORBIDDEN:')));
 });
 
+test('B14 country-scoped Excel project update persists both private references with durable ACK and idempotent replay',async()=>{
+  const db=baseDb(),provider=createProjectCommandProvider({auth:new Auth(),db,policy});
+  const countryBindings=[
+    {countryCode:'GT',providerBindingId:'cinema-gt',mappingRef:'map-gt'},
+    {countryCode:'HN',providerBindingId:'cinema-hn',mappingRef:'map-hn'}
+  ];
+  const payload={...baseProject,version:7,countries:['GT','HN'],operationalSource:{mode:'external',
+    providerType:'excel_online',authority:'external_source',readPolicy:'external_live',
+    writePolicy:'external_read_only',periodDiscovery:'provider_auto',countryBindings}};
+  const command={commandType:'project.update',tenantId:'tenant-a',projectId:'project-a',
+    periodId:'period-a',expectedVersion:7,idempotencyKey:'b14-country-hr-project-v1',payload};
+  const first=await provider.execute('token',command),replay=await provider.execute('token',command);
+  assert.equal(first.ok,true);assert.equal(first.readbackVerified,true);assert.equal(first.providerAck,true);
+  assert.deepEqual(first.entityReadback.operationalSource.countryBindings,countryBindings);
+  assert.equal(first.entityReadback.version,8);
+  assert.equal(first.entityReadback.operationalSource.providerBindingId,undefined);
+  assert.equal(first.externalProviderWrites,undefined);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
 test('VRM-191 HR source administration is project-scoped and project-provider persisted',()=>{
   const source=fs.readFileSync(new URL('../../../../app/modules/hr-source.js',import.meta.url),'utf8');
   assert.match(source,/const pid=\(\)=>data\.currentProjectId/);

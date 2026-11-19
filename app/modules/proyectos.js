@@ -175,6 +175,14 @@ CX.module('proyectos', ({data,ui})=>{
             const external=next.hrFuente.origen==='externa';
             const currentSource=pr.operationalSource||{};
             const providerType=external?String(currentSource.providerType||'').trim():'internal_firestore';
+            if(currentSource.providerType==='excel_online'){
+              const bound=Array.isArray(currentSource.countryBindings)?currentSource.countryBindings:[];
+              const requested=next.countries||[];
+              if(!external||bound.length!==requested.length||requested.some(c=>!bound.some(x=>x.countryCode===c&&x.providerBindingId&&x.mappingRef))){
+                ui.toast('Cambio bloqueado: las HR originales por país requieren un vínculo autorizado para cada país. Configure primero las conexiones en Fuente de HR.','warn',5200);return;
+              }
+              next.operationalSource=Object.assign({},currentSource,{mode:'external',authority:'external_source',readPolicy:'external_live',writePolicy:'external_read_only'});
+            }else{
             const providerBindingId=external?String(currentSource.providerBindingId||currentSource.integrationSettingId||currentSource.providerRef||'').trim():'';
             const mappingRef=external?String(currentSource.mappingRef||'').trim():'internal-native-mapping';
             if(external&&(!providerType||!providerBindingId||!mappingRef)){
@@ -189,6 +197,7 @@ CX.module('proyectos', ({data,ui})=>{
               providerBindingId:external?providerBindingId:null,
               mappingRef
             });
+            }
           }
           if(data.updateProject&&CX.cxDataCommandBoundary?.canonicalMode?.()){
             const ack=await data.updateProject(pr.id,next,{ackAware:true,reason:'project-config-update'});

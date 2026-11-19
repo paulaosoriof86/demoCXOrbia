@@ -3,12 +3,14 @@ import fs from 'node:fs';
 const q=fs.readFileSync('app/modules/cuestionario-shopper.js','utf8');
 const m=fs.readFileSync('app/modules/misvisitas.js','utf8');
 const checks={
-  visitSpecificNeverFallsBackToGeneral:q.includes("const url = esPorVisita ? ((visita&&")&&!q.includes("hrQuestionnaireLink)||cfg.url"),
+  visitSpecificNeverFallsBackToGeneral:q.includes("const url = providerPending ? '' : (esPorVisita ? ((visita&&")&&
+    q.includes("hrQuestionnaireLink))||'') : (cfg.url||''))")&&!q.includes("hrQuestionnaireLink)||cfg.url"),
   externalQuestionnaireRequiresProviderAck:q.includes("shopper-external-questionnaire-complete")&&q.includes("ackAware:true")&&q.includes("providerAck===true"),
   internalQuestionnaireRequiresProviderAck:q.includes("shopper-internal-questionnaire-submit")&&q.includes("data.submitQuestionnaire")&&q.includes("providerAck===true"),
   assignedStageHasSchedule:m.includes("if(kind==='asignada')")&&m.includes('data-sched="${v.id}"'),
   assignedScheduleRequiresPrerequisites:m.includes("scheduleReady:!!v.instructiveReadAt&&certState.done")&&m.includes("Completa primero el instructivo y la certificación requerida."),
-  scheduledStageActivatesRealized:m.includes("else if(kind==='agendada')actions=")&&m.includes('data-done="${v.id}"'),
+  scheduledStageActivatesRealized:m.includes("else if(kind==='agendada'){const ready=canCompleteVisit(v)")&&
+    m.includes('data-done="${v.id}"')&&m.includes('aria-disabled="true" title="Se habilita el día de la visita"'),
   realizedPendingActivatesQuestionnaire:m.includes('data-quest="${v.id}"'),
   completedQuestionnaireRemovesQuestionnaireAction:m.includes("else if(facets(v).questionnaire)actions=")&&m.includes("data-questionnaire-complete")
 };

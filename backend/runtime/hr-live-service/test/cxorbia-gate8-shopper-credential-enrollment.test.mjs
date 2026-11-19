@@ -25,7 +25,7 @@ class Query{
     const prefix=`${this.path}/`,depth=this.path.split('/').length+1,docs=[];
     for(const [path,value] of this.db._store){
       if(!path.startsWith(prefix)||path.split('/').length!==depth)continue;
-      if(value?.[this.field]===this.value)docs.push(new Snapshot(path.split('/').at(-1),value));
+      if(this.field===null||value?.[this.field]===this.value)docs.push(new Snapshot(path.split('/').at(-1),value));
       if(docs.length>=this.cap)break;
     }
     return {size:docs.length,docs};
@@ -35,6 +35,7 @@ class CollectionRef{
   constructor(db,path){this.db=db;this.path=path;}
   doc(id){return new DocRef(this.db,`${this.path}/${id}`);}
   where(field,op,value){assert.equal(op,'==');return new Query(this.db,this.path,field,value);}
+  async get(){return new Query(this.db,this.path,null,null).get();}
 }
 class FakeFirestore{
   constructor(){this._store=new Map();}

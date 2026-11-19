@@ -8,9 +8,9 @@ window.CX = window.CX || {};
 function qMode(m){ if(m==='externa')return 'externo_general'; if(m==='link')return 'externo_visita'; return m||'interna'; }
 function opaqueSourceRef(v){
   const s=String(v||'').trim();
-  if(!s||s.length>180||/\s/.test(s)||/[?#]/.test(s)||/^[a-z][a-z0-9+.-]*:\/\//i.test(s))return '';
-  return s;
+  return /^[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$/.test(s)?s:'';
 }
+function safeWizardAttr(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
 CX.projectWizard = function(data, ui){
   const st = {
@@ -21,7 +21,7 @@ CX.projectWizard = function(data, ui){
     frecuencia:'mensual', periodoMedicion:'igual', ventanas:'',
     cuestModo:'interna', cuestUrl:'',
     hrFuente:'Hoja creada en plataforma',
-    providerBindingId:'', mappingRef:'',
+    providerBindingId:'', mappingRef:'', countryBindings:{},
     revision:{consultora:true, cliente:false},
     submitido:{quien:'plataforma', rol:'hr'},
     contactos:{evidencias:'', soporte:'', coordinacion:''},
@@ -94,15 +94,26 @@ CX.projectWizard = function(data, ui){
       <select class="sel" id="f_hr" style="margin-bottom:12px">
         <option ${st.hrFuente==='Hoja creada en plataforma'?'selected':''}>Hoja creada en plataforma</option>
         <option ${st.hrFuente==='Google Sheets (online)'?'selected':''}>Google Sheets (online)</option>
+        <option ${st.hrFuente==='Excel Online / OneDrive (por país)'?'selected':''}>Excel Online / OneDrive (por país)</option>
         <option ${st.hrFuente==='Excel importado'?'selected':''}>Excel importado</option>
       </select>
-      <div id="f_hrRefs" style="${st.hrFuente==='Hoja creada en plataforma'?'display:none;':''}margin:-2px 0 14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2)">
+      <div id="f_hrRefs" style="${['Hoja creada en plataforma','Excel Online / OneDrive (por país)'].includes(st.hrFuente)?'display:none;':''}margin:-2px 0 14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2)">
         <div style="font-size:11.5px;color:var(--t2);margin-bottom:9px"><b>Vínculo seguro de la fuente</b> · usa referencias opacas ya autorizadas. No pegues URL, Sheet ID, credenciales ni tokens.</div>
         <div class="grid g2" style="gap:10px">
           <div><label class="lbl">Referencia de conexión</label><input class="inp" id="f_hrBinding" value="${st.providerBindingId}" placeholder="Ej. binding:cliente-hr-prod" autocomplete="off"></div>
           <div><label class="lbl">Referencia de mapeo</label><input class="inp" id="f_hrMapping" value="${st.mappingRef}" placeholder="Ej. mapping:visitas-v1" autocomplete="off"></div>
         </div>
         <div style="font-size:10.5px;color:var(--t3);margin-top:7px">Estas referencias quedan guardadas dentro del proyecto y se validan por el provider al crear. La fuente externa sigue siendo autoridad; CXOrbia no guarda el secreto ni la URL privada.</div>
+      </div>
+      <div id="f_hrCountryRefs" style="${st.hrFuente==='Excel Online / OneDrive (por país)'?'':'display:none;'}margin:-2px 0 14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2)">
+        <div style="font-size:12px;color:var(--t2);margin-bottom:9px"><b>Una HR original por país</b> · referencias privadas independientes; las pestañas de cada mes se descubren por el proveedor y se vinculan por su ID, sin exigir nombres idénticos.</div>
+        ${st.countries.map(c=>`<div class="card card-p" style="margin-bottom:9px" data-country="${c}">
+          <div class="card-t" style="font-size:12px;margin-bottom:8px">${safeWizardAttr(CX.COUNTRIES.find(x=>x.c===c)?.n||c)} (${c})</div>
+          <div class="grid g2" style="gap:10px">
+            <div><label class="lbl">Conexión segura de ${c}</label><input class="inp wHrCountryBinding" data-country="${c}" value="${safeWizardAttr(st.countryBindings[c]?.providerBindingId)}" placeholder="Referencia autorizada" autocomplete="off"></div>
+            <div><label class="lbl">Mapeo de ${c}</label><input class="inp wHrCountryMapping" data-country="${c}" value="${safeWizardAttr(st.countryBindings[c]?.mappingRef)}" placeholder="Contrato de columnas" autocomplete="off"></div>
+          </div></div>`).join('')}
+        <div style="font-size:10.5px;color:var(--t3)">La URL y el identificador del libro permanecen en la configuración privada del backend. Las escrituras a la HR quedan bloqueadas hasta certificar ACK, conflictos e idempotencia.</div>
       </div>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
       <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
@@ -147,6 +158,8 @@ CX.projectWizard = function(data, ui){
       if(g('f_isr')!=null)st.isr=+g('f_isr')||0; if(g('f_reg')!=null)st.regalias=+g('f_reg')||0; }
     if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=g('f_cmodo'); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
       if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_hrBinding')!=null)st.providerBindingId=g('f_hrBinding'); if(g('f_hrMapping')!=null)st.mappingRef=g('f_hrMapping'); if(g('f_scn')!=null)st.scenarios=g('f_scn');
+      wrap.querySelectorAll('.wHrCountryBinding').forEach(e=>{st.countryBindings[e.dataset.country]=Object.assign({},st.countryBindings[e.dataset.country],{providerBindingId:e.value});});
+      wrap.querySelectorAll('.wHrCountryMapping').forEach(e=>{st.countryBindings[e.dataset.country]=Object.assign({},st.countryBindings[e.dataset.country],{mappingRef:e.value});});
       if(g('f_freq')!=null)st.frecuencia=g('f_freq'); if(g('f_medi')!=null)st.periodoMedicion=g('f_medi'); if(g('f_vent')!=null)st.ventanas=g('f_vent'); }
     if(st.step===5){ if(g('f_res')!=null)st.restriccion=g('f_res'); if(g('f_dias')!=null)st.diasPago=+g('f_dias')||30; if(g('f_con')!=null)st.conocimiento=g('f_con'); }
   };
@@ -155,7 +168,7 @@ CX.projectWizard = function(data, ui){
     const external=st.hrFuente!=='Hoja creada en plataforma';
     const source={
       mode:external?'external':'internal',
-      providerType:external?(st.hrFuente==='Google Sheets (online)'?'google_sheets':'excel_import'):'internal_firestore',
+      providerType:external?(st.hrFuente==='Google Sheets (online)'?'google_sheets':st.hrFuente==='Excel Online / OneDrive (por país)'?'excel_online':'excel_import'):'internal_firestore',
       authority:external?'external_source':'platform',
       readPolicy:external?(st.hrFuente==='Excel importado'?'external_snapshot_import':'external_live'):'internal_live',
       writePolicy:external?'external_read_only':'platform_only',
@@ -163,7 +176,11 @@ CX.projectWizard = function(data, ui){
       visitLinkField:'questionnaireLink',
       label:st.hrFuente
     };
-    if(external){
+    if(source.providerType==='excel_online'){
+      source.countryBindings=st.countries.map(countryCode=>({countryCode,
+        providerBindingId:opaqueSourceRef(st.countryBindings[countryCode]?.providerBindingId),
+        mappingRef:opaqueSourceRef(st.countryBindings[countryCode]?.mappingRef)}));
+    }else if(external){
       source.providerBindingId=opaqueSourceRef(st.providerBindingId);
       source.mappingRef=opaqueSourceRef(st.mappingRef);
     }else source.mappingRef='internal-native-mapping';
@@ -177,7 +194,14 @@ CX.projectWizard = function(data, ui){
     if(!st.countries.length){ui.toast('Selecciona al menos un país','warn');st.step=1;render();return;}
     const windows=(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean);
     const operationalSource=sourceConfig();
-    if(operationalSource.mode==='external'&&(!operationalSource.providerBindingId||!operationalSource.mappingRef)){
+    const bindings=operationalSource.countryBindings||[];
+    if(operationalSource.providerType==='excel_online'&&
+      (bindings.length!==st.countries.length||bindings.some(x=>!x.providerBindingId||!x.mappingRef)||
+       new Set(bindings.map(x=>x.providerBindingId)).size!==bindings.length)){
+      ui.toast('Proyecto no creado: cada país requiere su propia conexión segura y su mapeo; no se reutiliza la misma conexión para dos países.','warn',5200);
+      st.step=4;render();return;
+    }
+    if(operationalSource.mode==='external'&&operationalSource.providerType!=='excel_online'&&(!operationalSource.providerBindingId||!operationalSource.mappingRef)){
       ui.toast('Proyecto no creado: seleccionaste una fuente externa y faltan referencias seguras de conexión o mapeo. No pegues URLs ni credenciales.','warn',5200);
       st.step=4;render();return;
     }
@@ -247,7 +271,10 @@ CX.projectWizard = function(data, ui){
     updateRequiredScope();
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
     const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w){const m=qMode(cm.value);w.style.display=(m==='interna'||m==='externo_visita')?'none':'';}});
-    const hr=wrap.querySelector('#f_hr'); if(hr)hr.addEventListener('change',()=>{st.hrFuente=hr.value;const refs=wrap.querySelector('#f_hrRefs');if(refs)refs.style.display=st.hrFuente==='Hoja creada en plataforma'?'none':'';});
+    const hr=wrap.querySelector('#f_hr'); if(hr)hr.addEventListener('change',()=>{st.hrFuente=hr.value;const refs=wrap.querySelector('#f_hrRefs'),countryRefs=wrap.querySelector('#f_hrCountryRefs');
+      if(refs)refs.style.display=['Hoja creada en plataforma','Excel Online / OneDrive (por país)'].includes(st.hrFuente)?'none':'';
+      if(countryRefs)countryRefs.style.display=st.hrFuente==='Excel Online / OneDrive (por país)'?'':'none';
+    });
     const ps=wrap.querySelector('#f_paisSearch'); if(ps)ps.addEventListener('input',()=>{const q=ps.value.toLowerCase();wrap.querySelectorAll('.wPaisRow').forEach(l=>{l.style.display=l.dataset.n.includes(q)?'':'none';});});
     const imp=wrap.querySelector('#f_import'); if(imp)imp.addEventListener('click',()=>importWizard());
   };
