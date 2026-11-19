@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.provider-prerequisite-run2623.v1",
+  "status": "HOLD",
+  "iteration": "I3",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "controlHead": "05c79a804c7c26effac129dd4b11953e5f97b49c",
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceTree": "f351b9704488ce8a2d6c8d40a9426a1d012bd152",
+  "proof": {
+    "runNumber": 2623,
+    "runId": 44458870753,
+    "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44458870753",
+    "canonicalJob": {
+      "id": 135340510535,
+      "conclusion": "success"
+    },
+    "b14ProviderJob": {
+      "id": 135340823805,
+      "conclusion": "success"
+    },
+    "artifact": {
+      "id": 14499545315,
+      "name": "cxorbia-i3-b14-qa-provider-44458870753",
+      "zipDigest": "sha256:95bc6e16c5a7c03ec0fbc4c23711dd926f26b20332b98fb49e235509779620ac"
+    },
+    "isolatedFixture": {
+      "spreadsheetId": "1W7oc7sV1D1oHXMhLnsHkslks0bD9pIsY5M720-tOGjg",
+      "tab": "B14_QA",
+      "row": 2,
+      "fixtureId": "B14-QA-20261118-001",
+      "tenantId": "tenant_qa",
+      "projectId": "project_qa",
+      "periodId": "periodo_qa"
+    },
+    "providerAck": {
+      "httpStatus": 200,
+      "totalUpdatedCells": 3,
+      "responseRanges": [
+        "B14_QA!H2",
+        "B14_QA!J2",
+        "B14_QA!L2"
+      ],
+      "providerWriteRequests": 2,
+      "independentReadback": true,
+      "replayNoopVerified": true,
+      "conflictNoopVerified": true,
+      "rowCountStable": true,
+      "fixtureRestored": true
+    },
+    "externalIndependentReadbackAfter": {
+      "fieldValue": "QA_PENDING",
+      "revision": 0,
+      "idempotencyKey": "",
+      "writerOrigin": "QA_ONLY",
+      "ackStatus": "NOT_TESTED"
+    },
+    "operationalHrWrites": 0,
+    "productionWrites": 0,
+    "decision": "PASS_B14_ISOLATED_PROVIDER_ACK_AND_READBACK_ONLY"
+  },
+  "strictAccreditation": {
+    "totalDomains": 21,
+    "matchBefore": 6,
+    "matchAfter": 6,
+    "promotions": 0,
+    "sourceReady": 21,
+    "providerPrerequisiteProven": true,
+    "applicationAckProven": false,
+    "b14Closed": false,
+    "i3": "HOLD",
+    "i4": "DO_NOT_TOUCH"
+  },
+  "remainingB14": {
+    "classification": "MAPPING_FAILURE",
+    "contractPath": "backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+    "contractStatus": "source_ready_provider_writes_blocked",
+    "adapterPath": "backend/adapters/hr-bidirectional-sync-adapter.preview.mjs",
+    "adapterStatus": "sourceOnly; connectedToFrontend=false; makeProviderConnected=false; hrWritesEnabled=false; platformWritesEnabled=false",
+    "outboxPath": "backend/adapters/make-outbox-adapter.preview.mjs",
+    "liveMakeBindingPresent": false,
+    "outstandingProof": "Real DEV application visit.assign -> project-scoped provider dispatch ACK -> independent HR readback -> reload -> reflection/dedupe/concurrency/echo; same operational project keeps its assigned HR, never global QA book"
+  },
+  "mechanismRepair": {
+    "workflowPath": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "sizeBeforeBytes": 511419,
+    "sizeAfterBytes": 508695,
+    "limitBytes": 510000,
+    "extractionPath": ".github/control/cxorbia-i3-certification-manifest-jq.sh",
+    "extractionBehavior": "Verbatim sourced jq command in existing certify shell, no new workflow, no rebuild, no deploy",
+    "frozenTestsRestored": true
+  },
+  "nextExactAction": "I3 P0_PROVEN B14: trace the active DEV command owner and establish an isolated project-scoped QA dispatch binding through the actual app path, demonstrate ACK/readback/replay/concurrency/echo; preserve each operational project's assigned HR; do not promote domain until this passes.",
+  "authorization": "Paula approved isolated synthetic B14 provider QA. Any operational HR write or I4 production deploy remains unauthorized."
+}
