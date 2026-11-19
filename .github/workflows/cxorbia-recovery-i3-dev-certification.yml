@@ -23,6 +23,7 @@ on:
    - backend/**
    - tools/**
    - firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
+   - firebase/auth-dev-tools/cxorbia-i3-a08-exceptions-negative-readonly.mjs
    - firestore.rules
    - storage.rules
    - firebase.json
@@ -6442,6 +6443,7 @@ jobs:
       MESSAGE="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
       R=.tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json
       if [[ "$MESSAGE" == *'[i3-a08-exceptions-negative-readonly]'* ]]; then
+        node --test tools/qa/cxorbia-i3-a08-membership-classifier.test.mjs
         node firebase/auth-dev-tools/cxorbia-i3-a08-exceptions-negative-readonly.mjs
         D=PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE
         jq -e '.gate=="HOLD" and (.keeperProof|length)==2 and (.exceptions|length)==3' "$R" >/dev/null

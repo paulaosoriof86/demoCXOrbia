@@ -9,6 +9,7 @@ import {applicationDefault, getApps, initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
+import {classifyA08MembershipEvidence} from '../../tools/qa/cxorbia-i3-a08-membership-classifier.mjs';
 
 const TENANT='tya', PROGRAM='cinepolis', PROJECT='cxorbia-backend-dev';
 const ROOT='https://cxorbia-backend-dev.web.app';
@@ -83,16 +84,7 @@ async function inspectException(tenant,auth,id){
       claimRoleMatches:str(claims.role)===str(m.role),
       claimTenantMatches:str(claims.tenantId)===TENANT});
   }
-  const valid=evidence.authRecords.filter(x=>x.authLookup==='PRESENT'&&
-    x.activeMembership&&x.role==='shopper'&&x.authNamespace==='shopper'&&
-    x.projectMember&&!x.authDisabled&&x.claimShopperMatches&&
-    x.claimRoleMatches&&x.claimTenantMatches);
-  evidence.canonicalAuthEligibleCount=valid.length;
-  evidence.classification=memberSnap.size>=9?'AUTH_FAILURE:EXCEPTION_MEMBERSHIP_BOUND_EXCEEDED':
-    evidence.membershipCount>1?'AUTH_FAILURE:EXCEPTION_MEMBERSHIP_COLLISION':
-    valid.length===1&&profileSnap.exists?'AUTH_RECORD_CONSISTENT_PASSWORD_LOGIN_UNPROVEN':
-    !profileSnap.exists&&evidence.membershipCount===0?'AUTH_FAILURE:EXCEPTION_ORPHAN_NONCANONICAL':
-    'AUTH_FAILURE:EXCEPTION_AUTH_MAPPING_INCOMPLETE';
+  Object.assign(evidence,classifyA08MembershipEvidence(evidence));
   return evidence;
 }
 async function signedShopper(auth,member,label){
@@ -148,6 +140,8 @@ try{
   const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
   for(const id of IDS)result.exceptions.push(await inspectException(tenant,auth,id));
   assert(result.exceptions.length===3,'MAPPING_FAILURE:A08_THREE_EXCEPTIONS_NOT_TRIAGED');
+  assert(result.exceptions.every(x=>x.classification.startsWith('AUTH_RECORD_CONSISTENT_')),
+    'AUTH_FAILURE:A08_UNRESOLVED_ACTIVE_OR_AMBIGUOUS_MEMBERSHIP');
   const [gt,hn]=await Promise.all([
     keeperByLogin(tenant,auth,'GT_MURGA','jennypher.murga'),
     keeperByLogin(tenant,auth,'HN_VILCA','rocio.vilca')
@@ -188,10 +182,14 @@ try{
         {caseId:own.label,outcome:staffResult.outcome});
     }finally{await session.context.close().catch(()=>{});}
   }
+  result.hrSnapshotLinkage={liveKeeperRevisionConsistent:true,
+    sameAsHistoricalMaterialization:result.observedHrRevision===SEALED_HR};
   result.decision='PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE';
   result.gate='HOLD';
-  result.remaining=['three exception password-login outcomes/approved-collision adjudication',
+  result.remaining=['three exception ordinary-password login outcomes',
     'uncovered API operation-by-role denials','real cross-shopper Storage object denial'];
+  if(!result.hrSnapshotLinkage.sameAsHistoricalMaterialization)
+    result.remaining.push('live HR revision requires fresh same-revision acceptance, not historical snapshot carryover');
 }catch(error){
   result.decision='HOLD_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE';
   result.failureCode=knownError(error);
