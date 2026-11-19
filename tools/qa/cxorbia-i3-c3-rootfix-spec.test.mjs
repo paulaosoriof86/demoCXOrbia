@@ -20,8 +20,8 @@ test('A08 immutable-DEV read-only role proof does not inherit HEAD release-compo
   const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
   const job=workflow.split('  i3-keeper-role-e2e-readonly:')[1]?.split('\n  i3-run2382-')[0]||'';
   assert.ok(job.includes('always() && !cancelled()'));
-  assert.ok(job.includes("contains(github.event.head_commit.message, '[i3-a08-exceptions-negative-readonly]')"));
-  assert.ok(job.includes("contains(github.event.head_commit.message, '[i3-keeper-role-e2e-readonly]') && needs.canonical-candidate-authority.result == 'success'"));
+  assert.match(job,/contains\(github\.event\.head_commit\.message,\s*'\[i3-a08-exceptions-negative-readonly\]'\)/);
+  assert.match(job,/contains\(github\.event\.head_commit\.message,\s*'\[i3-keeper-role-e2e-readonly\]'\)\s*&&\s*needs\.canonical-candidate-authority\.result\s*==\s*'success'/);
   assert.ok(job.includes('bash tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'));
   const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
   for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = 39'])
