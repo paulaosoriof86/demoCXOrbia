@@ -6413,23 +6413,24 @@ jobs:
      run: |
       set -Eeuo pipefail
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      test "$(jq -r '.production' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = DO_NOT_TOUCH
-      test "$(jq -r '.authorizationI4' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)" = false
-      P=docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json
-      jq -e '.decision=="PASS_RUN2587_PRIVATE_HR_BINDING_EXACT_DEV_CONSUMED_C3_PENDING" and .production==false and .i4Authorized==false and .materialization.runId==44030019174 and .materialization.sourceHostedExact==true and .materialization.runtimeTrafficExact==true' "$P" >/dev/null
-      SOURCE="$(jq -r '.sourceSha' "$P")"
-      TREE="$(jq -r '.sourceTree' "$P")"
-      HR="$(jq -r '.materialization.hrRevision' "$P")"
-      jq -e --arg s "$SOURCE" --arg t "$TREE" '.productSourceSha==$s and .productTreeAuthority==$t' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json >/dev/null
+      C=CXORBIA_RECOVERY_EXECUTION_CURRENT.json; D=CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
+      test "$(jq -r .production "$C")" = DO_NOT_TOUCH
+      test "$(jq -r .authorizationI4 "$C")" = false
+      P="$(jq -er '.b14Run2640VerifiedDevReadback20261119.proofPath' "$C")"
+      B="$(jq -er '.b14Run2640VerifiedDevReadback20261119.proofGitBlob' "$C")"
+      test "$(git rev-parse "HEAD:$P")" = "$B"
+      jq -e '.jobConclusion=="success" and .verifiedServedAssetCount==41 and .production==false and .phaseAComplete==false and .i4Authorized==false' "$P" >/dev/null
+      SOURCE="$(jq -er .source.sha "$P")"; TREE="$(jq -er .source.tree "$P")"; HR="$(jq -er .materialization.hrRevision "$P")"
+      jq -e --arg s "$SOURCE" --arg t "$TREE" --arg b "$B" '.productSourceSha==$s and .productTreeAuthority==$t and .b14Run2640VerifiedDevReadback20261119.proofGitBlob==$b' "$D" >/dev/null
       test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
-      jq -e --arg s "$SOURCE" --arg h "$HR" '.currentMaterialization.sourceSha==$s and .currentMaterialization.hrRevision==$h' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261117-V361.json >/dev/null
-      MATRIX="$(jq -r .moduleTruthPath CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
-      jq -e --arg s "$SOURCE" '.productSource.sha==$s' "$MATRIX" >/dev/null
+      MATRIX="$(jq -er .moduleTruthPath "$D")"
+      jq -e --arg s "$SOURCE" --arg t "$TREE" '.productSource.sha==$s and .productSource.treeSha==$t and (.modules|length)==21' "$MATRIX" >/dev/null
       mapfile -t FOCAL_OWNERS < <(jq -r '.modules[]|select(.domain=="auth-protected-data-runtime" or .domain=="base-router-shell-cache" or .domain=="core-config-data-router-permissions")|.owners[]' "$MATRIX" | sort -u)
       test "${#FOCAL_OWNERS[@]}" -ge 15
       git diff --quiet "$SOURCE" HEAD -- "${FOCAL_OWNERS[@]}" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-hr-source-bridge.js backend/runtime/hr-live-service/server.mjs
       echo "CXORBIA_PRODUCT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
       echo "CXORBIA_HR_REVISION=$HR" >> "$GITHUB_ENV"
+      echo "CXORBIA_ROLE_E2E_RECEIPT_PATH=$P" >> "$GITHUB_ENV"
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - uses: google-github-actions/setup-gcloud@v2

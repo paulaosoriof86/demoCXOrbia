@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # I3 A08: read-only proof of the exact already-materialized DEV artifact.
 set -Eeuo pipefail
-P=docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json
+P="${CXORBIA_ROLE_E2E_RECEIPT_PATH:-docs/checkpoints/CXORBIA_I3_B14_DEV_RUN2640_VERIFIED_READBACK_20261119.json}"
 O=.tmp/cxorbia-i3-two-keepers-role-e2e-readonly
 mkdir -p "$O"
-S="$(jq -r .sourceSha "$P")" R="$(jq -r .materialization.runtimeRevision "$P")"
+S="$(jq -r .source.sha "$P")" R="$(jq -r .materialization.runtimeRevision "$P")"
 D="$(jq -r .materialization.runtimeDigest "$P")" H="$(jq -r .materialization.hostingVersion "$P")"
-F="$(jq -r .materialization.firestoreRuleset "$P")"
+test "$(jq -r .materialization.firestoreRulesDeploys "$P")" = 0
+F="$(jq -r .materialization.firestoreRuleset docs/checkpoints/CXORBIA_I3_RUN2587_PRIVATE_HR_BINDING_DEV_READBACK_20261117.json)"
 test "$S" = "$CXORBIA_PRODUCT_SOURCE_SHA"
 [[ "$D" =~ ^sha256:[a-f0-9]{64}$ ]]
 gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json | jq -e --arg r "$R" '.status.latestReadyRevisionName==$r and ([.status.traffic[]?|select(.revisionName==$r and .percent==100)]|length)==1' >/dev/null
@@ -25,6 +26,6 @@ while IFS=$'\t' read -r A E; do
   printf '%s %s\n' "$A" "$E" >> "$O/served-assets.sha256"
   N=$((N+1))
 done < <(jq -r '.servedSha256|to_entries[]|[.key,.value]|@tsv' "$P")
-test "$N" = 39
-test "$(jq -r .verifiedServedAssetCount "$P")" = 39
-jq -n --arg s "$S" --arg r "$R" --arg d "$D" --arg h "$H" --arg f "$F" '{decision:"PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT",sourceSha:$s,runtimeRevision:$r,runtimeDigest:$d,hostingVersion:$h,firestoreRuleset:$f,servedAssetsMatch:39,builds:0,deploys:0,hrWrites:0,production:false}' > "$O/same-artifact-preflight.json"
+test "$N" = 41
+test "$(jq -r .verifiedServedAssetCount "$P")" = 41
+jq -n --arg s "$S" --arg r "$R" --arg d "$D" --arg h "$H" --arg f "$F" '{decision:"PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT",sourceSha:$s,runtimeRevision:$r,runtimeDigest:$d,hostingVersion:$h,firestoreRuleset:$f,servedAssetsMatch:41,builds:0,deploys:0,hrWrites:0,production:false}' > "$O/same-artifact-preflight.json"

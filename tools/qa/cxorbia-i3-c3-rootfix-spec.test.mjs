@@ -24,7 +24,7 @@ test('A08 immutable-DEV read-only role proof does not inherit HEAD release-compo
   assert.match(job,/contains\(github\.event\.head_commit\.message,\s*'\[i3-keeper-role-e2e-readonly\]'\)\s*&&\s*needs\.canonical-candidate-authority\.result\s*==\s*'success'/);
   assert.ok(job.includes('bash tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'));
   const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
-  for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = 39'])
+  for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = 41'])
     assert.ok(preflight.includes(required),`missing immutable DEV guard: ${required}`);
   assert.ok(!/\b(gcloud run deploy|firebase deploy|PATCH|POST|PUT|DELETE)\b/.test(preflight));
 });
@@ -276,4 +276,17 @@ test('B14 Excel Online bypasses only the legacy VRM356 Google Sheets preflight i
   assert.ok(job.includes('gcloud builds submit "$SOURCE_DIR"'));
   assert.ok(job.includes('gcloud run services update "$SERVICE"'));
   assert.ok(job.includes('FIREBASE_HOSTING_TARGET'));
+});
+
+test('A08 browser read-only job must use the current exact B14 DEV receipt with 41 owner assets',()=>{
+  const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
+  const job=workflow.split('  i3-keeper-role-e2e-readonly:')[1]?.split('\n  i3-run2382-')[0]||'';
+  assert.ok(job.includes('b14Run2640VerifiedDevReadback20261119.proofPath'));
+  assert.ok(job.includes('git rev-parse "HEAD:$P"'));
+  assert.ok(job.includes('CXORBIA_ROLE_E2E_RECEIPT_PATH=$P'));
+  assert.ok(!job.includes('P=docs/checkpoints/CXORBIA_I3_RUN2587'));
+  const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
+  assert.ok(preflight.includes('test "$N" = 41'));
+  assert.ok(preflight.includes('test "$(jq -r .materialization.firestoreRulesDeploys "$P")" = 0'));
+  assert.ok(!/\b(firebase deploy|gcloud run (deploy|services update)|PATCH|POST|PUT|DELETE)\b/.test(preflight));
 });
