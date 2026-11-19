@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.make-original-hr-inventory-receipt.v1",
+  "iteration": "I3",
+  "decision": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "authorizationScope": "one read-only execution of existing Make scenario 10196061 to list worksheets from the two original GT/HN Cinépolis workbooks",
+  "make": {
+    "zone": "eu2.make.com",
+    "organizationId": 4090072,
+    "teamId": 1975919,
+    "scenarioId": 10196061,
+    "scenarioName": "CXOrbia — inventario mensual HR originales GT/HN (solo lectura)",
+    "scenarioLastEditAtVerification": "2026-11-19T14:39:03.028Z",
+    "trigger": "on-demand",
+    "wasInactiveBeforeRun": true,
+    "executionCountUnderThisAuthorization": 1,
+    "executionId": "12ca269de2dd4786936e44c1fd14c951",
+    "executionStartedAt": "2026-11-19T17:34:15.369Z",
+    "executionStatus": "success",
+    "operations": 2,
+    "credits": 2,
+    "wasDeactivatedAfterRun": true,
+    "moduleErrors": 0,
+    "connectionId": 9089470,
+    "connectionHealthAtVerification": "ok"
+  },
+  "originalHrInventory": [
+    {
+      "countryCode": "HN",
+      "moduleId": 5,
+      "httpMethod": "GET",
+      "resource": "private original workbook /workbook/worksheets",
+      "query": {"$select": "id,name,position", "$top": "100"},
+      "moduleInvocations": 1,
+      "moduleErrors": 0,
+      "minimumObservedWorksheetCount": 31,
+      "observedMonthlyTabsInclude": ["ENERO 26", "FEBRERO 26", "MARZO 26", "ABRIL 26", "MAYO 26", "JUNIO 26", "JULIO 26", "AGOSTO 26", "SEPTIEMBRE 26"],
+      "observedNonHrTab": "syncsheet_settings",
+      "completeInventoryAvailableFromTool": false,
+      "limitation": "Make module execution output was truncated after the first 30 full worksheet records; the next worksheet identifier began but its name and later records were not readable."
+    },
+    {
+      "countryCode": "GT",
+      "moduleId": 6,
+      "httpMethod": "GET",
+      "resource": "private original workbook /workbook/worksheets",
+      "query": {"$select": "id,name,position", "$top": "100"},
+      "moduleInvocations": 1,
+      "moduleErrors": 0,
+      "minimumObservedWorksheetCount": 31,
+      "observedMonthlyTabsInclude": ["ENERO 26", "FEBRERO 26", "MARZO 26", "ABRIL 26", "MAYO 26", "JUNIO 26", "JULIO 26", "AGOSTO 26", "SEPTIEMBRE 26"],
+      "observedNonHrTab": "syncsheet_settings",
+      "completeInventoryAvailableFromTool": false,
+      "limitation": "Make module execution output was truncated after the first 30 full worksheet records; the next worksheet identifier began but its name and later records were not readable."
+    }
+  ],
+  "safety": {
+    "scenarioMethodsExecuted": ["GET", "GET"],
+    "originalHrWrites": 0,
+    "makeAdditionalRuns": 0,
+    "firestoreWrites": 0,
+    "productionWrites": 0,
+    "noCredentialOrOriginalWorkbookIdentifierInReceipt": true
+  },
+  "whatThisProves": [
+    "The existing Make OneDrive connection can enumerate both country-specific original workbook worksheet collections.",
+    "A provider's monthly worksheet registry is multi-sheet, with additional historical and non-HR tabs.",
+    "The single authorized read-only run completed with no module errors, and the scenario returned to inactive."
+  ],
+  "notYetProven": [
+    "The full worksheet inventories, especially records after the execution log's truncation point.",
+    "Live HR row contents and revision proof for the same country and period.",
+    "Private country-scoped integrationSettings bindings and actual DEV project reference readback.",
+    "Excel reader wired into the real DEV app endpoint; server.mjs still requires google_sheets.",
+    "Platform assignment dispatch through Make with provider ACK, independent original-HR readback, reload, idempotent replay, conflict and echo suppression.",
+    "Admin and Shopper same-artifact E2E and Gate20/Gate21."
+  ],
+  "sourceOwnerObservation": {
+    "countryBindingResolver": "backend/runtime/cxorbia-country-hr-binding-v1.mjs; pure resolver only, no live provider calls",
+    "liveHrService": "backend/runtime/hr-live-service/server.mjs; resolveProjectHrReadBinding currently requires google_sheets",
+    "bidirectionalContract": "backend/contracts/hr-bidirectional-assignment-sync-v1.json; liveMakeBindingPresent=false"
+  },
+  "strictDomainAccreditation": {
+    "total": 21,
+    "matchBefore": 6,
+    "matchAfter": 6,
+    "newPromotions": 0,
+    "interpretation": "Provider worksheet listing is a B14 prerequisite, never application LIVE_E2E_PASS or domain MATCH."
+  },
+  "mirrorMayBeRetired": false,
+  "nextExactAction": "I3/B14 owner-scoped: connect the Excel Online original-HR reader in the actual DEV application by tenant/project/country/period, verify complete dynamic worksheet inventory and independent live row revision, then establish gated bidirectional Make ACK/readback and same-artifact Admin+Shopper E2E. Keep original HR writes disabled until separately authorized and proven."
+}
