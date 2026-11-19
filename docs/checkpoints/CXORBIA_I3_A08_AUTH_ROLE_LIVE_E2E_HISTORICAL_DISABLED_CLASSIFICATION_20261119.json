@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.i3.a08.auth-role-live-e2e-historical-disabled-classification.v1",
+  "iteration": "I3",
+  "observedDate": "2026-11-19",
+  "decision": "PASS_I3_A08_SCOPED_READONLY_ROLE_DENIAL_AND_HISTORY_CLASSIFICATION",
+  "gate": "HOLD",
+  "terminalDomainAccreditationsAdded": 0,
+  "strictDomainsBefore": 6,
+  "strictDomainsAfter": 6,
+  "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "controlCommit": "2a50b438e6a101f371fc2e66de6adf40299fb7ee",
+  "evidence": {
+    "workflowRunId": 44603244336,
+    "workflowJobId": 135840366746,
+    "workflowJobConclusion": "success",
+    "artifactId": 14569671582,
+    "artifactSha256": "13d54033776631995976617f94fac75c5cd2c3a879cbe9620c3cc41695bed26c",
+    "artifactContents": [
+      "result.json",
+      "same-artifact-preflight.json",
+      "served-assets.sha256"
+    ],
+    "preflightDecision": "PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT",
+    "servedSourceAssets": 39,
+    "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "scenarioCountryScope": ["GT", "HN"],
+    "keeperCount": 2,
+    "keeperOwnProfileReadAllowed": 2,
+    "keeperCrossShopperReadsDenied": 2,
+    "keeperStaffMembershipReadsDenied": 2,
+    "a08Decision": "PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE",
+    "exceptionShopperCount": 3,
+    "exceptionCanonicalActiveCountPerShopper": [1, 1, 1],
+    "exceptionHistoricalDisabledMembershipCounts": [1, 1, 0],
+    "exceptionClassifications": [
+      "AUTH_RECORD_CONSISTENT_DISABLED_HISTORY_PASSWORD_LOGIN_UNPROVEN",
+      "AUTH_RECORD_CONSISTENT_DISABLED_HISTORY_PASSWORD_LOGIN_UNPROVEN",
+      "AUTH_RECORD_CONSISTENT_PASSWORD_LOGIN_UNPROVEN"
+    ],
+    "historicalSealHrRevision": "fbaf9605c5a8a6da14a3543953c113375e5ad36433b6fe0702f69a7a2ef1a630",
+    "observedLiveHrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "liveHrRevisionConsistentAcrossKeepers": true,
+    "observedLiveRevisionMatchesHistoricalSeal": false
+  },
+  "rootCauseCorrected": [
+    "A08 role test now executes against the exact served DEV candidate independently of unrelated, source-only HEAD composition drift; ordinary release certification remains strict.",
+    "Inactive and Auth-disabled historical memberships no longer produce a false active-identity collision; two live-active canonical memberships still fail closed.",
+    "The current live HR revision is recorded independently from the older deployment seal, without falsely asserting snapshot equality."
+  ],
+  "notProven": [
+    "Ordinary-password login/logout/relogin for the three exception shoppers.",
+    "All API operation-by-role denial cases.",
+    "Cross-shopper denial for a real protected Storage object.",
+    "Fresh same-external-HR-revision complete operational KPI readback.",
+    "Full 21-domain terminal obligation closure.",
+    "B14 bidirectional Graph/Make provider writes, remote ACK, readback, idempotent replay and conflict handling."
+  ],
+  "safety": {
+    "production": false,
+    "builds": 0,
+    "deploys": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "externalProviderWrites": 0,
+    "originalHrWorkbooksMutated": false,
+    "shopperPersonalDataExported": false
+  },
+  "nextExactAction": "Complete the three ordinary-login exception proofs and the remaining API/Storage role denials, then submit scoped source836 receipts to strict C3; continue B14 isolated original-HR temporary-tab ACK/readback/replay with country-specific provider bindings. Do not promote a domain from this bounded A08 receipt alone."
+}
