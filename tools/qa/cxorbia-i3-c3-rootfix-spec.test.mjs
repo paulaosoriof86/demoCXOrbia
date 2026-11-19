@@ -21,6 +21,8 @@ function fixture(type='read',options={}){
     const idx=types.find(t=>TYPES[t]===domain);
     return {domain,classification:idx?'SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN':'MATCH',
       owners:idx?[OWNERS[idx]]:[],pendingTerminalFiles:[],
+      // Match the frozen module matrix's human-readable role authority.
+      roles:idx?['Admin','Shopper','Cliente']:[],
       contractFunctional:idx?CONTRACTS[idx]:'',
       currentOwnerBlobs:idx?{[OWNERS[idx]]:BLOBS[idx]}:{},
       ...(idx&&requiredIds?{terminalRequiredObligationIds:requiredIds}: {})};
@@ -110,6 +112,21 @@ test('ordinary credential login is an explicit non-writing proof kind',()=>{
   assert.equal(decision(f).matchModules,21);
   f.additionalReceipts[0].authProof.ordinaryCredential=false;
   assert.equal(decision(f).matchModules,20);
+});
+test('frozen display roles map to authenticated scope roles without broadening access',()=>{
+  const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
+  const module=f.pre.modules.find(m=>m.domain===TYPES.auth),r=f.additionalReceipts[0];
+  assert.equal(decision(f).matchModules,21); // Shopper label permits shopper scope.
+  module.roles=['Admin'];
+  assert.equal(decision(f).matchModules,20); // Shopper does not become Admin.
+  r.scope.role='admin';r.auth.role='admin';
+  assert.equal(decision(f).matchModules,21);
+  module.roles=['Cliente'];
+  assert.equal(decision(f).matchModules,20); // Admin does not become Cliente.
+  r.scope.role='client';r.auth.role='client';
+  assert.equal(decision(f).matchModules,21); // Locale display label maps to client.
+  r.scope.role='super';r.auth.role='super';
+  assert.equal(decision(f).matchModules,20); // Super needs its own explicit authority.
 });
 test('real browser UI proof is not forced to fabricate provider writes',()=>{
   const f=append(fixture('ui'),receipt('ui','UI_INTERACTION'));

@@ -16,6 +16,13 @@ const priorIds=['VRM-036','VRM-037','VRM-039','VRM-042'];
 const terminalIds=['VRM-033','VRM-034','VRM-035','VRM-038','VRM-040','VRM-041'];
 const sha256=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
 const SHA256=/^[a-f0-9]{64}$/;
+// The frozen module registry uses human-facing Admin/Shopper/Cliente labels,
+// while authenticated receipt scopes use admin/shopper/client identifiers.
+// Normalize labels only for comparison; never infer a broader privilege.
+const canonicalScopeRole=value=>{
+  const role=String(value||'').trim().toLowerCase();
+  return role==='cliente'?'client':role;
+};
 // The kind required to close a domain is independent of the evidence used to
 // inspect its UI. In particular, a read-only screenshot is never a finance ACK.
 // Frozen, module-specific requirements take precedence over these conservative
@@ -62,7 +69,7 @@ const scopeErrors=(r,mod,sourceFiles,paths)=>{
     ['admin','super','shopper','client'].includes(s.role) && a.authenticated===true &&
     a.tenantExact===true && a.projectAuthorized===true && a.role===s.role,'AUTHENTICATED_CONTRACT_SCOPE');
   if(Array.isArray(mod.roles)&&mod.roles.length&&mod.roles.every(x=>typeof x==='string'))
-    need(mod.roles.includes(s.role),'MODULE_ROLE_AUTHORITY');
+    need(mod.roles.some(role=>canonicalScopeRole(role)===s.role),'MODULE_ROLE_AUTHORITY');
   const coverage=r.contractCoverage||{};
   need(Array.isArray(coverage.obligations) && coverage.obligations.length>0 &&
     coverage.obligations.every(x=>x?.id && x.observed===true && x.evidenceRef && SHA256.test(String(x.evidenceSha256||''))),'OBSERVED_CONTRACT_OBLIGATIONS');
