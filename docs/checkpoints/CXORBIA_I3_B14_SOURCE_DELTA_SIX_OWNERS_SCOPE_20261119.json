@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.source-delta-scope.v1",
+  "date": "2026-11-19",
+  "iteration": "I3",
+  "classification": "MAPPING_FAILURE",
+  "priority": "P0_PROVEN",
+  "state": "APPROVED_SOURCE_DELTA_NOT_YET_COMPOSED_OR_DEV_PUBLISHED",
+  "predecessorProductSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "currentMaterializedSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+  "allowedProductFiles": [
+    "app/modules/hr-source.js",
+    "app/modules/proyecto-wizard.js",
+    "app/modules/proyectos.js",
+    "backend/contracts/cxorbia-project-source-contract-v1.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"
+  ],
+  "evidence": {
+    "exactRun": 2632,
+    "runId": 44626095047,
+    "jobId": 135920209808,
+    "focalUnitCommand": "node --test tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs",
+    "focalTestsPass": 37,
+    "focalTestsFail": 0,
+    "b14CountryBindingTestsPass": 16,
+    "rolesControlTestsPass": 21,
+    "providerReadback": {
+      "GT": "PASS_DEFERRED_INDEPENDENT_SECOND_AND_THIRD_READ",
+      "HN": "PASS_DEFERRED_INDEPENDENT_SECOND_AND_THIRD_READ"
+    },
+    "failedWorkflowCause": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+    "sourceQAReceiptUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/44626095047",
+    "historicalLiveSourceRetained": true
+  },
+  "hardStops": [
+    "No operational HR writes",
+    "No automatic approval of 15 remaining domains",
+    "No claim of DEV materialization at new source",
+    "No I4",
+    "No unapproved gate bypass"
+  ],
+  "production": false,
+  "devPublished": false,
+  "sourceTestsPass": 16,
+  "sourceTestsFail": 0,
+  "nextExactAction": "Promote this exact six-owner approved delta through canonical candidate descriptor/ledger/matrix and immutable DEV materialization; then real Chrome/Graph/Make B14 application command ACK readback."
+}
