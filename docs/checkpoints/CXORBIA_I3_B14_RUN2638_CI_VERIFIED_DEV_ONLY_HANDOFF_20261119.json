@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.control.dev-materialization-handoff.v1",
+  "id": "CXORBIA_I3_B14_RUN2638_DEV_ONLY_HANDOFF_20261119",
+  "iteration": "I3",
+  "decision": "PASS_CI_SOURCE_QA_ONLY_DEV_MATERIALIZATION_PENDING",
+  "status": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "run2638": {
+    "runId": 44633569714,
+    "runNumber": 2638,
+    "conclusion": "success",
+    "authorityJobId": 135946268351,
+    "sourceQaDecision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA",
+    "sourceQaTestsPass": 667,
+    "sourceQaTestsFail": 0,
+    "artifactId": 14582293549,
+    "artifactDigest": "sha256:0762128f66ac60c4476c6c7874ad356ff246a3d70d8d9d035367f6f7447c5f54",
+    "artifactIsCertification": false
+  },
+  "currentAuthority": {
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "controlHeadAtVerification": "be0286250626357e3c2e8f36156a762891c9281a",
+    "moduleMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V364.json",
+    "strictMatch": 6,
+    "domains": 21
+  },
+  "currentDevBefore": {
+    "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4e615718c8ab4a03",
+    "runtimeRevision": "cxorbia-live-hr-dev-00380-s9m",
+    "runtimeDigest": "sha256:95eab8082b6e18a39164a22af7d27029558917f0ea0634a76055c6eb1b0dd395"
+  },
+  "route": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "vrm154-156-dev-materialization",
+    "trigger": "[i3-paired-dev-once]",
+    "expectedAuthorityStatus": "HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21",
+    "intent": "EXACT_SINGLE_CANONICAL_CANDIDATE_DEV_RUNTIME_AND_HOSTING_ONLY",
+    "productionAuthorized": false
+  },
+  "isolatedMakeQa": {
+    "gtScenarioId": 10199316,
+    "gtExecutionId": "ad66ca89d897402a98a257a623959d9a",
+    "hnScenarioId": 10199340,
+    "hnExecutionId": "41c29c9d3b474f0c96af2e11a976a124",
+    "scope": "TEMPORARY_SHEET_ONLY_COMPLETED_CLEANUP_NOT_B14_OPERATIONAL_PROVIDER_ACK"
+  },
+  "invariants": {
+    "originalHrOperationalRowsWritten": 0,
+    "productionTouched": false,
+    "hrWritesEnabled": false,
+    "terminalDomainPromotion": 0
+  },
+  "nextAction": "Run existing I3 DEV job; verify build, Cloud Run revision+digest, Hosting release/version, source served bytes, HR same revision; then independent B14 real-provider binding/ACK-replay and domain E2E before promotion",
+  "thisFileNature": "CONTROL_EVIDENCE_ONLY_NOT_PRODUCT_SOURCE_NOT_AUTHORITATIVE_RELEASE_OR_DEV_RESULT"
+}
