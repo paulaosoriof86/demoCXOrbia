@@ -24470,5 +24470,30 @@
     "totalDomains": 21,
     "requiredNextProof": "DEV build/Hosting/runtime exact readback then B14 provider bindings, ACK/idempotency, E2E; no new certifiable domain asserted",
     "dispatchReason": "Previous docs/checkpoints-only control receipt did not match canonical workflow push paths. Update existing CURRENT (allowed path) with exact pending evidence to run same existing job."
+  },
+  "b14Run2640VerifiedDevReadback20261119": {
+    "decision": "PASS_I3_B14_COUNTRY_HR_SOURCE_DEV_MATERIALIZATION",
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "runId": 44635279782,
+    "runNumber": 2640,
+    "artifactId": 14584121922,
+    "artifactDigest": "sha256:eef2b0c85e2fdd13473491a0484480e782d8fd7cbed019de7a871446c676eaa7",
+    "runtimeRevision": "cxorbia-live-hr-dev-00381-z2j",
+    "runtimeDigest": "sha256:2799afbfe752cb47ae9fc42f05fe5287753c265245dc8637e724d91edc0876dc",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795130103122000",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "verifiedServedAssetCount": 41,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "proofPath": "docs/checkpoints/CXORBIA_I3_B14_DEV_RUN2640_VERIFIED_READBACK_20261119.json",
+    "proofGitBlob": "b90b7e8a23f4dc52ba16a31ff2a4b345617b6496",
+    "strictMatches": 6,
+    "totalDomains": 21,
+    "terminalCertified": false,
+    "scope": "VERIFIED_CURRENT_DEV_RECEIPT_CONSUMPTION_IN_CANONICAL_LOCK_PENDING",
+    "nextAction": "B14 Graph/Make real-provider ACK and independent Admin/Shopper E2E then materialization authority convergence; PhaseA terminal still HOLD"
   }
 }
