@@ -4617,7 +4617,7 @@ jobs:
       test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
       test -f "$SOURCE_DIR/firebase.json"
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs
+      [[ "$ACTIVE_STATUS" == HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21 ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs
       if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]] && ! jq -e '.pass==true and .knownFailedPredecessor==true' "$FOCAL_OUT/vrm356-raw-range-preflight.json" >/dev/null 2>&1; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
    - if: env.ACTIVE_STATUS=='HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED'
      run: |

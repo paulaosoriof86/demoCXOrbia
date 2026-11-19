@@ -266,3 +266,14 @@ test('canonical evidence consumer is not limited to the two hardcoded original d
     assert.equal(discoverCanonicalDomainReceipts(path.join(dir,'unapproved-index.json')).receipts.length,0);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('B14 Excel Online bypasses only the legacy VRM356 Google Sheets preflight in the existing DEV lane',()=>{
+  const wf=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
+  const job=wf.split('  vrm154-156-dev-materialization:')[1]?.split('\n  vrm185-admin-live-adjudication:')[0]||'';
+  assert.ok(job.includes('[[ "$ACTIVE_STATUS" == HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21 ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs'));
+  assert.ok(job.includes('test "$(jq -r'));
+  assert.ok(job.includes('git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend'));
+  assert.ok(job.includes('gcloud builds submit "$SOURCE_DIR"'));
+  assert.ok(job.includes('gcloud run services update "$SERVICE"'));
+  assert.ok(job.includes('FIREBASE_HOSTING_TARGET'));
+});
