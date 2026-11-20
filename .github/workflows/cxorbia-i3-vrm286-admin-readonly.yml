@@ -122,6 +122,9 @@ jobs:
         if: always()
         with:
           name: 'cxorbia-i3-b11-r23-readonly-${{ github.run_id }}'
-          path: .tmp/i3-b11-r23-exact-dev/r23/result.json
+          path: |
+            .tmp/i3-b11-r23-exact-dev/r23/result.json
+            .tmp/i3-b11-r23-exact-dev/r23/GT/r23-external-hr-kpis-same-revision.json
+            .tmp/i3-b11-r23-exact-dev/r23/HN/r23-external-hr-kpis-same-revision.json
           if-no-files-found: warn
           retention-days: 30
