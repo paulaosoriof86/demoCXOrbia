@@ -67,6 +67,52 @@ async function readScopedOriginals(client, tool, config, contract, existing, res
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 }
 
+
+async function registerOriginalReadbackBindings(db, config, receipt) {
+  const authority=JSON.parse(fs.readFileSync('docs/checkpoints/CXORBIA_I3_B14_MAKE_GT_HN_LIVE_HEADERS_READONLY_ACCEPTANCE_20261119.json','utf8'));
+  const projectRef=db.doc('tenants/'+config.tenantId+'/projects/'+config.projectId);
+  if(receipt.countries.length!==2 || !receipt.countries.every(c=>c.twoEqualReads&&c.matchedByAllThreeKeys&&c.existingIds===c.originalVisits)) throw Error('MAPPING_FAILURE:B14_REGISTRY_PREFLIGHT');
+  const plan=await db.runTransaction(async tx=>{
+    const p=await tx.get(projectRef); const projectData=p.data();
+    const active=projectData?.operationalSource||projectData?.routeSource||{};
+    const activeId=active.providerBindingId||active.integrationSettingId||active.providerRef;
+    if(projectData?.tenantId!==config.tenantId || (projectData.projectId&&projectData.projectId!==config.projectId) ||
+       active.providerType!=='google_sheets' || active.mode!=='external' || active.readPolicy!==config.readPolicy || active.writePolicy!==config.writePolicy ||
+       !/^[\w.:-]+$/.test(activeId||'')) throw Error('MAPPING_FAILURE:B14_SELECTED_PROJECT');
+    const collection=db.collection('tenants/'+config.tenantId+'/integrationSettings');
+    const mirrorRef=collection.doc(activeId),mirror=(await tx.get(mirrorRef)).data();
+    if(!mirror||mirror.projectId!==config.projectId||mirror.tenantId!==config.tenantId||mirror.enabled!==true||
+       mirror.hrWritesEnabled!==false||mirror.mappingRef!==active.mappingRef||mirror.readPolicy!==active.readPolicy||
+       mirror.writePolicy!==active.writePolicy||mirror.providerType!=='google_sheets')throw Error('MAPPING_FAILURE:B14_EXISTING_MIRROR');
+    const proposals=config.countries.map(c=>{
+      const providerBindingId=config.projectId+'-original-readback-'+c.countryCode.toLowerCase();
+      const row=authority.countries[c.countryCode],worksheetName=row?.currentOperationalTab;
+      if (!worksheetName || !projectData.countries?.includes(c.countryCode))throw Error('MAPPING_FAILURE:B14_ORIGINAL_TAB');
+      return {ref:collection.doc(providerBindingId),entry:{countryCode:c.countryCode,providerBindingId,mappingRef:active.mappingRef},setting:{
+        tenantId:config.tenantId,projectId:config.projectId,countryCode:c.countryCode,providerType:'excel_online',enabled:true,purpose:'original_readback',
+        mappingRef:active.mappingRef,providerBindingId,readPolicy:config.readPolicy,writePolicy:config.writePolicy,hrWritesEnabled:false,
+        driveId:c.driveId,itemId:c.itemId,periodSheets:[{periodId:c.periodId,worksheetId:c.worksheetId,worksheetName}]}};
+    }).sort((a,b)=>a.entry.countryCode.localeCompare(b.entry.countryCode));
+    const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
+    const equal=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
+    const existing=await tx.getAll(...proposals.map(x=>x.ref));const bindings=proposals.map(x=>x.entry);
+    if (mirror.originalReadbackBindings!==undefined && !equal(mirror.originalReadbackBindings,bindings))throw Error('MAPPING_FAILURE:B14_MIRROR_HAS_DIFFERENT_READBACK');
+    for(let i=0;i<proposals.length;i++)if(existing[i].exists&&!equal(existing[i].data(),proposals[i].setting))throw Error('MAPPING_FAILURE:B14_BINDING_CONFLICT');
+    let writes=0;
+    for(let i=0;i<proposals.length;i++)if(!existing[i].exists){tx.create(proposals[i].ref,proposals[i].setting);writes++;}
+    if(mirror.originalReadbackBindings===undefined){tx.update(mirrorRef,{originalReadbackBindings:bindings});writes++;}
+    return {writes,mirrorRef,proposals};
+  });
+  const mirror=(await plan.mirrorRef.get()).data();
+  const project=(await projectRef.get()).data();
+  if((project.operationalSource||project.routeSource)?.providerType!=='google_sheets' || mirror.originalReadbackBindings?.length!==2)throw Error('MAPPING_FAILURE:B14_METADATA_READBACK');
+  for(const item of plan.proposals){const observed=(await item.ref.get()).data();
+    if(!observed || observed.driveId!==item.setting.driveId || observed.itemId!==item.setting.itemId ||
+       observed.periodSheets?.[0]?.worksheetId!==item.setting.periodSheets[0].worksheetId || observed.hrWritesEnabled!==false)throw Error('MAPPING_FAILURE:B14_CONFIGURATION_READBACK');
+  }
+  return {projectSelector:'google_sheets',registeredCountries:plan.proposals.map(v=>v.entry.countryCode),configurationDocumentWrites:plan.writes,checkedAfterCommit:true,operationalRowsChanged:0};
+}
+
 const project = 'cxorbia-backend-dev';
 const url = new URL(process.env.B14_MAKE_TOOLBOX_URL);
 if (url.origin !== 'https://eu2.make.com' || !/^\/mcp\/server\/[0-9a-f-]{36}$/.test(url.pathname) || url.search || url.hash) throw Error('Unrecognized toolbox URL');
@@ -153,6 +199,10 @@ try {
   if (compareOnly && result.originalVsDev.some(country=>!country.crosswalk.oneToOne || !country.crosswalk.matched)) throw Error('Crosswalk incomplete');
   const freshOriginal=process.env.B14_FRESH_ORIGINAL==='true';
   if (freshOriginal) await readScopedOriginals(client, tool, JSON.parse(process.env.B14_PRIVATE_BINDINGS), contract, active, result);
+  if (freshOriginal && process.env.B14_REGISTER_ORIGINAL==='true') {
+    result.stage='register_original_readback';
+    result.registration=await registerOriginalReadbackBindings(db,JSON.parse(process.env.B14_PRIVATE_BINDINGS),result);
+  }
   if (!compareOnly && !freshOriginal) for (const countryCode of ['GT','HN']) {
     const scope = {tenantId:'tya',projectId:'cinepolis',countryCode,periodId:'cinepolis-2026-11'};
     result.stage = 'binding_' + countryCode;

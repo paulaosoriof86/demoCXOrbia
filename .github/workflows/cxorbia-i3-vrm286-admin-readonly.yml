@@ -89,6 +89,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     env:
+      B14_REGISTER_ORIGINAL: ${{ contains(github.event.head_commit.message, '[i3-b14-register-original]') }}
       B14_FRESH_ORIGINAL: ${{ contains(github.event.head_commit.message, '[i3-b14-live-original]') }}
       B14_COMPARE_ONLY: ${{ contains(github.event.head_commit.message, '[i3-b14-original-parity]') }}
       B14_MAKE_TOOLBOX_URL: https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6
