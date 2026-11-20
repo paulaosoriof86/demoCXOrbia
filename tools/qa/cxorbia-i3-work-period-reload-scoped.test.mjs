@@ -72,5 +72,32 @@ test('mount validates remembered route and does not trust browser preference as 
  assert.match(ROUTER,/const selectedView=CX\.session\.view\|\|/);
  assert.match(ROUTER,/CX\.roleCanAccess\(gRole,selectedView\)/);
  assert.match(ROUTER,/CX\.moduleVisibleForProfile\(selectedView,role\)/);
- assert.match(ROUTER,/if\(opts\.history!=='replace'\)this\.rememberScopedUiHint/);
+ assert.match(ROUTER,/opts\.history!=='replace'&&opts\.remember!==false/);
+});
+
+test('protected startup reapplies the saved view after the default shell, once per principal',()=>{
+ const {h}=rememberAndReboot();const {CX,ctx}=h;
+ const originalNav=CX.router.nav;const nav=[];
+ CX.router.nav=(id,opts)=>{nav.push({id,history:opts.history});CX.session.view=id};
+ CX.session.view='midia';CX.router.restoreProtectedView();assert.equal(nav.length,0);
+ CX.data.currentProjectId='cinepolis';CX.data.currentPeriodId='cinepolis-2026-10';
+ CX.data.previewMeta={tenantId:'tya',projectId:'cinepolis',hrAuthority:true,sourceSafe:true};
+ ctx.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true};
+ CX.router.restoreProtectedView();assert.deepEqual(nav,[{id:'mireportes',history:'replace'}]);
+ CX.session.view='midia';CX.router.restoreProtectedView();assert.equal(nav.length,1);
+ CX.router.nav=originalNav;
+});
+test('startup does not override explicit user navigation, a different period or a foreign identity',()=>{
+ for(const setting of ['interaction','period','identity']){
+  const h=harness();const {CX,ctx}=h;CX.router.rememberScopedUiHint({view:'mireportes'});
+  ctx.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true};CX.session.view='midia';
+  if(setting==='interaction')CX.router._userNavigatedScope=CX.router._authorizedUiHintScope('tya','cinepolis').key;
+  if(setting==='period')CX.data.currentPeriodId='cinepolis-2026-11';
+  if(setting==='identity')h.principal.uid='other';
+  let calls=0;CX.router.nav=()=>{calls++};CX.router.restoreProtectedView();assert.equal(calls,0);
+ }
+});
+test('automatic data refreshes use the existing route without overwriting the saved intent',()=>{
+ assert.match(ROUTER,/CX\.router\.nav\(CX\.session\.view,\{history:false,remember:false\}\)/);
+ assert.match(ROUTER,/cx:protected-auth-hr-authority-ready',\(\)=>CX\.router\.restoreProtectedView\(\)/);
 });

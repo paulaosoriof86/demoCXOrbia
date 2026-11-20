@@ -1,0 +1,53 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "PERSISTENCE_FAILURE",
+  "affectedCases": [
+    "GT11",
+    "GT12",
+    "HN06"
+  ],
+  "preEditAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_AUTHENTICATED_APP_ORIGINAL_AND_SHOPPER_RELOAD_20261120.json",
+    "gitBlob": "79909381be854bfbfe3e862f3680ee481bc9777e",
+    "runId": 44826086330,
+    "appSourceRead": "PASS_GT_HN",
+    "period": "PASS_3_OF_3",
+    "view": "FAIL_3_OF_3",
+    "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+    "newModuleMatches": 0
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V373.json",
+    "gitBlob": "c15f6828650cc113371571af766c1df0ecc94676",
+    "domain": "core-config-data-router-permissions",
+    "affectedAcceptanceDomains": [
+      "base-router-shell-cache",
+      "human-runtime-domain-consistency"
+    ]
+  },
+  "scope": "ROUTER_ONLY_PROVEN_PROTECTED_BOOT_VIEW_LOSS",
+  "previousObservedSource": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "previousObservedTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+  "allowedProductFiles": [
+    "app/core/router.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "before": {
+    "router": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+    "test": "e95f4b502b60a68ff371cfed77fef1d3d33bb8ba"
+  },
+  "localRegression": {
+    "runner": "node --test tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs",
+    "passed": 10,
+    "failed": 0
+  },
+  "expected": "Protected HR publication resumes an authorized saved view after first mount. Background data notifications must not replace explicit user navigation.",
+  "currentDev": "RUN2672",
+  "production": false,
+  "hrWrites": 0,
+  "devDeploys": 0,
+  "domainPromotions": 0
+}

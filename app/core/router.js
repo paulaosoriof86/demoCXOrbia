@@ -57,6 +57,18 @@ CX.router = {
       periodId,view:allowedView?candidateView:'',savedAt:Date.now()};
     try{sessionStorage.setItem(scope.key,JSON.stringify(hint));return true;}catch(_){return false;}
   },
+  restoreProtectedView(){
+    const data=CX.data, auth=CX.backendAuth?.context?.()||{};
+    const scope=this._authorizedUiHintScope(auth.tenantId,data?.currentProjectId);
+    if(!scope||this._restoredScope===scope.key||!CX.session?.role||
+       data?.previewMeta?.hrAuthority!==true||data.previewMeta?.sourceSafe!==true||
+       window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied!==true)return;
+    this._restoredScope=scope.key;
+    const saved=this.readScopedUiHint(scope.tenantId,scope.projectId);
+    // User interaction during startup supersedes an earlier tab preference.
+    if(!saved?.view||saved.periodId!==data.currentPeriodId||this._userNavigatedScope===scope.key)return;
+    this.nav(saved.view,{history:'replace'});
+  },
   /* P0-1 (V171): resolver ÚNICO de navegación efectiva. CX.NAV solo define admin/shopper/cliente;
      cualquier otro rol (super, ops, coordinador, aliado, desconocido) navega sobre el layout admin
      SIN ampliar permisos (roleCanAccess sigue gobernando cada módulo). Usado por mount/buildRail/nav. */
@@ -411,7 +423,12 @@ CX.router = {
     /* Recovery B1: a route transition must not retain modal overlays from the previous screen. */
     try{CX.ui?.closeAllModals?.();}catch(_){}
     CX.session.view=id; CX.session.save();
-    if(opts.history!=='replace')this.rememberScopedUiHint({view:id});
+    if(opts.history!=='replace'&&opts.remember!==false){
+      const auth=CX.backendAuth?.context?.()||{};
+      const scope=this._authorizedUiHintScope(auth.tenantId,CX.data?.currentProjectId);
+      if(scope)this._userNavigatedScope=scope.key;
+      this.rememberScopedUiHint({view:id});
+    }
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');
     // crumb
@@ -466,6 +483,8 @@ CX.router = {
   },
 };
 
+window.addEventListener('cx:protected-auth-hr-authority-ready',()=>CX.router.restoreProtectedView());
+
 window.addEventListener('popstate',e=>{
   const id=e.state&&e.state.cxView;
   if(id&&CX.session?.role)CX.router.nav(id,{history:false});
@@ -475,7 +494,7 @@ window.addEventListener('popstate',e=>{
 CX.bus.on('project',()=>{
   if(!CX.session.role)return;
   CX.router.buildRail(CX.session.role);
-  CX.router.nav(CX.session.view,{history:false});
+  CX.router.nav(CX.session.view,{history:false,remember:false});
 });
 
 /* ============================================================
@@ -493,7 +512,7 @@ CX.bus.on('project',()=>{
   function reRender(){
     if(_busy || !CX.session.role || !CX.session.view) return;
     _busy=true;
-    try{ CX.router.buildRail(CX.session.role); CX.router.nav(CX.session.view); }
+    try{ CX.router.buildRail(CX.session.role); CX.router.nav(CX.session.view,{history:false,remember:false}); }
     finally{ _busy=false; }
   }
   /* #239 — 'project' (cambio de programa/periodo) también re-renderiza el módulo activo,
