@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.i3.work-chrome-c3-source-import.v1",
+  "dateLocal": "2026-11-20",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "source": "Independent Work Chrome connected; no code changes, authenticated Shopper GT and HN only",
+  "sourceLibrary": {
+    "zip": {
+      "libraryFileId": "libfile_e2ab46314ac08191ac585b4067310f95",
+      "sha256": "2dc7c264e5ab5e78eb4375b6abb6870c2df4195e0c01469466b624fd495b006a",
+      "files": 23,
+      "sha256ManifestEntries": 22,
+      "verifiedAll": true
+    },
+    "pdf": {
+      "libraryFileId": "libfile_b3bd5b973d908191912a09c560b3cc3b",
+      "sha256": "7f266ee5a36d81ce303953d9e7de105f1443f7a4c3d418e4b757377a8c49481d"
+    }
+  },
+  "importedFiles": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/recibos_Chrome.json",
+      "sourceSha256": "44feeeef1ccb32bf5904bacc3fac9b4efde38b1fda6aaba6614e2e41dceff721",
+      "lengthUTF8": 67654,
+      "count": 28
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/matriz_21_dominios.csv",
+      "sourceSha256": "6f03de5b0c084bfac64c1e12b9017d31e50918cffaad6d79e15424910e0105c9",
+      "lengthUTF8": 17618,
+      "rows": 21
+    }
+  ],
+  "receiptDistribution": {
+    "PASS focal": 20,
+    "FAIL": 3,
+    "HOLD": 5
+  },
+  "failCases": [
+    "GT11",
+    "GT12",
+    "HN06"
+  ],
+  "defectClassification": "PERSISTENCE_FAILURE proposed; exact owner pending source proof",
+  "scopedRoleSessions": [
+    "Shopper GT",
+    "Shopper HN"
+  ],
+  "missingAuthenticatedRoles": [
+    "Admin/Super",
+    "Operativo",
+    "Cliente"
+  ],
+  "originalScreenshotsInLibraryZip": 11,
+  "originalScreenshotHashesInLibraryZip": true,
+  "production": false,
+  "HRWrites": 0,
+  "cloudRunDeploys": 0,
+  "hostingDeploys": 0,
+  "otherEvidence": [
+    {
+      "type": "B11",
+      "runId": 44769697976,
+      "decision": "PASS_FOCAL"
+    },
+    {
+      "type": "B11",
+      "runId": 44771623030,
+      "decision": "PASS_FOCAL"
+    },
+    {
+      "type": "B14",
+      "makeScenario": 10200465,
+      "decision": "PASS_GRAPH_ONLY_APP_IAM_HOLD"
+    }
+  ],
+  "certificate": {
+    "currentModulesMATCH": 6,
+    "totalModules": 21,
+    "domainNewMatch": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "isTerminalCertificate": false
+  },
+  "nextExactAction": "Prove root cause of GT11 GT12 HN06: app/core/store.js + backend-browser-auth.js + app/adapters/tya-live-source-inplace-apply.js and app/core/router.js; then only P0 owner change and tests; no source promotion before canonical scope proof and DEV readback. Work 20 PASS focal preserve."
+}
