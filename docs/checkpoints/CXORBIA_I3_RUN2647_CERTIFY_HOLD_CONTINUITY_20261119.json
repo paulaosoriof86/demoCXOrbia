@@ -1,0 +1,490 @@
+{
+  "schemaVersion": "cxorbia.i3.run2647-terminal-hold-focal-continuity.v1",
+  "dateLocal": "2026-11-19",
+  "iteration": "I3",
+  "status": "HOLD",
+  "decision": "HOLD_I3_C3_PRETERMINAL_PASS_TERMINAL_15_DOMAINS_UNPROVEN",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtCapture": "53fbdf3ee43b423b4e7679ec5b0f4983f91511ae",
+  "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "productSourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+    "blob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
+    "match": 6,
+    "total": 21,
+    "phaseAComplete": false
+  },
+  "controlAuthorities": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+    "current": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "latestCanonicalCI": 44657151794
+  },
+  "dev": {
+    "materializationRun": 44635279782,
+    "buildsAfterRun2640": 0,
+    "sourceHostedExact": true,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00381-z2j",
+    "runtimeDigest": "sha256:2799afbfe752cb47ae9fc42f05fe5287753c265245dc8637e724d91edc0876dc",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "production": false
+  },
+  "ci": {
+    "run2645": {
+      "id": 44656687099,
+      "canonical": "failure",
+      "root": "MAPPING_FAILURE:CURRENT_AUTHORITY_ALIASES:CURRENT_TRUTH_MATRIX_BLOB_DESYNC",
+      "supersededByRun2646": true
+    },
+    "run2646": {
+      "id": 44657151794,
+      "conclusion": "success",
+      "canonical": "success",
+      "certify": "skipped"
+    },
+    "run2647": {
+      "id": 44657930084,
+      "conclusion": "failure",
+      "canonical": "success",
+      "c3Preterminal": "success",
+      "certify": "failure",
+      "certifyJobId": 136029551050,
+      "ciExitCode": 2,
+      "c3Decision": "PASS_C3_PRETERMINAL_COMPOSITION",
+      "browserFocal": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "hrSemantic": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+      "functionalFixturesBeforeTerminal": "success",
+      "terminalReason": "C3_MODULE_TRUTH_NOT_CLOSED",
+      "certifiedArtifactProduced": false,
+      "gate20": "HOLD",
+      "gate21": "HOLD"
+    }
+  },
+  "make": {
+    "originalHrInventory": {
+      "scenarioId": 10196061,
+      "executionId": "ad711edfe4734f4b8fc929f429800022",
+      "status": "success",
+      "gtTabs": 35,
+      "hnTabs": 34,
+      "gtColumns": 31,
+      "hnColumns": 30,
+      "readOnly": true,
+      "scenarioStatus": "inactive"
+    },
+    "gtTemporaryProviderQa": {
+      "scenarioId": 10199316,
+      "executionId": "ad66ca89d897402a98a257a623959d9a",
+      "status": "success",
+      "sheetCreatedHttp": 201,
+      "writeHttp": 200,
+      "independentReadback2Http": 200,
+      "independentReadback3Http": 200,
+      "cleanupHttp": 204
+    },
+    "hnTemporaryProviderQa": {
+      "scenarioId": 10199340,
+      "executionId": "41c29c9d3b474f0c96af2e11a976a124",
+      "status": "success",
+      "sheetCreatedHttp": 201,
+      "writeHttp": 200,
+      "independentReadback2Http": 200,
+      "independentReadback3Http": 200,
+      "cleanupHttp": 204
+    },
+    "liveApplicationTriggeredMakeReadOrAckProven": false,
+    "reason": "only Make-isolated provider QA and inventory evidence; no real CXOrbia application invocation observed"
+  },
+  "fifteenUncertifiedDomains": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "requiredOwners": 5,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/core/backend-browser-auth.js",
+          "app/core/backend-protected-dev-session-continuity.js",
+          "app/core/backend-cxdata-read-guard.js",
+          "app/core/backend-firebase.js",
+          "app/core/backend-protected-dev-mode.js",
+          "app/core/backend-dev-auth.local.js",
+          "app/adapters/tya-dev-technical-auth-e2e-v1.js",
+          "app/adapters/tya-c6-shopper-auth-click-guard-v1.js"
+        ],
+        "requiredOperationKinds": [
+          "AUTH_SESSION"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shopper_hn_3b3c2f5cc1,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. PRESERVE: VRM217 bounded closure; Julissa approved topology; GT/HN keeper ordinary sessions and scope. No census,sweep or refusion."
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 7,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/app.js",
+          "app/index-backend-dev.html",
+          "app/core/build-lock.js",
+          "app/styles/theme.css",
+          "app/styles/layout.css",
+          "app/manifest.webmanifest",
+          "app/sw.js",
+          "app/core/geo.js",
+          "app/core/store.js",
+          "app/core/dedupe.js",
+          "app/core/programa.js",
+          "app/core/automations.js",
+          "app/vendor/pptxgenjs.min.js",
+          "app/core/importador.js",
+          "app/core/ui.js",
+          "app/core/notif.js",
+          "app/core/backend-finance-benefits.js",
+          "app/core/backend-cxdata-finance-read.js",
+          "app/core/backend-operational-actions.js",
+          "app/core/backend-cxdata-readonly-corte4.js",
+          "app/core/backend-ui-action-bridge.js",
+          "app/core/backend-bulletins.js",
+          "app/core/backend-automations.js",
+          "app/core/backend-preview-status.js",
+          "app/core/topbar.js",
+          "app/core/pwa.js",
+          "app/modules/soporte.js",
+          "app/modules/saas-console.js",
+          "app/modules/importador.js",
+          "app/modules/comercial.js",
+          "app/modules/crm.js",
+          "app/modules/marketing.js",
+          "app/modules/integraciones.js",
+          "app/modules/automatizaciones.js",
+          "app/modules/correo.js",
+          "app/modules/marca.js",
+          "app/modules/diagnostico.js",
+          "app/modules/administrabilidad.js",
+          "app/adapters/tya-ab-cumulative-composition-v1.js",
+          "app/core/backend-corte4-empty-shell-guard.js"
+        ],
+        "requiredOperationKinds": [
+          "AUTH_SESSION",
+          "UI_INTERACTION"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "VRM134 comparable cold/warm initial load in relevant roles and only uncovered navigation/cache scenarios; integral acceptance. PRESERVE: R20 ordinary credential login/logout/relogin and accepted session guards; restored-session samples are not global cold-login/p95 proof."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 15,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/adapters/tya-cumulative-read-model-v2.js",
+          "app/adapters/tya-canonical-state-semantics-v2.js",
+          "app/adapters/tya-live-source-refresh-watch-v2.js",
+          "app/adapters/tya-live-source-inplace-apply.js",
+          "backend/runtime/hr-live-service/server.mjs",
+          "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+          "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+          "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+          "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+          "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+          "tools/hr-source/tya-resolve-live-month-tabs.mjs",
+          "backend/contracts/tya-hr-column-map-r20-v1.json",
+          "app/core/backend-hr-source-bridge.js",
+          "app/core/hr.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact."
+    },
+    {
+      "domain": "certifications",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E",
+      "requiredOwners": 5,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/modules/academia.js",
+          "app/modules/cert.js",
+          "app/data/tya-certification-carryover-source-safe.js",
+          "backend/runtime/hr-live-service/certification-runtime.mjs",
+          "app/core/backend-certifications.js",
+          "app/core/backend-ai.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "D08 real UI course/lesson/resource/progress and independent Shopper/Cliente sessions; only uncovered authorized Admin edit and role negatives. PRESERVE: B4 bank operations and accepted D06 locked; D08 RUN2391 providerACK/new-session/replay/other-learner/negative and cleanup PASS. No global recertification or repeated bank attempts."
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 4,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/core/cliente-data.js",
+          "app/modules/cliente.js",
+          "app/modules/cliente-extra.js",
+          "app/modules/cliente-insights.js",
+          "app/modules/clientes.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "F09 durable NPS/notes/meetings with providerACK/newsession/role proof; uncovered independent HR KPI/filters/drilldown/visual clauses. PRESERVE: F12 no-fabrication,VRM331 heading and VRM235 clientAuth control closure; these do not prove durable collaboration."
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "requiredOwners": 6,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/core/config.js",
+          "app/core/router.js",
+          "app/core/permissions.js",
+          "app/core/data.js",
+          "app/core/data-source.js",
+          "app/config/runtime.js"
+        ],
+        "requiredOperationKinds": [
+          "UI_INTERACTION"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "Only uncovered operation×role×project cases at API,Firestore and Storage plus applicable durable self-administration; actual denials required. PRESERVE: Existing scoped positive/negative permissions and role preview preserved; no broad permissions rewrite."
+    },
+    {
+      "domain": "dashboard-operation",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "requiredOwners": 2,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/modules/dashboard.js",
+          "app/modules/midia.js"
+        ],
+        "requiredOperationKinds": [
+          "UI_INTERACTION"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "B11 one independent externalHR revision, exact keys and totals across MiDia,Dashboard,Visits,HR,Reports,GT/HN/context/drilldowns; uncovered MiDia obligations. PRESERVE: B6 locked and VRM259 badge; accepted44visit GT34/HN10 readback retained."
+    },
+    {
+      "domain": "documents-resources",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 6,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/modules/novedades.js",
+          "app/modules/tablon.js",
+          "app/modules/documentos.js",
+          "app/core/backend-resources.js",
+          "app/modules/soporte.js",
+          "app/core/backend-bulletins.js",
+          "app/core/manuales-data.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "D07 isolated PDF create/metadata/version/retirement, foreign-doc denial,durable readACK and visit/revision binding. Corrected authenticated resource focal still requires current live proof. PRESERVE: Original authenticated7pagePDF Admin/Shopper open/download and RUN2387 preserved; TXT lifecycle does not certify PDF lifecycle."
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "requiredOwners": 4,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/core/finanzas-core.js",
+          "app/core/liquidacion.js",
+          "app/core/costos.js",
+          "app/modules/finanzas.js",
+          "app/adapters/tya-project-financial-model-contract-v1.js",
+          "app/data/tya-financial-canonical-source-safe.js",
+          "app/data/tya-financial-canonical-source-safe-liq-01.js",
+          "app/data/tya-financial-canonical-source-safe-liq-02.js",
+          "app/data/tya-financial-canonical-source-safe-liq-03.js",
+          "app/data/tya-financial-canonical-source-safe-review-01.js",
+          "app/data/tya-financial-canonical-source-safe-review-02.js",
+          "app/data/tya-financial-canonical-source-safe-evidence.js",
+          "app/data/tya-financial-canonical-source-safe-final.js",
+          "app/data/tya-payment-history-source-safe.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "Read existing twoQ7300 IDs/application; exact uncovered C06/C07/C09/C10 eligible/blockedUI,reload/replay/currency/support; single exact September reconciliation with external dated authority and historical metadata deltaVRM336. PRESERVE: C04/C05 provider13/13 and July/August approved cuts,B5 retained. No thirdadvance,banktransfer or manufactured payment."
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "requiredOwners": 3,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "app/adapters/tya-c6-domain-consistency-bridge.js",
+          "app/adapters/cxorbia-admin-identity-review-notice-v1.js"
+        ],
+        "requiredOperationKinds": [
+          "UI_INTERACTION"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "uncovered E02/E03/E11/context/period/visual cells. PRESERVE: VRM259 badge and B7 human acceptance preserved; no generic B7 reopening.; RUN2537 internal refresh country full cycle PASS, separate scoped VRM345 closure."
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 15,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+          "app/adapters/cxorbia-command-adapter-v1.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+          "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+          "app/adapters/cxorbia-command-http-transport-v1.js",
+          "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+          "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+          "app/adapters/cxorbia-legal-runtime-http-v1.js",
+          "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+          "backend/contracts/cxorbia-academy-base-progress-contract-v1.json"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact."
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "requiredOwners": 7,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/modules/proyectos.js",
+          "app/modules/periodos.js",
+          "app/modules/hr-source.js",
+          "app/modules/proyecto-wizard.js",
+          "backend/contracts/cxorbia-project-source-contract-v1.json",
+          "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+          "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+          "app/core/backend-config.js",
+          "app/core/backend-config-preview-dev.js",
+          "app/core/backend-v57-extra-config.js",
+          "app/modules/configuracion.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "Original Excel Online country bindings and independent Make/Graph source readback; exact ACK/replay/conflict/echo plus isolated A/B Admin+Shopper Chrome. No repeat DEV deploy."
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 1,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/modules/cuestionario-shopper.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "Authorized project-period-visit providerURL/version and correct shopperopen/submitted independent providerreadback; no fabricated questionnaire orURL. PRESERVE: Exact served routing/config source and failclosed missinglink preserved."
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+      "requiredOwners": 5,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/core/shopper-credential-rule.js",
+          "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "app/modules/shoppers.js",
+          "app/modules/misvisitas.js",
+          "app/core/shoppers-store.js"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; three exactAuth exceptions; B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review. PRESERVE: VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved."
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "requiredOwners": 7,
+      "verification": {
+        "ownerReceiptMissing": true,
+        "uncoveredFiles": [
+          "app/adapters/tya-canonical-reservations-guard-v2.js",
+          "app/modules/visitas.js",
+          "app/modules/visita-detalle.js",
+          "app/modules/revision-admin.js",
+          "app/modules/postulaciones.js",
+          "app/modules/reservas.js",
+          "firestore.rules"
+        ],
+        "requiredOperationKinds": [
+          "PROVIDER_WRITE"
+        ],
+        "fullDomainCoverageMissing": true
+      },
+      "actionRequired": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK. PRESERVE: B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+    }
+  ],
+  "methodLock": {
+    "doNotRerun": "Generic Certify will still fail until at least one contract-complete owner receipt for residual domains is actually available",
+    "creditPerDomain": "Only contracts, owner blobs, same source/hosting/runtime/revision and requisite operation/role, not source QA alone",
+    "preserveHistoricalB4B7": true,
+    "doNotRebuildB14": true,
+    "doNotReimportHr": true,
+    "doNotModifyLegacyOrProduction": true,
+    "doNotCreateParallelCandidateOrWorkflow": true
+  },
+  "exactNextAction": "Implement and prove B14 country/project/period private Excel Online source binding in the existing runtime via authorized Make/Graph provider (read-only first); get independent live readback plus guarded ACK/idempotent replay where bidirectional contract is approved. Generate proper same-source terminal owner/operation/role receipts from real Browser/Provider E2E, consume via existing C3, credit every completed domain; rerun strict Certify only when its required evidence exists. No I4 before 21/21, Gate20/21 GO and explicit authorization.",
+  "classification": {
+    "providerIntegration": "MAPPING_FAILURE",
+    "terminalReceiptGap": "MAPPING_FAILURE",
+    "productFunctionalDefect": "NOT_PROVEN_BY_THIS_TERMINAL_HOLD"
+  }
+}
