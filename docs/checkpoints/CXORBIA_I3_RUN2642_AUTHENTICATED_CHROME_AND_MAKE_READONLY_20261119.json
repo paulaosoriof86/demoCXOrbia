@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-readonly-chrome-make-receipt.v1",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E__MAKE_GT_HN_READONLY_PASS",
+  "status": "HOLD",
+  "classification": "MAPPING_FAILURE_RECOVERY",
+  "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "controlHead": "2df087ceb37334b34711818545eea5191cab209b",
+  "dev": {
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00381-z2j",
+    "runtimeDigest": "sha256:2799afbfe752cb47ae9fc42f05fe5287753c265245dc8637e724d91edc0876dc",
+    "sourceSameAsRun2640": true
+  },
+  "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+  "chrome": {
+    "workflowRunId": 44640645710,
+    "runNumber": 2642,
+    "workflowConclusion": "success",
+    "jobId": 135970883071,
+    "jobConclusion": "success",
+    "artifactId": 14586256496,
+    "artifactDigest": "sha256:ad19a7ca4d80135312ddcb71ef187d6fb220f2c258359a9a33d1e71c07b77b70",
+    "authMode": "CUSTOM_TOKEN_NOT_PASSWORD",
+    "adminAuthenticated": true,
+    "adminCanonicalKeepersVisible": {
+      "GT": 1,
+      "HN": 1
+    },
+    "adminVisits": 792,
+    "gtShopperOwnVisits": 15,
+    "gtUniqueVisitIds": 15,
+    "hnShopperOwnVisits": 4,
+    "hnUniqueVisitIds": 4,
+    "shopperRoutes": [
+      "miperfil",
+      "misvisitas"
+    ],
+    "sameHrRevisionAcrossRoles": true,
+    "sourceBoundToDev": true,
+    "sourceFilesParityCount": 41,
+    "scope": "SCOPED_READONLY_BROWSER_PROOF_NOT_COMPLETE_HUMAN_ACCEPTANCE"
+  },
+  "make": {
+    "scenarioId": 10196061,
+    "executionId": "ad711edfe4734f4b8fc929f429800022",
+    "status": "success",
+    "gtTabs": 35,
+    "hnTabs": 34,
+    "gtColumns": 31,
+    "hnColumns": 30,
+    "gtTableCount": 1,
+    "hnTableCount": 0,
+    "readOnly": true,
+    "connectionHealth": "ok",
+    "restoredScenarioInactive": true,
+    "operationalHrWrites": 0,
+    "operationalProviderAckProven": false
+  },
+  "priorEvidencePreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_E2E",
+    "RUN2610_A08_SCOPED_FIRESTORE_DENIALS",
+    "B14_MAKE_TEMP_GT_HN_ACK_READBACK_CLEANUP"
+  ],
+  "newDomainMatches": 0,
+  "strictMatches": 6,
+  "totalDomains": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "i4Authorized": false,
+  "functionalOutstanding": [
+    "A08 independent ordinary password and API/Storage negatives",
+    "Full role-specific protected data and configuration contracts",
+    "B14 operational project Excel Online scoped provider binding and independent Graph read/ACK/replay/echo and App Chrome E2E",
+    "Focal finance, D08 and remaining domain requirements"
+  ],
+  "action": "Run the existing A08 read-only exceptions/Firestore negative job on current DEV for independent proof; consume only contract-complete domain receipts. Do not count scoped proofs as terminal MATCH. No data or production write."
+}

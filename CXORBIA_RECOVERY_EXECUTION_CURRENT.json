@@ -24495,5 +24495,27 @@
     "terminalCertified": false,
     "scope": "VERIFIED_CURRENT_DEV_RECEIPT_CONSUMPTION_IN_CANONICAL_LOCK_PENDING",
     "nextAction": "B14 Graph/Make real-provider ACK and independent Admin/Shopper E2E then materialization authority convergence; PhaseA terminal still HOLD"
+  },
+  "b14Run2642AuthenticatedChrome20261119": {
+    "status": "HOLD",
+    "decision": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E__MAKE_GT_HN_READONLY_PASS",
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "runId": 44640645710,
+    "runNumber": 2642,
+    "jobId": 135970883071,
+    "artifactId": 14586256496,
+    "artifactDigest": "sha256:ad19a7ca4d80135312ddcb71ef187d6fb220f2c258359a9a33d1e71c07b77b70",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2642_AUTHENTICATED_CHROME_AND_MAKE_READONLY_20261119.json",
+    "receiptGitBlob": "06a9f53ff63fb3c3849182f30efba071f02e702e",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "strictMatches": 6,
+    "totalDomains": 21,
+    "scope": "CURRENT_DEV_SCOPED_E2E_NOT_TERMINAL_CERT",
+    "makeReadbackId": "ad711edfe4734f4b8fc929f429800022",
+    "devPublished": true,
+    "terminalCertified": false,
+    "production": false,
+    "nextAction": "Run the existing A08 read-only exceptions/Firestore negative job on current DEV for independent proof; consume only contract-complete domain receipts. Do not count scoped proofs as terminal MATCH. No data or production write."
   }
 }
