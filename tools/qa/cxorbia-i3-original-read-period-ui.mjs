@@ -71,20 +71,21 @@ try {
    for(const [id,view] of subject.tests)await receiptAction(id,async()=>{
     stage=id+'_INITIAL_VIEW';const selector=page.locator('#periodSel');
     await selector.selectOption(period);
-    await page.evaluate(view=>CX.router.nav(view,{history:false}),view);
+    await page.locator('#nav-'+view).click();
     await page.waitForFunction(v=>CX?.session?.view===v&&document.querySelector('#view')?.textContent?.trim(),view);
-    const capture=async()=>page.evaluate(({view})=>({period:document.querySelector('#periodSel')?.value,view:CX.session.view,periodInData:CX.data.currentPeriodId,count:view==='visitas'?document.querySelectorAll('#vList [data-detail]').length:null,
+    const capture=async()=>page.evaluate(({view})=>({period:document.querySelector('#periodSel')?.value,view:CX.session.view,savedView:CX.router.readScopedUiHint(CX.data.previewMeta.tenantId,CX.data.currentProjectId)?.view||null,historyView:history.state?.cxView||null,periodInData:CX.data.currentPeriodId,count:view==='visitas'?document.querySelectorAll('#vList [data-detail]').length:null,
       reportMonth:view==='mireportes'?/oct(?:ubre)?\.?\s*2026/i.test(document.querySelector('#view')?.innerText||''):null,owner:CX.backendAuth.context().shopperId}),{view});
     const before=await capture();stage=id+'_SELECT_OCTOBER';await selector.selectOption(oct);
     await page.waitForFunction(({v,target})=>CX.data.currentPeriodId===target && document.querySelector('#periodSel')?.value===target && CX.session.view===v && (v==='visitas'?document.querySelector('#vList'):/oct(?:ubre)?\.?\s*2026/i.test(document.querySelector('#view')?.innerText||'')),{v:view,target:oct},{timeout:16000});
     const selected=await capture();stage=id+'_RELOAD';await page.reload({waitUntil:'domcontentloaded'});await ready();await selector.waitFor({timeout:14000});
     try{await page.waitForFunction(({v,target})=>CX.session.view===v&&CX.data.currentPeriodId===target&&document.querySelector('#periodSel')?.value===target,{v:view,target:oct},{timeout:8000})}catch{}
     const after=await capture();
+    let reopened=null;if(after.view!==view){await page.locator('#nav-'+view).click();reopened=await capture();delete reopened.owner;}
     const ownerOk=[before,selected,after].every(x=>x.owner===member.shopperId);
     const pass=ownerOk&&selected.period===oct&&after.period===oct&&after.periodInData===oct&&after.view===view&&
       (view==='visitas'?selected.count>0&&before.count!==selected.count&&after.count===selected.count:after.reportMonth&&selected.reportMonth);
     for(const x of [before,selected,after])delete x.owner;
-    result.reloads.push({id,country:subject.country,view,ownerOk,before,selected,after,pass});
+    result.reloads.push({id,country:subject.country,view,ownerOk,before,selected,after,reopened,pass});
     await selector.screenshot({path:out+'/'+id+'.png'});
     check(pass,'PERSISTENCE_FAILURE:PERIOD_OR_VIEW');
    });
