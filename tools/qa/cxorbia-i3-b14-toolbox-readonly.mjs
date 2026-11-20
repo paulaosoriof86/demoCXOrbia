@@ -54,8 +54,9 @@ try {
   }
   result.stage='complete'; result.decision='PASS_B14_TOOLBOX_SCOPED_GT_HN';
 } catch (err) {
-  const safe = String(err?.message || '').match(/^(?:MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE):B14_[A-Z0-9_]+$/);
+  const safe = String(err?.message || '').match(/^(?:MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE):(?:B14_|EXCEL_HR_)[A-Z0-9_]+$/);
   result.error = safe ? safe[0] : (err?.name||'Error');
+  if (typeof err?.code === 'number') result.providerStatus = err.code;
   process.exitCode=1;
 } finally {
   await client.close().catch(()=>{});
