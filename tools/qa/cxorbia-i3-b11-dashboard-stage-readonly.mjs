@@ -72,8 +72,18 @@ try{
     }
     await page.evaluate(() => window.CX.router.nav('informes', {history: false}));
     await page.locator('#view [data-rep="cobertura"]').click();
-    const table = page.locator('#rptBody table').filter({has: page.getByRole('columnheader', {name:'Cobertura', exact:true})});
-    await table.waitFor();
+    const table = page.locator('#rptBody table:visible, #rkBody table:visible, .cx-ov:visible table').filter({has:page.locator('th').filter({hasText:/^Cobertura$/i})});
+    try { await table.waitFor({timeout:12000}); }
+    catch (error) {
+      result.preview = await page.evaluate(() => ({
+        view:window.CX?.session?.view,
+        pageHasReportKit:typeof window.CX?.reportKit?.previewHTML === 'function',
+        reportBodies:['rptBody','rkBody'].filter(id=>document.getElementById(id)),
+        tableHeaders:[...document.querySelectorAll('table')].filter(el=>el.getBoundingClientRect().height>0).map(el=>[...el.querySelectorAll('th')].map(th=>th.textContent.trim()).slice(0,10)).slice(0,6),
+        dialogs:[...document.querySelectorAll('.cx-ov,[role=dialog]')].filter(el=>el.getBoundingClientRect().height>0).map(el=>el.className).slice(0,4)
+      }));
+      throw error;
+    }
     const coverage = await table.evaluate(el => {
       const labels = [...el.querySelectorAll('thead th')].map(th => th.textContent.trim());
       return [...el.querySelectorAll('tbody tr')].map(row => Object.fromEntries([...row.querySelectorAll('td')].map((cell, i) => [labels[i],cell.textContent.trim()])));
@@ -127,5 +137,5 @@ try{
   assert(end.revision===REVISION,'RELEASE_COMPOSITION_FAILURE:B11_INDEPENDENT_HR_REVISION_CHANGED');
   result.decision=crossSurface ? 'PASS_B11_VISITS_KEYS_REPORT_COVERAGE_SAME_REVISION' : 'PASS_B11_DASHBOARD_MIDIA_CURRENT_HR_SCOPED_READONLY';
 }catch(error){result.error=String(error?.message||error).slice(0,180);}
-finally{if(browser)await browser.close().catch(()=>{});save();console.log(JSON.stringify({decision:result.decision,owners:result.owners.length,countries:result.countries,midia:result.midia,reason:result.error||null,production:false}));}
+finally{if(browser)await browser.close().catch(()=>{});save();console.log(JSON.stringify({decision:result.decision,owners:result.owners.length,countries:result.countries,midia:result.midia,reason:result.error||null,preview:result.preview||null,pageErrors:result.pageErrors,coverage:result.coverage||null,production:false}));}
 if(!result.decision.startsWith('PASS_'))process.exitCode=2;
