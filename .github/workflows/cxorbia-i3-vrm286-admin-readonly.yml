@@ -52,3 +52,34 @@ jobs:
             .tmp/cxorbia-i3-residual-keeper-preflight/result.json
           if-no-files-found: warn
           retention-days: 30
+
+  b14-delegated-credential-readonly-preflight:
+    if: ${{ contains(github.event.head_commit.message, '[i3-b14-credential-preflight]') }}
+    runs-on: ubuntu-24.04
+    permissions: { contents: read, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Read DEV Cloud Run credential reference names only
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe cxorbia-live-hr-dev --project cxorbia-backend-dev --region us-central1 --format=json > "$RUNNER_TEMP/cxorbia-service.json"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/cxorbia-service.json','utf8'));
+          const c=(s.spec?.template?.spec?.containers||[])[0]||{}, env=c.env||[];
+          const names=['CXORBIA_B14_MAKE_API_TOKEN','CXORBIA_B14_MAKE_SCENARIO_ID','CXORBIA_I3_B14_DIRECT_READER_DEV'];
+          const p=Object.fromEntries(names.map(name=>[name,{configured:env.some(x=>x.name===name),secretReferenced:env.some(x=>x.name===name&&!!x.valueFrom?.secretKeyRef)}]));
+          console.log('B14_DEV_CREDENTIAL_REFERENCE_PREFLIGHT='+JSON.stringify({decision:'READ_ONLY_DEV_REFERENCE_INVENTORY',service:'cxorbia-live-hr-dev',expected:p,production:false,secretValuesInspected:false}));
+          NODE
+          if gcloud secrets list --project cxorbia-backend-dev --format='value(name)' > "$RUNNER_TEMP/cxorbia-secret-names.txt" 2> "$RUNNER_TEMP/cxorbia-secret-list-error.txt"; then
+            echo 'B14_DEV_SECRET_NAMES_API=ACCESS_GRANTED_NAMES_ONLY'
+            grep -Ei 'B14|MAKE' "$RUNNER_TEMP/cxorbia-secret-names.txt" | sed -E 's/.*/B14_DEV_MATCHING_SECRET_NAME_PRESENT=true/' | sort -u || :
+          else
+            echo 'B14_DEV_SECRET_NAMES_API=READ_PERMISSION_UNVERIFIED'
+          fi
+          rm -f "$RUNNER_TEMP/cxorbia-service.json" "$RUNNER_TEMP/cxorbia-secret-names.txt" "$RUNNER_TEMP/cxorbia-secret-list-error.txt"
