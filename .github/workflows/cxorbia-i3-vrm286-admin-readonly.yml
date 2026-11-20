@@ -161,3 +161,16 @@ jobs:
           path: .tmp/i3-b11-stage-current-hr/result.json
           if-no-files-found: warn
           retention-days: 30
+  i3-b14-github-secret-presence:
+    if: ${{ contains(github.event.head_commit.message, '[i3-b14-credential-presence]') }}
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    env:
+      G1: ${{ secrets.CXORBIA_B14_MAKE_API_TOKEN != '' }}
+      G2: ${{ secrets.CXORBIA_MAKE_API_TOKEN != '' }}
+      G3: ${{ secrets.MAKE_API_TOKEN != '' }}
+      G4: ${{ secrets.MAKE_API_KEY != '' }}
+    steps:
+      - name: Detect existing Make API credential references without disclosing values
+        run: |
+          printf 'B14_GITHUB_CREDENTIAL_NAMES_ONLY={"CXORBIA_B14_MAKE_API_TOKEN":"%s","CXORBIA_MAKE_API_TOKEN":"%s","MAKE_API_TOKEN":"%s","MAKE_API_KEY":"%s","secretContentsRead":false,"production":false}\n' "$G1" "$G2" "$G3" "$G4"
