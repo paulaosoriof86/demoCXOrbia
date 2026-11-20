@@ -83,3 +83,45 @@ jobs:
             echo 'B14_DEV_SECRET_NAMES_API=READ_PERMISSION_UNVERIFIED'
           fi
           rm -f "$RUNNER_TEMP/cxorbia-service.json" "$RUNNER_TEMP/cxorbia-secret-names.txt" "$RUNNER_TEMP/cxorbia-secret-list-error.txt"
+
+  i3-b11-r23-same-revision-readonly:
+    if: ${{ contains(github.event.head_commit.message, '[i3-b11-r23-readonly]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions: { contents: read, id-token: write }
+    env:
+      PROJECT: cxorbia-backend-dev
+      HOSTING_URL: https://cxorbia-backend-dev.web.app
+      FOCAL_SOURCE: d72275685d57941f6cfa0fcebc4823287942f786
+      EXPECTED_HR_REVISION: 3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8
+      PHASEA_LIVE_OUT: .tmp/i3-b11-r23-exact-dev
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Verify unchanged DEV HR revision and existing served source
+        run: |
+          set -Eeuo pipefail
+          node --check tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs
+          curl -fsS --retry 2 "${HOSTING_URL}/api/tya/cinepolis/hr-live?format=meta" > "$RUNNER_TEMP/b11-hr-meta.json"
+          jq -e --arg expected "$EXPECTED_HR_REVISION" '.revision==$expected and .sourceSafe==true and .production==false' "$RUNNER_TEMP/b11-hr-meta.json" >/dev/null
+          rm "$RUNNER_TEMP/b11-hr-meta.json"
+      - name: Install authenticated DEV browser test dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null
+          npx --no-install playwright install chromium >/dev/null
+      - name: Execute B11 external HR / Admin KPI same-revision GT and HN
+        run: |
+          node tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs
+          jq -e '.decision=="PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION"' "$PHASEA_LIVE_OUT/r23/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: 'cxorbia-i3-b11-r23-readonly-${{ github.run_id }}'
+          path: .tmp/i3-b11-r23-exact-dev/r23/result.json
+          if-no-files-found: warn
+          retention-days: 30
