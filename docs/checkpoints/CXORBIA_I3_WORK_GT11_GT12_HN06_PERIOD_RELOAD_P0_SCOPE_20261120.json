@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-P0-Work-period-reload.v1",
+  "createdAt": "2026-11-20",
+  "iteration": "I3",
+  "decision": "P0_PROVEN_SCOPE_SOURCE_NOT_YET_FIXED",
+  "classification": "PERSISTENCE_FAILURE",
+  "sourceAuthority": {
+    "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "workArtifactSha256": "2dc7c264e5ab5e78eb4375b6abb6870c2df4195e0c01469466b624fd495b006a",
+    "WorkManifest": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/IMPORT_C3_MANIFEST.json"
+  },
+  "repro": [
+    {
+      "receipt": "GT11",
+      "role": "Shopper GT",
+      "action": "select October from November, available visits 3 to 1, reload",
+      "observed": "November after reload"
+    },
+    {
+      "receipt": "GT12",
+      "role": "Shopper GT",
+      "action": "select October and navigate My Reports, reload",
+      "observed": "November and MiDia after reload"
+    },
+    {
+      "receipt": "HN06",
+      "role": "Shopper HN",
+      "action": "select October in My Reports, reload",
+      "observed": "November and MiDia after reload"
+    }
+  ],
+  "evidenceFiles": [
+    "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/recibos_Chrome.json",
+    "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/matriz_21_dominios.csv"
+  ],
+  "reproductionScreenshotsPrivateLibrary": [
+    "capturas/05-shopper-gt-periodo-oct-antes.jpg",
+    "capturas/06-shopper-gt-periodo-nov-despues.jpg"
+  ],
+  "sourceRootCauseEvidence": [
+    {
+      "path": "app/core/store.js",
+      "blob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
+      "ownerAction": "CX.session.load preloads legacy localStorage only before protected HR periods exist; no authenticated scope; read at lines 41-50",
+      "modify": false
+    },
+    {
+      "path": "app/core/backend-browser-auth.js",
+      "blob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "ownerAction": "applyCxSession clears prior session and sets view=null on every authenticated restoration; lines 189-214",
+      "modify": false
+    },
+    {
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "blob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+      "ownerAction": "buildSnapshotCandidate uses previous in-memory period / runtime latest and does not restore auth-scoped user selection; lines 134-151",
+      "modify": true
+    },
+    {
+      "path": "app/core/router.js",
+      "blob": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+      "ownerAction": "periodSel updates currentPeriod but no auth-scope reload preference; mount uses CX.session.view which auth restoration cleared; lines 36-95,334-342",
+      "modify": true
+    }
+  ],
+  "proposedRepair": {
+    "allowedProductFiles": [
+      "app/core/router.js",
+      "app/adapters/tya-live-source-inplace-apply.js"
+    ],
+    "allowedTestFiles": [
+      "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+    ],
+    "design": "Use sessionStorage as a NONAUTHORITATIVE UI selection hint keyed by Firebase UID, authenticated tenant, root project, role and country; reconcile only against fresh HR provider-approved periods and validated route permissions. Ignore all other user/project hints. Do not touch localStorage data truth, Firestore, credentials, HR or business commands.",
+    "restoredView": "Only if existing module still authorized for authenticated role and scoped period after full HR hydration",
+    "fallback": "Latest valid provider period if preference stale, foreign, absent or unauthorized."
+  },
+  "requiredTests": {
+    "syntheticSource": [
+      "GT select October then fresh HR reload",
+      "HN select October then fresh HR reload",
+      "explicit project/period source never inferred globally",
+      "principal UID / tenant / project isolation",
+      "reject stale/unknown period",
+      "preserve permitted route only",
+      "no HR/auth/Firestore/production writes"
+    ],
+    "protectedChromium": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ]
+  },
+  "status": {
+    "source": "NOT_YET_CHANGED",
+    "dev": "OLD_SERVING_RUN2640",
+    "matchModules": 6,
+    "totalModules": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false,
+    "production": false
+  },
+  "nextExactAction": "Prove scoped source tests then canonical I3 source approval; do not deploy head without exact candidate descriptor/manifest and one controlled DEV materialization. Work authentic Shopper GT/HN repeat only three affected cases when updated DEV source is serving."
+}
