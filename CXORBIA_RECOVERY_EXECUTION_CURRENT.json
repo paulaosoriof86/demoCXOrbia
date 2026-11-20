@@ -418,8 +418,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
-          "gitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+          "gitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575",
           "runId": 44034333358,
           "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
           "scope": "SIX_COMPLETE_DOMAINS_BENEFITS_RUN2588_PRESERVED__RUN2606_ROLE_PDF_SCOPED_EVIDENCE_ADDED_NO_FULL_DOMAIN_PROMOTION"
@@ -1572,7 +1572,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "Verify canonical source CI for the four documented owners. Bind a B14-restricted Make credential to DEV before one paired materialization. Verify Hosting and runtime identity, then rerun only GT11, GT12 and HN06 on the changed DEV and complete outstanding role/provider contracts and Gate20/21.",
+  "nextExactAction": "Exclude proven financial footer rows from the source reader. Preserve the existing visit ids, reconcile the two original GT realization states in the read projection and verify the application-to-Make read per country. Complete the single authorized DEV pairing and rerun GT11, GT12, HN06 against that version. Retain remaining role and isolated-write contracts for Gate20/21.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2289,8 +2289,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
-    "gitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+    "gitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4290,8 +4290,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "a92800c70a50adc0be01b0920c504ab48effdb64",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
-    "matrixBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+    "matrixBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 4,
       "MATCH": 6,
@@ -6248,12 +6248,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
-      "gitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+      "gitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V696_2026-11-20.json",
-      "gitBlob": "9807d2b787df030645522738b07e23d111b7d50b"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V697_2026-11-20.json",
+      "gitBlob": "5cf75626f04ef0d3c6727491e2d6de1e05bf50dd"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -7195,8 +7195,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V696_2026-11-20.json",
-  "findingsLedgerExpectedGitBlob": "9807d2b787df030645522738b07e23d111b7d50b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V697_2026-11-20.json",
+  "findingsLedgerExpectedGitBlob": "5cf75626f04ef0d3c6727491e2d6de1e05bf50dd",
   "nextFindingId": "VRM-360",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8216,7 +8216,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10810,7 +10810,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94",
+  "moduleTruthExpectedGitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -12832,7 +12832,7 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "B14_EXCEL_PROJECT_SOURCE_MAPPING_AND_APP_READ__WORK_PERIOD_DEV_REPROOF__6_OF_21",
+  "activeBlocker": "B14_ORIGINAL_REALIZATION_PARITY_AND_APP_TRIGGERED_READ__PERIOD_DEV_REPROOF__6_OF_21",
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
@@ -24830,6 +24830,20 @@
     "path": "docs/checkpoints/CXORBIA_I3_B14_MAKE_TOOLBOX_IAM_WORK_EVIDENCE_20261120.json",
     "privateServiceCredential": "PROVEN_FOR_SCOPED_TOOLBOX",
     "activeSourceMigration": "HOLD_EXTERNAL_SOURCE_POLICY",
-    "appOriginalRead": false
+    "appOriginalRead": false,
+    "originalIdentityComparison": "PASS_44_OF_44",
+    "gtRealizationParity": "HOLD_TWO_ORIGINAL_REALIZATIONS_MISSING_IN_SERVED_DEV",
+    "originalParityReceipt": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json"
+  },
+  "currentB14OriginalParity": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json",
+    "gitBlob": "6f8c79e0269d690e0865d0322ca49b8a374bef1f",
+    "runId": 44818947183,
+    "matchedVisits": 44,
+    "gtStateDisagreements": [
+      29,
+      37
+    ],
+    "newDomainMatches": 0
   }
 }

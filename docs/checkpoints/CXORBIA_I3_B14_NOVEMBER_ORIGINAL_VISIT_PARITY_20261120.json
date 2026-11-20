@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.original-november-parity.v1",
+  "observedAt": "2026-11-20T21:18:05Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "sourceServed": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "productSourceInCandidate": "a92800c70a50adc0be01b0920c504ab48effdb64",
+  "period": "2026-11",
+  "project": "cinepolis",
+  "tenant": "tya",
+  "workReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_B11_VISITS_REPORTS_B14_TOOLBOX_SERVICE_READBACK_20261120.json",
+    "sha": "dfbf2c55273861e91d69117569db0381c604ed67"
+  },
+  "qaControl": "c28499d8de56db2577f357fd925cc94a4ad986d5",
+  "qaRun": 44818947183,
+  "qaJob": 136574487345,
+  "artifact": {
+    "id": 14671431517,
+    "digest": "sha256:7dbc61d69d1d067b6e2b7334ac14edcaab3749906abe02fa438af3c6dcccb513"
+  },
+  "priorStrictComparisonRun": 44818712512,
+  "scope": "Current paired November visits from the two original workbooks and the active DEV HR read-model. The job authenticates as the service identity; this is not an application-triggered Make execution.",
+  "keys": [
+    [
+      "cinemaId",
+      "quincena",
+      "escenario"
+    ],
+    [
+      "sucursal",
+      "quincena",
+      "escenario"
+    ],
+    [
+      "sucursal",
+      "quincena",
+      "escenario",
+      "tipoCombo"
+    ]
+  ],
+  "scopeKeys": [
+    "tenant",
+    "project",
+    "country",
+    "period"
+  ],
+  "countries": [
+    {
+      "country": "GT",
+      "makeExecution": "f0cbd808d3244e318d260b581022d6cf",
+      "rowsReadTwice": 140,
+      "originalVisitRows": 34,
+      "servedVisitRows": 34,
+      "oneToOneMatches": 34,
+      "realizedOriginal": 19,
+      "realizedServed": 17,
+      "realizationDifferences": [
+        {
+          "originalRow": 29,
+          "original": true,
+          "served": false
+        },
+        {
+          "originalRow": 37,
+          "original": true,
+          "served": false
+        }
+      ],
+      "nonVisitFooterRows": [
+        48,
+        49,
+        50,
+        52
+      ]
+    },
+    {
+      "country": "HN",
+      "makeExecution": "74c6ba4afa9d4877a579052ea7b77e61",
+      "rowsReadTwice": 140,
+      "originalVisitRows": 10,
+      "servedVisitRows": 10,
+      "oneToOneMatches": 10,
+      "realizedOriginal": 5,
+      "realizedServed": 5,
+      "realizationDifferences": [],
+      "nonVisitFooterRows": []
+    }
+  ],
+  "controlProof": {
+    "identityCrosswalk": "PASS_44_OF_44_THREE_AGREEING_KEYS",
+    "realizationStateParity": "HOLD_GT_2_DIFFERENCES",
+    "sourceRowAndFranjaBasedIds": "NO_SHARED_IDS_ACROSS_ORIGINS",
+    "historyAndOtherPeriodsVerified": false,
+    "candidateControlTestsPass": 18,
+    "workReceipts": 28,
+    "workPassesIndexed": 20,
+    "b11Scope": "Served DEV HR revision independent read vs Admin Visitas and Reportes, November GT and HN",
+    "hrRevisionInDev": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8"
+  },
+  "currentProjectConfig": {
+    "selected": "google_sheets",
+    "read": "external_live",
+    "write": "external_read_only",
+    "declaredExcelCountryConfigs": [],
+    "appTriggeredOriginalRead": false
+  },
+  "p0Proven": {
+    "defect": "Four closing reconciliation rows pass the operational visit row guard on the original GT workbook.",
+    "owner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "function": "parseTab",
+    "verifiedOwnerGitBlob": "763aa0f588c2e0cbd37eec0efed97a41b233a9b0",
+    "allowedProductChange": "Exclude confirmed financial reconciliation signatures from the parser, preserving historical visit identity and real visit rows. No change to operational selectors, datasets or ids."
+  },
+  "status": {
+    "strictMatches": 6,
+    "totalDomains": 21,
+    "newDomainMatches": 0,
+    "gates20And21": "HOLD",
+    "privateServiceCredential": "VERIFIED_FOR_ONE_MAKE_READ_TOOL",
+    "writesToHr": 0,
+    "providerWrites": 0,
+    "productionChanged": false,
+    "devDeployment": false
+  }
+}

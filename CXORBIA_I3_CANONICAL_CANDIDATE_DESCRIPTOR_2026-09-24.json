@@ -224,8 +224,8 @@
   "productSourceSha": "a92800c70a50adc0be01b0920c504ab48effdb64",
   "productTreeAuthority": "2968d129622f79241c45774e4511b20c8efbe992",
   "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V696_2026-11-20.json",
-  "findingsLedgerExpectedGitBlob": "9807d2b787df030645522738b07e23d111b7d50b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V697_2026-11-20.json",
+  "findingsLedgerExpectedGitBlob": "5cf75626f04ef0d3c6727491e2d6de1e05bf50dd",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B14_EXCEL_PROJECT_SOURCE_MAPPING_AND_APP_READ__WORK_PERIOD_DEV_REPROOF__6_OF_21",
+  "activeBlocker": "B14_ORIGINAL_REALIZATION_PARITY_AND_APP_TRIGGERED_READ__PERIOD_DEV_REPROOF__6_OF_21",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "Verify canonical source CI for the four documented owners. Bind a B14-restricted Make credential to DEV before one paired materialization. Verify Hosting and runtime identity, then rerun only GT11, GT12 and HN06 on the changed DEV and complete outstanding role/provider contracts and Gate20/21.",
+  "exactNextAction": "Exclude proven financial footer rows from the source reader. Preserve the existing visit ids, reconcile the two original GT realization states in the read projection and verify the application-to-Make read per country. Complete the single authorized DEV pairing and rerun GT11, GT12, HN06 against that version. Retain remaining role and isolated-write contracts for Gate20/21.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4434,7 +4434,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94",
+  "moduleTruthExpectedGitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -20087,12 +20087,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V369.json",
-      "gitBlob": "d93760661a337d38a6a8ca0c02ef048393d1ec94"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+      "gitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V696_2026-11-20.json",
-      "gitBlob": "9807d2b787df030645522738b07e23d111b7d50b"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V697_2026-11-20.json",
+      "gitBlob": "5cf75626f04ef0d3c6727491e2d6de1e05bf50dd"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -33928,6 +33928,20 @@
     "path": "docs/checkpoints/CXORBIA_I3_B14_MAKE_TOOLBOX_IAM_WORK_EVIDENCE_20261120.json",
     "privateServiceCredential": "PROVEN_FOR_SCOPED_TOOLBOX",
     "activeSourceMigration": "HOLD_EXTERNAL_SOURCE_POLICY",
-    "appOriginalRead": false
+    "appOriginalRead": false,
+    "originalIdentityComparison": "PASS_44_OF_44",
+    "gtRealizationParity": "HOLD_TWO_ORIGINAL_REALIZATIONS_MISSING_IN_SERVED_DEV",
+    "originalParityReceipt": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json"
+  },
+  "currentB14OriginalParity": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json",
+    "gitBlob": "6f8c79e0269d690e0865d0322ca49b8a374bef1f",
+    "runId": 44818947183,
+    "matchedVisits": 44,
+    "gtStateDisagreements": [
+      29,
+      37
+    ],
+    "newDomainMatches": 0
   }
 }
