@@ -1,0 +1,80 @@
+{
+  "iteration": "I3",
+  "status": "HOLD",
+  "readbackOf": "8730ce23072d2cdbb0dc3d0f6c47666d4dc8f875",
+  "canonicalSource": "85251fb11582d99f4d65fb3d96bf6380dfbb3665",
+  "sourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_FOOTER_SOURCE_PROOF_20261120.json",
+    "sha": "3522221b4da37fd38d9ffa0c5c7bc5bae0750fba"
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V371.json",
+    "sha": "ff013fb8ab0c7749f807e4aff8c0f4c03e4f25d6"
+  },
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V698_2026-11-20.json",
+    "sha": "28ae59ef96d8bb892ae8b56357ab8ca315295691"
+  },
+  "canonicalGuard": {
+    "run": 44820000990,
+    "number": 2669,
+    "conclusion": "success"
+  },
+  "existingHumanAcceptance": {
+    "run": 44820000743,
+    "number": 166,
+    "conclusion": "success",
+    "retained": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ]
+  },
+  "scopedReadOnly": {
+    "run": 44820000737,
+    "number": 842,
+    "job": 136578121584,
+    "conclusion": "success",
+    "artifact": 14671051579,
+    "artifactSha256": "9489f4a24b1ad44aa6aa80bdc26437113dbfaca9256511f8bae5419edcd64656",
+    "passed": [
+      "18 Work evidence, period and Graph tests",
+      "3 CLI HR reader self-tests",
+      "DEV service identity authenticates to a single Make toolbox tool",
+      "44 original November identities match one-to-one with the 44 existing visits"
+    ]
+  },
+  "b11": {
+    "path": "docs/checkpoints/CXORBIA_I3_B11_VISITS_REPORTS_B14_TOOLBOX_SERVICE_READBACK_20261120.json",
+    "sha": "dfbf2c55273861e91d69117569db0381c604ed67"
+  },
+  "originalExcelParity": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json",
+    "sha": "6f8c79e0269d690e0865d0322ca49b8a374bef1f"
+  },
+  "makeUiAtConfiguration": {
+    "path": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/Make_B14_solo_lectura.jpg",
+    "gitBlob": "da488a1190ce95210ad0095f5c6a3b5ddfd75404",
+    "scope": "one scenario designated read only, screenshot taken at setup"
+  },
+  "decision": {
+    "domains": 6,
+    "denominator": 21,
+    "newWholeDomains": 0,
+    "deploysDev": 0,
+    "hrWrites": 0,
+    "production": false,
+    "appInitiatedMakeRead": false,
+    "originalExcelMatchesServedRealizations": {
+      "GT": false,
+      "HN": true
+    },
+    "pending": [
+      "Two GT realizations in the original workbook absent from current DEV view",
+      "Application-initiated credentialed original read with per-country project bindings",
+      "One canonical DEV deployment and the three Work reload repros",
+      "Remaining role, isolated lifecycle and Gate20/21 acceptance"
+    ]
+  }
+}
