@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.make-on-demand-graph-read.v1",
+  "dateLocal": "2026-11-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "before": {
+    "makeScenario": 10200465,
+    "state": "inactive",
+    "scheduling": "on-demand",
+    "connectionId": 9089470,
+    "connectionStatus": "ok",
+    "graphMethods": [
+      "GET",
+      "GET"
+    ]
+  },
+  "change": {
+    "operation": "Activate exactly existing scenario without schedule",
+    "scenario": 10200465,
+    "result": "active",
+    "scheduling": "on-demand",
+    "noWebhook": true,
+    "requestAuthenticatedThroughMakeConnector": true
+  },
+  "after": {
+    "makeScenario": 10200465,
+    "state": "active",
+    "scheduling": "on-demand",
+    "connectionStatus": "ok",
+    "writes": 0,
+    "source": "external_Microsoft_Graph",
+    "checks": [
+      {
+        "country": "GT",
+        "executionId": "45f9d4f006dc42869e0d68af1dd088e2",
+        "decision": "PASS",
+        "HTTP": [
+          200,
+          200
+        ],
+        "rows": [
+          8,
+          8
+        ],
+        "hashesMatch": true,
+        "scopeEchoMatches": true
+      },
+      {
+        "country": "HN",
+        "executionId": "3a006ce58a5a41de9055dc4d44e03646",
+        "decision": "PASS",
+        "HTTP": [
+          200,
+          200
+        ],
+        "rows": [
+          6,
+          6
+        ],
+        "hashesMatch": true,
+        "scopeEchoMatches": true
+      }
+    ]
+  },
+  "scope": "MAKE_GRAPH_DELEGATED_API_BACKEND_NOT_CONNECTED_YET",
+  "secretsRetrieved": false,
+  "sourceDataInReceipt": false,
+  "production": false,
+  "devDeployed": false,
+  "certification": {
+    "domain": "projects-periods-hr-source-wizard-multiproject",
+    "matchIncrement": 0,
+    "prev6Current6": true,
+    "B14Closed": false
+  },
+  "remaining": {
+    "credential": "Make API token/OAuth required for Cloud Run, not available in checked GitHub secrets or DEV Cloud Run env",
+    "appReadback": "Backend has candidate source-only B14 reader; no runtime activation or exact provider response",
+    "upsertWrites": "Only gate-authorized QA fixture ACK idempotency and no residue",
+    "phaseI3": "HOLD",
+    "phaseI4": "NOT_AUTHORIZED"
+  },
+  "nextExactAction": "Provision scoped Make delegated API credential in GCP DEV Secret Manager and service binding with IAM, enable verified B14 read behind dev flag, prove exact scoped Excel live revision from app Admin Shopper and independent provider and same-artifact readback, compose source only via canonical candidate gate, then terminal receipts."
+}
