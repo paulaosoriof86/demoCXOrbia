@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "cxorbia.i3.work-period-b14-canonical-source-readback.v1",
+  "dateGuatemala": "2026-11-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSource": {
+    "sha": "a92800c70a50adc0be01b0920c504ab48effdb64",
+    "tree": "2968d129622f79241c45774e4511b20c8efbe992"
+  },
+  "validatedControl": {
+    "sha": "3ba5a7c72df590907afa8251bfd86ea1b558ade2",
+    "tree": "ad04eb08bcc9cf31fcbb1f23646f2e07680ce9e0",
+    "canonicalRunId": 44813569116,
+    "canonicalRunNumber": 2660,
+    "canonicalJobId": 136556030896,
+    "conclusion": "success",
+    "sourceAligned": true,
+    "ownerMismatches": [],
+    "sourceFileMismatches": [],
+    "sourceQaArtifacts": [
+      {
+        "id": 14668627821,
+        "name": "cxorbia-i3-source-qa-44813569116-1",
+        "digest": "sha256:a949847bd8583c649cf0f2cdd18219011a0675ccd90f1191a32773338346c829"
+      }
+    ],
+    "pairedDevJob": "skipped"
+  },
+  "sources": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V368.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V695_2026-11-20.json",
+    "proofPath": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SOURCE_PROOF_20261120.json",
+    "proofBlob": "1316bf14da6ed8425c52a6443bdd9f6cf83c038f"
+  },
+  "acceptanceContinuity": {
+    "runId": 44813568870,
+    "runNumber": 163,
+    "jobId": 136556025637,
+    "conclusion": "success",
+    "acceptedBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "humanPassed": 4,
+    "humanTotal": 9,
+    "strictMatches": 6,
+    "strictTotal": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "newDomainMatches": 0
+  },
+  "tests": {
+    "workPeriod": 7,
+    "workC3Import": 4,
+    "b14DelegatedReader": 7,
+    "failed": 0,
+    "runType": "focal source tests; no Chrome reproof claimed",
+    "imagePackaging": {
+      "originalMissingRuntimeImports": 2,
+      "afterMissingDirectRuntimeImports": 0,
+      "nodeLoadedBothStagedB14Modules": true,
+      "fullContainerBuild": false
+    }
+  },
+  "providerRangeReadback": {
+    "scope": "Replay of saved Make outputs through corrected source header mapping; original samples only, not an application call, full worksheet proof, or new Graph run",
+    "scenario": 10200465,
+    "active": true,
+    "trigger": "on-demand",
+    "connectionHealth": "ok",
+    "countryChecks": [
+      {
+        "executionId": "45f9d4f006dc42869e0d68af1dd088e2",
+        "country": "GT",
+        "status": "success",
+        "checkedReturnedReads": 2,
+        "matchedFields": 21,
+        "layout": "tab_scoped_compact",
+        "countryAuthority": "verified_country_binding",
+        "withinReturnedRangeHeaderRow": 4
+      },
+      {
+        "executionId": "3a006ce58a5a41de9055dc4d44e03646",
+        "country": "HN",
+        "status": "success",
+        "checkedReturnedReads": 2,
+        "matchedFields": 22,
+        "layout": "full_identity",
+        "countryAuthority": "provider_column",
+        "withinReturnedRangeHeaderRow": 1
+      }
+    ],
+    "rawRowsPersisted": false
+  },
+  "currentDev": {
+    "source": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "runId": 44635279782,
+    "runNumber": 2640,
+    "runtime": "cxorbia-live-hr-dev-00381-z2j",
+    "hosting": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1"
+  },
+  "blocker": {
+    "classification": "AUTH_FAILURE",
+    "scope": "B14 Cloud Run DEV to delegated Make scenario",
+    "cloudSecretList": "Global Secret Manager view of cxorbia-backend-dev reported no secrets",
+    "runtimeToken": "not established",
+    "makeTeamSharedWithOtherScenarios": true,
+    "privateCredentialRequestedInChat": false,
+    "required": "Identify or provision access restricted to the B14 scenario; store only in DEV Secret Manager, grant the DEV service identity access to that secret, and bind a pinned secret version and DEV-only reader settings in the one canonical deployment."
+  },
+  "remaining": [
+    "After the DEV readback proves the exact candidate source is serving, run only GT11, GT12 and HN06 in connected Chrome and append receipts to C3.",
+    "Verify B14 application-originated reads against an independent external revision. The implemented metadata proof endpoint is admin-only; the operational role flows and authorized ACK/idempotency are separate pending obligations.",
+    "Complete uncovered Admin, Operativo and Cliente acceptance, full remaining domain contracts, Gate20/21."
+  ],
+  "priorWork": {
+    "receipts": 28,
+    "focalPass": 20,
+    "failedPreviousDev": 3,
+    "hold": 5
+  },
+  "devDeploysThisIntervention": 0,
+  "productionDeploys": 0,
+  "hrWrites": 0,
+  "i4Authorized": false
+}
