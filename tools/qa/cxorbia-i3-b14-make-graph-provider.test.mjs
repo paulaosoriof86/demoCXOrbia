@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 const contract={contractId:'test-mapping',headerVariants:[{id:'full',required:['País','ID CINEMA','Shopping'],countrySource:'column'}],
  columns:{pais:{aliases:['País'],critical:true},idCinema:{aliases:['ID CINEMA'],critical:true},shopping:{aliases:['Shopping'],critical:true}}};
@@ -34,4 +35,37 @@ test('remote content drift, empty ACK and missing critical headers fail closed',
 test('source access gate refuses missing delegated token and forbidden write policy',async()=>{
  await assert.rejects(readExcelPeriodThroughMake({binding,scenarioId:'10200465',columnMap:contract}),/B14_MAKE_API_TOKEN_MISSING/);
  await assert.rejects(readExcelPeriodThroughMake({binding:{...binding,proof:{...binding.proof,writePolicy:'bidirectional_gated'}},token:'t',scenarioId:'10200465',columnMap:contract}),/B14_SOURCE_POLICY/);
+});
+
+const hrContract = JSON.parse(readFileSync(new URL(
+  '../../backend/contracts/tya-hr-column-map-r20-v1.json', import.meta.url
+), 'utf8'));
+
+// Only contract labels from the two Graph readbacks; no workbook rows or identifiers.
+const sharedColumns = [
+  'ID CINEMA', 'CIUDAD', 'DIRECCIÓN ', 'Shopping ', 'Franja Horaria', 'Formato de Cine',
+  'Tipo de Combo', 'Tipo de Compra', 'Método de Pago', 'Quincena', 'Shopper Asignado',
+  'Teléfono', 'Mail', 'Disponible a partir de', 'Fecha  programada', 'Control día s/ franja horaria',
+  'Fecha  realizada', 'Fecha Cuestionario \ncompletado', 'Precio de boleto', 'Precio de combo',
+  'Honorarios', 'Fecha  submitido'
+];
+
+test('Honduras uses the explicit country column when the same header also matches the compact layout', () => {
+  const header = ['País', ...sharedColumns];
+  const proof = validateGraphColumnMap([header], hrContract, 'HN');
+  assert.equal(proof.headerVariant, 'full_identity');
+  assert.equal(proof.countryAuthority, 'provider_column');
+});
+
+test('Guatemala retains the compact layout when the country column is absent', () => {
+  const proof = validateGraphColumnMap([[], [], [], sharedColumns], hrContract, 'GT');
+  assert.equal(proof.headerRow, 4);
+  assert.equal(proof.headerVariant, 'tab_scoped_compact');
+  assert.equal(proof.countryAuthority, 'verified_country_binding');
+});
+
+test('two distinct header rows remain ambiguous even when both match the same contract', () => {
+  const header = ['País', ...sharedColumns];
+  assert.throws(() => validateGraphColumnMap([header, [], header], hrContract, 'HN'),
+    /B14_HEADER_AMBIGUOUS_OR_MISSING/);
 });

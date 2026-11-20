@@ -20,7 +20,12 @@ export function validateGraphColumnMap(values,contract,countryCode){
       const countries=Array.isArray(variant.allowedCountries)?variant.allowedCountries:[];
       if(countries.length&&!countries.includes(countryCode))continue;
       if((variant.requiresAbsent||[]).some(v=>cells.includes(normalize(v))))continue;
-      if((variant.required||[]).every(v=>cells.includes(normalize(v))))selected.push({index:i,variant,cells});
+      const required = (variant.required || []).map(normalize).filter(Boolean);
+      if (required.length && required.every(label => cells.includes(label))) {
+        // The contract orders layouts by priority. Count matching rows, not variants of one row.
+        selected.push({index: i, variant, cells});
+        break;
+      }
     }
   }
   if(selected.length!==1)fail('MAPPING_FAILURE','HEADER_AMBIGUOUS_OR_MISSING');

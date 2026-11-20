@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.i3.scoped-source-delta.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedControlParent": "afe2c416322ff2c626d5eb66e5aed0d54cb318ff",
+  "expectedControlTree": "7e87bec6077d68a32f752f66ef93421ed2390e42",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "workPeriod": {
+    "scope": "docs/checkpoints/CXORBIA_I3_WORK_GT11_GT12_HN06_PERIOD_RELOAD_P0_SCOPE_20261120.json",
+    "sourceQA": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_RELOAD_GT_HN_7_TESTS_SOURCE_PASS_20261120.json",
+    "repeatOnChangedDev": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ]
+  },
+  "b14": {
+    "readerOwner": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "observedPreviousBlob": "e06e9b155d5f968f65da9034fd1b37998b462106",
+    "reproduced": "MAPPING_FAILURE:B14_HEADER_AMBIGUOUS_OR_MISSING",
+    "precedent": {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "blob": "763aa0f588c2e0cbd37eec0efed97a41b233a9b0",
+      "rule": "first eligible configured variant on a header row"
+    },
+    "countryHeaderObservations": {
+      "GT": {
+        "execution": "45f9d4f006dc42869e0d68af1dd088e2",
+        "status": "success",
+        "country": "GT",
+        "range": "A1:AE8",
+        "counts": [
+          8,
+          8
+        ],
+        "type": "array",
+        "columns": 31,
+        "hashesMatch": true,
+        "matches": [
+          {
+            "rowIndex": 3,
+            "id": "tab_scoped_compact"
+          }
+        ]
+      },
+      "HN": {
+        "execution": "3a006ce58a5a41de9055dc4d44e03646",
+        "status": "success",
+        "country": "HN",
+        "range": "A4:AD9",
+        "counts": [
+          6,
+          6
+        ],
+        "type": "array",
+        "columns": 30,
+        "hashesMatch": true,
+        "matches": [
+          {
+            "rowIndex": 0,
+            "id": "full_identity"
+          },
+          {
+            "rowIndex": 0,
+            "id": "tab_scoped_compact"
+          }
+        ]
+      }
+    },
+    "regressionBefore": {
+      "pass": 6,
+      "fail": 1,
+      "scope": "7 B14 source tests"
+    },
+    "fix": "Select the first eligible contract variant per row. Multiple physical header rows remain ambiguous. No workbook data in the regression fixtures.",
+    "enabledInDev": false,
+    "privateCredential": {
+      "secretManagerGlobalList": "EMPTY_ON_2026_11_20",
+      "cloudRunDelegation": "UNPROVEN",
+      "directMakeConnection": "ACTIVE_ON_DEMAND_CONNECTION_OK",
+      "accountScope": "Existing Make team shared with other active scenarios; restricted service identity required before enabling runtime access"
+    }
+  },
+  "guardRun": 44800675866,
+  "allowDomainPromotion": false,
+  "match": 6,
+  "total": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false
+}
