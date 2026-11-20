@@ -1,0 +1,41 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "expectedControlParent": "8b3283a3644118772470214a092dd5d963cab1ec",
+  "expectedControlTree": "62ef15144a5bb69d59c4b54efe898f7564764769",
+  "priorScopeReceiptPath": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SCOPE_20261120.json",
+  "priorScopeReceiptBlob": "cc0fd13b61ac90b26ff1fceb9fd2644639729a4b",
+  "priorCanonicalProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SOURCE_PROOF_20261120.json",
+    "gitBlob": "1316bf14da6ed8425c52a6443bdd9f6cf83c038f"
+  },
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "classification": "MAPPING_FAILURE",
+  "exactOwner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+  "ownerBeforeBlob": "763aa0f588c2e0cbd37eec0efed97a41b233a9b0",
+  "witness": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json",
+    "sha": "6f8c79e0269d690e0865d0322ca49b8a374bef1f"
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V370.json",
+    "gitBlob": "b2ba2ac84598f707dd40fd8ca423ac673796f575"
+  },
+  "operationalReadsEnabled": false,
+  "hrWrites": 0,
+  "devDeploys": 0,
+  "production": false,
+  "incrementalScope": "Exclude verified reconciliation rows; keep original source, HR rows, other visit identities, and services unchanged."
+}

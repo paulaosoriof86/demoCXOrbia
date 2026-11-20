@@ -95,6 +95,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
+      - name: Run the three canonical HR reader self-tests and focal Work/Graph regressions
+        run: |
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --mapping-self-test
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --assignment-self-test
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --provider-auth-self-test
+          node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs tools/qa/cxorbia-i3-work-chrome-c3-evidence.test.mjs
       - name: Install pinned test clients
         run: npm install --no-save --package-lock=false --ignore-scripts firebase-admin@13.4.0 @modelcontextprotocol/sdk@1.26.0
       - uses: google-github-actions/auth@v2
