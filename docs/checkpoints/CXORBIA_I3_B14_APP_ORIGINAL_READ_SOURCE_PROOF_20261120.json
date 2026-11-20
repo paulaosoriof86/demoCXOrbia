@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scoped-source-proof.v1",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_SOURCE_QA_ONLY",
+  "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_B14_APP_ORIGINAL_READ_CUMULATIVE_SCOPE_20261120.json",
+  "scopeReceiptBlob": "9da769d2322c86dc47cc23d9ed2abafc1209fdc5",
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "productBlobs": {
+    "app/adapters/tya-live-source-inplace-apply.js": "79100d93ed0214f983cd029a831f592bac671403",
+    "app/core/router.js": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "8fe0bc655aa2865a5a282d759acfaf35870af836",
+    "backend/runtime/hr-live-service/server.mjs": "f749923ac399648223a2e2fd9cf12149224ba4ab",
+    "backend/runtime/hr-live-service/Dockerfile": "8768e4af9f9e21ad7eeb37d76d51cf0a19567c23",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "e0e70c46053b3f3d3b99dc339296158fd49f1188",
+    "backend/runtime/hr-live-service/package.json": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs": "c3ea8fc1daaeafb13d7bc82cc6d3a29af3725472"
+  },
+  "testBlobs": {
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs": "128c309e398f32d73bb2ff105403e29bb441eae0",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs": "e95f4b502b60a68ff371cfed77fef1d3d33bb8ba"
+  },
+  "findings": [
+    {
+      "id": "WORK_GT11_GT12_HN06",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "sourceProof": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_RELOAD_GT_HN_7_TESTS_SOURCE_PASS_20261120.json"
+    },
+    {
+      "id": "B14",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "command": "node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "countryChecks": "GT compact with country supplied by binding; HN explicit country column in the first matching contract layout; distinct header rows rejected"
+    },
+    {
+      "id": "B14_RUNTIME_IMAGE_IMPORTS",
+      "priority": "P0_PROVEN",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": "backend/runtime/hr-live-service/Dockerfile",
+      "proof": {
+        "buildConfig": "backend/runtime/hr-live-service/cloudbuild.yaml",
+        "buildConfigBlob": "e9ec8e7c9b4fabe4d1f26d68bea284d56f2bde57",
+        "entrypoint": "backend/runtime/hr-live-service/server.mjs",
+        "entrypointBlob": "ba8627cbe50a5e4828ca28d841bfe4880b54631c",
+        "buildContext": "Git archive, then Dockerfile explicit COPY instructions",
+        "beforeMissingWhenStaged": [
+          "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+          "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+        ],
+        "beforeNodeModuleLoad": "ERR_MODULE_NOT_FOUND",
+        "afterMissingWhenStaged": [],
+        "afterNodeModuleLoad": "PASS",
+        "buildTimeGuard": "Node imports both actual providers at image build",
+        "fullContainerBuildExecuted": false
+      }
+    },
+    {
+      "id": "B14_ORIGINAL_FINANCIAL_FOOTERS",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "observedIn": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json"
+    },
+    {
+      "id": "B14_APP_ORIGINAL_READ",
+      "classification": "MAPPING_FAILURE",
+      "priority": "P0_PROVEN",
+      "evidence": "docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_SERVICE_QA_AND_APPLICATION_SCOPE_20261120.json"
+    }
+  ],
+  "sourceTestsPass": 20,
+  "sourceTestsFail": 0,
+  "commands": [
+    "node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs tools/qa/cxorbia-i3-work-chrome-c3-evidence.test.mjs"
+  ],
+  "testExecution": "Node 24, 20 distinct focal tests on the cumulative candidate, including original transport and registry isolation.",
+  "previousGuardRunId": 44819445252,
+  "technicalDomainMatches": 6,
+  "totalDomains": 21,
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "terminalCertified": false,
+  "packagingProof": {
+    "missingBefore": 2,
+    "missingAfter": 0,
+    "nodeImportOfStagedModules": "PASS",
+    "containerImageBuilt": false
+  },
+  "workEvidenceTests": {
+    "pass": 4,
+    "fail": 0,
+    "source": "original Work artifacts and immutable V366",
+    "terminalDomainIncrement": 0
+  },
+  "supersedesSourceReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_FOOTER_SOURCE_PROOF_20261120.json",
+    "gitBlob": "3522221b4da37fd38d9ffa0c5c7bc5bae0750fba",
+    "sourceSha": "85251fb11582d99f4d65fb3d96bf6380dfbb3665",
+    "sourceTree": "6b7f284e7880a2b2d7694146d5c52259eb64e55e"
+  },
+  "sourceRequirementsBeforeDev": "Exact canonical-candidate authority and the existing paired DEV job. Verify source, Hosting, runtime and the new app call against independently hashed originals.",
+  "supportingCoreCarryForward": {
+    "domain": "phase-a-supporting-core",
+    "priorClass": "MATCH",
+    "scope": "RUN2640 baseline credit only; this source has no terminal certificate",
+    "dockerfileChange": "all prior Dockerfile instructions preserved in order, with two new COPY lines and one import check",
+    "requiredAfterMaterialization": "Load both imports in the built runtime and verify image digest and runtime health before applying acceptance to changed package owner",
+    "otherDomainOwnersDifferent": 0
+  },
+  "comparisons": [
+    {
+      "country": "GT",
+      "rawRows": 140,
+      "previousRows": 38,
+      "visits": 34,
+      "excluded": [
+        48,
+        49,
+        50,
+        52
+      ],
+      "realized": 19,
+      "otherVisitDifferences": 0
+    },
+    {
+      "country": "HN",
+      "rawRows": 140,
+      "previousRows": 10,
+      "visits": 10,
+      "excluded": [],
+      "realized": 5,
+      "otherVisitDifferences": 0
+    }
+  ],
+  "realizationStateParity": "HOLD_GT_29_37",
+  "sourceReplayMethod": "Isolated original parser body and revised parser body, with only their CLI main invocation replaced by a parseTab export for this replay. Identical source-safe fixtures; all retained visit objects compared by deep equality.",
+  "originalSourceServiceQa": {
+    "run": 44823073838,
+    "job": 136588641505
+  },
+  "privateRegistryReadback": {
+    "run": 44823863943,
+    "job": 136591340663,
+    "registeredCountries": [
+      "GT",
+      "HN"
+    ],
+    "devConfigurationDocumentWrites": 3,
+    "operationalRowsChanged": 0
+  }
+}

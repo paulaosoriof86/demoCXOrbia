@@ -1,0 +1,60 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "expectedControlParent": "9aae9cb06c881d05032326d72444de929b89e2ce",
+  "expectedControlTree": "62ef15144a5bb69d59c4b54efe898f7564764769",
+  "priorScopeReceiptPath": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SCOPE_20261120.json",
+  "priorScopeReceiptBlob": "cc0fd13b61ac90b26ff1fceb9fd2644639729a4b",
+  "priorCanonicalProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SOURCE_PROOF_20261120.json",
+    "gitBlob": "1316bf14da6ed8425c52a6443bdd9f6cf83c038f"
+  },
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "classification": "MAPPING_FAILURE",
+  "exactOwner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+  "ownerBeforeBlob": "763aa0f588c2e0cbd37eec0efed97a41b233a9b0",
+  "witness": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_NOVEMBER_ORIGINAL_VISIT_PARITY_20261120.json",
+    "sha": "6f8c79e0269d690e0865d0322ca49b8a374bef1f"
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V371.json",
+    "gitBlob": "ff013fb8ab0c7749f807e4aff8c0f4c03e4f25d6"
+  },
+  "operationalReadsEnabled": false,
+  "hrWrites": 0,
+  "devDeploys": 0,
+  "production": false,
+  "incrementalScope": "Existing protected b14-provider-meta read only, original country references and toolbox.",
+  "parentScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_FOOTER_CUMULATIVE_SCOPE_20261120.json",
+    "gitBlob": "9013df2372eeec5e155ab627bd998175f4161ecb"
+  },
+  "preEditAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_SERVICE_QA_AND_APPLICATION_SCOPE_20261120.json",
+    "sha": "bb34d0320847233af3fe4afa47da93056fb13349",
+    "type": "blob",
+    "mode": "100644"
+  },
+  "exactOwners": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+  ],
+  "previousCanonicalSource": "85251fb11582d99f4d65fb3d96bf6380dfbb3665"
+}

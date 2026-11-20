@@ -4643,7 +4643,7 @@ jobs:
       if [[ "$PAIR_ENV_ONLY" == true ]]; then
         gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE" --quiet
       else
-      gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE" --quiet
+      bash tools/release/cxorbia-i3-update-dev-runtime.sh "$IMAGE_URI"
       fi
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime.json"
       DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$FOCAL_OUT/runtime.json")"
