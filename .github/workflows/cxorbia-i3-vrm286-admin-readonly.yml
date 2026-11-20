@@ -174,3 +174,16 @@ jobs:
       - name: Detect existing Make API credential references without disclosing values
         run: |
           printf 'B14_GITHUB_CREDENTIAL_NAMES_ONLY={"CXORBIA_B14_MAKE_API_TOKEN":"%s","CXORBIA_MAKE_API_TOKEN":"%s","MAKE_API_TOKEN":"%s","MAKE_API_KEY":"%s","secretContentsRead":false,"production":false}\n' "$G1" "$G2" "$G3" "$G4"
+  i3-work-period-reload-p0-test:
+    if: ${{ contains(github.event.head_commit.message, '[i3-work-period-source-test]') }}
+    runs-on: ubuntu-24.04
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - name: Work GT11 GT12 HN06 scoped period and route reload source tests
+        run: |
+          node --check app/core/router.js
+          node --check app/adapters/tya-live-source-inplace-apply.js
+          node --test tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs

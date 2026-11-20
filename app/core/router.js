@@ -4,6 +4,59 @@
 window.CX = window.CX || {};
 
 CX.router = {
+  /* WORK GT11 GT12 HN06. Browser preference is NOT tenant/HR authority.
+     It is scoped to the live Firebase principal, tenant, root project, role and
+     claimed country; every use is checked against the fresh provider period set.
+     sessionStorage lasts only for this tab; no localStorage data truth. */
+  _authorizedUiHintScope(tenantId,projectId){
+    const c=CX.backendAuth?.context?.()||{};
+    let uid='';
+    try{uid=String(window.firebase?.auth?.()?.currentUser?.uid||'').trim();}catch(_){}
+    const tenant=String(tenantId||'').trim(),project=String(projectId||'').trim();
+    const role=String(c.role||'').trim().toLowerCase(),country=String(c.country||'').trim().toUpperCase();
+    const projects=Array.isArray(c.projectIds)?c.projectIds.map(x=>String(x||'').trim()):[];
+    if(c.authenticated!==true||c.provider!=='firebase'||!uid||!tenant||!project||
+       String(c.tenantId||'')!==tenant||!role||
+       (role!=='super'&&!projects.includes(project)))return null;
+    return {key:['cxorbia.i3.ui-context.v1',tenant,project,uid,role,country||'-'].map(encodeURIComponent).join(':'),
+      tenantId:tenant,projectId:project,role,country,uid};
+  },
+  readScopedUiHint(tenantId,projectId){
+    const scope=this._authorizedUiHintScope(tenantId,projectId);
+    if(!scope)return null;
+    try{
+      const v=JSON.parse(sessionStorage.getItem(scope.key)||'null');
+      if(v?.version!==1||v.tenantId!==scope.tenantId||v.projectId!==scope.projectId||
+         v.role!==scope.role||v.country!==scope.country||
+         !Number.isSafeInteger(v.savedAt)||v.savedAt>Date.now()||
+         Date.now()-v.savedAt>7*86400000||
+         typeof v.periodId!=='string'||v.periodId.length>160||v.periodId.length<1)return null;
+      return {periodId:v.periodId,view:typeof v.view==='string'?v.view:''};
+    }catch(_){return null;}
+  },
+  rememberScopedUiHint(next={}){
+    const d=CX.data||{},tenant=String(d.previewMeta?.tenantId||'').trim(),
+      project=String(d.currentProjectId||'').trim(),periodId=String(d.currentPeriodId||'').trim();
+    if(d.previewMeta?.hrAuthority!==true||d.previewMeta?.sourceSafe!==true||
+       String(d.previewMeta.projectId||'')!==project)return false;
+    const scope=this._authorizedUiHintScope(tenant,project);
+    if(!scope||!periodId)return false;
+    const period=Array.isArray(d.projects)?d.projects.find(x=>String(x?.id||'')===periodId):null;
+    if(!period||String(d.programKey?.(period)||period.projectId||'')!==project)return false;
+    if(scope.country&&Array.isArray(period.countries)&&!period.countries.includes(scope.country))return false;
+    const visible=this.resolveVisibleProjects(CX.session?.role);
+    if(!Array.isArray(visible)||!visible.some(x=>String(x?.id||'')===periodId))return false;
+    const previous=this.readScopedUiHint(tenant,project)||{};
+    const candidateView=typeof next.view==='string'?next.view:String(previous.view||'');
+    const role=CX.session?.role;
+    const allowedView=candidateView&&CX.MODULES?.[candidateView]&&
+      CX.MODULES[candidateView].roles?.includes(role)&&CX.moduleEnabled?.(candidateView)&&
+      CX.roleCanAccess?.(CX.session?.testRole||role,candidateView)&&
+      CX.moduleVisibleForProfile?.(candidateView,role);
+    const hint={version:1,tenantId:tenant,projectId:project,role:scope.role,country:scope.country,
+      periodId,view:allowedView?candidateView:'',savedAt:Date.now()};
+    try{sessionStorage.setItem(scope.key,JSON.stringify(hint));return true;}catch(_){return false;}
+  },
   /* P0-1 (V171): resolver ÚNICO de navegación efectiva. CX.NAV solo define admin/shopper/cliente;
      cualquier otro rol (super, ops, coordinador, aliado, desconocido) navega sobre el layout admin
      SIN ampliar permisos (roleCanAccess sigue gobernando cada módulo). Usado por mount/buildRail/nav. */
@@ -88,9 +141,12 @@ CX.router = {
     /* P0-4: la vista guardada solo se reutiliza si TODAS las validaciones de nav() la aceptarían
        (roles, moduleEnabled, roleCanAccess, moduleVisibleForProfile) — si alguna falla, cae al
        primer módulo permitido en vez de dejar una pantalla vacía. */
-    const savedOk = CX.session.view && CX.MODULES[CX.session.view] && CX.MODULES[CX.session.view].roles.includes(role)
-      && CX.moduleEnabled(CX.session.view) && CX.roleCanAccess(gRole,CX.session.view) && CX.moduleVisibleForProfile(CX.session.view,role);
-    const start = savedOk ? CX.session.view : first;
+    const authScope=CX.backendAuth?.context?.()||{};
+    const browserHint=this.readScopedUiHint(authScope.tenantId,CX.data?.currentProjectId);
+    const selectedView=CX.session.view||(browserHint?.periodId===CX.data?.currentPeriodId?browserHint.view:null);
+    const savedOk = selectedView && CX.MODULES[selectedView] && CX.MODULES[selectedView].roles.includes(role)
+      && CX.moduleEnabled(selectedView) && CX.roleCanAccess(gRole,selectedView) && CX.moduleVisibleForProfile(selectedView,role);
+    const start = savedOk ? selectedView : first;
     this.nav(start,{history:'replace'});
   },
 
@@ -329,13 +385,15 @@ CX.router = {
         const periods=(typeof d.periodsForProgram==='function')?d.periodsForProgram(key):visibleProjects.filter(pr=>(d.programKey?d.programKey(pr):pr.program)===key);
         if(periods && periods.length) d.setProject(periods[0].id);
       }
+      this.rememberScopedUiHint({view:CX.session?.view||''});
       CX.ui.toast('Proyecto: '+(d.period()?projectBaseLabelOf(d.period()):sel.value),'ok'); this.buildRail(CX.session.role);
     });
     const psel=document.getElementById('periodSel');
     if(psel)psel.addEventListener('change',()=>{
       /* P0-4: setCurrentPeriod(periodId) \u2014 fallback a setProject(periodId) si no existe. */
       const ok = (typeof d.setCurrentPeriod==='function') ? d.setCurrentPeriod(psel.value) : false;
-      if(!ok && typeof d.setProject==='function') d.setProject(psel.value);
+      const restored = !ok && typeof d.setProject==='function' ? d.setProject(psel.value) : ok;
+      if(restored===true)this.rememberScopedUiHint({view:CX.session?.view||''});
       /* Ajuste B (V161): periodLabelOf() es la única fuente de etiqueta de periodo, también en
          este toast — nunca lee periodo/ronda/name directamente aquí. */
       CX.ui.toast('Periodo: '+periodLabelOf(d.period()),'ok');
@@ -353,6 +411,7 @@ CX.router = {
     /* Recovery B1: a route transition must not retain modal overlays from the previous screen. */
     try{CX.ui?.closeAllModals?.();}catch(_){}
     CX.session.view=id; CX.session.save();
+    if(opts.history!=='replace')this.rememberScopedUiHint({view:id});
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');
     // crumb

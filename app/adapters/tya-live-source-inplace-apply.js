@@ -134,10 +134,22 @@ window.CX = window.CX || {};
   function buildSnapshotCandidate(snapshot,meta={},options={}){
     const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&safeArray(snapshot.periods).length&&safeArray(snapshot.visits).length&&CX.data);
     if(!valid)throw new Error('Snapshot HR live inválido o vacío.');
-    const previousPeriodKey=options.previousPeriodKey||(()=>{try{return CX.data.period&&CX.data.period()?.periodKey||null;}catch(e){return null;}})();
     const identity=sourceIdentity(snapshot);
     const periods=mapPeriods(snapshot,identity),visits=mapVisits(snapshot,identity),shoppers=mapShoppers(snapshot),posts=mapPosts(visits,identity);
-    const latest=latestOf(periods),preferred=periods.find(p=>p.periodKey===previousPeriodKey)||periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
+    /* WORK GT11 GT12 HN06: initial demo/legacy storage is NOT a valid HR period source.
+       Preserve a current HR-approved period if already active; otherwise honor only
+       a Firebase principal-scoped tab preference validated by THIS provider snapshot.
+       Missing/deleted/foreign period always fails closed to provider latest. */
+    const currentHr= CX.data?.previewMeta?.hrAuthority===true&&
+      String(CX.data.previewMeta.tenantId||'')===identity.tenantId&&
+      String(CX.data.previewMeta.projectId||'')===identity.projectId;
+    const previousPeriodKey=options.previousPeriodKey||(currentHr?(()=>{try{return CX.data.period?.()?.periodKey||null;}catch(_){return null;}})():null);
+    const hint=CX.router?.readScopedUiHint?.(identity.tenantId,identity.projectId)||null;
+    const authCountry=String(CX.backendAuth?.context?.()?.country||'').trim().toUpperCase();
+    const validHint=hint?periods.find(p=>p.id===hint.periodId&&p.projectId===identity.projectId&&
+      (!authCountry||p.countries?.includes(authCountry))):null;
+    const latest=latestOf(periods),preferred=periods.find(p=>p.periodKey===previousPeriodKey)||validHint||
+      periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
     const sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
     const previewMeta=Object.assign({},CX.data.previewMeta||{},{
       tenantId:identity.tenantId,projectId:identity.projectId,projectName:identity.projectName,sourceTitle:snapshot.source&&snapshot.source.title,
