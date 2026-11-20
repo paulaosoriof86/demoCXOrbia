@@ -1,0 +1,3543 @@
+{
+  "schemaVersion": "cxorbia.i3.82-task-execution-coverage-freeze.v1",
+  "localDate": "2026-11-20",
+  "iteration": "I3",
+  "officialStatus": "HOLD",
+  "type": "APPEND_ONLY_SCOPE_CONTROL_NOT_A_NEW_MASTER_PLAN",
+  "preservedOriginal": {
+    "title": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+    "sha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+    "bytes": 203721,
+    "fileId": "file_00000000057481f5be70982d2380a38f",
+    "originalPlanVersion": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "historicalStatusesNotCurrent": true
+  },
+  "currentAuthority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHeadAtFreeze": "cf3fd85ca85998460a8490a15110cdb57a12d270",
+    "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "productTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+    "matrixBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+    "matched": 6,
+    "total": 21,
+    "phaseAComplete": false,
+    "i4Authorized": false
+  },
+  "summary": {
+    "tasks": 82,
+    "I3": 63,
+    "I4": 7,
+    "POST": 6,
+    "FASE_B": 6,
+    "routeRolePairs": 56,
+    "criticalFunctions": 42,
+    "gates": 21,
+    "forensicFindings": 16,
+    "identityCandidates": 19,
+    "historicalVrm": 274,
+    "visualObservations": 63,
+    "visualScreenshots": 20,
+    "historicalRefs": 1846
+  },
+  "taskRegister": [
+    {
+      "id": "G01",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Autoridad, alcance y ledger",
+      "owner": "Orquestación y QA read-only",
+      "owners": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [],
+      "action": "Relacionar F01–F16, 56 rutas y 42 funciones con los IDs históricos existentes, descriptor, 21 dominios y última aprobación por módulo. Conservar todos los hallazgos anteriores.",
+      "acceptance": "Cada obligación tiene dueño, etapa y prueba; no hay hallazgos omitidos ni funciones reclasificadas a Fase B sin autoridad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "G02",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Ejecutor, IAM y fuentes",
+      "owner": "Orquestación; Paula sólo IAM irresoluble",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | app/core/automations.js:62–82; app/modules/cert.js:249–266 | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": [
+        "G01"
+      ],
+      "action": "Comprobar acceso efectivo del escritor único vigente en CR-20260910-02, runner, navegador y proveedor. No imponer Codex como prerrequisito. Distinguir preparación, ejecución aceptada y resultado verificado.",
+      "acceptance": "Ejecutor y accesos comprobados; impedimentos llevan error exacto y responsable. No confundir paquete preparado con ejecución iniciada.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "G03",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Alcance publicado y baseline",
+      "owner": "Orquestación y QA read-only",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "G01"
+      ],
+      "action": "Localizar evidencia F9/último diseño aprobado y manifest por función. El tag consultado devolvió 404: buscar su evidencia existente, no dar por perdida la release. Mantener todo Phase A obligatorio.",
+      "acceptance": "Lista completa de capacidades Phase A y B documentada; cada función sin adjudicación permanece bloqueante. No se oculta una capacidad obligatoria para publicar.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "G04",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Pruebas de capacidades",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "G01"
+      ],
+      "action": "Convertir contraejemplos P01–P09 y acciones no ejercidas en aserciones con caso elegible, negativo, ACK, readback y recarga. Separar prueba de fuente, funcional y visual.",
+      "acceptance": "El harness falla cuando falta una acción requerida. NO_EJERCITADO y NO_APLICA justificado no se convierten en PASS de otra capacidad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "G05",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Seguridad de la observación",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/hr-live-service/server.mjs:325–440",
+      "depends": [
+        "G02"
+      ],
+      "action": "Separar observación HR de reconciliación escritora en server.mjs. Conservar el auto-upsert en el escritor explícito. Mientras no exista observación segura, usar artefactos y lecturas originales.",
+      "acceptance": "Una consulta de auditoría deja Auth, Firestore, HR y Storage sin cambios; cada reconciliación autorizada emite recibo por sistema y entidad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "G06",
+      "stage": "I3",
+      "package": "CONTROL",
+      "priority": "P0 previo",
+      "module": "Cola de ejecución única",
+      "owner": "Orquestación",
+      "owners": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "G01"
+      ],
+      "action": "Preparar un paquete autosuficiente A–E y agenda de archivos compartidos. Análisis, datos y pruebas pueden avanzar en paralelo; los commits de producto tienen un único escritor y source.",
+      "acceptance": "No hay writers concurrentes sobre el mismo archivo, rama paralela, workflow transportador ni deploy por cada comentario. Usar la política de escritor ya aprobada, sin condicionar el avance a una herramienta opcional.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A01",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Normalización de shoppers",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk",
+      "depends": [
+        "G02",
+        "G04"
+      ],
+      "action": "Normalizar la clave de comparación de nombres, tildes, caja, espacios y puntuación sin degradar el nombre visible. Evitar que editar el nombre genere una persona o credencial nueva.",
+      "acceptance": "Variantes autorizadas convergen; nombre visible conserva grafía válida; IDs históricos no se recalculan ni se borran.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A02",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Deduplicación completa",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | app/adapters/tya-protected-auth-hr-authority-bridge-v2.js:64–83",
+      "depends": [
+        "A01",
+        "G05"
+      ],
+      "action": "Reconciliar los 19 grupos del libro con los IDs de HR, Firestore, Auth y crosswalk. Corroborar contactos y acceso; producir un plan de equivalencias y una lista mínima de casos ambiguos.",
+      "acceptance": "El universo vigente y cada grupo tienen disposición explícita. No se presupone que 210 nombres sean 210 personas. Paula recibe sólo dudas no resolubles automáticamente.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A03",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Alias, UID y conservación de historia",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | app/adapters/tya-protected-auth-hr-authority-bridge-v2.js:64–83",
+      "depends": [
+        "A02"
+      ],
+      "action": "Aplicar equivalencias corroboradas de forma idempotente con snapshot previo de referencias, keeper de acceso y alias durables. Unir histórico, visitas, cuentas, pagos y certificaciones sin recrear Auth.",
+      "acceptance": "Credencial y UID conservados; diez referencias Stiven del corte auditado intactas; reintentar no crea cuentas. Conflictos reales no se fusionan y no bloquean a terceros.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A04",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Resolución de sesión",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js:64–83",
+      "depends": [
+        "A01"
+      ],
+      "action": "Resolver cadenas de alias y canónico antes de contar personas distintas en sessionProfile. Mantener principal, país y permisos correctos; rechazar alias cíclico o ajeno.",
+      "acceptance": "Alias y canónico válidos cuentan como una persona; homónimos sin equivalencia siguen separados; no se desbloquea cargando otro perfil.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A05",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Carga y refresco atómicos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98",
+      "depends": [
+        "G04",
+        "G05"
+      ],
+      "action": "Preparar snapshot fuera de CX.data, validar generación de sesión, UID, rol, proyecto y revisión y aplicar de una vez. La promesa refresh espera la composición y su readback.",
+      "acceptance": "No hay estado parcial ni resultado de una sesión anterior aplicado a la nueva. Login, cambio de rol y actualización no requieren recargar manualmente.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A06",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Watcher y datos sin visitas",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98",
+      "depends": [
+        "A05"
+      ],
+      "action": "Conservar el watcher existente y cerrar la aplicación de nuevas revisiones. Distinguir cero visitas de fallo de carga o falta de país; no ampliar esperas como sustituto del arreglo.",
+      "acceptance": "Revisión HR nueva actualiza todas las superficies; shopper válido sin visitas entra normalmente; sesión fría y caliente tienen tiempos medidos.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A07",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 funcional",
+      "module": "Completitud y edición de perfil",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/adapters/tya-cumulative-read-model-v2.js:133",
+      "depends": [
+        "A04"
+      ],
+      "action": "Separar datos completos, acceso habilitado y certificación. Retirar dependencia de pass/password del read model y validar ediciones permitidas de nombre, contacto y datos bancarios.",
+      "acceptance": "Perfil completo no necesita una contraseña expuesta; Admin autorizado ve datos permitidos; otro shopper no los recibe.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A08",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 seguridad",
+      "module": "Permisos efectivos y minimización",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": [
+        "G02",
+        "G04"
+      ],
+      "action": "Cruzar UI, claims, membership, API, Firestore y Storage para Superadmin, Admin, Ops, Coordinación, Shopper y Cliente. Probar respuestas y descargas, no sólo menú oculto.",
+      "acceptance": "Acceso permitido funciona; acceso ajeno se deniega sin datos en el response; usuario sin sesión tampoco accede. Un hueco de cobertura no se rotula como fuga ocurrida.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "A09",
+      "stage": "I3",
+      "package": "A",
+      "priority": "P0 crítico",
+      "module": "Ingreso real y población",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | app/adapters/tya-protected-auth-hr-authority-bridge-v2.js:64–83 | app/adapters/tya-cumulative-read-model-v2.js:133 | bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": [
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "action": "Ejecutar login ordinario de Stiven, Paula y Priscila y casos representativos de cada clase de identidad, GT/HN, cero visitas y roles. Validar integridad poblacional sin obtener contraseñas masivas.",
+      "acceptance": "Primer intento, logout/login, restauración y recarga correctos; universo actual/histórico íntegro y sin cruces; custom token no sustituye prueba de contraseña.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B01",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Origen HR y caso Cayalá",
+      "owner": "QA / proveedor autorizado",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "depends": [
+        "G02",
+        "G05"
+      ],
+      "action": "Cotejar source configurado, hoja, periodo y clave de fila de Cayalá con evidencia de la modificación reportada. No inventar titular, autor ni hora; no sustituir por una hoja homónima.",
+      "acceptance": "Origen exacto validado y controversia resuelta por evento/evidencia o decisión específica documentada; no se adjudica a caché sin prueba.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B02",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Último cambio válido",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "depends": [
+        "G02",
+        "G04"
+      ],
+      "action": "Implementar evento por visita/campo con origen, autor conocido, before/after, revisión base, orden causal e idempotencia. No tratar readAt, modifiedTime global ni eco como hora real de edición.",
+      "acceptance": "Secuencias comparables eligen el último evento válido; concurrencia o temporalidad desconocida pasan a revisión sin sobrescritura silenciosa.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B03",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Proveedor HR bidireccional",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | backend/runtime/hr-live-service/server.mjs:325–440",
+      "depends": [
+        "B02",
+        "G05"
+      ],
+      "action": "Conectar el contrato al proveedor existente con permisos mínimos, cola/recibo durable y ACK remoto. Especificar qué campos editables viajan; separar lectura de escritura y no añadir un carril paralelo.",
+      "acceptance": "Una escritura autorizada cambia la fila correcta y su lectura posterior confirma valor/revisión; credenciales fuera del navegador; reintentos no duplican.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B04",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Bitácora y resolución de conflictos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "depends": [
+        "B02"
+      ],
+      "action": "Persistir bitácora append-only por visita y exponerla al rol autorizado. Registrar efecto por campo, origen, actor disponible, causalidad, ACK y conflicto; conservar el estado previo.",
+      "acceptance": "La última asignación puede reconstruirse sin suposiciones. La edición reflejada no vuelve a ganar como cambio nuevo.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B05",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Asignar y reasignar visita",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "depends": [
+        "A04",
+        "A05",
+        "B03",
+        "B04"
+      ],
+      "action": "Usar el mismo comando desde Dashboard, Visitas, Postulaciones y Reservas. Mover la visita efectiva, no sólo la reserva. Mantener trazabilidad del titular previo y restricciones de datos.",
+      "acceptance": "La visita sale de disponibles y de activas del titular anterior, aparece una vez al nuevo, y Admin/HR coinciden. Los historiales autorizados no se pierden.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B06",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Postulaciones",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "A05",
+        "B03"
+      ],
+      "action": "Conservar CRUD demostrado; probar crear, editar, standby, rechazar, eliminar y aprobar contra visita elegible. Separar solicitud, decisión y sincronización.",
+      "acceptance": "Gestión ve el registro persistido; eliminación no reaparece; aprobar produce asignación única con ACK externo cuando aplica.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B07",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Reservas y Asignación",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "B05"
+      ],
+      "action": "Conservar reserva durable y probar la transición reserva→visita. Validar pendiente, aprobada, cambio de titular y eliminación según contrato; no repetir sólo visitWrite=false.",
+      "acceptance": "Una reserva aceptada produce la asignación real de la visita exacta; no hay doble ocupación ni reserva huérfana.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B08",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Agenda, reprogramación y cancelación",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "B03",
+        "B04",
+        "B05"
+      ],
+      "action": "Cubrir solicitudes Shopper, motivos humanos, decisión Admin, fechas elegibles, franjas/cortes y liberación de HR. Solicitud rechazada conserva la agenda; aprobada cambia con ACK.",
+      "acceptance": "Cada transición se ve en ambos roles y HR, con notificación y bitácora; liberar quita asignación real y habilita disponibilidad correcta.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B09",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Realizada, check-in y evidencia",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "A05",
+        "A08",
+        "B05"
+      ],
+      "action": "Ejecutar casos elegibles de marcar realizada y check-in con cámara o archivo, GPS, fecha, visita, Storage y provider ACK; probar permiso denegado y fallo de carga.",
+      "acceptance": "Evidencia descargable vinculada a una visita y titular; fallo no crea éxito ni archivo huérfano; móvil y escritorio comprobados.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B10",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Cuestionarios y revisión",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "B09"
+      ],
+      "action": "Usar programa publicado interno o fuente externa configurada, versión, pesos y evidencias. Completar cuestionario/revisión/submitir según cada proyecto; recuperar owner existente.",
+      "acceptance": "Versión visible a Shopper y Cliente coincide con Admin; cálculos y estado correctos; no se cuenta como submitida por un texto de interfaz.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B11",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Disponibilidad, periodos y KPIs",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+      "depends": [
+        "A09",
+        "B05",
+        "B08"
+      ],
+      "action": "Comparar elegibles/no asignadas y todas las fases contra la misma revisión externa, GT/HN y periodo vigente. Probar cambio de periodo y de proyecto, con drill-down de cada KPI.",
+      "acceptance": "Mi Día, Dashboard, Visitas, HR y reportes contienen las mismas claves y totales; no usar otro derivado del mismo snapshot local como oráculo independiente.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PARTIAL_B11_SCOPED_LIVE_PASSES_OTHER_CROSS_SURFACES_PENDING",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B12",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Histórico y fuentes cargadas",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "A03",
+        "A05"
+      ],
+      "action": "Resolver selector y alimentación del histórico vacío conservando archivo aprobado. Resolver cuál owner registra rutas al final y evitar duplicación por montaje; no borrar implementaciones a ciegas.",
+      "acceptance": "Histórico Admin/Shopper muestra los periodos y visitas propios; owner servido documentado; cambios no pierden datos ni otro módulo aprobado.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B13",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 funcional",
+      "module": "Novedades, campanita y soporte",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "A05",
+        "A08",
+        "B08"
+      ],
+      "action": "Probar emisión, destinatario, nueva lectura individual y todas, recarga, navegación exacta y ticket/respuesta/cierre. Conservar ACK ya implementado y copia R22.",
+      "acceptance": "Campanita, Tablón y Mi Día muestran el mismo mensaje humano; readback persiste; ninguna notificación ajena; canal externo sólo enviado con recibo real.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "B14",
+      "stage": "I3",
+      "package": "B",
+      "priority": "P0 crítico",
+      "module": "Repetición, fallos y orden de eventos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | backend/runtime/hr-live-service/server.mjs:325–440",
+      "depends": [
+        "B01",
+        "B03",
+        "B04",
+        "B05",
+        "B08",
+        "B11"
+      ],
+      "action": "Ejecutar plataforma→HR y HR→plataforma con eventos posteriores y casos de concurrencia, eco, pérdida de respuesta y replay. Hacerlo en fixture autorizado que use el proveedor real.",
+      "acceptance": "Último evento válido gana; conflicto no se oculta; cero duplicados; error conserva estado/recibo y se recupera sin reimportar.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "P0_GRAPH_GET_PASS_APP_AUTH_IAM_E2E_HOLD",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C01",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 funcional",
+      "module": "Conciliar en Dashboard",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216",
+      "depends": [
+        "G04"
+      ],
+      "action": "Enlazar el botón del Dashboard y detalle al manejador financiero común, sin duplicar proveedor ni esperar comprobantes para que el botón responda.",
+      "acceptance": "Clic en ambas rutas produce acción o denegación humana; no existe botón mudo; caso positivo y bloqueado comprobados.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C02",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Readback financiero coherente",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | app/modules/finanzas.js:209–403,290,987–1011; detalle:1216",
+      "depends": [
+        "A05",
+        "C01"
+      ],
+      "action": "Esperar confirmación de entidad y revisión después de conciliar; usar composición actualizada, no un refresh que retorna antes.",
+      "acceptance": "La misma fila cambia, se conserva al recargar y se ve en otra sesión; fallo no actualiza éxito local.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C03",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Anticipo/remesa Q7.300",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas",
+      "depends": [
+        "G05"
+      ],
+      "action": "Localizar el registro existente por ID, tipo, fecha, moneda, alcance y fuente. Separar fondos recibidos, anticipo, remesa e ingreso devengado; explicar saldo sin recrear registro.",
+      "acceptance": "Q7.300 aparece o su ausencia queda demostrada por fuente exacta; resumen y detalle concuerdan con naturaleza aprobada. No se da por borrado ni se duplica.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C04",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Proyecto y Global durable",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133",
+      "depends": [
+        "G02"
+      ],
+      "action": "Usar persistencia remota tenant-scoped para hechos Global y proyecto. Mantener preferencias visuales separadas; localizar datos locales existentes sin reimportación indiscriminada.",
+      "acceptance": "Movimiento/cuenta autorizado aparece en otra sesión/dispositivo; ninguna operación monetaria usa localStorage como verdad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C05",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "CxP, CxC, cobros y financiamientos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133",
+      "depends": [
+        "C03",
+        "C04"
+      ],
+      "action": "Hacer visibles obligaciones y derechos con saldo, contraparte, moneda, proyecto/global y periodo. Separar monto conocido, elegibilidad y conciliación; no borrar obligación por faltar confirmación de pago.",
+      "acceptance": "Cobro/abono reduce sólo cuenta correcta, replay no duplica, referencias cruzadas reconstruibles y GTQ/HNL nunca sumados como una moneda.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C06",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Pago individual y soporte",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216 | app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "C02",
+        "C05",
+        "A08"
+      ],
+      "action": "Ejecutar desde UI una liquidación elegible y otra bloqueada. Registrar fecha, importe, referencia y soporte durable. No hacer una transferencia real de dinero para superar un test.",
+      "acceptance": "Pago interno, soporte recibido, confirmación externa y conciliado se distinguen; ACK, readback y recarga sin doble pago.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C07",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Lotes de pago",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "C06"
+      ],
+      "action": "Crear lote con sólo filas seleccionadas/elegibles de una moneda; subir soporte, registrar, consultar, exportar y conciliar mediante comando común.",
+      "acceptance": "Contenido, importe y fuente del lote coinciden; otro intento no duplica; filas excluidas no se pagan; Shopper y Admin ven lo mismo.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C08",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Cortes históricos aceptados",
+      "owner": "Escritor único vigente (CR-20260910-02)/proveedor; Paula sólo excepción real",
+      "owners": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas",
+      "depends": [
+        "C03",
+        "C05"
+      ],
+      "action": "Preservar cierre histórico hasta julio; agosto pagado 02-10; septiembre sólo filas probadas en ese lote; octubre operación viva. No exigir re-probar todos los pagos históricos cerrados.",
+      "acceptance": "Cohortes y recibos exactos trazables; septiembre ambiguo se presenta en única lista de decisión; no se inventa confirmación externa ni se reimporta.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C09",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 funcional",
+      "module": "Beneficios, reportes y Dashboard financiero",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline",
+      "depends": [
+        "C05",
+        "C06",
+        "C07",
+        "C08"
+      ],
+      "action": "Usar la misma consulta/ledger para honorarios, reembolso, obligación, fondos y pago en todos los roles. Validar export y detalle, con el mismo corte.",
+      "acceptance": "Totales explicables por filas y moneda; beneficio propio coincide con Admin; soporte visible según permisos; no IDs técnicos como identidad principal.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "C10",
+      "stage": "I3",
+      "package": "C",
+      "priority": "P0 crítico",
+      "module": "Cierre financiero entre sesiones",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216 | app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C07",
+        "C08",
+        "C09"
+      ],
+      "action": "Probar octubre y sus antecedentes reales sin alterar dinero; usar fixtures identificados para writes, verificar limpieza y separar pruebas de datos operacionales.",
+      "acceptance": "Cuentas, movimientos, liquidación, lote y soporte correctos en nueva sesión; pruebas de septiembre no cierran casos de octubre.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D01",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 crítico",
+      "module": "Documento fuente autorizado",
+      "owner": "Orquestación / responsable documental autorizado",
+      "owners": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "depends": [
+        "G02"
+      ],
+      "action": "Usar instructivo ya disponible y resolver versión/hash/aprobación y alcance de país/proyecto. No pedir de nuevo el archivo ni sustituir por histórico sólo por nombre.",
+      "acceptance": "Fuente identificada y vigente; se conserva evidencia de aprobación. Si falta aprobación real, queda pendiente sólo esa publicación; parser puede avanzar.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D02",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 crítico",
+      "module": "Extractor PDF/DOCX",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/core/automations.js:62–82; app/modules/cert.js:249–266",
+      "depends": [
+        "G04"
+      ],
+      "action": "Sustituir regex binaria por parser real compartido; validar formatos, texto suficiente, codificación y contenido relevante. PDF con capa de texto no necesita OCR.",
+      "acceptance": "El PDF auténtico conserva instrucciones relevantes; DOCX ya no retorna vacío; formato inválido se rechaza antes de llamar al proveedor.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D03",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 crítico",
+      "module": "Generación real con IA",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "depends": [
+        "D01",
+        "D02"
+      ],
+      "action": "Generar exactamente quince preguntas para el contrato que lo exige, con opciones, respuesta, explicación y referencia al instructivo. Registrar diagnóstico de forma segura; no inventar preguntas de reemplazo.",
+      "acceptance": "Quince preguntas válidas, distintas y revisables desde texto válido; persistencia pending_review con ACK; un fallo de entrada se distingue del modelo.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D04",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 funcional",
+      "module": "Editor y revisión del banco",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "depends": [
+        "D02"
+      ],
+      "action": "Habilitar vista de preguntas y edición versionada. Mostrar fuente y diferencias; guardar sin publicar; mantener controles de revisor autorizado distinto del autor cuando el contrato lo exige.",
+      "acceptance": "Admin revisa/edita realmente; no basta cambiar metadatos o estado; una sesión nueva conserva contenido y versión.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D05",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 crítico",
+      "module": "Publicación y vigencia",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "depends": [
+        "D03",
+        "D04",
+        "A08"
+      ],
+      "action": "Controlar publicación en servidor, permisos, vigencia por proyecto y retiro. Mantener banco anterior y carryover sólo con evidencia; cambio mensual no borra vigencia válida.",
+      "acceptance": "Borrador no se rinde; banco publicado autorizado sí; retiro no borra intentos; ningún otro proyecto hereda certificación.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D06",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 funcional",
+      "module": "Ciclo Shopper y recertificación",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219 | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "A09",
+        "D05"
+      ],
+      "action": "Probar dos bancos, selector, rendir, aprobar/reprobar, feedback, persistencia, histórico, recertificar y cambiar periodo con usuarios elegibles.",
+      "acceptance": "Certificaciones, Mi Día y Mis Visitas comparten la misma elegibilidad; test de cuatro preguntas no sustituye contrato de quince.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D07",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 funcional",
+      "module": "Recursos y documentos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "D02",
+        "A08"
+      ],
+      "action": "Probar abrir PDF real, alta, metadatos, versión, lectura confirmada, permisos y retiro seguro. Conservar upload/delete TXT probado sin extrapolarlo al PDF.",
+      "acceptance": "Archivo y metadato coinciden; no binario huérfano; documento ajeno denegado; vínculo a visita y revisión correcto.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "D08",
+      "stage": "I3",
+      "package": "D",
+      "priority": "P0 contrato",
+      "module": "Academia y progreso",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "D02",
+        "A08"
+      ],
+      "action": "Conservar cursos/proveedor existentes; probar curso, lección, evaluación, recursos, progreso y edición autorizada. No anunciar IA real fuera del módulo habilitado.",
+      "acceptance": "Progreso y edición persisten en nueva sesión en Admin/Shopper/Cliente; funciones futuras de IA quedan fuera sólo con autoridad de alcance.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E01",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 visual",
+      "module": "Baseline visual y componentes",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline",
+      "depends": [
+        "G03"
+      ],
+      "action": "Recuperar última aprobación por tarjeta/tabla/modal y token; distinguir cambios aceptados de regresión. No rediseñar todo ni llamar histórico aprobado a una apariencia propuesta.",
+      "acceptance": "Cada componente tiene referencia y criterio observable; donde falta baseline visual exacto, registrar gap y revisión explícita sin fingir igualdad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E02",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 visual",
+      "module": "Tarjetas, tablas y modales",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline",
+      "depends": [
+        "E01"
+      ],
+      "action": "Aplicar tokens/componentes compartidos en owners y retirar estilos inline que los contradicen. Conservar jerarquía rica, acciones contextuales y datos.",
+      "acceptance": "Tipografía computada y contraste sobre fondo real aceptables en cuerpo, celda, nota, botón y modal; sin overlay global !important.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E03",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 visual",
+      "module": "Textos humanos y estados",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "E01"
+      ],
+      "action": "Reemplazar jerga técnica visible por nombres/estados operativos claros. IDs y diagnóstico quedan en trazabilidad autorizada; no ocultar errores reales.",
+      "acceptance": "Sin owner canónico, slice, Storage o códigos crudos como instrucción al usuario; vacío/carga/error/pendiente/éxito se distinguen sin ambigüedad.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E04",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 fuente",
+      "module": "Portal Cliente: benchmark y colaboración",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | app/modules/cliente-insights.js:15–19,31–43,62–79",
+      "depends": [
+        "G03",
+        "A08"
+      ],
+      "action": "Quitar fallback 71/85 como supuesta referencia real y exigir fuente/metodología. Persistir NPS, notas y reuniones si forman parte del alcance publicado; no disimular carencia con localStorage.",
+      "acceptance": "Sin fuente muestra no disponible, no juicio inventado; colaboración de Phase A se ve en otra sesión autorizada con ACK.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E05",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Configuración y autoadministración",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "G03",
+        "A08"
+      ],
+      "action": "Por campo, cerrar parámetros operativos de Proyecto, Periodo, Configuración, Administrabilidad y Marca mediante proveedor durable; conservar aceptaciones y permisos.",
+      "acceptance": "Alta/edición aprobada no depende de source por proyecto ni se vuelve local para habilitar controles; modos read-only sólo donde el contrato lo permite. Preservar legal/consentimiento no bloqueante según addendum 2026-09-18: no autoaceptar, no convertir ausencia de recibo legal en bloqueo de acceso o I4.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E06",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Clientes, costos, CRM y Portal Cliente",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/modules/cliente-insights.js:15–19,31–43,62–79 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "G03",
+        "A08"
+      ],
+      "action": "Conservar motor de costos y proveedores; probar CRUD, vínculos, propuesta, actividades, acciones y programa publicado por cliente. No convertir visita a ruta vacía en cierre.",
+      "acceptance": "Cada capacidad publicada tiene caso positivo y negativo, persistencia y datos reales o vacío honesto; sin impuestos/modelos de otro proyecto.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E07",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Reportes y exportaciones",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "B11",
+        "C09",
+        "D06"
+      ],
+      "action": "Comprobar contenido de reportes Admin/Shopper/Cliente/finanzas para los formatos comprometidos y fuente vigente; conservar ReportKit y mejoras existentes.",
+      "acceptance": "Archivo abre y coincide en filas, país, moneda, periodo y permiso; no basta que haya descarga. Mejoras estéticas P1 sólo si ya autorizadas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E08",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Correo, automatizaciones e integraciones",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "G03",
+        "A08"
+      ],
+      "action": "Distinguir guardar configuración, simulación, borrador, conexión real y entrega. Validar cada proveedor comprometido en Phase A; no asumir que connectionRef existe.",
+      "acceptance": "Envío/recepción de prueba consentida tiene ID/ACK externo; sin proveedor no se afirma enviado. Una función Phase A no puede ocultarse para cerrar.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E09",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Marketing y servicios publicados",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "G03",
+        "E08"
+      ],
+      "action": "Cerrar calendario, solicitud comercial y acciones vigentes por proveedor. Mantener publicación externa/IA avanzada como futura sólo si autoridad previa lo demuestra.",
+      "acceptance": "Todas las funciones ofrecidas como operativas tienen dueño y recibo; capacidades futuras preservadas y explícitas, no ficticiamente activas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E10",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 contrato",
+      "module": "Importador y mapeos",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": [
+        "G03",
+        "A08"
+      ],
+      "action": "Validar permisos, mapeo, dry-run, errores por fila e idempotencia con fixtures. No usar importador como arreglo de identidad, dinero o HR existente.",
+      "acceptance": "Replay de fixture no duplica, source/mapping trazables y 0 datos reales reimportados.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "E11",
+      "stage": "I3",
+      "package": "E",
+      "priority": "P0 visual",
+      "module": "Recorridos de interfaz por rol",
+      "owner": "Escritor único vigente (CR-20260910-02): único escritor técnico",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10"
+      ],
+      "action": "Cubrir las 56 rutas del informe y vistas aplicables Ops/Coordinación/Superadmin en escritorio/móvil, con modales y estados elegibles; no contar inventario como clic funcional.",
+      "acceptance": "Mediciones/imagen/acciones por función y rol; baseline y diferencias documentadas. Ninguna nota, tabla o modal queda fuera por no ser el primer viewport.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "V01",
+      "stage": "I3",
+      "package": "CIERRE",
+      "priority": "P0 previo",
+      "module": "Pruebas fuente y regresión mínima",
+      "owner": "QA independiente / runner existente",
+      "owners": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "G04",
+        "A01",
+        "A04",
+        "A05",
+        "A07",
+        "B02",
+        "B04",
+        "C01",
+        "C04",
+        "D02",
+        "D04",
+        "E02"
+      ],
+      "action": "Ejecutar contraejemplos reparados y contratos vecinos en source; preservar PASS ajenos sin reauditoría. Resolver faltantes con owner y fixture, no nuevas metodologías.",
+      "acceptance": "Todos los contraejemplos exigidos pasan por su causa; ningún cambio de código fuera del allowlist queda sin hallazgo/prueba.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "V02",
+      "stage": "I3",
+      "package": "CIERRE",
+      "priority": "P0 previo",
+      "module": "Candidata acumulativa y build",
+      "owner": "Runner único / orquestación",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "V01"
+      ],
+      "action": "Unificar los paquetes aceptados en un source/tree; verificar load order, 21 dominios, baseline/deltas y config de entorno. Construir una vez la candidata a certificar y publicar en DEV por carril único.",
+      "acceptance": "Un manifest apunta al source, build, TAR/runtime/config y Hosting exactos; no nuevo repositorio, candidata paralela ni deploy del HEAD completo.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "V03",
+      "stage": "I3",
+      "package": "CIERRE",
+      "priority": "P0 crítico",
+      "module": "E2E sobre el mismo artefacto",
+      "owner": "QA independiente / navegador y runner",
+      "owners": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3 | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": [
+        "V02",
+        "A09",
+        "B14",
+        "C10",
+        "D06",
+        "D07",
+        "D08",
+        "E11"
+      ],
+      "action": "Ejecutar en el artefacto final los ciclos Admin/Shopper/Cliente y roles operativos, positivos/negativos, múltiples scopes y revisiones. Probar los casos omitidos por RUN1727.",
+      "acceptance": "Toda capacidad Phase A tiene expected/observed, acción real, permiso, ACK/readback y recarga cuando aplica; sin falsos PASS por controles ausentes.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "V04",
+      "stage": "I3",
+      "package": "CIERRE",
+      "priority": "P0 visual",
+      "module": "Aceptación incremental de Paula",
+      "owner": "Paula: aceptación visual, no pruebas técnicas",
+      "owners": "app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "depends": [
+        "V02"
+      ],
+      "action": "Entregar cada bloque funcional/visual que pase E2E en el mismo DEV, con ruta corta, prueba y alcance. No esperar módulos independientes; no pedir repetir pruebas técnicas.",
+      "acceptance": "Aprobación por módulo/función/source registrada; si cambian bytes o dependencia, revalidar sólo alcance afectado. No confundir aprobación local con autorización I4. Aprobación por bloque ligada a hashes de owners y dependencias, contexto, revisión, screenshots y texto de Paula. No esperar V03 completo para un bloque ya validado. Sólo un nuevo drift comprobado invalida su alcance afectado.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "V05",
+      "stage": "I3",
+      "package": "CIERRE",
+      "priority": "P0 crítico",
+      "module": "Gate20, Gate21 e I3 GO",
+      "owner": "Orquestación / QA independiente",
+      "owners": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "depends": [
+        "V03",
+        "V04"
+      ],
+      "action": "Consolidar 21 gates, 21 dominios, evidencias y aprobaciones; Gate20 visual semántico y Gate21 fingerprint del mismo artefacto, sin rebuild.",
+      "acceptance": "0 P0 pendiente, 0 capacidad Phase A sin prueba y 0 conflicto de fuente/permiso sin resolver. Emitir GO sólo con evidencia completa.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "MUST_RECONCILE_AGAINST_CURRENT_V366_V693_AND_RECEIPTS",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P01",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Autorización exacta",
+      "owner": "Paula / responsable de release",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "V05"
+      ],
+      "action": "Presentar digest, source, entorno, smoke, respaldo y rollback; pedir una sola autorización expresa para reemplazar producción.",
+      "acceptance": "Autorización de Paula asociada a ese artefacto y destino. Urgencia o aprobación visual no se interpreta como permiso productivo.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P02",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Backup y compatibilidad de datos",
+      "owner": "Responsable de release / proveedor existente",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "V02"
+      ],
+      "action": "Capturar Hosting/version y runtime/config/reglas previos; verificar restauración y compatibilidad. Respaldar cambios de identidad/ledger sin conectar ni copiar DB legacy.",
+      "acceptance": "Rollback verificable del código/config y tratamiento de datos documentado; no se planifica restaurar toda la DB perdiendo operaciones válidas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P03",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Drenaje y sincronización de corte",
+      "owner": "Responsable de release",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P01",
+        "P02"
+      ],
+      "action": "Cerrar o identificar operaciones pendientes y outbox; establecer frontera de versiones para los cambios durante el corte. No descartar solicitudes ni pagos en vuelo.",
+      "acceptance": "Todo evento anterior/posterior al corte tiene recibo y dueño; no escritor duplicado; configuración y datos de destino corresponden al entorno aprobado.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P04",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Reemplazo inmutable",
+      "owner": "Runner de despliegue único",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P03"
+      ],
+      "action": "Publicar exactamente el artefacto certificado en tya-plataforma.web.app por el carril único, con runtime y configuración certificados. No rebuild ni sustitución de dependencias.",
+      "acceptance": "Digest, versión Hosting y digest/revisión runtime comprobados por lectura independiente; source != HEAD de control es explícito.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P05",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Smoke productivo real",
+      "owner": "QA independiente",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P04"
+      ],
+      "action": "Comprobar login ordinario Admin/Shopper, HR actual, disponibles, asignación/postulación permitida, KPIs, recursos y marcadores visuales. Writes sólo en casos productivos controlados autorizados.",
+      "acceptance": "Sin cruces de identidad, datos atrasados como vigentes ni duplicados; artefacto servido igual al certificado; no transferencias bancarias de prueba.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P06",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "Contingencia del corte",
+      "owner": "Responsable de release",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P02"
+      ],
+      "action": "Ante fallo de identidad/confidencialidad, pérdida/duplicado, dinero, sync esencial o digest: detener promoción/escrituras afectadas y aplicar rollback probado. Preservar bitácora y eventos válidos.",
+      "acceptance": "Retorno al runtime/Hosting anterior comprobado sin perder datos; la falla vuelve a su owner I3 o parche controlado, no a una reconstrucción.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "P07",
+      "stage": "I4",
+      "package": "PUBLICACIÓN",
+      "priority": "P0 producción",
+      "module": "PRODUCTION_LOCK y entrega operativa",
+      "owner": "Orquestación / responsable de release",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P05"
+      ],
+      "action": "Registrar URLs, SHA/digests, config, Hosting/version, runtime/revisión, HR/sourceRevision, cuentas de rol verificadas, evidencia de smoke, autorización y rollback disponible.",
+      "acceptance": "CXORBIA_TYA_PRODUCTION_ACCEPTED sólo tras lectura posterior; informar exactamente qué quedó operativo y evidencia del lock.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "NOT_AUTHORIZED_I3_GO_REQUIRED",
+      "blocksGo": "Sí"
+    },
+    {
+      "id": "H01",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 estabilidad",
+      "module": "Primera ventana operativa",
+      "owner": "Operación / soporte técnico",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07"
+      ],
+      "action": "Desde el corte seguir errores de acceso, tiempos, retraso HR, outbox/ACK y duplicados de identidad/pagos; asignar responsable y canal. Esta planificación no crea un monitor.",
+      "acceptance": "Cada incidente tiene ID/owner/impacto/acción; degradación P0 se atiende de inmediato, no se difiere por estar en postproducción.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "H02",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 estabilidad",
+      "module": "Conciliación de las primeras 24 h",
+      "owner": "Operación / QA",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "H01"
+      ],
+      "action": "Revisar deltas reales desde PRODUCTION_LOCK: cuentas, visitas, movimientos, soportes y sincronizaciones. Comparar ambas fuentes sin reejecutar escrituras ni volver a probar todos los gates.",
+      "acceptance": "Ninguna entidad pierde referencia ni duplica efecto; divergencias resueltas y recibos custodiados.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "H03",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 estabilidad",
+      "module": "Revisión de las primeras 72 h",
+      "owner": "Soporte técnico / responsable de release",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "H02"
+      ],
+      "action": "Revisar fallos/reintentos, rendimiento frío/caliente, logs sin secretos y restauración en entorno aislado autorizado. No tocar producción para ensayar restauraciones.",
+      "acceptance": "Incidentes y umbrales sustentados en datos; restauración comprobable; backlog sólo no crítico.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "H04",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 operación",
+      "module": "Primer corte y cambio de periodo",
+      "owner": "Operación / QA",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "H01"
+      ],
+      "action": "En el primer cambio real de quincena/periodo comprobar elegibilidad, históricos, certificación vigente, lotes y saldos; reglas dependen del proyecto, no del calendario hardcoded.",
+      "acceptance": "El nuevo corte conserva historia, certificados válidos, eventos y saldos; no revive postulaciones eliminadas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "H05",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 operación",
+      "module": "Cierre de estabilización",
+      "owner": "Orquestación / Operación",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "H02",
+        "H03"
+      ],
+      "action": "En la revisión operativa propuesta a siete días, cerrar incidencias resueltas, documentar runbook y fijar baseline estable para evolutivos. No crear I5. Conservar también la revisión legal post-go-live ya diferida expresamente y su versión/publicación, sin fabricar consentimiento ni reabrir el gate de acceso.",
+      "acceptance": "Backlog trazable, responsables y baseline de operación definidos; fallos críticos no quedan clasificados como mejora.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "H06",
+      "stage": "POST",
+      "package": "POST",
+      "priority": "P1 mejora acotada",
+      "module": "Presentación de exportes no bloqueantes",
+      "owner": "Escritor único vigente (CR-20260910-02) en siguiente alcance autorizado",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07"
+      ],
+      "action": "Recuperar backlog histórico autorizado de presentación Excel y gráficos PDF incompletos, sólo cuando datos y formatos contractuales ya funcionan.",
+      "acceptance": "Mejora de presentación sin tocar cálculos, fuente, permisos o formato contractual obligatorio. Lo bloqueante se cierra antes en E07.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N01",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P1 posterior",
+      "module": "HR embebida autoadministrable",
+      "owner": "Escritor único vigente (CR-20260910-02): siguiente paquete autorizado",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "H02"
+      ],
+      "action": "Implementar vista viva embebida/edición según lock de 06-10, reutilizando el writer/ACK/bitácora ya cerrados. No iframe público ni copia como nueva verdad.",
+      "acceptance": "Lectura/edición por rol/proyecto auditables; no nuevo mecanismo de sync. Si esta función ya era P0 contractual, debe volver al cierre I3, no diferirse.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N02",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P1 posterior",
+      "module": "Segundo proyecto real",
+      "owner": "Producto / Escritor único vigente (CR-20260910-02) cuando haya defecto probado",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "H02"
+      ],
+      "action": "Dar de alta siguiente proyecto real mediante configuración existente: fuente, país, moneda, periodos/cortes, cuestionario y documentos. No desarrollar un fork de Cinépolis.",
+      "acceptance": "Onboarding sin cambio global de source, sin mezcla de tenant/proyecto y con fixture/aceptación propia.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N03",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P2 ampliación",
+      "module": "IA fuera de certificación",
+      "owner": "Producto / Escritor único vigente (CR-20260910-02)",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "H05"
+      ],
+      "action": "Preservar capacidades trabajadas de Academia, Marketing y mapeo inteligente; conectar proveedores reales sólo en funciones posteriores adjudicadas como B.",
+      "acceptance": "Métricas y coste/proveedor trazables, revisión humana y grounding; no se sustituye una función Phase A ausente por promesa futura.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N04",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P2 ampliación",
+      "module": "Canales y automatización avanzados",
+      "owner": "Producto / Escritor único vigente (CR-20260910-02)",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "H05"
+      ],
+      "action": "Ampliar correo, WhatsApp, publicación y automatizaciones que no fueran Phase A; reaprovechar recibos e idempotencia y evitar emisores duplicados.",
+      "acceptance": "Entrega verificable por proveedor, permisos correctos y consentimiento; simulaciones diferenciadas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N05",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P2 ampliación",
+      "module": "Analítica y benchmark con datos",
+      "owner": "Producto / datos / Escritor único vigente (CR-20260910-02)",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "H05"
+      ],
+      "action": "Incorporar datasets, metodología, NPS y benchmarks sustentados; recuperar últimas versiones aprobadas. No volver a constantes 71/85 ni conclusiones sin muestra.",
+      "acceptance": "Cada indicador identifica fuente/corte/metodología; funciones históricas preservadas y no reconstruidas.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    },
+    {
+      "id": "N06",
+      "stage": "FASE_B",
+      "package": "EVOLUCIÓN",
+      "priority": "P2 producto",
+      "module": "Productización multi-tenant",
+      "owner": "Dirección de producto / Escritor único vigente (CR-20260910-02)",
+      "owners": "Control / proveedor ya existente; delimitar archivo sólo con evidencia",
+      "depends": [
+        "P07",
+        "N02"
+      ],
+      "action": "Planificar capacidades comerciales, observabilidad y administración multi-tenant desde el PRODUCTION_LOCK, manteniendo ramas/productos ya existentes y sin otro Firebase como prerrequisito.",
+      "acceptance": "Matriz de módulos B y deltas aprobados, pruebas de aislamiento, onboarding y límites; no reiniciar Recovery.",
+      "originStatus": "PENDIENTE",
+      "currentProof": "PRESERVED_SEPARATE_PHASE_NO_I3_DEFERAL",
+      "blocksGo": "No: no sustituye un P0 de I3"
+    }
+  ],
+  "gates": [
+    {
+      "gate": "I3-01",
+      "taskIds": [
+        "A08",
+        "E05"
+      ],
+      "contract": "Aislamiento proyecto A/B",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-02",
+      "taskIds": [
+        "E05",
+        "B01",
+        "B03"
+      ],
+      "contract": "Fuente internal/external por proyecto",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-03",
+      "taskIds": [
+        "B11",
+        "E05",
+        "D06"
+      ],
+      "contract": "Cambio de periodo real",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-04",
+      "taskIds": [
+        "G05",
+        "B01",
+        "B11"
+      ],
+      "contract": "HR viva",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-05",
+      "taskIds": [
+        "B05",
+        "B11"
+      ],
+      "contract": "Disponibles = elegibles/no asignadas",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-06",
+      "taskIds": [
+        "A01",
+        "A03",
+        "A09"
+      ],
+      "contract": "Shopper HR → upsert idempotente",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-07",
+      "taskIds": [
+        "B05",
+        "B07"
+      ],
+      "contract": "Asignación → disponibilidad y shopper",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-08",
+      "taskIds": [
+        "A09"
+      ],
+      "contract": "Login Shopper",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-09",
+      "taskIds": [
+        "B06"
+      ],
+      "contract": "Postulación → gestión inmediata",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-10",
+      "taskIds": [
+        "A05",
+        "C10",
+        "D06"
+      ],
+      "contract": "Persistencia tras reload",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-11",
+      "taskIds": [
+        "B05",
+        "B06",
+        "B14"
+      ],
+      "contract": "Aprobar/asignar sin duplicar",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-12",
+      "taskIds": [
+        "A03",
+        "B12"
+      ],
+      "contract": "Histórico Shopper",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-13",
+      "taskIds": [
+        "A08",
+        "B11"
+      ],
+      "contract": "Identidad/KPIs según permisos",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-14",
+      "taskIds": [
+        "B11"
+      ],
+      "contract": "KPI contra revisión externa exacta",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-15",
+      "taskIds": [
+        "B11",
+        "C10"
+      ],
+      "contract": "GT/HN, reglas y moneda",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-16",
+      "taskIds": [
+        "B14"
+      ],
+      "contract": "Bidireccionalidad con ACK",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-17",
+      "taskIds": [
+        "V01"
+      ],
+      "contract": "Sintaxis y contratos",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-18",
+      "taskIds": [
+        "V03"
+      ],
+      "contract": "E2E Admin",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-19",
+      "taskIds": [
+        "V03"
+      ],
+      "contract": "E2E Shopper",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-20",
+      "taskIds": [
+        "E11",
+        "V04",
+        "V05"
+      ],
+      "contract": "Browser/visual contra aprobado",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    },
+    {
+      "gate": "I3-21",
+      "taskIds": [
+        "V02",
+        "V05"
+      ],
+      "contract": "Fingerprint estable",
+      "evidenceRule": "Evidencia previa se conserva por alcance; no hay nuevo cierre por este plan.",
+      "originStatus": "PENDIENTE_REVALIDACION_REQUERIDA"
+    }
+  ],
+  "routeRoleMatrix": [
+    {
+      "role": "shopper",
+      "route": "midia",
+      "linkedTaskIds": [
+        "A05",
+        "A06",
+        "B11",
+        "B13"
+      ],
+      "requiredActions": "Próxima visita, cronograma, alertas, notificaciones, saltos a acciones",
+      "acceptance": "Primer ingreso y cambio HR visibles sin recarga; próxima visita y alertas coinciden con Mis Visitas y Admin.",
+      "owners": "[\"app/modules/midia.js:10-231\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "miperfil",
+      "linkedTaskIds": [
+        "A03",
+        "A04",
+        "A07",
+        "A09"
+      ],
+      "requiredActions": "Identidad, contacto, datos bancarios, acceso, historial, detalle",
+      "acceptance": "Stiven, Paula, Priscila y resto HR ingresan y ven sólo su perfil/historia; casos sin visitas ingresan normalmente.",
+      "owners": "[\"app/modules/operacion-extra.js:1-167\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "visitas",
+      "linkedTaskIds": [
+        "A09",
+        "B05",
+        "B11"
+      ],
+      "requiredActions": "Listado, búsqueda, país, elegibilidad, detalle, postulación, publicación",
+      "acceptance": "Sin visita asignada mostrada como disponible; elegibles en HR y UI iguales; postulación durable y sin duplicado.",
+      "owners": "[\"app/modules/visitas.js:1-383\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "reservas",
+      "linkedTaskIds": [
+        "B05",
+        "B07",
+        "B14"
+      ],
+      "requiredActions": "Solicitar, aprobar, reasignar reserva, eliminar, asignar visita",
+      "acceptance": "Mover la visita entre titulares en ambas fuentes, una sola reserva/asignación efectiva, histórico preservado.",
+      "owners": "[\"app/modules/reservas.js:123-287\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "misvisitas",
+      "linkedTaskIds": [
+        "A09",
+        "B08",
+        "B09",
+        "B10",
+        "D06"
+      ],
+      "requiredActions": "Actuales, historial, agenda, reprogramar, cancelar, realizada, cuestionario, GPS",
+      "acceptance": "Cada acción ofrecida funciona con un caso elegible; cambio HR real mueve disponibilidad/titular sin borrar historia.",
+      "owners": "[\"app/modules/misvisitas.js:1-292\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "aprendizaje",
+      "linkedTaskIds": [
+        "D08",
+        "E03",
+        "E11"
+      ],
+      "requiredActions": "Catálogo, curso, lección, progreso, recursos, creación/edición y categorías Admin",
+      "acceptance": "Progreso y edición persistentes, rol correcto, adjuntos legibles y evidencia por cada acción ofrecida.",
+      "owners": "[\"app/modules/academia.js:2130-2750\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "cert",
+      "linkedTaskIds": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "requiredActions": "Crear con IA, importar banco, revisar, publicar, rendir, resultado, recertificar, retirar",
+      "acceptance": "PDF real autorizado→15 preguntas distintas revisables→guardar→publicar→rendir→histórico→recertificar; no pérdida al cambiar periodo.",
+      "owners": "[\"app/modules/cert.js:55-374\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "documentos",
+      "linkedTaskIds": [
+        "D07",
+        "A08"
+      ],
+      "requiredActions": "Listar, abrir, subir, editar metadatos, eliminar, instructivo, lectura confirmada",
+      "acceptance": "Shopper autorizado abre recurso correcto; revisión visible; documento ajeno no se entrega; sin binario huérfano.",
+      "owners": "[\"app/modules/documentos.js:19-239\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "soporte",
+      "linkedTaskIds": [
+        "B13",
+        "A08"
+      ],
+      "requiredActions": "Crear solicitud, adjuntar contexto, bandeja, responder, estado",
+      "acceptance": "Solicitud/respuesta persisten en ambos roles; canal externo sólo se anuncia enviado con su confirmación.",
+      "owners": "[\"app/modules/soporte.js:48-197\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "novedades",
+      "linkedTaskIds": [
+        "B13",
+        "E03"
+      ],
+      "requiredActions": "Feed por rol, marcar leído, abrir acción, publicación Admin",
+      "acceptance": "Mensaje correcto en Campanita, Tablón y Mi Día; lectura durable; ninguna notificación ajena.",
+      "owners": "[\"app/modules/novedades.js:41-96\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "beneficios",
+      "linkedTaskIds": [
+        "C09",
+        "C10",
+        "A03"
+      ],
+      "requiredActions": "Honorarios, reembolso, liquidación, saldo, detalle y exportación",
+      "acceptance": "Cifras propias iguales a Admin y proveedor para el mismo corte; CSV sin datos ajenos ni dobles pagos.",
+      "owners": "[\"app/modules/beneficios.js:1-141\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "shopper",
+      "route": "mireportes",
+      "linkedTaskIds": [
+        "C09",
+        "E07",
+        "A08"
+      ],
+      "requiredActions": "Visitas, postulaciones, histórico y beneficios exportables",
+      "acceptance": "Listado y export propios iguales; historial unido tras dedup; cero exposición de otras personas.",
+      "owners": "[\"app/modules/operacion-extra.js:418-489\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "midia",
+      "linkedTaskIds": [
+        "A05",
+        "A06",
+        "B11",
+        "B13"
+      ],
+      "requiredActions": "Próxima visita, cronograma, alertas, notificaciones, saltos a acciones",
+      "acceptance": "Primer ingreso y cambio HR visibles sin recarga; próxima visita y alertas coinciden con Mis Visitas y Admin.",
+      "owners": "[\"app/modules/midia.js:10-231\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "dashboard",
+      "linkedTaskIds": [
+        "B11",
+        "E02",
+        "E03"
+      ],
+      "requiredActions": "KPIs, fases, filtros GT/HN, selección, WhatsApp, agenda, acciones directas",
+      "acceptance": "Misma revisión HR, listado exacto al pulsar cada KPI, revisión nueva visible y no efectos secundarios por render.",
+      "owners": "[\"app/modules/dashboard.js:1-540\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "visitas",
+      "linkedTaskIds": [
+        "A09",
+        "B05",
+        "B11"
+      ],
+      "requiredActions": "Listado, búsqueda, país, elegibilidad, detalle, postulación, publicación",
+      "acceptance": "Sin visita asignada mostrada como disponible; elegibles en HR y UI iguales; postulación durable y sin duplicado.",
+      "owners": "[\"app/modules/visitas.js:1-383\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "postulaciones",
+      "linkedTaskIds": [
+        "B06",
+        "B08",
+        "B14"
+      ],
+      "requiredActions": "Crear, standby, rechazar, eliminar, agenda, cancelación, reasignar, pedir acción",
+      "acceptance": "Aprobación/cancelación/reasignación visible en ambos roles y HR, bitácora completa; eliminación no reaparece.",
+      "owners": "[\"app/modules/postulaciones.js:337-1002\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "reservas",
+      "linkedTaskIds": [
+        "B05",
+        "B07",
+        "B14"
+      ],
+      "requiredActions": "Solicitar, aprobar, reasignar reserva, eliminar, asignar visita",
+      "acceptance": "Mover la visita entre titulares en ambas fuentes, una sola reserva/asignación efectiva, histórico preservado.",
+      "owners": "[\"app/modules/reservas.js:123-287\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "shoppers",
+      "linkedTaskIds": [
+        "A01",
+        "A02",
+        "A03",
+        "A07",
+        "A09"
+      ],
+      "requiredActions": "Directorio, búsqueda, alta, perfil, identidad, acceso, datos de pago, criterios",
+      "acceptance": "Todos los grupos de equivalencia resueltos o en excepción explícita, accesos válidos, sin contraseña en el read model ni exposición cruzada.",
+      "owners": "[\"app/modules/shoppers.js:1-627\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "informes",
+      "linkedTaskIds": [
+        "B11",
+        "E07"
+      ],
+      "requiredActions": "Listado de reportes, vista, exportación, criterios por país/periodo",
+      "acceptance": "Totales, filtros, IDs de visitas y fechas del export coinciden con la vista y la revisión externa.",
+      "owners": "[\"app/modules/operacion-extra.js:247-418\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "clientes",
+      "linkedTaskIds": [
+        "E06",
+        "A08"
+      ],
+      "requiredActions": "Alta, edición, cartera de clientes, vincular proyectos, ficha",
+      "acceptance": "Registro persiste en otra sesión y sólo en tenant autorizado; no dejar datos de prueba.",
+      "owners": "[\"app/modules/clientes.js:72-244\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "proyectos",
+      "linkedTaskIds": [
+        "E05",
+        "B01",
+        "A08"
+      ],
+      "requiredActions": "Alta, ficha, configuración, contactos, moneda, reglas, escenarios",
+      "acceptance": "Dos proyectos con fuentes y moneda distintas, sin modificación global de código ni mezcla de periodo/proyecto.",
+      "owners": "[\"app/modules/proyectos.js:1-182\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "periodos",
+      "linkedTaskIds": [
+        "B11",
+        "E05"
+      ],
+      "requiredActions": "Listar, seleccionar, crear, activar, asociar al proyecto",
+      "acceptance": "Selector, datos, formularios y export de la misma revisión y periodo; periodos históricos no se alteran.",
+      "owners": "[\"app/modules/periodos.js:1-85\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "historico",
+      "linkedTaskIds": [
+        "B12",
+        "E07"
+      ],
+      "requiredActions": "Comparar periodos, país, métricas y detalle",
+      "acceptance": "Los periodos conocidos y sus visitas aparecen sin pérdida; ausencia real claramente distinguida de filtro vacío.",
+      "owners": "[\"app/modules/historico.js:1-100\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "rutas",
+      "linkedTaskIds": [
+        "B01",
+        "B05",
+        "B12",
+        "B14"
+      ],
+      "requiredActions": "Listado por periodo, fecha, asignación, estado, importación/mapeo",
+      "acceptance": "Ruta servida y owner documentados; revisión y estados iguales al proveedor; sin duplicados por montaje.",
+      "owners": "[\"app/modules/operacion-extra.js:167-247\", \"app/modules/rutas.js:1-67\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "hrsource",
+      "linkedTaskIds": [
+        "B01",
+        "B02",
+        "B03",
+        "B14",
+        "G05"
+      ],
+      "requiredActions": "Configurar origen, mapeo, columnas, prueba y lectura",
+      "acceptance": "Fuente canónica exacta verificada; lectura actualizada y dos cambios ordenados HR↔plataforma con bitácora.",
+      "owners": "[\"app/modules/hr-source.js:83-311\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "cuestionarios",
+      "linkedTaskIds": [
+        "B10",
+        "E05"
+      ],
+      "requiredActions": "Editar estructura, pesos, escenarios, guardar programa, exportar",
+      "acceptance": "Versión publicada efectiva, edición crea versión, respuestas y puntajes corresponden al programa correcto.",
+      "owners": "[\"app/modules/configuracion.js:5-204\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "importador",
+      "linkedTaskIds": [
+        "E10"
+      ],
+      "requiredActions": "Mapeo, validación, previsualización, importación por categoría",
+      "acceptance": "No duplica por replay, errores por fila explícitos y conserva fuente; ningún dato real reimportado en Recovery.",
+      "owners": "[\"app/modules/importador.js:1-528\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "aprendizaje",
+      "linkedTaskIds": [
+        "D08",
+        "E03",
+        "E11"
+      ],
+      "requiredActions": "Catálogo, curso, lección, progreso, recursos, creación/edición y categorías Admin",
+      "acceptance": "Progreso y edición persistentes, rol correcto, adjuntos legibles y evidencia por cada acción ofrecida.",
+      "owners": "[\"app/modules/academia.js:2130-2750\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "cert",
+      "linkedTaskIds": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "requiredActions": "Crear con IA, importar banco, revisar, publicar, rendir, resultado, recertificar, retirar",
+      "acceptance": "PDF real autorizado→15 preguntas distintas revisables→guardar→publicar→rendir→histórico→recertificar; no pérdida al cambiar periodo.",
+      "owners": "[\"app/modules/cert.js:55-374\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "documentos",
+      "linkedTaskIds": [
+        "D07",
+        "A08"
+      ],
+      "requiredActions": "Listar, abrir, subir, editar metadatos, eliminar, instructivo, lectura confirmada",
+      "acceptance": "Shopper autorizado abre recurso correcto; revisión visible; documento ajeno no se entrega; sin binario huérfano.",
+      "owners": "[\"app/modules/documentos.js:19-239\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "soporte",
+      "linkedTaskIds": [
+        "B13",
+        "A08"
+      ],
+      "requiredActions": "Crear solicitud, adjuntar contexto, bandeja, responder, estado",
+      "acceptance": "Solicitud/respuesta persisten en ambos roles; canal externo sólo se anuncia enviado con su confirmación.",
+      "owners": "[\"app/modules/soporte.js:48-197\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "novedades",
+      "linkedTaskIds": [
+        "B13",
+        "E03"
+      ],
+      "requiredActions": "Feed por rol, marcar leído, abrir acción, publicación Admin",
+      "acceptance": "Mensaje correcto en Campanita, Tablón y Mi Día; lectura durable; ninguna notificación ajena.",
+      "owners": "[\"app/modules/novedades.js:41-96\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "financiero",
+      "linkedTaskIds": [
+        "C01",
+        "C02",
+        "C03",
+        "C09"
+      ],
+      "requiredActions": "KPIs por moneda, obligaciones, revisión, Conciliar, presupuesto, comparativos",
+      "acceptance": "Clic→resultado verificable en la fila→recarga; no queda un botón mudo; totales explicables por país/moneda.",
+      "owners": "[\"app/modules/finanzas.js:207-403\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "movimientos",
+      "linkedTaskIds": [
+        "C03",
+        "C04",
+        "C05",
+        "C10"
+      ],
+      "requiredActions": "Ingreso, egreso, CxC, CxP, anticipo, remesa, financiamiento, cobro, pago",
+      "acceptance": "Q7.300 trazable por ID, tipo, moneda y origen; CxC/CxP visibles y con saldo correcto en otra sesión.",
+      "owners": "[\"app/modules/finanzas.js:403-1046\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "liquidaciones",
+      "linkedTaskIds": [
+        "C02",
+        "C06",
+        "C08",
+        "C09"
+      ],
+      "requiredActions": "Listar, validar, conciliar, pago individual, lote, soporte, historial",
+      "acceptance": "Importe y elegibilidad exactos; soporte durable; resultado idempotente; no poner pagado por un flag local.",
+      "owners": "[\"app/modules/finanzas.js:1046-1329\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "lotes",
+      "linkedTaskIds": [
+        "C07",
+        "C08",
+        "C10"
+      ],
+      "requiredActions": "Crear lote, seleccionar, soporte, registrar, exportar, conciliar",
+      "acceptance": "Lote no mezcla monedas, contiene sólo visitas elegibles; replay no duplica; cuenta/visita/Shopper concuerdan.",
+      "owners": "[\"app/modules/finanzas.js:1329-1426\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "costos",
+      "linkedTaskIds": [
+        "E06",
+        "E07"
+      ],
+      "requiredActions": "Modelo, costos, honorarios, márgenes, escenarios, propuesta",
+      "acceptance": "Resultado explicable con variables de proyecto y moneda; parámetros durables; no activar impuestos/regalías de otro modelo.",
+      "owners": "[\"app/modules/comercial.js:13-204\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "crm",
+      "linkedTaskIds": [
+        "E06"
+      ],
+      "requiredActions": "Cuentas, contactos, oportunidades, pipeline, actividades, documentos",
+      "acceptance": "Alta/cambio/actividad visibles en sesión nueva y trazables; no mezclar clientes y shoppers por nombre.",
+      "owners": "[\"app/modules/crm.js:86-584\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "marketing",
+      "linkedTaskIds": [
+        "E09",
+        "E08"
+      ],
+      "requiredActions": "Calendario, crear, editar, programar, IA, métricas, automatizar",
+      "acceptance": "Sólo las funciones del alcance Phase A operables con ACK; las externas no publicadas quedan claramente no disponibles.",
+      "owners": "[\"app/modules/marketing.js:25-188\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "config",
+      "linkedTaskIds": [
+        "E05",
+        "A08"
+      ],
+      "requiredActions": "Parámetros, reglas, plan, permisos, origen y accesos a dominios",
+      "acceptance": "Cambio permitido persiste en otra sesión; denegación efectiva del servidor, con versión y autor.",
+      "owners": "[\"app/modules/configuracion.js:500-760\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "administrabilidad",
+      "linkedTaskIds": [
+        "E05",
+        "A08"
+      ],
+      "requiredActions": "Identidad, plan, NDA, reglas y matriz de gestión",
+      "acceptance": "Funciones prometidas editables según rol, cambios durables y aceptaciones antiguas intactas.",
+      "owners": "[\"app/modules/administrabilidad.js:37-236\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "usuarios",
+      "linkedTaskIds": [
+        "A08",
+        "E05"
+      ],
+      "requiredActions": "Usuarios, roles, acciones y alcance",
+      "acceptance": "Matriz de permitir/denegar probada también para Ops/coordinador, Cliente y Shopper; sin bypass por vista Admin.",
+      "owners": "[\"app/modules/configuracion.js:318-497\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "automatizaciones",
+      "linkedTaskIds": [
+        "E08"
+      ],
+      "requiredActions": "Plantillas, activar, canal, simulación, reglas, avisos",
+      "acceptance": "Evento se registra una vez y su entrega puede leerse; simulaciones nunca contabilizadas como envío real.",
+      "owners": "[\"app/modules/automatizaciones.js:1-140\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "integraciones",
+      "linkedTaskIds": [
+        "B03",
+        "B09",
+        "E08"
+      ],
+      "requiredActions": "Configurar proveedor, probar, activar, check-in",
+      "acceptance": "Proveedor/credencial efectivos en servidor; estado corresponde a prueba real; check-in enlaza archivo y visita.",
+      "owners": "[\"app/modules/integraciones.js:159-260\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "correo",
+      "linkedTaskIds": [
+        "E08"
+      ],
+      "requiredActions": "Bandeja, leer, responder, enviar, conectar",
+      "acceptance": "Mensaje de prueba consentido con ID de proveedor y readback, sin secretos en navegador; fuera de alcance, estado explícito.",
+      "owners": "[\"app/modules/correo.js:1-312\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "admin",
+      "route": "marca",
+      "linkedTaskIds": [
+        "E01",
+        "E02",
+        "E05"
+      ],
+      "requiredActions": "Logo, nombres, temas y reglas visuales",
+      "acceptance": "Logo/colores correctos en login y roles; edición autorizada versionada y consistente en sesión nueva.",
+      "owners": "[\"app/modules/marca.js:1-252\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_dashboard",
+      "linkedTaskIds": [
+        "B11",
+        "E04",
+        "E06"
+      ],
+      "requiredActions": "Indicadores, sucursales, resultados, periodo, país",
+      "acceptance": "Acceso sólo al proyecto/país habilitado, totales y detalle del reporte coinciden con fuente real.",
+      "owners": "[\"app/modules/cliente.js:223-343\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_sucursales",
+      "linkedTaskIds": [
+        "E06",
+        "A08"
+      ],
+      "requiredActions": "Filtro, score, detalle, planes",
+      "acceptance": "Caso con y sin score correcto; detalle no cruza proyecto ni reporta referencias ficticias.",
+      "owners": "[\"app/modules/cliente.js:343-382\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_acciones",
+      "linkedTaskIds": [
+        "E06",
+        "A08"
+      ],
+      "requiredActions": "Crear, asignar, comentar, cambiar estado",
+      "acceptance": "Admin y Cliente ven misma acción tras sesión nueva, historial de cambios y derechos por proyecto.",
+      "owners": "[\"app/modules/cliente.js:382-482\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_insights",
+      "linkedTaskIds": [
+        "E04"
+      ],
+      "requiredActions": "Promedio, benchmark, NPS, notas, reuniones",
+      "acceptance": "Referencia documentada o estado no disponible; nota/reunión/NPS aparecen en otra sesión autorizada y tienen acuse.",
+      "owners": "[\"app/modules/cliente-insights.js:1-129\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_capacitacion",
+      "linkedTaskIds": [
+        "D08",
+        "E06"
+      ],
+      "requiredActions": "Necesidades, prioridad, acciones y formación",
+      "acceptance": "Caso de brecha real y sin brecha; trazabilidad entre hallazgo, curso y seguimiento.",
+      "owners": "[\"app/modules/cliente-extra.js:1-53\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "aprendizaje",
+      "linkedTaskIds": [
+        "D08",
+        "E03",
+        "E11"
+      ],
+      "requiredActions": "Catálogo, curso, lección, progreso, recursos, creación/edición y categorías Admin",
+      "acceptance": "Progreso y edición persistentes, rol correcto, adjuntos legibles y evidencia por cada acción ofrecida.",
+      "owners": "[\"app/modules/academia.js:2130-2750\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_reportes",
+      "linkedTaskIds": [
+        "E07",
+        "A08"
+      ],
+      "requiredActions": "Catálogo, vista, PDF/Excel, comparativos",
+      "acceptance": "Archivo abre y coincide con periodos, país, cliente y métricas; no reportes cruzados.",
+      "owners": "[\"app/modules/cliente-extra.js:166-366\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_programa",
+      "linkedTaskIds": [
+        "B10",
+        "E06"
+      ],
+      "requiredActions": "Estructura, procesos, pesos, preguntas",
+      "acceptance": "El Cliente ve el mismo programa publicado que rige el cuestionario del periodo.",
+      "owners": "[\"app/modules/cliente-extra.js:366-404\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "cli_market",
+      "linkedTaskIds": [
+        "E09",
+        "A08"
+      ],
+      "requiredActions": "Catálogo, detalle y solicitud",
+      "acceptance": "Solicitud recibida una vez por Administración con ID, actor, proyecto y estado; sin falsa compra.",
+      "owners": "[\"app/modules/cliente-extra.js:404-448\"]",
+      "originalLevel": "NO_CERRADO"
+    },
+    {
+      "role": "client",
+      "route": "novedades",
+      "linkedTaskIds": [
+        "B13",
+        "E03"
+      ],
+      "requiredActions": "Feed por rol, marcar leído, abrir acción, publicación Admin",
+      "acceptance": "Mensaje correcto en Campanita, Tablón y Mi Día; lectura durable; ninguna notificación ajena.",
+      "owners": "[\"app/modules/novedades.js:41-96\"]",
+      "originalLevel": "NO_CERRADO"
+    }
+  ],
+  "criticalFunctions": [
+    {
+      "file": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "function": "safeHash",
+      "linkedTaskIds": [
+        "A01",
+        "A02"
+      ],
+      "assessment": "Hash sensible a tildes: identidad de fuente distinta para la misma equivalencia nominal."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "sessionProfile",
+      "linkedTaskIds": [
+        "A04"
+      ],
+      "assessment": "Cuenta IDs raw/canonical como perfiles distintos; debe resolver equivalencia antes de exigir unicidad."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "validateShopperPrincipal",
+      "linkedTaskIds": [
+        "A04",
+        "A08"
+      ],
+      "assessment": "Conservar validación UID/claims/membership; no sustituirla por nombre de pantalla."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "shopperReadiness",
+      "linkedTaskIds": [
+        "A06",
+        "A07"
+      ],
+      "assessment": "Admite persona sin visitas si identidad/país están resueltos; integrar a gating completo."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "applyComposition",
+      "linkedTaskIds": [
+        "A05"
+      ],
+      "assessment": "Mutación del read model antes de completar validación de perfil; exigir aplicación atómica."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "reconcile",
+      "linkedTaskIds": [
+        "A05",
+        "B05"
+      ],
+      "assessment": "Captura estado protegido antes de await HR; controlar generación de sesión y revisión."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "schedule",
+      "linkedTaskIds": [
+        "A06"
+      ],
+      "assessment": "No concluir que elimina todo refresco: watcher externo llama con force=true."
+    },
+    {
+      "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "function": "bind",
+      "linkedTaskIds": [
+        "A05",
+        "A06"
+      ],
+      "assessment": "refresh retorna antes del trabajo de recompose programado; el llamador debe esperar revisión aplicada."
+    },
+    {
+      "file": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "function": "check",
+      "linkedTaskIds": [
+        "A06"
+      ],
+      "assessment": "El watcher existe, consulta revisión y fuerza reconciliación cuando detecta cambio."
+    },
+    {
+      "file": "app/adapters/tya-cumulative-read-model-v2.js",
+      "function": "normalizedName",
+      "linkedTaskIds": [
+        "A01"
+      ],
+      "assessment": "Obtiene nombre de presentación; no sustituye política estable de identidad."
+    },
+    {
+      "file": "app/adapters/tya-cumulative-read-model-v2.js",
+      "function": "profileComplete",
+      "linkedTaskIds": [
+        "A07"
+      ],
+      "assessment": "Elimina dependencia de password en modelo UI; estado de credencial debe ser independiente."
+    },
+    {
+      "file": "app/adapters/tya-cumulative-read-model-v2.js",
+      "function": "findProtectedVisit",
+      "linkedTaskIds": [
+        "B05",
+        "B12"
+      ],
+      "assessment": "Prioriza documento exacto de visita; mantener determinismo al integrar alias."
+    },
+    {
+      "file": "app/adapters/tya-cumulative-read-model-v2.js",
+      "function": "compose",
+      "linkedTaskIds": [
+        "A05",
+        "B05"
+      ],
+      "assessment": "Unificar autoridades de identidad y visitas; preservar universo e histórico."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "refreshSnapshot",
+      "linkedTaskIds": [
+        "G05"
+      ],
+      "assessment": "GET fresco puede programar escrituras de reconciliación; read-only requiere otro contrato."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "scheduleDurableReconciliation",
+      "linkedTaskIds": [
+        "G05",
+        "B03"
+      ],
+      "assessment": "Coordina escrituras por revisión; distinguir ACK publicado del readback final de cada entidad."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "protectedPlatformState",
+      "linkedTaskIds": [
+        "A08"
+      ],
+      "assessment": "Reservas/certificaciones scoped; snapshot de operación se clona completo. Revisar minimización por rol en API, no sólo filtros UI."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "verifiedProtectedPrincipal",
+      "linkedTaskIds": [
+        "A08"
+      ],
+      "assessment": "Verifica rol/tenant/proyecto; no asumir que todas las otras capas usan el mismo alcance."
+    },
+    {
+      "file": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "function": "reconcileVisitDoc",
+      "linkedTaskIds": [
+        "B02",
+        "B03",
+        "B04"
+      ],
+      "assessment": "Parchea estado/asignación HR sin arbitraje del último evento de origen de ambos medios."
+    },
+    {
+      "file": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "function": "transactionExecute",
+      "linkedTaskIds": [
+        "B05",
+        "B06",
+        "B07",
+        "B08"
+      ],
+      "assessment": "Transacciones/ACK útiles pero no ACK externo HR; reservar cada commandType con su prueba."
+    },
+    {
+      "file": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "function": "resolveVisibleLogin",
+      "linkedTaskIds": [
+        "A03",
+        "A09"
+      ],
+      "assessment": "Conservar credenciales/UID al deduplicar; no introducir nuevos usuarios por variación de nombre."
+    },
+    {
+      "file": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "function": "membershipMatches",
+      "linkedTaskIds": [
+        "A03",
+        "A04"
+      ],
+      "assessment": "Unicidad activa es un invariante, no un mecanismo para unir historia por sí solo."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "cxFinanceOperatingRevenueEligible",
+      "linkedTaskIds": [
+        "C03"
+      ],
+      "assessment": "Separación de anticipo y devengo; explicar saldo sin inferir desaparición."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "cxFinanceReviewState",
+      "linkedTaskIds": [
+        "C05"
+      ],
+      "assessment": "La frase obligación no cuantificable puede aparecer aun cuando la fila tiene total; separar falta de conciliación de falta de monto."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "cxFinanceLiquidationEligibility",
+      "linkedTaskIds": [
+        "C06",
+        "C07"
+      ],
+      "assessment": "Mantener bloqueos de validación/moneda/monto; probar caso elegible, no sólo casos deshabilitados."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "cxFinanceReconcileWithProof",
+      "linkedTaskIds": [
+        "C02"
+      ],
+      "assessment": "ACK y refresh se verifican, pero refresh puede retornar antes de recomposición; espera por entidad/revisión requerida."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "cxFinanceExactReconcileReadback",
+      "linkedTaskIds": [
+        "C02"
+      ],
+      "assessment": "Debe comparar read model actualizado y clave de visita única."
+    },
+    {
+      "file": "app/modules/finanzas.js",
+      "function": "refreshDurableFinance",
+      "linkedTaskIds": [
+        "C04",
+        "C05"
+      ],
+      "assessment": "Read de movimientos/cuentas/presupuestos por proyecto; extender coherencia al ámbito Global autorizado."
+    },
+    {
+      "file": "app/core/automations.js",
+      "function": "readAttachment",
+      "linkedTaskIds": [
+        "D02"
+      ],
+      "assessment": "Regex de paréntesis no es extractor PDF válido; DOCX e imagen se aceptan pero retornan vacío."
+    },
+    {
+      "file": "app/core/backend-ai.js",
+      "function": "patch",
+      "linkedTaskIds": [
+        "D03",
+        "E08"
+      ],
+      "assessment": "ask seguro sólo habilita module certification; no prueba IA de Academia/Marketing."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "function": "normalizeGeneratedQuestions",
+      "linkedTaskIds": [
+        "D03"
+      ],
+      "assessment": "INVALID significa ninguna pregunta válida de estructura; no permite atribuir automáticamente fallo de HTTP/proveedor."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "function": "validateVertexQuestionSet",
+      "linkedTaskIds": [
+        "D03"
+      ],
+      "assessment": "Valida cantidad, cuatro opciones, explicación y duplicados; no prueba fidelidad semántica al documento."
+    },
+    {
+      "file": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "function": "generateBank",
+      "linkedTaskIds": [
+        "D03"
+      ],
+      "assessment": "Proveedor real probado con cuatro preguntas; entrada PDF quince y versión documental no cerradas."
+    },
+    {
+      "file": "app/modules/cert.js",
+      "function": "banks",
+      "linkedTaskIds": [
+        "D05",
+        "D06"
+      ],
+      "assessment": "Filtra banco por periodo; separar reutilización de certificación por proyecto de catálogo visible actual."
+    },
+    {
+      "file": "app/modules/cert.js",
+      "function": "save",
+      "linkedTaskIds": [
+        "D04",
+        "D05"
+      ],
+      "assessment": "Recurso durable con ACK; preserve historial/versionado de banco, no confundir metadatos con revisión de preguntas."
+    },
+    {
+      "file": "app/modules/cert.js",
+      "function": "clear",
+      "linkedTaskIds": [
+        "D05",
+        "D06"
+      ],
+      "assessment": "Retiro está implementado; no afirmar que no existe autoadministración alguna."
+    },
+    {
+      "file": "app/core/backend-bulletins.js",
+      "function": "markRead",
+      "linkedTaskIds": [
+        "B13"
+      ],
+      "assessment": "Readback de servidor antes de marcar leído, parte valiosa a conservar."
+    },
+    {
+      "file": "app/core/backend-bulletins.js",
+      "function": "noticeHumanCopy",
+      "linkedTaskIds": [
+        "B13",
+        "E03"
+      ],
+      "assessment": "Nueva presentación R22, no cambio transversal de identidad/HR/finanzas."
+    },
+    {
+      "file": "app/core/topbar.js",
+      "function": "_noticeTarget",
+      "linkedTaskIds": [
+        "B13",
+        "A08"
+      ],
+      "assessment": "Destino por visita y contexto; verificar alias, no navegación sólo por nombre."
+    },
+    {
+      "file": "app/modules/cliente-insights.js",
+      "function": "scoreProg",
+      "linkedTaskIds": [
+        "E04"
+      ],
+      "assessment": "Score propio null cuando no hay fuente; benchmark hardcoded queda fuera de esta protección."
+    },
+    {
+      "file": "app/modules/cliente-insights.js",
+      "function": "save",
+      "linkedTaskIds": [
+        "E04"
+      ],
+      "assessment": "Escribe NPS/notas/reuniones locales; no equivale a colaboración durable del cliente."
+    },
+    {
+      "file": "app/modules/integraciones.js",
+      "function": "connectionRef",
+      "linkedTaskIds": [
+        "E08"
+      ],
+      "assessment": "Devuelve null; un toggle no constituye conexión de proveedor."
+    },
+    {
+      "file": "app/core/permissions.js",
+      "function": "_contextOk",
+      "linkedTaskIds": [
+        "A08"
+      ],
+      "assessment": "Chequeos de scope UI deben ser reflejados en backend/reglas, no considerados frontera de seguridad final."
+    }
+  ],
+  "forensicFindings": [
+    {
+      "id": "F01",
+      "title": "Identidad derivada del nombre sin normalización de acentos",
+      "linkedTaskIds": [
+        "A01",
+        "A02",
+        "A03",
+        "A09",
+        "B11",
+        "B12"
+      ],
+      "classification": "MAPPING_FAILURE",
+      "originalGate": "Ingreso con credencial conservada, diez visitas Stiven sin pérdida; población completa, alias antiguos y proyectos aislados; replay sin nuevas cuentas."
+    },
+    {
+      "id": "F02",
+      "title": "Una equivalencia raw/canonical puede ser rechazada como ambigua",
+      "linkedTaskIds": [
+        "A02",
+        "A03",
+        "A04",
+        "A09"
+      ],
+      "classification": "AUTH_FAILURE",
+      "originalGate": "Alias + canónico cuentan como una identidad; homónimos reales siguen separados; primer ingreso/recarga/cambio de rol no mezclan datos."
+    },
+    {
+      "id": "F03",
+      "title": "La métrica de perfil completo depende de password en el read model",
+      "linkedTaskIds": [
+        "A07",
+        "A09"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "originalGate": "Perfil completo sin contraseña en read model; secretos no expuestos; métricas documentadas con sus campos obligatorios."
+    },
+    {
+      "id": "F04",
+      "title": "Hidratación y refresco no son atómicos para el usuario",
+      "linkedTaskIds": [
+        "A05",
+        "A06",
+        "A09",
+        "B06",
+        "B09",
+        "B11",
+        "B12",
+        "B13",
+        "C02",
+        "E07"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "originalGate": "Tres perfiles, sesión fría/caliente, cambio de rol, red lenta y revisión cambiante; no recarga manual; sin mezclar dos revisiones."
+    },
+    {
+      "id": "F05",
+      "title": "Regla de última modificación HR/plataforma no implementada",
+      "linkedTaskIds": [
+        "G02",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B11",
+        "B14"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "originalGate": "Cambio plataforma→HR y HR→plataforma; último evento válido gana, empate va a revisión; old/new shoppers y Admin coinciden; bitácora no se pierde."
+    },
+    {
+      "id": "F06",
+      "title": "Una lectura fresca puede provocar escrituras durables",
+      "linkedTaskIds": [
+        "G05",
+        "B03",
+        "B14"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "originalGate": "Consulta read-only deja Auth/Firestore/HR invariables; un job escritor genera recibos por sistema y entidad."
+    },
+    {
+      "id": "F07",
+      "title": "Conciliar no está enlazado en Dashboard Financiero",
+      "linkedTaskIds": [
+        "C01",
+        "C02",
+        "C06",
+        "C10"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "originalGate": "Botón visible responde, operación/denegación produce resultado humano, ACK y lectura de la fila; repetir en dashboard y detalle."
+    },
+    {
+      "id": "F08",
+      "title": "Remesa, anticipo y devengo se presentan como categorías incoherentes",
+      "linkedTaskIds": [
+        "C03",
+        "C05",
+        "C06",
+        "C07",
+        "C08",
+        "C09",
+        "C10"
+      ],
+      "classification": "MAPPING_FAILURE",
+      "originalGate": "Q7.300 explicado sin reimportar ni recrear; tablas y KPIs reconcilian; saldos por moneda y periodo correctos en sesión nueva."
+    },
+    {
+      "id": "F09",
+      "title": "El ámbito Global y algunas funciones colaborativas conservan estado local",
+      "linkedTaskIds": [
+        "C04",
+        "C05",
+        "C09",
+        "C10",
+        "E04",
+        "E08"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "originalGate": "Abrir otra sesión/dispositivo muestra mismos datos autorizados; no éxito de guardado antes de acuse/readback."
+    },
+    {
+      "id": "F10",
+      "title": "Extractor de PDF no recupera el instructivo real; DOCX no soportado",
+      "linkedTaskIds": [
+        "G02",
+        "D01",
+        "D02",
+        "D03",
+        "D07",
+        "D08"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "originalGate": "Mismo PDF autorizado conserva el contenido relevante y referencia; quince preguntas se generan desde ese texto y se revisan. El PDF probado de Drive no pudo compararse byte a byte con el archivo local elegido en el navegador."
+    },
+    {
+      "id": "F11",
+      "title": "Certificación tiene CRUD parcial, pero revisión/publicación incompleta",
+      "linkedTaskIds": [
+        "D01",
+        "D03",
+        "D04",
+        "D05",
+        "D06"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "originalGate": "Crear/importar→revisar/editar→publicar→rendir→feedback→persistir→recertificar→retirar con al menos dos bancos y cambio de periodo."
+    },
+    {
+      "id": "F12",
+      "title": "Benchmark del Portal Cliente contiene constantes sin fuente conectada",
+      "linkedTaskIds": [
+        "E04",
+        "E06"
+      ],
+      "classification": "SOURCE_FAILURE",
+      "originalGate": "Con fuente ausente no aparecen benchmark ni juicio de salud; con fuente válida se puede reconstruir la comparación."
+    },
+    {
+      "id": "F13",
+      "title": "Diseño transversal fragmentado y controles visuales insuficientes",
+      "linkedTaskIds": [
+        "G03",
+        "C09",
+        "E01",
+        "E02",
+        "E03",
+        "E11",
+        "V02",
+        "V04"
+      ],
+      "classification": "VISUAL_DEFECT",
+      "originalGate": "Medición de fuente computada y contraste sobre fondo real por componente; desktop y móvil; modales y estados vacío/error/carga; aprobación visual de módulos corregidos."
+    },
+    {
+      "id": "F14",
+      "title": "Confusión de promesa, disponibilidad y prueba por rol",
+      "linkedTaskIds": [
+        "G01",
+        "G03",
+        "B09",
+        "B10",
+        "B12",
+        "B13",
+        "D07",
+        "D08",
+        "E03",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "V02",
+        "V04"
+      ],
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "originalGate": "Toda función publicada como operativa tiene evidencia; toda no aplicable justifica su alcance sin ocultar un P0 obligatorio."
+    },
+    {
+      "id": "F15",
+      "title": "Integridad y control de ejecución se usan como cierre de comportamiento",
+      "linkedTaskIds": [
+        "G01",
+        "G04",
+        "G06",
+        "B06",
+        "B07",
+        "B08",
+        "B09",
+        "B10",
+        "B13",
+        "C06",
+        "C07",
+        "C10",
+        "D06",
+        "D07",
+        "E07",
+        "E11",
+        "V01",
+        "V02",
+        "V03",
+        "V05"
+      ],
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "originalGate": "Ninguna función necesaria se cierra sólo con routeCount, screenshot, grep, metadata o success del job de autoridad."
+    },
+    {
+      "id": "F16",
+      "title": "Cobertura de permisos incompleta para Ops/coordinación y minimización API",
+      "linkedTaskIds": [
+        "G02",
+        "A08",
+        "A09",
+        "E10",
+        "V03"
+      ],
+      "classification": "AUTH_FAILURE",
+      "originalGate": "Matriz negativa entre usuarios y proyectos; llamadas no autorizadas denegadas; datos de otro shopper ausentes donde no están autorizados."
+    }
+  ],
+  "domainRegistry": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "owners": [
+        "app/core/backend-browser-auth.js",
+        "app/core/backend-protected-dev-session-continuity.js",
+        "app/core/backend-cxdata-read-guard.js",
+        "app/core/backend-firebase.js",
+        "app/core/backend-protected-dev-mode.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shopper_hn_3b3c2f5cc1,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. PRESERVE: VRM217 bounded closure; Julissa approved topology; GT/HN keeper ordinary sessions and scope. No census,sweep or refusion.",
+      "contract": "Auth/Identidad/Seguridad/Contexto"
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/app.js",
+        "app/index-backend-dev.html",
+        "app/core/build-lock.js",
+        "app/styles/theme.css",
+        "app/styles/layout.css",
+        "app/manifest.webmanifest",
+        "app/sw.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "VRM134 comparable cold/warm initial load in relevant roles and only uncovered navigation/cache scenarios; integral acceptance. PRESERVE: R20 ordinary credential login/logout/relogin and accepted session guards; restored-session samples are not global cold-login/p95 proof.",
+      "contract": "Release/Visual/Security"
+    },
+    {
+      "domain": "benefits",
+      "classification": "MATCH",
+      "owners": [
+        "app/modules/beneficios.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper"
+      ],
+      "actionRequired": "Preserve complete RUN2588 Benefits READ_ONLY contract and B5 human approval. Reprove only on exact owner/dependency/configuration/contract drift. September payout/Q7300 and other C09/C10 financial-command residuals remain in finance-core B8.",
+      "contract": "Identidad/Visual"
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+        "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+        "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+        "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
+        "tools/hr-source/tya-resolve-live-month-tabs.mjs",
+        "backend/contracts/tya-hr-column-map-r20-v1.json",
+        "app/core/backend-hr-source-bridge.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+      "contract": "HR/Disponibles/Sync/KPIs"
+    },
+    {
+      "domain": "certifications",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E",
+      "owners": [
+        "app/modules/academia.js",
+        "app/modules/cert.js",
+        "app/data/tya-certification-carryover-source-safe.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "app/core/backend-certifications.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper"
+      ],
+      "actionRequired": "D08 real UI course/lesson/resource/progress and independent Shopper/Cliente sessions; only uncovered authorized Admin edit and role negatives. PRESERVE: B4 bank operations and accepted D06 locked; D08 RUN2391 providerACK/new-session/replay/other-learner/negative and cleanup PASS. No global recertification or repeated bank attempts.",
+      "contract": "Shopper/Identidad/Visual"
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/core/cliente-data.js",
+        "app/modules/cliente.js",
+        "app/modules/cliente-extra.js",
+        "app/modules/cliente-insights.js"
+      ],
+      "roles": [
+        "Admin",
+        "Cliente"
+      ],
+      "actionRequired": "F09 durable NPS/notes/meetings with providerACK/newsession/role proof; uncovered independent HR KPI/filters/drilldown/visual clauses. PRESERVE: F12 no-fabrication,VRM331 heading and VRM235 clientAuth control closure; these do not prove durable collaboration.",
+      "contract": "Identidad/KPIs/ReportKit"
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "owners": [
+        "app/core/config.js",
+        "app/core/router.js",
+        "app/core/permissions.js",
+        "app/core/data.js",
+        "app/core/data-source.js",
+        "app/config/runtime.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "Only uncovered operation×role×project cases at API,Firestore and Storage plus applicable durable self-administration; actual denials required. PRESERVE: Existing scoped positive/negative permissions and role preview preserved; no broad permissions rewrite.",
+      "contract": "Contexto/Seguridad/Release"
+    },
+    {
+      "domain": "dashboard-operation",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/midia.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "B11 one independent externalHR revision, exact keys and totals across MiDia,Dashboard,Visits,HR,Reports,GT/HN/context/drilldowns; uncovered MiDia obligations. PRESERVE: B6 locked and VRM259 badge; accepted44visit GT34/HN10 readback retained.",
+      "contract": "Operación/HR/Visual"
+    },
+    {
+      "domain": "documents-resources",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/modules/novedades.js",
+        "app/modules/tablon.js",
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js",
+        "app/modules/soporte.js",
+        "app/core/backend-bulletins.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "D07 isolated PDF create/metadata/version/retirement, foreign-doc denial,durable readACK and visit/revision binding. Corrected authenticated resource focal still requires current live proof. PRESERVE: Original authenticated7pagePDF Admin/Shopper open/download and RUN2387 preserved; TXT lifecycle does not certify PDF lifecycle.",
+      "contract": "Proyecto/Contexto/Visual"
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "owners": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/core/costos.js",
+        "app/modules/finanzas.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "Read existing twoQ7300 IDs/application; exact uncovered C06/C07/C09/C10 eligible/blockedUI,reload/replay/currency/support; single exact September reconciliation with external dated authority and historical metadata deltaVRM336. PRESERVE: C04/C05 provider13/13 and July/August approved cuts,B5 retained. No thirdadvance,banktransfer or manufactured payment.",
+      "contract": "País/moneda/Persistencia/ACK"
+    },
+    {
+      "domain": "historical",
+      "classification": "MATCH",
+      "owners": [
+        "app/modules/historico.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": null,
+      "contract": "Histórico"
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "owners": [
+        "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/adapters/cxorbia-admin-identity-review-notice-v1.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "uncovered E02/E03/E11/context/period/visual cells. PRESERVE: VRM259 badge and B7 human acceptance preserved; no generic B7 reopening.; RUN2537 internal refresh country full cycle PASS, separate scoped VRM345 closure.",
+      "contract": "HR/Auth/Identidad/Visual"
+    },
+    {
+      "domain": "identity-membership-roll-forward",
+      "classification": "MATCH",
+      "owners": [
+        "app/adapters/cxorbia-exact-identity-contract-v1.js",
+        "app/adapters/cxorbia-identity-roll-forward-v1.js",
+        "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+        "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+        "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper"
+      ],
+      "actionRequired": "NONE__B1_CANONICAL_SESSION_OWNER_LIVE_REPROOF_PASS",
+      "contract": "Shopper/Auth/Identidad"
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/adapters/cxorbia-command-http-transport-v1.js",
+        "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+        "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+        "app/adapters/cxorbia-legal-runtime-http-v1.js",
+        "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+        "backend/contracts/cxorbia-academy-base-progress-contract-v1.json"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+      "contract": "Persistencia/Writes HR/ACK/idempotencia"
+    },
+    {
+      "domain": "phase-a-supporting-core",
+      "classification": "MATCH",
+      "owners": [
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "backend/runtime/hr-live-service/Dockerfile",
+        "app/adapters/tya-phase-a-authority-compat-v1.js",
+        "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+        "app/adapters/tya-delegated-coordination-finance-guard-v1.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": null,
+      "contract": "Release/Security"
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "owners": [
+        "app/modules/proyectos.js",
+        "app/modules/periodos.js",
+        "app/modules/hr-source.js",
+        "app/modules/proyecto-wizard.js",
+        "backend/contracts/cxorbia-project-source-contract-v1.json",
+        "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-country-hr-binding-v1.mjs"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "Original Excel Online country bindings and independent Make/Graph source readback; exact ACK/replay/conflict/echo plus isolated A/B Admin+Shopper Chrome. No repeat DEV deploy.",
+      "contract": "Proyecto/Fuente/Contexto/País/second-project readiness"
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/modules/cuestionario-shopper.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper"
+      ],
+      "actionRequired": "Authorized project-period-visit providerURL/version and correct shopperopen/submitted independent providerreadback; no fabricated questionnaire orURL. PRESERVE: Exact served routing/config source and failclosed missinglink preserved.",
+      "contract": "Proyecto/Fuente/Contexto"
+    },
+    {
+      "domain": "reports-admin-shopper",
+      "classification": "MATCH",
+      "owners": [
+        "app/modules/operacion-extra.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": null,
+      "contract": "KPIs/Identidad/ReportKit"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+      "owners": [
+        "app/core/shopper-credential-rule.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/shoppers.js",
+        "app/modules/misvisitas.js",
+        "app/core/shoppers-store.js"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper"
+      ],
+      "actionRequired": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; three exactAuth exceptions; B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review. PRESERVE: VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved.",
+      "contract": "Shopper/Auth/Identidad/Histórico"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "owners": [
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "app/modules/visitas.js",
+        "app/modules/visita-detalle.js",
+        "app/modules/revision-admin.js",
+        "app/modules/postulaciones.js",
+        "app/modules/reservas.js",
+        "firestore.rules"
+      ],
+      "roles": [
+        "Admin",
+        "Shopper",
+        "Cliente"
+      ],
+      "actionRequired": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK. PRESERVE: B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved.",
+      "contract": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia"
+    },
+    {
+      "domain": "tenant-admin-config-branding",
+      "classification": "MATCH",
+      "owners": [
+        "app/modules/configuracion.js",
+        "app/modules/administrabilidad.js",
+        "app/modules/marca.js"
+      ],
+      "roles": [
+        "Admin"
+      ],
+      "actionRequired": "NONE_WITHIN_APPROVED_TENANT_DOMAIN_CONTRACT; preserve RUN2537 complete readonly and country UI/provider/reload/replay/cleanup proof unless reproducible drift.",
+      "contract": "Persistence success only after remote ACK where mutation exists; otherwise connected mode is explicitly immutable/read-only and browser-local state is never operational truth."
+    }
+  ],
+  "currentNewEvidence": {
+    "b11": [
+      {
+        "runId": 44769697976,
+        "receipt": "docs/checkpoints/CXORBIA_I3_B11_R23_GT_HN_SAME_REVISION_CHROMIUM_PASS_20261120.json",
+        "result": "PASS_AUTHENTICATED_ADMIN_GT_HN_EXACT_HR_REVISION"
+      },
+      {
+        "runId": 44771623030,
+        "receipt": "docs/checkpoints/CXORBIA_I3_B11_DASHBOARD_MIDIA_CURRENT_HR_44_VISITS_PASS_20261120.json",
+        "result": "PASS_DASHBOARD_MIDIA_44_VISITS_EXACT_ID_SETS"
+      }
+    ],
+    "b14": {
+      "scenario": 10200465,
+      "MakeGraphDoubleGet": "PASS",
+      "appConsumesExcelOriginal": "NOT_PROVEN",
+      "credentialEnvAndGitHub": "ABSENT_FOUR_CHECKED_NAMES",
+      "currentCodeNotComposed": [
+        "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "class": "AUTH_FAILURE_AND_RELEASE_COMPOSITION_FAILURE"
+    },
+    "C3": {
+      "lastRunId": 44657930084,
+      "report": "C3_OWNER_RECEIPT_MISSING 15 domains; C3_FULL_DOMAIN_EVIDENCE_REQUIRED",
+      "match": 6,
+      "unmatched": 15
+    }
+  },
+  "workflow": {
+    "writer": "ChatGPT Direct I3",
+    "Work": "INDEPENDENT_BROWSER_READ_ONLY_ACCEPTANCE_EVIDENCE",
+    "WorkWritesForbidden": true,
+    "IAM": "Existing private Make API token or IAM secret may require explicit user credential action; no raw secret in chat",
+    "dev": "One serial candidate build only after source proven",
+    "i4": "Explicit user go-live authorization only after I3 GO"
+  },
+  "exactGatesRemaining": [
+    {
+      "id": "B14-IAM",
+      "type": "AUTH_FAILURE",
+      "done": false,
+      "criteria": "Secure Make API credential in DEV only, exact named service revision and readback"
+    },
+    {
+      "id": "B14-INTEGRATION",
+      "type": "MAPPING_FAILURE",
+      "done": false,
+      "criteria": "Backend operational HR Excel scoped GT/HN period+scenario whole-read with two independent provider observations, mapping fail-closed; no PII exposed"
+    },
+    {
+      "id": "B14-WRITE",
+      "type": "PROVIDER_FAILURE",
+      "done": false,
+      "criteria": "Only where authorized bidirectional, QA-only replay, provider ACK, idempotence, zero residues"
+    },
+    {
+      "id": "B11-CROSS-SURFACE",
+      "type": "FUNCTIONAL_DEFECT_IF_PROVEN",
+      "done": false,
+      "criteria": "MiDia/Dashboard/Visits/Reports same external revision, GT/HN and owner path/role/operation readback, preserve passed B11 tests"
+    },
+    {
+      "id": "C3",
+      "type": "RELEASE_COMPOSITION_FAILURE",
+      "done": false,
+      "criteria": "15 domain owner/role/operation/visual receipts path-bound to same served source; preserve 6 MATCH"
+    },
+    {
+      "id": "G20-G21",
+      "type": "RELEASE_COMPOSITION_FAILURE",
+      "done": false,
+      "criteria": "one source, build, certified immutable artifact, same-run visuals and Gate21 manifest verification"
+    },
+    {
+      "id": "I4",
+      "type": "RELEASE_COMPOSITION_FAILURE",
+      "done": false,
+      "criteria": "After I3 GO and separate authorization, immutable deploy exact artifact and rollback/prod lock"
+    }
+  ],
+  "preservation": {
+    "historicalTasksReopened": false,
+    "originalPlanModified": false,
+    "allTaskIdsPresent": true,
+    "noP0MovedToPhaseB": true,
+    "noOverlays": true,
+    "noLegacyDataImport": true,
+    "productionTouched": false,
+    "noNewBuild": true,
+    "noNewDomainMatch": true,
+    "allHistoricalHumanFindingsRetained": true,
+    "legalNonBlockingExceptionPreserved": true,
+    "approvedB4B5B6B7Preserved": true
+  },
+  "nextAction": "Use Work read-only authenticated Chrome role matrix evidence and existing B11 focal PASS. Direct technical writer fixes exact B14 secured Make provider integration under P0 owner and source approval; consume remaining 15 per-domain C3 receipts; only then Gate20/21 and I3 GO before explicit I4 approval."
+}
