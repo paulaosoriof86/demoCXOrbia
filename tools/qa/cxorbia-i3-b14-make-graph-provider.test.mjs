@@ -27,7 +27,7 @@ test('foreign source and worksheet identity are rejected',()=>{
  }
 });
 test('remote content drift, empty ACK and missing critical headers fail closed',()=>{
- assert.throws(()=>verifyMakeGraphReadOutput({...output(),values2:[...values,['GT','002','Other']]},{...binding.scope,bindingFingerprint:binding.proof.bindingFingerprint},binding.privateProvider.worksheets[0],'A1:AI140',contract),/B14_INDEPENDENT_SOURCE_REVISION_CONFLICT/);
+ assert.throws(()=>verifyMakeGraphReadOutput({...output(),rowCount2:3,values2:[...values,['GT','002','Other']]},{...binding.scope,bindingFingerprint:binding.proof.bindingFingerprint},binding.privateProvider.worksheets[0],'A1:AI140',contract),/B14_INDEPENDENT_SOURCE_REVISION_CONFLICT/);
  assert.throws(()=>verifyMakeGraphReadOutput({...output(),status1:403},{...binding.scope,bindingFingerprint:binding.proof.bindingFingerprint},binding.privateProvider.worksheets[0],'A1:AI140',contract),/B14_GRAPH_ACK_MISSING/);
  assert.throws(()=>validateGraphColumnMap([['No','Map'],['x','y']],contract,'GT'),/B14_HEADER_AMBIGUOUS_OR_MISSING/);
 });
