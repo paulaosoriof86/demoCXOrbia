@@ -1,0 +1,160 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceServed": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "controlTest": "4600654e5cd7b3948f2be1d02d73401c507bbe96",
+  "externalHrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+  "readOnly": true,
+  "production": false,
+  "hrWrites": 0,
+  "providerWrites": 0,
+  "scope": "Admin Visitas individual visit keys and Reportes coverage country keys and values compared with the same independent DEV HR revision. Distinct from B14 original Excel end-to-end.",
+  "b11": {
+    "run": 44817603113,
+    "job": 136569868496,
+    "number": 836,
+    "artifact": 14670700005,
+    "artifactSha256": "sha256:8de1d82d551f9cb14b6f29620b3602c301f1540bb487fd960c2ab2f2b03b79c1",
+    "passed": true,
+    "countries": [
+      {
+        "country": "GT",
+        "visits": 34,
+        "visitKeysMatched": 34,
+        "keysetSha256": "4cdce3938cebdbdac5ac67a257ac1b1e5404fa9cdbeb13f185d54179e8e03f76",
+        "externalRealized": 17,
+        "reportedRealized": 17,
+        "coverage": "50%"
+      },
+      {
+        "country": "HN",
+        "visits": 10,
+        "visitKeysMatched": 10,
+        "keysetSha256": "9265a0800db436d65d3bfcade57c11441c100b183ab77089c9e30d6de31f41bc",
+        "externalRealized": 5,
+        "reportedRealized": 5,
+        "coverage": "50%"
+      }
+    ],
+    "pageErrors": 0,
+    "previousDashboardAndMiDia": 44771623030,
+    "previousScopedKpis": 44769697976,
+    "remaining": "Uncovered role operations, Mi Dia handoffs, archive/delete and residual domain obligations."
+  },
+  "work": {
+    "total": 28,
+    "passes": [
+      "GT01",
+      "GT02",
+      "GT03",
+      "GT04",
+      "GT05",
+      "GT06",
+      "GT07",
+      "GT08",
+      "GT09",
+      "GT10",
+      "GT13",
+      "GT14",
+      "GT16",
+      "HN01",
+      "HN02",
+      "HN03",
+      "HN04",
+      "HN05",
+      "HN07",
+      "HN09"
+    ],
+    "fail": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ],
+    "hold": [
+      "GT15",
+      "HN08",
+      "AD01",
+      "OP01",
+      "CL01"
+    ],
+    "indexedPassByDomain": {
+      "auth-protected-data-runtime": [
+        "GT01",
+        "GT08",
+        "GT16",
+        "HN01",
+        "HN09"
+      ],
+      "base-router-shell-cache": [
+        "GT01",
+        "GT08",
+        "GT13",
+        "HN01",
+        "HN07"
+      ],
+      "certifications": [
+        "GT02",
+        "GT03",
+        "GT14",
+        "HN04"
+      ],
+      "documents-resources": [
+        "GT04",
+        "GT10",
+        "GT13",
+        "HN05",
+        "HN09"
+      ],
+      "visits-review-postulations-reservations": [
+        "GT05",
+        "GT06",
+        "GT07",
+        "GT13",
+        "HN02",
+        "HN03",
+        "HN07"
+      ],
+      "human-runtime-domain-consistency": [
+        "GT05",
+        "HN03"
+      ],
+      "shoppers-mi-visitas-profile": [
+        "GT07",
+        "GT09",
+        "HN02",
+        "HN07"
+      ],
+      "dashboard-operation": [
+        "GT09",
+        "HN02"
+      ]
+    },
+    "importManifest": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/IMPORT_C3_MANIFEST.json",
+    "domainPromotions": 0
+  },
+  "b14": {
+    "accessReceipt": "docs/checkpoints/CXORBIA_I3_B14_MAKE_TOOLBOX_IAM_WORK_EVIDENCE_20261120.json",
+    "serviceIdentityAuthentication": "PASS",
+    "readOnlyToolList": 1,
+    "authorizedTool": "t8430_cxorbia_b_14_read",
+    "servicePreflight": 44817354812,
+    "lastAttempt": "MAPPING_FAILURE:EXCEL_HR_SOURCE_POLICY",
+    "origin": "Runtime service identity in QA, distinct from a deployed app request",
+    "currentOperationalSource": "served reader requires google_sheets",
+    "targetOperationalSource": "excel_online with per-country bindings",
+    "risk": "Changing the selector alone would cause the existing live HR reader to fail. Validate the fully scoped original workbook data and its projection before cutover."
+  },
+  "strictDomains": {
+    "matched": 6,
+    "total": 21,
+    "terminalPromotions": 0
+  },
+  "humanPass": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
