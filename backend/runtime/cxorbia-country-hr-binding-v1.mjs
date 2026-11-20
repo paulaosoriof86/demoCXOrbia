@@ -4,7 +4,7 @@
    The operational adapter must independently read the provider and verify
    the binding fingerprint again before publishing its snapshot or an ACK. */
 import crypto from 'node:crypto';
-import {validateProjectPayload} from './cxorbia-project-command-provider-v1.mjs';
+import {validateProjectPayload,validateExcelCountryBindings} from './cxorbia-project-command-provider-v1.mjs';
 
 const str=v=>String(v==null?'':v).trim();
 const sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex');
@@ -66,16 +66,30 @@ export function discoverExcelMonthlyWorksheets({worksheets=[],periodCatalog=[],e
     providerWrites:0,firestoreWrites:0,hrWrites:0};
 }
 
-export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,countryCode,periodId}={}){
+export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,countryCode,periodId,purpose='operational'}={}){
   if(!db?.doc||!id(tenantId)||!id(projectId)||!/^[A-Z]{2}$/.test(str(countryCode))||!id(periodId))fail('SCOPE_INVALID');
   const scope={tenantId:str(tenantId),projectId:str(projectId),countryCode:str(countryCode),periodId:str(periodId)};
   const project=await db.doc(`tenants/${scope.tenantId}/projects/${scope.projectId}`).get();
   if(!project.exists)fail('PROJECT_MISSING');
-  const raw=project.data()||{},source=raw.operationalSource||raw.routeSource||{};
+  const raw=project.data()||{},active=raw.operationalSource||raw.routeSource||{};
+  let source=active, mirrorStamp=null;
+  if(!['operational','original_readback'].includes(purpose))fail('PURPOSE');
   if(raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');
   if(!Array.isArray(raw.countries)||!raw.countries.includes(scope.countryCode))fail('COUNTRY_NOT_ASSIGNED');
+  if(purpose==='original_readback' && active.providerType==='google_sheets'){
+    const reference=active.providerBindingId||active.integrationSettingId||active.providerRef;
+    if(active.mode!=='external'||active.readPolicy!=='external_live'||active.writePolicy!=='external_read_only'||!id(reference))fail('MIRROR_SCOPE');
+    const mirror=await db.doc(`tenants/${scope.tenantId}/integrationSettings/${reference}`).get();
+    const row=mirror.exists?mirror.data():null;
+    if(!row||row.enabled!==true||row.tenantId!==scope.tenantId||row.projectId!==scope.projectId||
+       row.providerType!=='google_sheets'||row.readPolicy!==active.readPolicy||row.writePolicy!==active.writePolicy||
+       row.hrWritesEnabled!==false||row.mappingRef!==active.mappingRef||(row.providerBindingId&&row.providerBindingId!==reference))fail('MIRROR_INTEGRATION');
+    source={mode:'external',providerType:'excel_online',readPolicy:'external_live',writePolicy:'external_read_only',periodDiscovery:'provider_auto',countryBindings:row.originalReadbackBindings};
+    if(validateExcelCountryBindings(raw.countries,source).length)fail('ORIGINAL_READBACK_REGISTRY');
+    mirrorStamp=stamp(mirror);
+  }
   if(source.mode!=='external'||source.providerType!=='excel_online'||source.readPolicy!=='external_live')fail('SOURCE_POLICY');
-  const valid=validateProjectPayload({...raw,operationalSource:source});
+  const valid=mirrorStamp ? {ok:true} : validateProjectPayload({...raw,operationalSource:source});
   if(!valid.ok)fail('PROJECT_CONFIG_INVALID');
   const candidates=source.countryBindings.filter(x=>x.countryCode===scope.countryCode);
   if(candidates.length!==1)fail('COUNTRY_BINDING_AMBIGUOUS');
@@ -84,6 +98,7 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
   if(!binding.exists)fail('INTEGRATION_MISSING');
   const setting=binding.data()||{};
   if(setting.tenantId!==scope.tenantId||setting.projectId!==scope.projectId||setting.countryCode!==scope.countryCode)fail('INTEGRATION_SCOPE');
+  if(mirrorStamp && setting.purpose!=='original_readback')fail('ORIGINAL_READBACK_PURPOSE');
   if(setting.enabled!==true||setting.providerType!=='excel_online'||setting.readPolicy!=='external_live'||
     setting.writePolicy!==source.writePolicy||setting.mappingRef!==country.mappingRef||
     (setting.providerBindingId&&setting.providerBindingId!==bindingId))fail('INTEGRATION_POLICY');
@@ -110,7 +125,7 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
   const selected=matches.map(x=>({worksheetId:x.worksheetId,worksheetName:x.worksheetName,scenarioKey:str(x.scenarioKey)||null}))
     .sort((a,b)=>str(a.scenarioKey).localeCompare(str(b.scenarioKey))||a.worksheetId.localeCompare(b.worksheetId));
   const projectStamp=stamp(project),settingStamp=stamp(binding);
-  const fingerprint=sha(JSON.stringify({scope,projectStamp,settingStamp,bindingId,driveId:setting.driveId,itemId:setting.itemId,
+  const fingerprint=sha(JSON.stringify({scope,projectStamp,settingStamp,...(mirrorStamp?{mirrorStamp,purpose}:{}),bindingId,driveId:setting.driveId,itemId:setting.itemId,
     worksheets:selected,mappingRef:country.mappingRef,writePolicy:source.writePolicy}));
   return {
     scope,

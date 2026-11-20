@@ -69,3 +69,29 @@ test('two distinct header rows remain ambiguous even when both match the same co
   assert.throws(() => validateGraphColumnMap([header, [], header], hrContract, 'HN'),
     /B14_HEADER_AMBIGUOUS_OR_MISSING/);
 });
+
+test('toolbox transport retains independent Graph read and binding verification',async()=>{
+  const seen=[];
+  const result=await readExcelPeriodThroughMake({binding,columnMap:contract,runScenario:async inputs=>{seen.push(inputs);return output();}});
+  assert.equal(seen.length,1);
+  assert.equal(result.proof.externalRevisionIndependentlyVerified,true);
+  await assert.rejects(readExcelPeriodThroughMake({binding,columnMap:contract,runScenario:async()=>({...output(),countryCode:'HN'})}),/B14_RESPONSE_SCOPE_MISMATCH/);
+});
+
+import { resolveCountryHrPeriodBinding } from '../../backend/runtime/cxorbia-country-hr-binding-v1.mjs';
+test('the original verification registry is project bound and cannot select the operational source',async()=>{
+ const scope={tenantId:'tenant',projectId:'project',countryCode:'GT',periodId:'period'};
+ const active={mode:'external',providerType:'google_sheets',providerBindingId:'mirror',mappingRef:'map',readPolicy:'external_live',writePolicy:'external_read_only'};
+ const docs={
+  'tenants/tenant/projects/project':{tenantId:'tenant',projectId:'project',countries:['GT'],operationalSource:active},
+  'tenants/tenant/integrationSettings/mirror':{tenantId:'tenant',projectId:'project',...active,enabled:true,hrWritesEnabled:false,originalReadbackBindings:[{countryCode:'GT',providerBindingId:'original-gt',mappingRef:'map'}]},
+  'tenants/tenant/integrationSettings/original-gt':{tenantId:'tenant',projectId:'project',countryCode:'GT',providerType:'excel_online',purpose:'original_readback',enabled:true,hrWritesEnabled:false,readPolicy:'external_live',writePolicy:'external_read_only',mappingRef:'map',providerBindingId:'original-gt',itemId:'item',driveId:'drive',periodSheets:[{periodId:'period',worksheetId:'sheet',worksheetName:'Noviembre'}]}
+ };
+ const db={doc:key=>({get:async()=>({exists:Boolean(docs[key]),data:()=>docs[key],updateTime:{seconds:1,nanoseconds:0}})})};
+ await assert.rejects(resolveCountryHrPeriodBinding({db,...scope}),/SOURCE_POLICY/);
+ const proof=await resolveCountryHrPeriodBinding({db,...scope,purpose:'original_readback'});
+ assert.equal(proof.privateProvider.itemId,'item');assert.equal(proof.proof.hrWrites,false);
+ await assert.rejects(resolveCountryHrPeriodBinding({db,...scope,countryCode:'HN',purpose:'original_readback'}),/COUNTRY_NOT_ASSIGNED/);
+ docs['tenants/tenant/integrationSettings/original-gt'].projectId='foreign';
+ await assert.rejects(resolveCountryHrPeriodBinding({db,...scope,purpose:'original_readback'}),/INTEGRATION_SCOPE/);
+});

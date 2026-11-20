@@ -214,6 +214,37 @@ function canonicalProtectedAuthNamespace(role,value){
   if(namespace)return namespace;
   return String(role||'').trim().toLowerCase()==='shopper'?'shopper':'';
 }
+
+async function readOriginalThroughToolbox(binding, columnMap) {
+  const url = new URL(process.env.CXORBIA_B14_MAKE_TOOLBOX_URL || 'about:blank');
+  const token = process.env.CXORBIA_B14_MAKE_TOOLBOX_TOKEN;
+  if (url.origin !== 'https://eu2.make.com' || !/^\/mcp\/server\/[0-9a-f-]{36}$/.test(url.pathname) || url.search || url.hash || url.username || url.password)
+    throw Error('MAPPING_FAILURE:B14_TOOLBOX_URL');
+  if (!token) throw Error('AUTH_FAILURE:B14_TOOLBOX_CREDENTIAL');
+  const [{Client},{StreamableHTTPClientTransport}] = await Promise.all([
+    import('@modelcontextprotocol/sdk/client/index.js'), import('@modelcontextprotocol/sdk/client/streamableHttp.js')
+  ]);
+  const client = new Client({name:'cxorbia-hr-readback',version:'1.0.0'});
+  try {
+    await client.connect(new StreamableHTTPClientTransport(url, {requestInit:{redirect:'error',headers:{Authorization:'Bearer '+token}}}));
+    const list = await client.listTools();
+    const tool = list.tools[0];
+    if (list.nextCursor || list.tools.length !== 1 || tool?.annotations?.readOnlyHint !== true ||
+        !['bindingFingerprint','worksheetId','driveId','itemId','periodId'].every(key=>Object.hasOwn(tool.inputSchema?.properties || {},key)))
+      throw Error('MAPPING_FAILURE:B14_TOOLBOX_CONTRACT');
+    const runScenario = async inputs => {
+      const reply = await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});
+      if (reply.isError) throw Error('PROVIDER_FAILURE:B14_TOOLBOX_EXECUTION');
+      if (reply.structuredContent) return reply.structuredContent.outputs ?? reply.structuredContent;
+      if (reply.content?.length !== 1 || reply.content[0].type !== 'text') throw Error('PROVIDER_FAILURE:B14_TOOLBOX_RESPONSE');
+      try { return JSON.parse(reply.content[0].text); } catch { throw Error('PROVIDER_FAILURE:B14_TOOLBOX_RESPONSE'); }
+    };
+    return await readExcelPeriodThroughMake({binding,columnMap,runScenario});
+  } finally {
+    await client.close().catch(()=>{});
+  }
+}
+
 async function verifiedProtectedPrincipal(req,scope){
   const token=String(req.headers.authorization||'').trim().replace(/^Bearer\s+/i,'');
   if(!token)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_BEARER_REQUIRED');
@@ -633,12 +664,14 @@ const server=http.createServer(async(req,res)=>{
       if(!['super','admin'].includes(principal.role))return sendJson(res,403,{ok:false,error:'role_denied'});
       const countryCode=String(url.searchParams.get('countryCode')||'').toUpperCase();
       const periodId=String(url.searchParams.get('periodId')||'');
-      const bound=await resolveCountryHrPeriodBinding({db:principal.db,...requestedScope,countryCode,periodId});
+      const bindingRequest={db:principal.db,...requestedScope,countryCode,periodId,purpose:'original_readback'};
+      const bound=await resolveCountryHrPeriodBinding(bindingRequest);
       const contractPath=path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json');
       const columnMap=JSON.parse(fs.readFileSync(contractPath,'utf8'));
-      const read=await readExcelPeriodThroughMake({binding:bound,token:process.env.CXORBIA_B14_MAKE_API_TOKEN,
-        scenarioId:process.env.CXORBIA_B14_MAKE_SCENARIO_ID,columnMap});
-      return sendJson(res,200,{ok:true,...read.proof,sourceSafe:true,writes:false,hrWrites:false,production:false});
+      const read=await readOriginalThroughToolbox(bound,columnMap);
+      const after=await resolveCountryHrPeriodBinding(bindingRequest);
+      if(after.proof.bindingFingerprint!==bound.proof.bindingFingerprint)throw Error('MAPPING_FAILURE:B14_BINDING_CHANGED_DURING_READ');
+      return sendJson(res,200,{ok:true,...read.proof,bindingPurpose:'original_readback',sourceSafe:true,writes:false,hrWrites:false,production:false});
     }
     const forceFresh=url.searchParams.get('fresh')==='1';
     const protectedRequested=url.searchParams.get('protectedState')==='1';

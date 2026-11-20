@@ -58,7 +58,7 @@ export function verifyMakeGraphReadOutput(out,scope,worksheet,rangeAddress,contr
     sourceContentSha256:firstHash,rowsReturned:first.length,...mapping,independentReadback:true,remoteRevisionVerified:true,
     method:'GET_GRAPH_WORKBOOK_RANGE_VIA_MAKE',hrWrites:0,providerWriteRequests:0,production:false}};
 }
-export async function readExcelPeriodThroughMake({binding,token,scenarioId,rangeAddress='A1:AI140',columnMap,fetchImpl=fetch}={}){
+export async function readExcelPeriodThroughMake({binding,token,scenarioId,rangeAddress='A1:AI140',columnMap,fetchImpl=fetch,runScenario}={}){
   const scope=binding?.scope||{},provider=binding?.privateProvider||{},proof=binding?.proof||{};
   if(proof.providerType!=='excel_online'||proof.readPolicy!=='external_live'||proof.writePolicy!=='external_read_only'||proof.hrWrites!==false)fail('MAPPING_FAILURE','SOURCE_POLICY');
   if(![scope.tenantId,scope.projectId,scope.periodId].every(isId)||!/^[A-Z]{2}$/.test(str(scope.countryCode))||
@@ -67,22 +67,25 @@ export async function readExcelPeriodThroughMake({binding,token,scenarioId,range
   if(!/^A1:[A-Z]{1,2}(?:[1-9][0-9]{0,2})$/.test(rangeAddress))fail('MAPPING_FAILURE','RANGE_INVALID');
   const match=rangeAddress.match(/([A-Z]{1,2})(\d+)$/),columns=[...match[1]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0),rows=Number(match[2]);
   if(columns>45||rows>200)fail('MAPPING_FAILURE','RANGE_LIMIT_EXCEEDED');
-  if(!str(token))fail('AUTH_FAILURE','MAKE_API_TOKEN_MISSING');
-  if(!/^\d{6,12}$/.test(str(scenarioId)))fail('MAPPING_FAILURE','MAKE_READER_SCENARIO_MISSING');
+  if(!runScenario&&!str(token))fail('AUTH_FAILURE','MAKE_API_TOKEN_MISSING');
+  if(!runScenario&&!/^\d{6,12}$/.test(str(scenarioId)))fail('MAPPING_FAILURE','MAKE_READER_SCENARIO_MISSING');
   if(!columnMap?.contractId||columnMap.contractId!==provider.mappingRef)fail('MAPPING_FAILURE','MAPPING_CONTRACT_NOT_BOUND');
-  const taken=new Set(),readings=[];
-  for(const sheet of provider.worksheets){
-    if(!isPrivate(sheet.worksheetId)||taken.has(sheet.worksheetId))fail('MAPPING_FAILURE','WORKSHEET_INVALID_OR_DUPLICATE');
-    taken.add(sheet.worksheetId);
-    const inputs={tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,countryCode:scope.countryCode,
-      bindingFingerprint:proof.bindingFingerprint,driveId:provider.driveId,itemId:provider.itemId,worksheetId:sheet.worksheetId,rangeAddress};
+  async function runRestScenario(inputs){
     const response=await fetchImpl('https://eu2.make.com/api/v2/scenarios/'+scenarioId+'/run',{
       method:'POST',headers:{Authorization:'Token '+token,'Content-Type':'application/json','Cache-Control':'no-store'},
       body:JSON.stringify({data:inputs,responsive:true}),signal:AbortSignal.timeout(38000)});
     if(!response?.ok)fail('PROVIDER_FAILURE','MAKE_READ_HTTP_'+Number(response?.status||0));
     const body=await response.json();
     if(!['1',1,'success'].includes(body?.status)||!/^[a-f0-9]{32}$/i.test(str(body.executionId)))fail('PROVIDER_FAILURE','MAKE_READ_NOT_COMPLETED');
-    const output=body.outputs||body?.response?.outputs||body?.data?.outputs;
+    return body.outputs||body?.response?.outputs||body?.data?.outputs;
+  }
+  const taken=new Set(),readings=[];
+  for(const sheet of provider.worksheets){
+    if(!isPrivate(sheet.worksheetId)||taken.has(sheet.worksheetId))fail('MAPPING_FAILURE','WORKSHEET_INVALID_OR_DUPLICATE');
+    taken.add(sheet.worksheetId);
+    const inputs={tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,countryCode:scope.countryCode,
+      bindingFingerprint:proof.bindingFingerprint,driveId:provider.driveId,itemId:provider.itemId,worksheetId:sheet.worksheetId,rangeAddress};
+    const output=await (runScenario || runRestScenario)(inputs);
     const received=verifyMakeGraphReadOutput(output,{...scope,bindingFingerprint:proof.bindingFingerprint},sheet,rangeAddress,columnMap);
     readings.push({worksheetId:sheet.worksheetId,scenarioKey:sheet.scenarioKey||null,...received});
   }
