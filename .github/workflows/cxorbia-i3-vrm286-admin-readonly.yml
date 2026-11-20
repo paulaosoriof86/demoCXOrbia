@@ -166,14 +166,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
   i3-b11-stage-current-hr-readonly:
-    if: ${{ contains(github.event.head_commit.message, '[i3-b11-stage-readonly]') || contains(github.event.head_commit.message, '[i3-b11-visits-reports]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-b11-stage-readonly]') || contains(github.event.head_commit.message, '[i3-b11-visits-reports]') || contains(github.event.head_commit.message, '[i3-original-app-ui]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions: { contents: read, id-token: write }
     env:
-      FOCAL_SOURCE: d72275685d57941f6cfa0fcebc4823287942f786
+      FOCAL_SOURCE: ${{ contains(github.event.head_commit.message, '[i3-original-app-ui]') && 'ea0def43f653b014a271d7404df5604f2a9e2805' || 'd72275685d57941f6cfa0fcebc4823287942f786' }}
       EXPECTED_HR_REVISION: 3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8
       EXPECTED_PERIOD_ID: cinepolis-2026-11
+      B14_UI: ${{ contains(github.event.head_commit.message, '[i3-original-app-ui]') }}
       B11_CROSS_SURFACE: ${{ contains(github.event.head_commit.message, '[i3-b11-visits-reports]') }}
       B11_STAGE_OUT: .tmp/i3-b11-stage-current-hr
     steps:
@@ -190,6 +191,10 @@ jobs:
           node --check tools/qa/cxorbia-i3-b11-dashboard-stage-readonly.mjs
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null
           npx --no-install playwright install chromium >/dev/null
+          if [[ "$B14_UI" == true ]]; then
+            node tools/qa/cxorbia-i3-original-read-period-ui.mjs
+            exit 0
+          fi
           node tools/qa/cxorbia-i3-b11-dashboard-stage-readonly.mjs
           if [[ "$B11_CROSS_SURFACE" == true ]]; then
             jq -e '.decision=="PASS_B11_VISITS_KEYS_REPORT_COVERAGE_SAME_REVISION" and (.owners|length)==2 and (.countries|length)==2 and (.coverage|length)==2 and all(.coverage[];.pass) and .production==false' "$B11_STAGE_OUT/result.json" >/dev/null
@@ -200,7 +205,9 @@ jobs:
         if: always()
         with:
           name: 'cxorbia-i3-b11-stage-readonly-${{ github.run_id }}'
-          path: .tmp/i3-b11-stage-current-hr/result.json
+          path: |
+            .tmp/i3-b11-stage-current-hr/result.json
+            .tmp/i3-original-browser/
           if-no-files-found: warn
           retention-days: 30
   i3-b14-github-secret-presence:
