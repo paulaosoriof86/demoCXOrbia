@@ -15,6 +15,8 @@ import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runt
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, createHrSnapshotReconciler } from './cxorbia-command-runtime-v1.mjs';
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
+import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
+import { readExcelPeriodThroughMake } from '../cxorbia-make-graph-provider-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -624,6 +626,20 @@ const server=http.createServer(async(req,res)=>{
   try{
     const protectedRequestStartedAt=Date.now();
     const format=url.searchParams.get('format')||'json';
+    // B14 isolated DEV application-read proof only: never substitute this for the operational HR response.
+    if(format==='b14-provider-meta'){
+      if(process.env.CXORBIA_I3_B14_DIRECT_READER_DEV!=='true')return sendJson(res,404,{ok:false,error:'not_found'});
+      const principal=await verifiedProtectedPrincipal(req,requestedScope);
+      if(!['super','admin'].includes(principal.role))return sendJson(res,403,{ok:false,error:'role_denied'});
+      const countryCode=String(url.searchParams.get('countryCode')||'').toUpperCase();
+      const periodId=String(url.searchParams.get('periodId')||'');
+      const bound=await resolveCountryHrPeriodBinding({db:principal.db,...requestedScope,countryCode,periodId});
+      const contractPath=path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json');
+      const columnMap=JSON.parse(fs.readFileSync(contractPath,'utf8'));
+      const read=await readExcelPeriodThroughMake({binding:bound,token:process.env.CXORBIA_B14_MAKE_API_TOKEN,
+        scenarioId:process.env.CXORBIA_B14_MAKE_SCENARIO_ID,columnMap});
+      return sendJson(res,200,{ok:true,...read.proof,sourceSafe:true,writes:false,hrWrites:false,production:false});
+    }
     const forceFresh=url.searchParams.get('fresh')==='1';
     const protectedRequested=url.searchParams.get('protectedState')==='1';
     const {current,principal,timing}=await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);

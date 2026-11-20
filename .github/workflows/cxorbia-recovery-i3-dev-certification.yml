@@ -6560,3 +6560,16 @@ jobs:
    - uses: actions/upload-artifact@v4
      if: always()
      with: {name: 'cxorbia-i3-b14-qa-provider-${{ github.run_id }}',path: .tmp/i3-b14-provider-qa/,if-no-files-found: warn,retention-days: 30}
+  i3-b14-make-provider-source-test:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-b14-make-source-test]') }}
+    runs-on: ubuntu-latest
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - name: Verify bounded B14 Make Graph application reader, scope and fail-closed guards
+        run: |
+          node --check backend/runtime/cxorbia-make-graph-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs
