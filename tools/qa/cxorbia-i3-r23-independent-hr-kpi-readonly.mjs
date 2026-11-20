@@ -128,8 +128,21 @@ try{
   const pendingOverlayVisibility=Math.max(0,Number(result.browserScopedCount)-Number(expected.total));
 
   await page.waitForSelector('#shBody [data-sid]',{timeout:30000});
+  const uiCohort=await page.evaluate(id=>{
+    const cx=window.CX||{},d=cx.data||{},target=(d.shoppers||[]).find(x=>String(x.id)===String(id))||null;
+    const eligible=typeof d.shoppersFor==='function'?d.shoppersFor():[],rows=[...document.querySelectorAll('#shBody [data-sid]')];
+    const activePeriod=typeof d.period==='function'?d.period():null;
+    return {totalProfiles:Array.isArray(d.shoppers)?d.shoppers.length:null,
+      eligibleProfiles:eligible.length,renderedRows:rows.length,listedTarget:eligible.some(x=>String(x.id)===String(id)),
+      renderedTarget:rows.some(x=>String(x.dataset.sid)===String(id)),
+      targetCountry:String(target?.pais||target?.country||''),targetState:String(target?.identityState||''),
+      targetStatus:String(target?.status||''),periodCountries:Array.isArray(activePeriod?.countries)?activePeriod.countries:[],
+      scopedCountries:typeof d.scopePaises==='function'?d.scopePaises():null,
+      currentPeriodId:String(d.currentPeriodId||''),view:String(cx.session?.view||''),
+      moduleAvailable:!!cx.MODULES?.shoppers,role:String(cx.session?.role||'')};
+  },result.targetId);
   const clicked=await page.evaluate(id=>{const row=[...document.querySelectorAll('#shBody [data-sid]')].find(x=>String(x.dataset.sid)===String(id));if(!row)return false;row.click();return true;},result.targetId);
-  ensure(clicked,'FUNCTIONAL_DEFECT',{blocker:'R23_SHOPPER_ROW_NOT_RENDERED',shopperFingerprint:fp(result.targetId)});
+  ensure(clicked,'FUNCTIONAL_DEFECT',{blocker:'R23_SHOPPER_ROW_NOT_RENDERED',shopperFingerprint:fp(result.targetId),uiCohort});
   await page.waitForSelector('#shKpis [data-k="all"]',{timeout:30000});
   const actual=await page.evaluate(()=>{const numberOf=key=>{const el=document.querySelector(`#shKpis [data-k="${key}"]`),m=String(el?.innerText||el?.textContent||'').match(/\b(\d+)\b/);return m?Number(m[1]):null;};return {total:numberOf('all'),realizadas:numberOf('done'),liquidadas:numberOf('liq'),enCurso:numberOf('curso'),browserRevision:String(window.CX?.data?.previewMeta?.sourceRevision||''),authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true};});
   const kpisExact=Object.keys(expected).every(k=>Number(actual[k])===Number(expected[k]));
