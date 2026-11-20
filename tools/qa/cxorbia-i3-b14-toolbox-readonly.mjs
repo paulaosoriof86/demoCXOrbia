@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -26,6 +27,45 @@ try {
   result.readOnlyHint = tool.annotations?.readOnlyHint ?? null;
   const db = getFirestore(initializeApp({ projectId:project, credential: applicationDefault() }));
   const contract = JSON.parse(fs.readFileSync('backend/contracts/tya-hr-column-map-r20-v1.json', 'utf8'));
+  const originals = JSON.parse(fs.readFileSync('docs/checkpoints/CXORBIA_I3_B14_ORIGINAL_PROJECTED_NOVEMBER_KEY_HASHES_20261120.json','utf8'));
+  const hrUrl = new URL('/api/tya/cinepolis/hr-live', 'https://cxorbia-backend-dev.web.app');
+  hrUrl.searchParams.set('format','json');
+  hrUrl.searchParams.set('b14compare',String(Date.now()));
+  const http = await fetch(hrUrl, {cache:'no-store', redirect:'error'});
+  if (!http.ok) throw Error('Cannot read DEV HR');
+  const hr = await http.json();
+  const snapshot = hr.snapshot || hr.data || hr;
+  const revision = hr._runtime?.revision || snapshot._runtime?.revision;
+  if (snapshot.sourceSafe !== true || revision !== originals.hrRevision || !Array.isArray(snapshot.visits)) throw Error('Changed DEV revision');
+  const active = snapshot.visits.filter(v=>(v.periodKey===originals.period || v.periodId==='cinepolis-'+originals.period) && !v._archived);
+  const hash = v => createHash('sha256').update(JSON.stringify(v)).digest('hex');
+  const normalize = v => String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');
+  result.originalVsDev = originals.countries.map(({country,executionId,records}) => {
+    const rows = active.filter(v=>(v.country || v.pais)===country);
+    const keys = rows.map(v=>hash([country,...originals.businessKeyFields.slice(1).map(k=>normalize(v[k]))]));
+    const idKeys = new Set(rows.map(v=>hash(v.id || v.visitId)));
+    const duplicates = keys.length-new Set(keys).size;
+    const match = new Map(rows.map((v,i)=>[keys[i],v]));
+    const originalSet = new Set(records.map(r=>r.businessKey));
+    const inBoth = records.filter(r=>match.has(r.businessKey));
+    const originalOnly = records.filter(r=>!match.has(r.businessKey));
+    return {country, executionId, originalRows:records.length, devRows:rows.length,
+      duplicateBusinessKeysOriginal:records.length-originalSet.size, duplicateBusinessKeysDev:duplicates,
+      commonIdentityKeys:records.filter(r=>idKeys.has(r.rowIdHash)).length,
+      commonBusinessKeys:inBoth.length, devOnly:keys.filter(key=>!originalSet.has(key)).length,
+      originalOnly:originalOnly.length, originalOnlyRows:originalOnly.map(r=>r.row),
+      realizedOriginal:records.filter(r=>r.realized).length,
+      realizedDev:rows.filter(v=>v.canonicalFacets?.realized&&!v.canonicalFacets.cancelled).length,
+      commonRealizationDisagreements:duplicates || records.length!==originalSet.size ? null : inBoth.filter(r=>{
+        const v=match.get(r.businessKey); return r.realized !== (v.canonicalFacets?.realized===true && !v.canonicalFacets.cancelled);
+      }).map(r=>r.row)};
+  });
+  const currentProject=(await db.doc('tenants/tya/projects/cinepolis').get()).data();
+  const source = currentProject?.operationalSource || currentProject?.routeSource || {};
+  const existing = await db.collection('tenants/tya/integrationSettings').where('providerType','==','excel_online').get();
+  result.configuration = {selected:source.providerType, read:source.readPolicy, write:source.writePolicy,
+    declaredCountries:(source.countryBindings||[]).map(b=>b.countryCode).sort(),
+    existingExcelCountryConfigs:existing.docs.map(d=>d.data()).filter(b=>b.projectId==='cinepolis').map(b=>({country:b.countryCode,enabled:b.enabled,periodSheets:Array.isArray(b.periodSheets)?b.periodSheets.length:0}))};
   for (const countryCode of ['GT','HN']) {
     const scope = {tenantId:'tya',projectId:'cinepolis',countryCode,periodId:'cinepolis-2026-11'};
     result.stage = 'binding_' + countryCode;

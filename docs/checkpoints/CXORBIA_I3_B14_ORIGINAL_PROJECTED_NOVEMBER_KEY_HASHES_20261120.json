@@ -1,0 +1,368 @@
+{
+  "source": "Make B14 original Excel range; same range read twice in each execution; no names or original workbook locators persisted",
+  "sourceServedAtComparison": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+  "period": "2026-11",
+  "businessKeyFields": [
+    "country",
+    "cinemaId",
+    "sucursal",
+    "quincena",
+    "franja",
+    "escenario"
+  ],
+  "countries": [
+    {
+      "country": "GT",
+      "executionId": "f0cbd808d3244e318d260b581022d6cf",
+      "sheetRange": "A1:AI140",
+      "records": [
+        {
+          "businessKey": "295be5f745c7746e78c96bccc4e804c62da8541bf70fb17a2eabe128466420cc",
+          "rowIdHash": "e4d7d4d48e3b55a00de39e4efdb77af6db215ad4e0fbb965b583e47184fcadf8",
+          "row": 5,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "5716366adc1109138f62049cf2d7b33bb6e873f77a200c6d41cc2ef697c08850",
+          "rowIdHash": "5aa0d63206d85f2f98fe84b8156a35d9c65199001bc3a5e34c96d2c056219ab6",
+          "row": 6,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "e58e183eb91578353b5279705e597ffbd9d29b16f7c5ec69218395b5c8730f69",
+          "rowIdHash": "8f0a659cdb9055a378dd3a4af9d63d07560a4bb81a45490152b664afdaa3c934",
+          "row": 7,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "06dc15808a9a23ead6b3d4c6701d167ee904217382ea563c6e19a83879580833",
+          "rowIdHash": "46dae03ec6f4b9b06dfecb212df4c850d67f4c2651f804454eb89902d6d5145a",
+          "row": 8,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "4c53b6959a18597d53fe33c7baf5e657f15e5a5e6f356468debecb5a0ff0cfc5",
+          "rowIdHash": "0a33d46105ebe8c420254570191c754c8ae6edff47bd572db6b38a65566c2228",
+          "row": 9,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "5becf075d084a6f93cd36a4b6b19072292cdc9b839bcf05bf2f0eb3c74fcb17a",
+          "rowIdHash": "cffdcacffb7c131d1083603f383e76751252f94bf65efa0d60bdd3badaeaf05c",
+          "row": 10,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "88ec0e344774822386ff27e7c5b3424f424b872f46803e94428c55789b9ab5bf",
+          "rowIdHash": "3bd93a36e57b9710bb2245f8ead0bc90ac9ad6524df730039140f64c3d39f4db",
+          "row": 11,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "6f0a94828ebfa5bfb8038f2b056bfd2a1981de27501aa3305ff84ca1f9544025",
+          "rowIdHash": "adbb6d1c4b8c31818e7754a4e4d889503cb59f9399e6cebd4e1d51d0c244d149",
+          "row": 12,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "90979dd84e846eb5368b12a2dc5244b5324b06bfeb2be34d29cefb71aa9352ac",
+          "rowIdHash": "944904a79992980824bc6031c07c7d74639f8c194bef2b3afe65e58367f83bc2",
+          "row": 13,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "c0aa45fefdd38689306a127ade0a382804d9c711139fd9f432da1b9e8df8bd1d",
+          "rowIdHash": "77c8e91a16f678f6aa826efed4f830e19f12c255b4d9897a50ba31193f9cd2da",
+          "row": 14,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "ef29f24f868266b8e7bc744df9eee5b3619acdf20997f3d449e21764bf5b9791",
+          "rowIdHash": "79ce44bdf53a0fc883a78fb5b4e90d0aae92787dfe14dd02df9eeb0a49c4906d",
+          "row": 15,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "37e391cc7037bf9d9f116d9de4a37adab529c94e944d67e68f9a93694352ea78",
+          "rowIdHash": "cb4b36b06d8c8828e58f3ca48c6691bd7ccde797fc612769e4ba9fbc8c95b0c2",
+          "row": 16,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "26f06e23880762900c0212fa1684aec4a583e1aa52ca6b86dadfbb91360ed6c8",
+          "rowIdHash": "f197f88369e235c593dcd5773bff79a9099943dfcfe9f9d31d9ee10031b3505f",
+          "row": 17,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "c954fa38b20b7767207eb6ec2f187d303df182c3637e6386d8ff753861303844",
+          "rowIdHash": "76fab8f06ba715d249ed8779e5d868f2aa07504f9d2c483e00a62a0f8dcefe98",
+          "row": 18,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "7b3a41cd63600daaa250a10de8dede6ff1c6653b51f1c31f2fd9d057884b85be",
+          "rowIdHash": "657f17feb3d5606ae0dbad97075b66987d114ccb323fc428986a72839c9c688b",
+          "row": 19,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "efaca246784772c697bc2055cf6c7540e702af17760eec72f37c9f90254adafe",
+          "rowIdHash": "b70f5dc182b6011ba5ee2b2ab54645e987c9496607bd9b748b09861904697661",
+          "row": 20,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "38f5ab9383e2bbd82077a4866994e913397249f4e1a2c4e13d34beb7f271950e",
+          "rowIdHash": "f31b3864f26c5d39337d935ace2b5c041b1dac49692e8e78a7b000c1bec30d8d",
+          "row": 21,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "ac998af12e02f904f516e9487359c8f6234779d7ea5bcc1d5997d5b9b7295f96",
+          "rowIdHash": "df92dfa8201af74d98d18cbf0f7b2ecf9336743ba799949ed8450a5aa3611f90",
+          "row": 22,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "b89a0981fb6976a6628ce7cbfff9db378a27bab045f946483fdf278a4d8f17d6",
+          "rowIdHash": "affceddc43391527befd2d730902576509049096e80d610a3bff57c897ba6d4e",
+          "row": 23,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "a43161a4a95afe9b626823e2d3471040bf8f66b5783327a7e3d4118d21470c59",
+          "rowIdHash": "69b9c0706a534d6245ed99d8bf7f8310e9f7e1abac69fc23adef77852c7b2378",
+          "row": 24,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "1c0dc0cda6a984185c2e68ba6936273aac6ac9da74b5140c72d325f2cc6d215e",
+          "rowIdHash": "c53f4a1675a11f4aa8233eaa7bb78cd017c4d0241f2ce5615060d263f39be454",
+          "row": 25,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "bd9350dac81c9ba6751362164f5ae93efd3bbb0a3bbd2e65b441393f89725388",
+          "rowIdHash": "02c5aefd0ce3a0eb42bf5bffa69116cbee8ea0ad1c5094748074eb71446e1062",
+          "row": 26,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "621b6cde005284d98135785c7b5c0c76e3006ee22ee28cde803d8951dbd60205",
+          "rowIdHash": "6a6ce21665f8a983a3e0b76e04c84ae26541a4e35e1a051ef92f35ef75413769",
+          "row": 27,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "5606aff7a54f6487a88ec41bff212bd1f26c1e09e60a58a97082a185b394107d",
+          "rowIdHash": "be4ae8368a6e12b4d64f64a8aff8fc7235780e45683184fb9522bacec8aaa3e8",
+          "row": 28,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "fce380ce35d3764cbc041d37855edc9dbe6b6986465e79577bdbc8172d034a84",
+          "rowIdHash": "f7409bee42d1a26385d8940456e0ed19aed901eb2733dd92b8d7303607905096",
+          "row": 29,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "24dd08306e2bb11c737e9d2b28c32736d304b4eb3acfe797cd81785a6cacae31",
+          "rowIdHash": "4674af4f4ee42b4445c1d65e93dc48a92f2e28fb7ad6800ca8610ec042cb49ce",
+          "row": 30,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "0326617b98bd89207196eb480f708be6a8af1d602d91de5fb80e3dec67dfa826",
+          "rowIdHash": "2644ea18461bd46a338fcd357c931119c6c17cdda4128a6f7bcad8f1859599ad",
+          "row": 31,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "1676dce1c5dab6900d4818f044201dea7a550f33f89df0b0c6bb3507e48f7f55",
+          "rowIdHash": "01f5396348390f0235ce4751b0475bb882ee627eacf9526e4e270d51a83d34f8",
+          "row": 32,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "8fc59a8c1430b49a71794ae191505670a50984cefc9d67d416b8f9c17899b1bd",
+          "rowIdHash": "a8ec3d7587a713692bded98999c0e8ef5c976737f02403d334d3cd0f1d2806c0",
+          "row": 33,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "1e6af0aab6c236b14483c72694511fac664491517021108772e7eb0696c1a99b",
+          "rowIdHash": "603364192dc8e990a77c73ec91f7cd21cc3e8afb4ad3c952e7514eac87f5e33e",
+          "row": 34,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "560097b3b8bf40f871c711a6e273e21e05aa38acf809ec7a8328fe839440b966",
+          "rowIdHash": "af380148abeeba2777b12a2f50af2bb4548959475e1d74aa3ee8e7d41b8fc53d",
+          "row": 35,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "49e5b8ae10879316cbff1326f486c2a9925b437a14b280277bf40e3ec4d05912",
+          "rowIdHash": "86486fb0eaf43753017ca8237bbc3bde847397dddd5588b0f5b79e94f4472e86",
+          "row": 36,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "86601a6b94b01f95e10c4bb310860919cd7ddec523fa590a8357487aba095bed",
+          "rowIdHash": "fb7d4a9bfe48956acf0689e2e6801490f79c2ef17a158af6430c8574856bb8bf",
+          "row": 37,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "97b3fd8c35d7bf68b259e0cad872074dece1904ece2a538a9bf0520c2772c269",
+          "rowIdHash": "8481c0dd8e25de1888425977e890b2141b1fc634fb7617c39bcd5131d3a850cf",
+          "row": 38,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "8e09e1e813c9d64f0976b41786097bf4f9580e3e903e0db96235342e639d789f",
+          "rowIdHash": "a3549666b8ec1fbb01b6cab9164285e9f741b4f39bcddc46f25c0838e7757f3d",
+          "row": 48,
+          "realized": false,
+          "cinemaIdIsNumeric": false
+        },
+        {
+          "businessKey": "7a935916fd12bef06a6dee339751f1f46456db1620fb4dcef4d25ef6e16198c6",
+          "rowIdHash": "2ec0d727d5605d5370f9b47b6a12c7c46eebb7c108bc21faad34ada974335110",
+          "row": 49,
+          "realized": false,
+          "cinemaIdIsNumeric": false
+        },
+        {
+          "businessKey": "d75cf6e2c2d1d9beecc0685b166ba1f15877dc2015f880edad458166334811fb",
+          "rowIdHash": "3a83fe3a93581f6ec022423e476bc0c3ef49d968d8813c0c60ce492ec88f20c4",
+          "row": 50,
+          "realized": false,
+          "cinemaIdIsNumeric": false
+        },
+        {
+          "businessKey": "28793954a3228d34fba9059a385603f844018c77c2ab58befe46102fa35634be",
+          "rowIdHash": "98262e73899486ec14a2e4a1f7b8cd1cd9d7bb50a81bacad29efafb0419e0468",
+          "row": 52,
+          "realized": false,
+          "cinemaIdIsNumeric": false
+        }
+      ],
+      "distinctBusinessKeys": 38
+    },
+    {
+      "country": "HN",
+      "executionId": "74c6ba4afa9d4877a579052ea7b77e61",
+      "sheetRange": "A1:AI140",
+      "records": [
+        {
+          "businessKey": "7853a47abc346eab0eb7614dc39d47a5f10395e085b2a3de416cdb76f9bbf1ad",
+          "rowIdHash": "1fa9d8737d35da7e36f50d5152b9b6732ca2549b43b7198a431d1b132492889d",
+          "row": 5,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "fd7dee8372e68028e2c6a4249ebe63ea2134804f4ce9050009b6277a297256e2",
+          "rowIdHash": "b8a1eeece3f7678efbc870d6219b52899aac9dd074cfadec488bca0cfdea6aec",
+          "row": 6,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "25e4bd097c118e2f03a68330124e6caf719631770d26d8ae67d58d3540d7fc4d",
+          "rowIdHash": "8464858926ed4b5c3e1095da15827cf01a0ed7d01d292e7dd869fb17f0ae769f",
+          "row": 7,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "c5c403f68a66f5dc5c08dd45306083d0e78418517311c98157dbe9aaf9b213a9",
+          "rowIdHash": "7c892631c1248960cbf415ed36b0e06f75c89e110a31797a185b6e4249b5c398",
+          "row": 8,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "641762703329ab42c74ebbf8795083171457777880e575d1d8fec7d663114b9e",
+          "rowIdHash": "76fff9106110514a4745bf401529490eeb3f727e1707616dab93622bcfcd69eb",
+          "row": 9,
+          "realized": true,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "690eb59c22455b647532976b69b8c679eb9da0fcd48a6b0b32f3b945c86bff8c",
+          "rowIdHash": "b323e729689c176b3ea4580ed9985b48aad0cf32e533ce9fc604d5464716306f",
+          "row": 10,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "9d5c808c8671088f6b51c5e9f132dc53b7427e3e5c68fcb76eb0b3cfe302e1dc",
+          "rowIdHash": "5992fba2572cade517bc8b51dc73536ed08e09f9d98712b209377aecb414dfde",
+          "row": 11,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "9b8e577585eaf2a055049c6cbfe70c5adcf1abbdaaca1c967b00e2a675f30904",
+          "rowIdHash": "a9b276c29e18adff49c9b9fa2489152dc3a584686c85e682ba28671ae1e616cb",
+          "row": 12,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "aab28b82646b7e2fd374dd5d4a33bee1583df0aa0b72d08ece6fa4eb0ca35328",
+          "rowIdHash": "d21675d821a3d642c731c6be17dfc24bf289ae20ef8116a7a806c47d93923232",
+          "row": 13,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        },
+        {
+          "businessKey": "90e1f44f8a6e783be7b466ac9f46522f15920fa111f386d2f1124f8f23e8d554",
+          "rowIdHash": "1395740cf4a1d1ef8a6eaf46a9e784d8474ab0bac14ee36046e6d3e42f54bbdf",
+          "row": 14,
+          "realized": false,
+          "cinemaIdIsNumeric": true
+        }
+      ],
+      "distinctBusinessKeys": 10
+    }
+  ]
+}
