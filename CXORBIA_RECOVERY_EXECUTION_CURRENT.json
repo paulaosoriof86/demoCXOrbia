@@ -24695,5 +24695,29 @@
       "terminalArtifactProduced": false
     }
   },
-  "controlDependencyOrder": "MATRIX_BLOB_THEN_LEDGER_BLOB_THEN_DESCRIPTOR_AND_CURRENT"
+  "controlDependencyOrder": "MATRIX_BLOB_THEN_LEDGER_BLOB_THEN_DESCRIPTOR_AND_CURRENT",
+  "i3C3CurrentSourcePreterminalDispatch20261119": {
+    "status": "HOLD",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "decision": "EXECUTE_EXISTING_C3_CURRENT_SOURCE_DEV_PREFLIGHT",
+    "iteration": "I3",
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "devRunId": 44635279782,
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00381-z2j",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1",
+    "continuityCiRunId": 44657151794,
+    "continuityCiConclusion": "success",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+    "strictDomainMatchesBefore": 6,
+    "domainCount": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "production": false,
+    "requireSameSource": true,
+    "job": "c3-preterminal-module-truth",
+    "purpose": "Execute exact current source Git blob parity, DEV runtime/Hosting parity, project/role owner readiness and make source evidence explicit. Do not automatically promote missing E2E domains",
+    "nextAction": "Consume C3 focal result then only uncovered B14 original Excel Online provider link and full role E2E."
+  }
 }
