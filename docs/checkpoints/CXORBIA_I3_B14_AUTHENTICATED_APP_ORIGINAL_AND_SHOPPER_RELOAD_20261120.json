@@ -1,0 +1,375 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+  "devDeploymentRun": 44824377418,
+  "qaRun": 44826086330,
+  "qaArtifact": 14673558413,
+  "qaArtifactDigest": "sha256:1c79b32fcb0b49c0baf988913ea0ffb439e6b044112833ceac3e285def4b10d9",
+  "scope": "Authenticated Admin application-origin fetch and normal Shopper rail clicks in headless Chromium, using authorized scoped test sign-in. Ordinary password entry and equality to the masked Work account are not asserted.",
+  "providerScenario": 10200465,
+  "appRead": "PASS_GT_HN_NOVEMBER_ORIGINAL_READBACK",
+  "correlatedReads": [
+    {
+      "run": 44825548347,
+      "read": {
+        "http": 200,
+        "start": "2026-11-20T22:03:24.417Z",
+        "end": "2026-11-20T22:03:34.078Z",
+        "country": "GT",
+        "period": "cinepolis-2026-11",
+        "purpose": "original_readback",
+        "revision": "11262b7c227f61fcf7cab1f78a65dc07d12fd0a7dc4a64401b141bdc6297ed2b",
+        "worksheets": 1,
+        "readSha": "d43fa327f01c5a770e586bf9f81fb1124b4d98d54e4ef45b5f5c1831058da2ca",
+        "rows": 140,
+        "equalIndependentReads": true,
+        "privateRowsExposed": false,
+        "hrWrites": false,
+        "expectedCountry": "GT"
+      },
+      "make": {
+        "id": "1d21e5d521114020836f9fa84bc5156c",
+        "startedAt": "2026-11-20T22:03:27.102Z",
+        "status": "success",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "country": "GT",
+        "periodId": "cinepolis-2026-11",
+        "range": "A1:AI140",
+        "graphStatus": [
+          200,
+          200
+        ],
+        "rowCount": [
+          140,
+          140
+        ],
+        "equalProviderHash": true,
+        "graphModules": [
+          {
+            "module": 2,
+            "invocations": 1,
+            "errors": 0
+          },
+          {
+            "module": 3,
+            "invocations": 1,
+            "errors": 0
+          }
+        ]
+      }
+    },
+    {
+      "run": 44825548347,
+      "read": {
+        "http": 200,
+        "start": "2026-11-20T22:03:34.081Z",
+        "end": "2026-11-20T22:03:39.680Z",
+        "country": "HN",
+        "period": "cinepolis-2026-11",
+        "purpose": "original_readback",
+        "revision": "35b4537465bb173362c7ae79eb74c246bbe30ceb5bbdd370be865c3f8933e822",
+        "worksheets": 1,
+        "readSha": "1bac42ad1d745ecfa3508bbb9ba16059ab512b7b53cdc12ce87f86da680de16f",
+        "rows": 140,
+        "equalIndependentReads": true,
+        "privateRowsExposed": false,
+        "hrWrites": false,
+        "expectedCountry": "HN"
+      },
+      "make": {
+        "id": "d01a80dd7f914924a6a1ba7eb8fefe43",
+        "startedAt": "2026-11-20T22:03:35.950Z",
+        "status": "success",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "country": "HN",
+        "periodId": "cinepolis-2026-11",
+        "range": "A1:AI140",
+        "graphStatus": [
+          200,
+          200
+        ],
+        "rowCount": [
+          140,
+          140
+        ],
+        "equalProviderHash": true,
+        "graphModules": [
+          {
+            "module": 2,
+            "invocations": 1,
+            "errors": 0
+          },
+          {
+            "module": 3,
+            "invocations": 1,
+            "errors": 0
+          }
+        ]
+      }
+    },
+    {
+      "run": 44826086330,
+      "read": {
+        "http": 200,
+        "start": "2026-11-20T22:07:09.180Z",
+        "end": "2026-11-20T22:07:15.856Z",
+        "country": "GT",
+        "period": "cinepolis-2026-11",
+        "purpose": "original_readback",
+        "revision": "11262b7c227f61fcf7cab1f78a65dc07d12fd0a7dc4a64401b141bdc6297ed2b",
+        "worksheets": 1,
+        "readSha": "d43fa327f01c5a770e586bf9f81fb1124b4d98d54e4ef45b5f5c1831058da2ca",
+        "rows": 140,
+        "equalIndependentReads": true,
+        "privateRowsExposed": false,
+        "hrWrites": false,
+        "expectedCountry": "GT"
+      },
+      "make": {
+        "id": "10a91134f45b4c96a544ad7e3b080521",
+        "startedAt": "2026-11-20T22:07:11.116Z",
+        "status": "success",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "country": "GT",
+        "periodId": "cinepolis-2026-11",
+        "range": "A1:AI140",
+        "graphStatus": [
+          200,
+          200
+        ],
+        "rowCount": [
+          140,
+          140
+        ],
+        "equalProviderHash": true,
+        "graphModules": [
+          {
+            "module": 2,
+            "invocations": 1,
+            "errors": 0
+          },
+          {
+            "module": 3,
+            "invocations": 1,
+            "errors": 0
+          }
+        ]
+      }
+    },
+    {
+      "run": 44826086330,
+      "read": {
+        "http": 200,
+        "start": "2026-11-20T22:07:15.857Z",
+        "end": "2026-11-20T22:07:21.183Z",
+        "country": "HN",
+        "period": "cinepolis-2026-11",
+        "purpose": "original_readback",
+        "revision": "35b4537465bb173362c7ae79eb74c246bbe30ceb5bbdd370be865c3f8933e822",
+        "worksheets": 1,
+        "readSha": "1bac42ad1d745ecfa3508bbb9ba16059ab512b7b53cdc12ce87f86da680de16f",
+        "rows": 140,
+        "equalIndependentReads": true,
+        "privateRowsExposed": false,
+        "hrWrites": false,
+        "expectedCountry": "HN"
+      },
+      "make": {
+        "id": "0817b726af804a8f93c415e45575c6a9",
+        "startedAt": "2026-11-20T22:07:17.894Z",
+        "status": "success",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "country": "HN",
+        "periodId": "cinepolis-2026-11",
+        "range": "A1:AI140",
+        "graphStatus": [
+          200,
+          200
+        ],
+        "rowCount": [
+          140,
+          140
+        ],
+        "equalProviderHash": true,
+        "graphModules": [
+          {
+            "module": 2,
+            "invocations": 1,
+            "errors": 0
+          },
+          {
+            "module": 3,
+            "invocations": 1,
+            "errors": 0
+          }
+        ]
+      }
+    }
+  ],
+  "periodAfterReload": "PASS_3_OF_3",
+  "ownerAfterReload": "PASS_3_OF_3",
+  "viewAfterReload": "FAIL_3_OF_3",
+  "reopenedSameOctoberData": "PASS_3_OF_3",
+  "reloads": [
+    {
+      "id": "GT11",
+      "country": "GT",
+      "view": "visitas",
+      "ownerOk": true,
+      "before": {
+        "period": "cinepolis-2026-11",
+        "view": "visitas",
+        "savedView": "visitas",
+        "historyView": "visitas",
+        "periodInData": "cinepolis-2026-11",
+        "count": 3,
+        "reportMonth": null
+      },
+      "selected": {
+        "period": "cinepolis-2026-10",
+        "view": "visitas",
+        "savedView": "visitas",
+        "historyView": "visitas",
+        "periodInData": "cinepolis-2026-10",
+        "count": 1,
+        "reportMonth": null
+      },
+      "after": {
+        "period": "cinepolis-2026-10",
+        "view": "midia",
+        "savedView": "midia",
+        "historyView": "midia",
+        "periodInData": "cinepolis-2026-10",
+        "count": 0,
+        "reportMonth": null
+      },
+      "reopened": {
+        "period": "cinepolis-2026-10",
+        "view": "visitas",
+        "savedView": "visitas",
+        "historyView": "visitas",
+        "periodInData": "cinepolis-2026-10",
+        "count": 1,
+        "reportMonth": null
+      },
+      "pass": false
+    },
+    {
+      "id": "GT12",
+      "country": "GT",
+      "view": "mireportes",
+      "ownerOk": true,
+      "before": {
+        "period": "cinepolis-2026-11",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-11",
+        "count": null,
+        "reportMonth": false
+      },
+      "selected": {
+        "period": "cinepolis-2026-10",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "after": {
+        "period": "cinepolis-2026-10",
+        "view": "midia",
+        "savedView": "midia",
+        "historyView": "midia",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "reopened": {
+        "period": "cinepolis-2026-10",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "pass": false
+    },
+    {
+      "id": "HN06",
+      "country": "HN",
+      "view": "mireportes",
+      "ownerOk": true,
+      "before": {
+        "period": "cinepolis-2026-11",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-11",
+        "count": null,
+        "reportMonth": false
+      },
+      "selected": {
+        "period": "cinepolis-2026-10",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "after": {
+        "period": "cinepolis-2026-10",
+        "view": "midia",
+        "savedView": "midia",
+        "historyView": "midia",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "reopened": {
+        "period": "cinepolis-2026-10",
+        "view": "mireportes",
+        "savedView": "mireportes",
+        "historyView": "mireportes",
+        "periodInData": "cinepolis-2026-10",
+        "count": null,
+        "reportMonth": true
+      },
+      "pass": false
+    }
+  ],
+  "classification": "PERSISTENCE_FAILURE",
+  "owner": "app/core/router.js",
+  "ownerBlob": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+  "observedFailure": "Stored route and visible history are correct after selecting October. After startup both become midia. Existing router mounts before protected HR is hydrated and the central re-render calls nav on the transient view.",
+  "matrixPreEdit": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V372.json",
+    "gitBlob": "e1e7d784f97fe3e7fda13554992c087e10faba9d"
+  },
+  "operationalProvider": "google_sheets",
+  "originalGtRealized": 19,
+  "operationalGtRealized": 17,
+  "originalHnRealized": 5,
+  "operationalHnRealized": 5,
+  "gtDiscrepantSourceRows": [
+    29,
+    37
+  ],
+  "hrWrites": 0,
+  "production": false,
+  "newModuleMatches": 0,
+  "matchModules": 6,
+  "domainCount": 21,
+  "b14Closed": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
