@@ -1,0 +1,60 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "Make toolbox technical verification and pre-edit scope for read-only application proof",
+  "sourceCandidate": "85251fb11582d99f4d65fb3d96bf6380dfbb3665",
+  "sourceServed": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "qa": {
+    "run": 44823073838,
+    "job": 136588641505,
+    "artifact": 14673270765,
+    "artifactDigest": "sha256:a71fbd8aa20be7b834fe62327813823d5b05c6c45f6986832c452cc8c484a1b5",
+    "conclusion": "success"
+  },
+  "countries": [
+    {
+      "country": "GT",
+      "range": "A1:AI140",
+      "http": [
+        200,
+        200
+      ],
+      "contentSha256": "d43fa327f01c5a770e586bf9f81fb1124b4d98d54e4ef45b5f5c1831058da2ca",
+      "sameOriginalReads": true,
+      "identityCount": 34,
+      "originalRealized": 19,
+      "servedRealized": 17,
+      "differentOriginalRows": [
+        29,
+        37
+      ]
+    },
+    {
+      "country": "HN",
+      "range": "A1:AI140",
+      "http": [
+        200,
+        200
+      ],
+      "contentSha256": "1bac42ad1d745ecfa3508bbb9ba16059ab512b7b53cdc12ce87f86da680de16f",
+      "sameOriginalReads": true,
+      "identityCount": 10,
+      "originalRealized": 5,
+      "servedRealized": 5,
+      "differentOriginalRows": []
+    }
+  ],
+  "classification": "MAPPING_FAILURE",
+  "before": "Cloud Run b14-provider-meta requires an operational Excel selection and uses the former Make REST token. The live operational project is a read-only Google mirror. Switching its provider before verifying full historic data and stable identities would interrupt normal reads.",
+  "allowedScope": "Use the existing Admin-only readback endpoint with scoped Make authentication and project-bound original references. Preserve active HR during historical verification. Deploy only through the existing canonical paired workflow.",
+  "allowedFiles": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+  ],
+  "registeredCount": 6,
+  "total": 21,
+  "hrWrites": 0,
+  "production": false
+}
