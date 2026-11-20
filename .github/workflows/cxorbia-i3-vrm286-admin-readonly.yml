@@ -85,10 +85,11 @@ jobs:
           rm -f "$RUNNER_TEMP/cxorbia-service.json" "$RUNNER_TEMP/cxorbia-secret-names.txt" "$RUNNER_TEMP/cxorbia-secret-list-error.txt"
 
   b14-delegated-toolbox-readonly:
-    if: ${{ contains(github.event.head_commit.message, '[i3-b14-toolbox-readonly]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-b14-toolbox-readonly]') || contains(github.event.head_commit.message, '[i3-b14-original-parity]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     env:
+      B14_COMPARE_ONLY: ${{ contains(github.event.head_commit.message, '[i3-b14-original-parity]') }}
       B14_MAKE_TOOLBOX_URL: https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6
     steps:
       - uses: actions/checkout@v4

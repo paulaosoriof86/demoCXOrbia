@@ -53,11 +53,26 @@ try {
       return [id,{original:originalKeys.length,dev:devKeys.length,uniqueOriginal:a.size,uniqueDev:b.size,intersection:[...a].filter(k=>b.has(k)).length}];
     }));
     const match = new Map(rows.map((v,i)=>[keys[i],v]));
+    const verifiedPairs = [];
+    const names = ['idHalfScenario','branchHalfScenario','branchCombo'];
+    const destinations = new Set();
+    for (const src of visitRecords) {
+      const matches = names.map(name=>rows.filter(v=>{
+        const fields=originals.alternateBusinessKeys[name];
+        return fields.every(k=>normalize(v[k])) && src.candidateKeys[name]===hash([country,...fields.map(k=>normalize(v[k]))]);
+      }));
+      if(!matches.every(set=>set.length===1 && set[0]===matches[0][0])) throw Error('Ambiguous crosswalk');
+      const dev=matches[0][0], devIdHash=hash(dev.id || dev.visitId);
+      if(destinations.has(devIdHash)) throw Error('Duplicate crosswalk');
+      destinations.add(devIdHash);
+      verifiedPairs.push({sourceRow:src.row, sourceKey:src.rowIdHash, existingKey:devIdHash, originalRealized:src.realized, devRealized:dev.canonicalFacets?.realized===true && !dev.canonicalFacets.cancelled});
+    }
+    if(destinations.size!==rows.length || verifiedPairs.length!==visitRecords.length) throw Error('Incomplete crosswalk');
     const originalSet = new Set(records.map(r=>r.businessKey));
     const inBoth = records.filter(r=>match.has(r.businessKey));
     const originalOnly = records.filter(r=>!match.has(r.businessKey));
     return {country, executionId, originalRows:records.length, devRows:rows.length, dimensions,
-      originalVisitRows:visitRecords.length, reconciliationFooterRows:records.filter(r=>r.confirmedReconciliationFooter).map(r=>r.row),
+      crosswalk:{keys:names,matched:verifiedPairs.length,oneToOne:true,verifiedPairs}, originalVisitRows:visitRecords.length, reconciliationFooterRows:records.filter(r=>r.confirmedReconciliationFooter).map(r=>r.row),
       originalVisitRealized:visitRecords.filter(r=>r.realized).length,
       duplicateBusinessKeysOriginal:records.length-originalSet.size, duplicateBusinessKeysDev:duplicates,
       commonIdentityKeys:records.filter(r=>idKeys.has(r.rowIdHash)).length,
@@ -75,7 +90,9 @@ try {
   result.configuration = {selected:source.providerType, read:source.readPolicy, write:source.writePolicy,
     declaredCountries:(source.countryBindings||[]).map(b=>b.countryCode).sort(),
     existingExcelCountryConfigs:existing.docs.map(d=>d.data()).filter(b=>b.projectId==='cinepolis').map(b=>({country:b.countryCode,enabled:b.enabled,periodSheets:Array.isArray(b.periodSheets)?b.periodSheets.length:0}))};
-  for (const countryCode of ['GT','HN']) {
+  const compareOnly=process.env.B14_COMPARE_ONLY==='true';
+  if (compareOnly && result.originalVsDev.some(country=>!country.crosswalk.oneToOne || !country.crosswalk.matched)) throw Error('Crosswalk incomplete');
+  if (!compareOnly) for (const countryCode of ['GT','HN']) {
     const scope = {tenantId:'tya',projectId:'cinepolis',countryCode,periodId:'cinepolis-2026-11'};
     result.stage = 'binding_' + countryCode;
     const binding = await resolveCountryHrPeriodBinding({ db, ...scope });
@@ -101,7 +118,7 @@ try {
       Object.assign(item,{http:[out.status1,out.status2], rows:proof.rowsReturned, matchedFields:proof.matchedFields, independentReadback:proof.independentReadback, revision:proof.sourceContentSha256});
     }
   }
-  result.stage='complete'; result.decision='PASS_B14_TOOLBOX_SCOPED_GT_HN';
+  result.stage='complete'; result.decision=compareOnly ? 'PASS_B14_ORIGINAL_EXISTING_NOVEMBER_IDENTITIES_READONLY' : 'PASS_B14_TOOLBOX_SCOPED_GT_HN';
 } catch (err) {
   const safe = String(err?.message || '').match(/^(?:MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE):(?:B14_|EXCEL_HR_)[A-Z0-9_]+$/);
   result.error = safe ? safe[0] : (err?.name||'Error');
@@ -111,5 +128,6 @@ try {
   await client.close().catch(()=>{});
   fs.mkdirSync('.tmp/i3-b14-toolbox',{recursive:true});
   fs.writeFileSync('.tmp/i3-b14-toolbox/result.json',JSON.stringify(result,null,2)+'\n');
-  console.log(JSON.stringify(result));
+  const summary={...result,originalVsDev:result.originalVsDev?.map(country=>({...country,crosswalk:{keys:country.crosswalk.keys,matched:country.crosswalk.matched,oneToOne:country.crosswalk.oneToOne,realizationDifferences:country.crosswalk.verifiedPairs.filter(p=>p.originalRealized!==p.devRealized).map(p=>({row:p.sourceRow,original:p.originalRealized,dev:p.devRealized}))}}))};
+  console.log(JSON.stringify(summary));
 }
