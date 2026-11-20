@@ -26,7 +26,19 @@ test('28 receipts are scoped focal, 20 PASS 3 FAIL and 5 HOLD with no fictitious
     assert.equal(receipts.filter(x=>x.estado===state).length,count);
   assert.equal(receipts.every(x=>x.certificacion_terminal===false&&x.dominio_completo===false),true);
   assert.deepEqual(receipts.filter(x=>x.estado==='FAIL').map(x=>x.id).sort(),['GT11','GT12','HN06']);
-  for(const x of receipts){assert.equal(x.tenant,'tya');assert.equal(x.proyecto,'cinepolis');assert.equal(x.source_de_control,'d72275685d57941f6cfa0fcebc4823287942f786');}
+  for(const x of receipts){
+    // Work did not have authenticated Admin, Operativo or Cliente sessions.
+    // Their HOLD records correctly contain null tenant and project; never
+    // synthesize a principal or promote a route that was not visited.
+    if(x.rol_autenticado===true){
+      assert.equal(x.tenant,'tya');assert.equal(x.proyecto,'cinepolis');
+    }else{
+      assert.equal(x.estado,'HOLD');assert.equal(x.tenant,null);
+      assert.equal(x.proyecto,null);
+      assert.ok(['AD01','OP01','CL01'].includes(x.id));
+    }
+    assert.equal(x.source_de_control,'d72275685d57941f6cfa0fcebc4823287942f786');
+  }
 });
 test('21 Work domain records match exact canonical V366 IDs and preserve 6 MATCH',()=>{
   assert.equal(rows.length,22);assert.equal(domains.length,21);assert.equal(new Set(domains).size,21);
