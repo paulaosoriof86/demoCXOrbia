@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.graph-live-original-hr-readonly.v1",
+  "frozenAtLocal": "2026-11-19",
+  "iteration": "I3",
+  "status": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "2f6d9316cc5c25e59f5886f7c10513caa1cc6f2b",
+  "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "productSourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "originalCheckpoint": "docs/checkpoints/CXORBIA_I3_RUN2647_CERTIFY_HOLD_CONTINUITY_20261119.json",
+  "origin": "Make connector live readback (not CI, not application)",
+  "provider": "microsoft_graph_v1_via_make_onedrive_oauth",
+  "scenario": {
+    "id": 10196061,
+    "name": "CXOrbia — inventario mensual HR originales GT/HN (solo lectura)",
+    "url": "https://eu2.make.com/1975919/scenarios/10196061",
+    "addedReadModules": [
+      {
+        "moduleId": 13,
+        "countryCode": "GT",
+        "method": "GET",
+        "range": "A1:AE8"
+      },
+      {
+        "moduleId": 14,
+        "countryCode": "HN",
+        "method": "GET",
+        "range": "A4:AD9"
+      }
+    ],
+    "existingModulesPreserved": true,
+    "originalOutputsPreserved": 17,
+    "newOutputs": [
+      "gtSampleRowCount",
+      "hnSampleRowCount"
+    ],
+    "postRunStatus": "inactive",
+    "connectionsStatus": "ok"
+  },
+  "execution": {
+    "id": "ea03f835887d44db8dae4aa60e9a70d7",
+    "status": "success",
+    "startedAtUtc": "2026-11-20T02:48:42.219Z",
+    "operations": 9,
+    "gt": {
+      "tabsObserved": 35,
+      "columnsObserved": 31,
+      "sampleRowsReturned": 8
+    },
+    "hn": {
+      "tabsObserved": 34,
+      "columnsObserved": 30,
+      "sampleRowsReturned": 6
+    }
+  },
+  "safety": {
+    "requestedMethods": [
+      "GET"
+    ],
+    "scenarioReadOnly": true,
+    "operationalHrWriteRequests": 0,
+    "workflowSourceCodeChanges": 0,
+    "sourceRebuilds": 0,
+    "devDeploys": 0,
+    "productionDeploys": 0,
+    "realHrImport": 0,
+    "productionTouched": false,
+    "personallyIdentifyingRowValuesStoredInEvidence": false
+  },
+  "interpretation": {
+    "independentGraphSourceRead": "PASS_FOR_SCOPED_GET_ONLY",
+    "backendGraphConsumption": "UNPROVEN",
+    "applicationAuthenticatedAdminShopperE2E": "UNPROVEN",
+    "bidirectionalHrAck": "NOT_AUTHORIZED_OR_PROVEN",
+    "sourceRevisionParity": "UNPROVEN",
+    "moduleTruthMatchBefore": 6,
+    "moduleTruthMatchAfter": 6,
+    "totalDomains": 21,
+    "closureDecision": "HOLD_B14_NOT_APPLICATION_PROVEN",
+    "rootClassification": "MAPPING_FAILURE",
+    "observedCodeOwners": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/cxorbia-country-hr-binding-v1.mjs"
+    ],
+    "reason": "Original HR workbook rows can be read via Make/Graph, but operational CXOrbia server uses google_sheets-only reader; Excel source binding resolver is not consumed by the operational read path."
+  },
+  "nextExactAction": "Within proven backend owners, implement secure provider transport for live private Excel Online country/period bindings with mapping and read-only source revision verification; run authenticated same-artifact Admin/Shopper E2E, then only authorized isolated ACK/replay/conflict tests; produce exact C3 terminal receipts and credit each domain. Never mark B14 pass on Make-only GET.",
+  "i4Authorization": false
+}
