@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
@@ -7,6 +9,63 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { resolveCountryHrPeriodBinding } from '../../backend/runtime/cxorbia-country-hr-binding-v1.mjs';
 import { verifyMakeGraphReadOutput } from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+
+async function readScopedOriginals(client, tool, config, contract, existing, result) {
+  if (config.tenantId !== 'tya' || config.projectId !== 'cinepolis' || config.writePolicy !== 'external_read_only' ||
+      config.readPolicy !== 'external_live' || config.countries?.map(c=>c.countryCode).sort().join(',') !== 'GT,HN' || tool.annotations?.readOnlyHint !== true)
+    throw Error('MAPPING_FAILURE:B14_PRIVATE_BINDINGS');
+  const parserFile='tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
+  const parserSource=fs.readFileSync(parserFile,'utf8');
+  const entry="\nif(process.argv.includes('--provider-auth-self-test'))";
+  if (parserSource.indexOf(entry)<0 || parserSource.indexOf(entry)!==parserSource.lastIndexOf(entry)) throw Error('SOURCE_FAILURE:PARSER_ENTRY');
+  const temp=fs.mkdtempSync('tools/hr-source/.original-qa-');
+  try {
+    for (const name of ['tya-canonical-visit-state-r20.mjs','tya-resolve-live-month-tabs.mjs']) fs.copyFileSync('tools/hr-source/'+name,temp+'/'+name);
+    fs.writeFileSync(temp+'/reader.mjs',parserSource.slice(0,parserSource.indexOf(entry))+'\nexport {parseTab};\n');
+    const {parseTab}=await import(pathToFileURL(path.resolve(temp,'reader.mjs')));
+    const registry=JSON.parse(fs.readFileSync('backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json','utf8'));
+    for (const row of config.countries) {
+      const {countryCode,periodId,worksheetId,itemId,driveId,rangeAddress}=row;
+      if(![worksheetId,itemId,driveId].every(v=>typeof v==='string' && v.length>5) || !/^cinepolis-20\d\d-(?:0[1-9]|1[0-2])$/.test(periodId) || rangeAddress!=='A1:AI140') throw Error('MAPPING_FAILURE:B14_PRIVATE_SCOPE');
+      const scope={tenantId:config.tenantId,projectId:config.projectId,countryCode,periodId};
+      const bindingFingerprint=createHash('sha256').update(JSON.stringify({...scope,driveId,itemId,worksheetId,rangeAddress})).digest('hex');
+      const inputs={...scope,driveId,itemId,worksheetId,rangeAddress,bindingFingerprint};
+      const summary={country:countryCode,scopeConfirmed:false};
+      result.countries.push(summary);
+      result.stage='read_original_'+countryCode;
+      const rpc=await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:90000});
+      summary.blocks=(rpc.content||[]).map(v=>v.type);
+      summary.isError=Boolean(rpc.isError);summary.structured=Boolean(rpc.structuredContent);
+      if(rpc.isError)throw Error('PROVIDER_FAILURE:B14_SCENARIO_EXECUTION');
+      let out=rpc.structuredContent;
+      if(!out && rpc.content?.length===1 && rpc.content[0].type==='text'){const txt=rpc.content[0].text;summary.resultLength=txt.length;try{out=JSON.parse(txt)}catch{summary.outputFormat=txt.trim().startsWith('{')?'object_text':'other_text';throw Error('PROVIDER_FAILURE:B14_NON_JSON')}}
+      if(Array.isArray(out)&&out.length===1)out=out[0];
+      summary.topKeys=Object.keys(out||{}).filter(k=>/^[a-zA-Z][a-zA-Z0-9_]{0,25}$/.test(k));
+      out=out?.outputs??out?.output??out;
+      const checked=verifyMakeGraphReadOutput(out,inputs,{worksheetId},rangeAddress,contract);
+      const p=checked.proof; Object.assign(summary,{scopeConfirmed:true,rows:p.rowsReturned,externalRevision:p.sourceContentSha256,twoEqualReads:p.independentReadback,http:[out.status1,out.status2]});
+      const key=periodId.slice(-7),[year,month]=key.split('-').map(Number);
+      const parsed=parseTab({country:countryCode,key,year,month,tabTitle:'B14 '+key},checked.privateRows,contract,registry);
+      if(parsed.issues.some(i=>i.severity==='critical'))throw Error('MAPPING_FAILURE:B14_ORIGINAL_PARSER');
+      const expected=existing.filter(v=>(v.country||v.pais)===countryCode && (v.periodKey===key||v.periodId===periodId) && !v._archived);
+      const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');
+      const schemas=[['cinemaId','quincena','escenario'],['sucursal','quincena','escenario'],['sucursal','quincena','escenario','tipoCombo']];
+      const matches=new Set(),diff=[];
+      for(const sourceVisit of parsed.visits){
+        const groups=schemas.map(fields=>expected.filter(v=>fields.every(k=>norm(v[k]) && norm(v[k])===norm(sourceVisit[k]))));
+        if(!groups.every(group=>group.length===1 && group[0]===groups[0][0]))throw Error('MAPPING_FAILURE:B14_AMBIGUOUS_VISIT');
+        const served=groups[0][0],id=served.id||served.visitId;
+        if(!id||matches.has(id))throw Error('MAPPING_FAILURE:B14_DUPLICATE_VISIT');
+        matches.add(id);
+        const src=sourceVisit.canonicalFacets.realized===true && !sourceVisit.canonicalFacets.cancelled;
+        const dev=served.canonicalFacets?.realized===true && !served.canonicalFacets?.cancelled;
+        if(src!==dev)diff.push({originalRow:sourceVisit.sourceRow,original:src,served:dev});
+      }
+      if(!matches.size||matches.size!==expected.length||matches.size!==parsed.visits.length)throw Error('MAPPING_FAILURE:B14_INCOMPLETE_VISITS');
+      Object.assign(summary,{originalVisits:parsed.visits.length,existingIds:matches.size,matchedByAllThreeKeys:true,originalRealized:parsed.visits.filter(v=>v.canonicalFacets.realized&&!v.canonicalFacets.cancelled).length,servedRealized:expected.filter(v=>v.canonicalFacets?.realized&&!v.canonicalFacets?.cancelled).length,realizationDifferences:diff});
+    }
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+}
 
 const project = 'cxorbia-backend-dev';
 const url = new URL(process.env.B14_MAKE_TOOLBOX_URL);
@@ -92,7 +151,9 @@ try {
     existingExcelCountryConfigs:existing.docs.map(d=>d.data()).filter(b=>b.projectId==='cinepolis').map(b=>({country:b.countryCode,enabled:b.enabled,periodSheets:Array.isArray(b.periodSheets)?b.periodSheets.length:0}))};
   const compareOnly=process.env.B14_COMPARE_ONLY==='true';
   if (compareOnly && result.originalVsDev.some(country=>!country.crosswalk.oneToOne || !country.crosswalk.matched)) throw Error('Crosswalk incomplete');
-  if (!compareOnly) for (const countryCode of ['GT','HN']) {
+  const freshOriginal=process.env.B14_FRESH_ORIGINAL==='true';
+  if (freshOriginal) await readScopedOriginals(client, tool, JSON.parse(process.env.B14_PRIVATE_BINDINGS), contract, active, result);
+  if (!compareOnly && !freshOriginal) for (const countryCode of ['GT','HN']) {
     const scope = {tenantId:'tya',projectId:'cinepolis',countryCode,periodId:'cinepolis-2026-11'};
     result.stage = 'binding_' + countryCode;
     const binding = await resolveCountryHrPeriodBinding({ db, ...scope });
@@ -118,7 +179,7 @@ try {
       Object.assign(item,{http:[out.status1,out.status2], rows:proof.rowsReturned, matchedFields:proof.matchedFields, independentReadback:proof.independentReadback, revision:proof.sourceContentSha256});
     }
   }
-  result.stage='complete'; result.decision=compareOnly ? 'PASS_B14_ORIGINAL_EXISTING_NOVEMBER_IDENTITIES_READONLY' : 'PASS_B14_TOOLBOX_SCOPED_GT_HN';
+  result.stage='complete'; result.decision=freshOriginal ? 'PASS_B14_SERVICE_INITIATED_ORIGINAL_GTHN_WITH_EXISTING_IDS' : compareOnly ? 'PASS_B14_ORIGINAL_EXISTING_NOVEMBER_IDENTITIES_READONLY' : 'PASS_B14_TOOLBOX_SCOPED_GT_HN';
 } catch (err) {
   const safe = String(err?.message || '').match(/^(?:MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE):(?:B14_|EXCEL_HR_)[A-Z0-9_]+$/);
   result.error = safe ? safe[0] : (err?.name||'Error');
