@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.b11.dashboard-midia.same-artifact-readonly.v1",
+  "iteration": "I3",
+  "dateLocal": "2026-11-20",
+  "state": "HOLD",
+  "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "productTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "exactReadback": {
+    "runId": 44771623030,
+    "workflowNumber": 816,
+    "artifactId": 14648485695,
+    "artifactDigest": "sha256:daeb2e7a203451969b8a74a11bafe3cc76e40baef8e2d3e8f20da993519dddea",
+    "decision": "PASS_B11_DASHBOARD_MIDIA_CURRENT_HR_SCOPED_READONLY",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "role": "admin",
+    "sourceRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "owners": [
+      {
+        "path": "app/modules/dashboard.js",
+        "gitBlob": "174edadcb33f00afaa7e36262ed27aba1209a80e",
+        "sourceSha256": "20d9f6856e473757901645cdba1082bf94b78bcf998cba64e0616a13412a46c8",
+        "servedSha256": "20d9f6856e473757901645cdba1082bf94b78bcf998cba64e0616a13412a46c8",
+        "byteParity": true
+      },
+      {
+        "path": "app/modules/midia.js",
+        "gitBlob": "b17a2224170d23c3a9152628003115a1edfbd471",
+        "sourceSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+        "servedSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+        "byteParity": true
+      }
+    ],
+    "countries": [
+      {
+        "country": "GT",
+        "externalVisits": 34,
+        "tileCount": 34,
+        "modalRows": 34,
+        "exactSetSha256": "4cdce3938cebdbdac5ac67a257ac1b1e5404fa9cdbeb13f185d54179e8e03f76"
+      },
+      {
+        "country": "HN",
+        "externalVisits": 10,
+        "tileCount": 10,
+        "modalRows": 10,
+        "exactSetSha256": "9265a0800db436d65d3bfcade57c11441c100b183ab77089c9e30d6de31f41bc"
+      }
+    ],
+    "midia": {
+      "expectedReal": 22,
+      "observedReal": 22,
+      "pass": true
+    },
+    "pageErrors": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "production": false
+  },
+  "additionalR23Pass": "docs/checkpoints/CXORBIA_I3_B11_R23_GT_HN_SAME_REVISION_CHROMIUM_PASS_20261120.json",
+  "preserveHistoricalProof": "docs/checkpoints/CXORBIA_I3_RUN2546_OBSERVED_EVIDENCE_20261116/b11-dashboard-stages.json",
+  "accounting": {
+    "B11SourceCurrentPASS": true,
+    "crossSurfaceDashboardMiDiaPass": true,
+    "remainingDomainContract": [
+      "Visitas and Reportes exact same revision cross-surface",
+      "Shopper and Client role-scoped actions/visual acceptance",
+      "Full terminal owner/role/operation receipt"
+    ],
+    "moduleDomain": "dashboard-operation",
+    "promotedToMatch": false,
+    "matchModules": 6,
+    "total": 21,
+    "phaseAComplete": false,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "classification": "MAPPING_FAILURE resolved for prior B11 selector; current B11 focal PASS; residual owner coverage pending",
+  "nextExactAction": "Use preserved RUN2546 stage identity proof, current R23 same-revision KPI proof and RUN816 same-served-byte Dashboard/MiDia proof; run only uncovered Visit/Report/Shopper/Client clauses before complete C3 domain receipt. B14 remains HOLD on Make delegated IAM and actual application Graph reader.",
+  "productionAuthorization": false
+}
