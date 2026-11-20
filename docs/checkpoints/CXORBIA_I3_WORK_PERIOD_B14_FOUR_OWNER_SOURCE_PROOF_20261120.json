@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scoped-source-proof.v1",
+  "iteration": "I3",
+  "decision": "PASS_SCOPED_SOURCE_QA_ONLY",
+  "sourceSha": "6fb939ce6d661ca00524cc57681828c67200ee25",
+  "sourceTree": "2155f9e503b612efe654376800446ea5553f67b9",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_CANONICAL_DELTA_SCOPE_20261120.json",
+  "scopeReceiptBlob": "28f5ecdc677e83d3d7faef7cd4861009aa699415",
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "productBlobs": {
+    "app/adapters/tya-live-source-inplace-apply.js": "79100d93ed0214f983cd029a831f592bac671403",
+    "app/core/router.js": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "960e4bb85b34b3e429dbdb677ba24bd647ec8849",
+    "backend/runtime/hr-live-service/server.mjs": "ba8627cbe50a5e4828ca28d841bfe4880b54631c"
+  },
+  "testBlobs": {
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs": "9b88a7b3df470133736ce4f2570f06dd32ba934b",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs": "e95f4b502b60a68ff371cfed77fef1d3d33bb8ba"
+  },
+  "findings": [
+    {
+      "id": "WORK_GT11_GT12_HN06",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "sourceProof": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_RELOAD_GT_HN_7_TESTS_SOURCE_PASS_20261120.json"
+    },
+    {
+      "id": "B14",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "command": "node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "countryChecks": "GT compact with country supplied by binding; HN explicit country column in the first matching contract layout; distinct header rows rejected"
+    }
+  ],
+  "sourceTestsPass": 14,
+  "sourceTestsFail": 0,
+  "commands": [
+    "node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "testExecution": "local Node, focal source only",
+  "previousGuardRunId": 44800675866,
+  "technicalDomainMatches": 6,
+  "totalDomains": 21,
+  "devPublished": false,
+  "production": false,
+  "hrWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "terminalCertified": false
+}
