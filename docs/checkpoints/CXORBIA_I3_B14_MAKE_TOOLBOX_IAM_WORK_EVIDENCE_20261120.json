@@ -1,0 +1,167 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "work": {
+    "total": 28,
+    "passes": [
+      "GT01",
+      "GT02",
+      "GT03",
+      "GT04",
+      "GT05",
+      "GT06",
+      "GT07",
+      "GT08",
+      "GT09",
+      "GT10",
+      "GT13",
+      "GT14",
+      "GT16",
+      "HN01",
+      "HN02",
+      "HN03",
+      "HN04",
+      "HN05",
+      "HN07",
+      "HN09"
+    ],
+    "fail": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ],
+    "hold": [
+      "GT15",
+      "HN08",
+      "AD01",
+      "OP01",
+      "CL01"
+    ],
+    "indexedPassByDomain": {
+      "auth-protected-data-runtime": [
+        "GT01",
+        "GT08",
+        "GT16",
+        "HN01",
+        "HN09"
+      ],
+      "base-router-shell-cache": [
+        "GT01",
+        "GT08",
+        "GT13",
+        "HN01",
+        "HN07"
+      ],
+      "certifications": [
+        "GT02",
+        "GT03",
+        "GT14",
+        "HN04"
+      ],
+      "documents-resources": [
+        "GT04",
+        "GT10",
+        "GT13",
+        "HN05",
+        "HN09"
+      ],
+      "visits-review-postulations-reservations": [
+        "GT05",
+        "GT06",
+        "GT07",
+        "GT13",
+        "HN02",
+        "HN03",
+        "HN07"
+      ],
+      "human-runtime-domain-consistency": [
+        "GT05",
+        "HN03"
+      ],
+      "shoppers-mi-visitas-profile": [
+        "GT07",
+        "GT09",
+        "HN02",
+        "HN07"
+      ],
+      "dashboard-operation": [
+        "GT09",
+        "HN02"
+      ]
+    },
+    "importManifest": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/IMPORT_C3_MANIFEST.json",
+    "domainPromotions": 0
+  },
+  "make": {
+    "scenario": 10200465,
+    "toolbox": 4891,
+    "toolCount": 1,
+    "methods": [
+      "GET",
+      "GET"
+    ],
+    "guard": "DEV project, country and workbook allowlist; worksheet ID and bounded A1 range",
+    "keysExposed": false,
+    "reads": [
+      {
+        "id": "e3c9fdb93fe54b4f9a702c8a7e9897f4",
+        "status": "success",
+        "hash": "be4bede3f1cdc6b27de5209aa5f64923bbe08221bbe825f12d7bbad791378f59",
+        "scope": "GT",
+        "rows": [
+          8,
+          8
+        ],
+        "http": [
+          200,
+          200
+        ],
+        "valuesMatch": true,
+        "outputs": 15
+      },
+      {
+        "id": "fffa3e741d1349278c355212a7a5c537",
+        "status": "success",
+        "hash": "e9c6af466c9c6a542bb3dba0a8d7178a3c9ea423d9dc6efb02c04851e5e4860f",
+        "scope": "HN",
+        "rows": [
+          6,
+          6
+        ],
+        "http": [
+          200,
+          200
+        ],
+        "valuesMatch": true,
+        "outputs": 15
+      }
+    ],
+    "unboundProject": {
+      "execution": "952d730544b54a66a3e510604f1dc3bf",
+      "modulesExecuted": [
+        {
+          "id": 1,
+          "invocations": 1
+        }
+      ],
+      "graphReads": 0
+    }
+  },
+  "gcp": {
+    "project": "cxorbia-backend-dev",
+    "secret": "cxorbia-dev-b14-make-toolbox",
+    "version": 1,
+    "status": "enabled",
+    "service": "cxorbia-live-hr-dev",
+    "servicePrincipal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "role": "roles/secretmanager.secretAccessor",
+    "grantResource": "single_secret",
+    "inherited": false
+  },
+  "next": "Test server-to-toolbox using exact DEV service identity and B11 authenticated Admin UI against same independent revision. Current product reader uses Make REST, so the toolbox key requires the MCP client transport before any paired DEV publication.",
+  "devDeploys": 0,
+  "production": false,
+  "hrWrites": 0,
+  "strictMatch": 6,
+  "totalDomains": 21
+}

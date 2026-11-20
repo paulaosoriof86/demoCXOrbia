@@ -84,6 +84,32 @@ jobs:
           fi
           rm -f "$RUNNER_TEMP/cxorbia-service.json" "$RUNNER_TEMP/cxorbia-secret-names.txt" "$RUNNER_TEMP/cxorbia-secret-list-error.txt"
 
+  b14-delegated-toolbox-readonly:
+    if: ${{ contains(github.event.head_commit.message, '[i3-b14-toolbox-readonly]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      B14_MAKE_TOOLBOX_URL: https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install pinned test clients
+        run: npm install --no-save --package-lock=false --ignore-scripts firebase-admin@13.4.0 @modelcontextprotocol/sdk@1.26.0
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Prove scoped Make GT and HN reads with the DEV service identity
+        run: node tools/qa/cxorbia-i3-b14-toolbox-readonly.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: 'cxorbia-i3-b14-toolbox-readonly-${{ github.run_id }}'
+          path: .tmp/i3-b14-toolbox/result.json
+          if-no-files-found: warn
+          retention-days: 30
+
   i3-b11-r23-same-revision-readonly:
     if: ${{ contains(github.event.head_commit.message, '[i3-b11-r23-readonly]') }}
     runs-on: ubuntu-24.04
@@ -129,7 +155,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
   i3-b11-stage-current-hr-readonly:
-    if: ${{ contains(github.event.head_commit.message, '[i3-b11-stage-readonly]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-b11-stage-readonly]') || contains(github.event.head_commit.message, '[i3-b11-visits-reports]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions: { contents: read, id-token: write }
@@ -137,6 +163,7 @@ jobs:
       FOCAL_SOURCE: d72275685d57941f6cfa0fcebc4823287942f786
       EXPECTED_HR_REVISION: 3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8
       EXPECTED_PERIOD_ID: cinepolis-2026-11
+      B11_CROSS_SURFACE: ${{ contains(github.event.head_commit.message, '[i3-b11-visits-reports]') }}
       B11_STAGE_OUT: .tmp/i3-b11-stage-current-hr
     steps:
       - uses: actions/checkout@v4
@@ -153,7 +180,11 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null
           npx --no-install playwright install chromium >/dev/null
           node tools/qa/cxorbia-i3-b11-dashboard-stage-readonly.mjs
-          jq -e '.decision=="PASS_B11_DASHBOARD_MIDIA_CURRENT_HR_SCOPED_READONLY" and (.owners|length)==2 and (.countries|length)==2 and .midia.passed==true and .production==false' "$B11_STAGE_OUT/result.json" >/dev/null
+          if [[ "$B11_CROSS_SURFACE" == true ]]; then
+            jq -e '.decision=="PASS_B11_VISITS_KEYS_REPORT_COVERAGE_SAME_REVISION" and (.owners|length)==2 and (.countries|length)==2 and (.coverage|length)==2 and all(.coverage[];.pass) and .production==false' "$B11_STAGE_OUT/result.json" >/dev/null
+          else
+            jq -e '.decision=="PASS_B11_DASHBOARD_MIDIA_CURRENT_HR_SCOPED_READONLY" and (.owners|length)==2 and (.countries|length)==2 and .midia.passed==true and .production==false' "$B11_STAGE_OUT/result.json" >/dev/null
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
