@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "cxorbia.i3.a08.scoped-negative-dev-e2e-readback.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "decision": "PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE",
+  "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+  "dev": {
+    "hosting": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1",
+    "runtime": "cxorbia-live-hr-dev-00381-z2j",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8"
+  },
+  "execution": {
+    "runId": 44652395494,
+    "runNumber": 2643,
+    "conclusion": "success",
+    "jobId": 136010572411,
+    "jobConclusion": "success",
+    "artifactId": 14592100117,
+    "artifactDigest": "sha256:469738789bb2f97c0a1ba4428b7d5b96765d6334c7431ac41a715b9677db3cd6",
+    "artifactSize": 4404
+  },
+  "observed": {
+    "exceptions": 3,
+    "canonicalAuthEligibleCount": [
+      1,
+      1,
+      1
+    ],
+    "historicalDisabledMemberships": [
+      1,
+      1,
+      0
+    ],
+    "gtOwnReadAllowed": true,
+    "gtCrossReadDenied": true,
+    "gtStaffReadDenied": true,
+    "hnOwnReadAllowed": true,
+    "hnCrossReadDenied": true,
+    "hnStaffReadDenied": true,
+    "denialCode": "permission-denied",
+    "sameHRRevision": true,
+    "apiDenied": "NOT_TESTED",
+    "storageDenied": "NOT_TESTED",
+    "ordinaryPasswordLogin": "NOT_TESTED",
+    "customTokenSessions": true
+  },
+  "counting": {
+    "strictMatch": 6,
+    "totalDomains": 21,
+    "newFullMatches": 0,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "providerCommands": 0,
+    "production": false
+  },
+  "nextExactAction": "A08 independent ordinary password login and API/Storage negative access on known resources; B14 operational Excel Online country bindings, Graph/Make read/write ACK and replay, exact browser roles. Reuse PASS evidence without inventing domain terminal accreditation."
+}

@@ -24517,5 +24517,27 @@
     "terminalCertified": false,
     "production": false,
     "nextAction": "Run the existing A08 read-only exceptions/Firestore negative job on current DEV for independent proof; consume only contract-complete domain receipts. Do not count scoped proofs as terminal MATCH. No data or production write."
+  },
+  "b14Run2643ScopedA08Negative20261119": {
+    "status": "HOLD",
+    "decision": "PASS_I3_A08_SCOPED_FIRESTORE_DENIALS_AUTH_TRIAGE",
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "sourceTree": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
+    "runId": 44652395494,
+    "runNumber": 2643,
+    "artifactId": 14592100117,
+    "artifactDigest": "sha256:469738789bb2f97c0a1ba4428b7d5b96765d6334c7431ac41a715b9677db3cd6",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_A08_NEGATIVE_RUN2643_READBACK_20261119.json",
+    "receiptGitBlob": "72a8f68b1db262aeb0a310c79634908d34f2df2c",
+    "frozenMethodPath": "docs/checkpoints/CXORBIA_I3_ANTI_LOOP_ACCEPTANCE_AND_B14_EXECUTION_FREEZE_20261119.md",
+    "frozenMethodGitBlob": "f6904b3afd02ed31fe6cb02b78a42168026b039c",
+    "strictMatches": 6,
+    "totalDomains": 21,
+    "newWholeDomains": 0,
+    "ordinaryPasswordLoginProven": false,
+    "apiDenialsProven": false,
+    "storageDenialsProven": false,
+    "production": false,
+    "nextAction": "A08 independent ordinary password login and API/Storage negative access on known resources; B14 operational Excel Online country bindings, Graph/Make read/write ACK and replay, exact browser roles. Reuse PASS evidence without inventing domain terminal accreditation."
   }
 }
