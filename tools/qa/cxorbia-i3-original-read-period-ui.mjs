@@ -25,25 +25,28 @@ try {
  result.servedHrRevision=meta.revision;
  const app=initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'}),db=getFirestore(app),auth=getAuth(app);
  const users=(await db.collection('tenants/tya/users').get()).docs.map(d=>({...d.data(),uid:d.id})).filter(m=>m.active===true);
+ let stage='INIT';
  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
  browser=await chromium.launch({headless:true});
  async function session(member){
    const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage();
    const url=root+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxTechnicalAuthE2E=YES_PAULA_20260801_REAL_USERS_E2E';
-   await page.goto(url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.firebase?.apps?.length>0);
-   const token=await auth.createCustomToken(member.uid);
-   await page.evaluate(async jwt=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(jwt)},token);
-   await page.reload({waitUntil:'domcontentloaded'});
-   const ready=async()=>page.waitForFunction(({id,rev})=>firebase.auth().currentUser?.uid===id&&CX?.backendAuth?.context?.().authenticated===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&CX?.data?.previewMeta?.sourceRevision===rev,{id:member.uid,rev:meta.revision},{timeout:100000});
+   stage='INITIAL_NAVIGATION';await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:90000});
+   stage='AUTHORIZE_SCOPED_QA_SESSION';const token=await auth.createCustomToken(member.uid);
+   stage='FIREBASE_TEST_LOGIN';await page.evaluate(async()=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL)});
+   await page.evaluate(jwt=>{window.firebase.auth().signInWithCustomToken(jwt).catch(()=>{});return true},token);
+   await page.waitForFunction(uid=>window.firebase?.auth?.()?.currentUser?.uid===uid,member.uid,{timeout:90000});
+   stage='RESTORE_BROWSER_SESSION';await page.goto('about:blank',{waitUntil:'domcontentloaded'});await page.goto(url+'&settled=1',{waitUntil:'domcontentloaded',timeout:90000});
+   const ready=async()=>page.waitForFunction(({id,rev})=>window.firebase?.auth?.()?.currentUser?.uid===id&&window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX?.data?.previewMeta?.sourceRevision===rev,{id:member.uid,rev:meta.revision},{timeout:100000});
    await ready();return {context,page,ready};
  }
- const receiptAction=async(label,fn)=>{try{await fn()}catch(e){const raw=String(e.message||'');result.errors.push({label,reason:/^[A-Z_]+:[A-Z0-9_]+$/.test(raw)?raw:(e.name==='TimeoutError'?'BROWSER_WAIT_TIMEOUT':'RUNTIME_ERROR')})}};
+ const receiptAction=async(label,fn)=>{try{await fn()}catch(e){const raw=String(e.message||'');const known=(raw.match(/Execution context was destroyed|Target page, context or browser has been closed|is not defined|Failed to fetch|Cannot read properties of undefined|net::ERR_[A-Z_]+|Permission denied|Missing or insufficient permissions|The caller does not have permission|not a function|strict mode violation/i)||[])[0]||null;result.errors.push({label,stage,known,code:typeof e.code==='string'&&/^[a-z0-9_/-]{1,80}$/.test(e.code)?e.code:undefined,reason:/^[A-Z_]+:[A-Z0-9_]+$/.test(raw)?raw:(e.name==='TimeoutError'?'BROWSER_WAIT_TIMEOUT':'RUNTIME_ERROR')})}};
  await receiptAction('B14_ADMIN',async()=>{
-  const staff=users.find(m=>m.authNamespace==='staff'&&['admin','super'].includes(m.role)&&(m.role==='super'||m.projectIds?.includes('cinepolis')));
+  stage='ADMIN_SCOPE';const staff=users.find(m=>m.authNamespace==='staff'&&['admin','super'].includes(m.role)&&(m.role==='super'||m.projectIds?.includes('cinepolis')));
   check(staff,'AUTH_FAILURE:ADMIN_NOT_AVAILABLE');
   const {page,context}=await session(staff);
   try{
-   for(const country of expectations.countries){
+   for(const country of expectations.countries){stage='APP_ORIGINAL_GET';
     const read=await page.evaluate(async({api,country,period})=>{
      const bearer=await firebase.auth().currentUser.getIdToken();
      const start=new Date().toISOString();
@@ -58,7 +61,7 @@ try {
  });
  const cases=[{country:'GT',login:'jennypher.murga',tests:[['GT11','visitas'],['GT12','mireportes']]},{country:'HN',login:'rocio.vilca',tests:[['HN06','mireportes']]}];
  for(const subject of cases)await receiptAction('SESSION_'+subject.country,async()=>{
-  const choices=users.filter(m=>m.role==='shopper'&&m.authNamespace==='shopper'&&m.projectIds?.includes('cinepolis')&&norm(m.visibleLogin||m.username||m.user)===subject.login);
+  stage='SHOPPER_SCOPE';const choices=users.filter(m=>m.role==='shopper'&&m.authNamespace==='shopper'&&m.projectIds?.includes('cinepolis')&&norm(m.visibleLogin||m.username||m.user)===subject.login);
   check(choices.length===1,'AUTH_FAILURE:SHOPPER_UNIQUE');const member=choices[0],account=await auth.getUser(member.uid);
   check(account.disabled===false&&account.customClaims?.shopperId===member.shopperId,'AUTH_FAILURE:SHOPPER_SCOPE');
   const profile=(await db.doc('tenants/tya/shoppers/'+member.shopperId).get()).data()||{};
@@ -66,15 +69,15 @@ try {
   const {page,context,ready}=await session(member);
   try{
    for(const [id,view] of subject.tests)await receiptAction(id,async()=>{
-    const selector=page.locator('#periodSel');
+    stage=id+'_INITIAL_VIEW';const selector=page.locator('#periodSel');
     await selector.selectOption(period);
     await page.evaluate(view=>CX.router.nav(view,{history:false}),view);
     await page.waitForFunction(v=>CX?.session?.view===v&&document.querySelector('#view')?.textContent?.trim(),view);
     const capture=async()=>page.evaluate(({view})=>({period:document.querySelector('#periodSel')?.value,view:CX.session.view,periodInData:CX.data.currentPeriodId,count:view==='visitas'?document.querySelectorAll('#vList [data-detail]').length:null,
       reportMonth:view==='mireportes'?/oct(?:ubre)?\.?\s*2026/i.test(document.querySelector('#view')?.innerText||''):null,owner:CX.backendAuth.context().shopperId}),{view});
-    const before=await capture();await selector.selectOption(oct);
+    const before=await capture();stage=id+'_SELECT_OCTOBER';await selector.selectOption(oct);
     await page.waitForFunction(({v,target})=>CX.data.currentPeriodId===target && document.querySelector('#periodSel')?.value===target && CX.session.view===v && (v==='visitas'?document.querySelector('#vList'):/oct(?:ubre)?\.?\s*2026/i.test(document.querySelector('#view')?.innerText||'')),{v:view,target:oct},{timeout:16000});
-    const selected=await capture();await page.reload({waitUntil:'domcontentloaded'});await ready();await selector.waitFor({timeout:14000});
+    const selected=await capture();stage=id+'_RELOAD';await page.reload({waitUntil:'domcontentloaded'});await ready();await selector.waitFor({timeout:14000});
     try{await page.waitForFunction(({v,target})=>CX.session.view===v&&CX.data.currentPeriodId===target&&document.querySelector('#periodSel')?.value===target,{v:view,target:oct},{timeout:8000})}catch{}
     const after=await capture();
     const ownerOk=[before,selected,after].every(x=>x.owner===member.shopperId);
