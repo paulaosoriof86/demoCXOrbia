@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "cxorbia.i3.work-gt-hn-period-restore-source-QA.v1",
+  "date": "2026-11-20",
+  "iteration": "I3",
+  "finding": {
+    "name": "WORK_GT11_GT12_HN06",
+    "classification": "PERSISTENCE_FAILURE",
+    "proven": true,
+    "role": "Shopper",
+    "countries": [
+      "GT",
+      "HN"
+    ],
+    "scopeReceipt": "docs/checkpoints/CXORBIA_I3_WORK_GT11_GT12_HN06_PERIOD_RELOAD_P0_SCOPE_20261120.json"
+  },
+  "before": {
+    "workReceipts": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ],
+    "observed": "selected OCT 2026 and saw correct data, then browser reload served NOV 2026 and Mi Día",
+    "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+    "devRuntime": "cxorbia-live-hr-dev-00381-z2j",
+    "devHosting": "sites/cxorbia-backend-dev/versions/7cf637fb71b2f9a1"
+  },
+  "sourceFix": {
+    "sourceCommit": "b4fe57850a893dab6d199fe2e4f52bced9e76f65",
+    "changedProductOwners": [
+      {
+        "path": "app/core/router.js",
+        "beforeBlob": "d7afbf30cdfe17b5a6a968f46883625e7d56a9f6",
+        "afterBlob": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+        "behavior": "Remember UI period/view only for validated Firebase UID/tenant/project/role/country after authorized HR; read guarded view on mount; invalid or foreign selection ignored"
+      },
+      {
+        "path": "app/adapters/tya-live-source-inplace-apply.js",
+        "beforeBlob": "45e1cd1b8c01d6276be2c256d5b99baa93e90252",
+        "afterBlob": "79100d93ed0214f983cd029a831f592bac671403",
+        "behavior": "Select fresh provider-authorized period after exact principal UI hint; current trusted HR period takes priority; stale period falls back to provider latest"
+      }
+    ],
+    "testPath": "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs",
+    "testBlob": "e95f4b502b60a68ff371cfed77fef1d3d33bb8ba",
+    "testWorkflow": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml"
+  },
+  "testEvidence": {
+    "runId": 44799451335,
+    "runNumber": 824,
+    "jobId": 136507475064,
+    "jobConclusion": "success",
+    "tests": 7,
+    "passed": 7,
+    "failed": 0,
+    "scopes": [
+      "GT authenticated same principal restores October",
+      "HN authenticated same principal restores October",
+      "foreign UID tenant project cannot access",
+      "deleted period and foreign country rejected",
+      "stale/tampered hint rejected",
+      "HR selected in-memory period wins on in-place refresh",
+      "saved route only when module/role authorized"
+    ]
+  },
+  "after": {
+    "sourceOnly": true,
+    "devDeployed": false,
+    "production": false,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "builds": 0,
+    "domainMatchAdded": 0,
+    "currentMatch": 6,
+    "total": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD"
+  },
+  "notCompleted": [
+    "Full exact DEV source composition with preexisting B14 source-only delta",
+    "Authenticated real Chrome GT11 GT12 HN06 reproof after DEV deployment",
+    "Admin Client Operativo approvals and full 15 C3 domain receipts"
+  ],
+  "nextExactAction": "Treat this receipt as bounded P0-proven source QA, compose only approved Work period source with existing B14 pending exact source deltas into one canonical successor, run source and artifact gates; materialize one DEV build after source approval, ask Work only 3 affected Chrome reproofs. Production DO_NOT_TOUCH."
+}
