@@ -22,266 +22,722 @@
           "rowIdHash": "e4d7d4d48e3b55a00de39e4efdb77af6db215ad4e0fbb965b583e47184fcadf8",
           "row": 5,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "861e1149442866d9023a16255d7aab5409657902f53a61947061c1eac5d09e68",
+            "branch": "e5fa2627f4e03247100c16119837f0a929fe028d60b0c2157638923da5b414a9",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "ef17e1128cc5410fcc06c2e6a9b5f70d7a1f75ac6fba6200777b0e2bc7f09d8b",
+            "branchHalfScenario": "a529753e18e1ec11b10bf1bdecccccb9b902e8fc229dc8bd7d922a3525faa03b",
+            "cinemaScenarioWindow": "0afbe41fa332173432789a43f00ae15fc9268f98e68c235141c8dfb3ad219e3e",
+            "branchCombo": "444cfb8917d3c7e92fe10b2342e257d32a24301c0579546b9d0e8fc76b489506"
+          }
         },
         {
           "businessKey": "5716366adc1109138f62049cf2d7b33bb6e873f77a200c6d41cc2ef697c08850",
           "rowIdHash": "5aa0d63206d85f2f98fe84b8156a35d9c65199001bc3a5e34c96d2c056219ab6",
           "row": 6,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "aee9c0632a7a359e55ac5edc85e2af5c2144ff6e0cf544218f599feade0be1b1",
+            "branch": "f4a92e32bb0b07ec5d3696673c4e56285fe023ebbeeaeabd40e2691cb0927c57",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "b10a60d0d83110700a770caac8c1a2f71f0f14549c64682fd88f53773046309c",
+            "branchHalfScenario": "b27e09209fb7bb4bc64eddea5d2ad01c57402d9113c614aec6de34ab722664b7",
+            "cinemaScenarioWindow": "a0f8d6c531510b66330538e9f244c0312af540d9067fb68ac5385ab4a5b2f940",
+            "branchCombo": "06d629db646a4d95ad1f2a17ee29f7712b4ff5659824da75bf470ef347050fc4"
+          }
         },
         {
           "businessKey": "e58e183eb91578353b5279705e597ffbd9d29b16f7c5ec69218395b5c8730f69",
           "rowIdHash": "8f0a659cdb9055a378dd3a4af9d63d07560a4bb81a45490152b664afdaa3c934",
           "row": 7,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "ad10490b0930360374e48a8ba61dafc1b8b6cc782efb7cf8fb0ae36d820719bc",
+            "branch": "3f11b3514504591306f99522f895442c9b80836af108022dfda9813235b25045",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "b22beb67a8307e2d53e817acd178c44161abc82b84acdb185d15320a9a33a4fb",
+            "branchHalfScenario": "937f250298585ef50a208e9d3c0217e240f007eb3f9f45f420b5740b3086dc77",
+            "cinemaScenarioWindow": "b3d7f9e84753d9ffb89dfe5801459e5f7e614970f301cb0bf46589c44a9909a5",
+            "branchCombo": "97fee113d12017df0ede65ded61a89fc63484b82ae08387aa61633c081d5914f"
+          }
         },
         {
           "businessKey": "06dc15808a9a23ead6b3d4c6701d167ee904217382ea563c6e19a83879580833",
           "rowIdHash": "46dae03ec6f4b9b06dfecb212df4c850d67f4c2651f804454eb89902d6d5145a",
           "row": 8,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "ae5cb6820ea694e25e6c0d97252c2184434fb1ad64586f24e7d82b35b81758d5",
+            "branch": "be0139e598c5609db9261873b2af6e0c0dec8d73e91bbb27c1fbd1b34422788c",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "b5ccfc82318ee8e06a32a3e0a053f0793f058a1a3e73e1666ae5151770da4074",
+            "branchHalfScenario": "9e093912c80b1c73ecdbeeb9140a17aee5945f5b11288ce4bb10096c2932846a",
+            "cinemaScenarioWindow": "ed458824982c3ce7898a47a2ccfb2c5f0531250077761469672473c934881ac4",
+            "branchCombo": "ab7c7dfa672b221562a83ed215348cc13a0c56e57be62a9f70fbe2931cb980c6"
+          }
         },
         {
           "businessKey": "4c53b6959a18597d53fe33c7baf5e657f15e5a5e6f356468debecb5a0ff0cfc5",
           "rowIdHash": "0a33d46105ebe8c420254570191c754c8ae6edff47bd572db6b38a65566c2228",
           "row": 9,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "70793a5ca551309550e45cbbdfb699979c258f6346e4b84f50a9d5487ec1c81e",
+            "branch": "52df3111dc49c1ebf1cf0ca4d75e7e43787ea735e38b25e1128cfaa5ff2514d5",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "aecf4624135f578cc96186b12560b403fd165cd528731c17e02e3894b6b4c221",
+            "branchHalfScenario": "40b3e01fc770673669f433859a0a256e7c8a07041d7daef20ba7d531968560c7",
+            "cinemaScenarioWindow": "7d56f20284fc7c44dea49edcf6b89fd974a2e54ee1587790771c8f5f2604425b",
+            "branchCombo": "881450443cf8feb643ad732524c9fbbe2fd043c783f97cfb2e73b4b130f8f35c"
+          }
         },
         {
           "businessKey": "5becf075d084a6f93cd36a4b6b19072292cdc9b839bcf05bf2f0eb3c74fcb17a",
           "rowIdHash": "cffdcacffb7c131d1083603f383e76751252f94bf65efa0d60bdd3badaeaf05c",
           "row": 10,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "0427ed42adebd516e62ff54256d82233de96293ceb007bd1d4273d238e152183",
+            "branch": "3f452b0580ec572263bf16dd0587ad8e8b4f2765011217faede97705c5a77bdc",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "3be26ca67f0e96bd7e5a1e9700cc7fced6d12163818f6c619658a1c388553262",
+            "branchHalfScenario": "2b001edf4e8f7b8bcc76c11d9a4e2f741a09b6a1ac314806b6182dd1fc1684c6",
+            "cinemaScenarioWindow": "d213231ceb485e09b46a33d29e5d1cfe0cf628e396af8d15283e5a99eae1a5a9",
+            "branchCombo": "e0ea229297459a1ad65bea2dc45d03e6bfbf895a2b944ddc9be787c49da48a5e"
+          }
         },
         {
           "businessKey": "88ec0e344774822386ff27e7c5b3424f424b872f46803e94428c55789b9ab5bf",
           "rowIdHash": "3bd93a36e57b9710bb2245f8ead0bc90ac9ad6524df730039140f64c3d39f4db",
           "row": 11,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "b2e35b87669bb6c980131d8c8497388ac8acc8b99a6e96c882a9021cb4510054",
+            "branch": "662bd0fc7711295879184d808927f40e9a932ff9f648cd84743cac221074aa7b",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "f4f6405a5ae89004141400dcccee35a4fcfbb25843e6c36ec4f9ad937e437389",
+            "branchHalfScenario": "de7a90f6fd82298fcd08ca18e4715678f0cf4a8dea58ca5745922a4eaa871f8c",
+            "cinemaScenarioWindow": "b8d852e10a1b91b49780bba10439482efc0688eb306e46d7aacfab40e8fa998c",
+            "branchCombo": "217b45556f6b1562a1b92301fe73c21080c59897857c31992db0282286752856"
+          }
         },
         {
           "businessKey": "6f0a94828ebfa5bfb8038f2b056bfd2a1981de27501aa3305ff84ca1f9544025",
           "rowIdHash": "adbb6d1c4b8c31818e7754a4e4d889503cb59f9399e6cebd4e1d51d0c244d149",
           "row": 12,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "7d5863ba84d7c9e809f9839adbfaf77bd0077e36dd284472fb7d53feb23ec368",
+            "branch": "35ea5d50b5d2d6fa3c724e7d00a2c164227db2a7616609c5acb3e3525f713581",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "cae6b3f096f8ee575f6b65403ec612eabcc3121ee5fc0940cbe496a252572852",
+            "branchHalfScenario": "db0e4fda5991e027d42463ba04071d6345b3851e668940a7cc8934726211abfc",
+            "cinemaScenarioWindow": "58430545d76eed26c1c1826f58849b27861b7483486d387f37b9f34aa54af1dd",
+            "branchCombo": "2e67ec6fcb20a7ee89686012f0c26d3f90493acecf57cc3fe710e1a439913772"
+          }
         },
         {
           "businessKey": "90979dd84e846eb5368b12a2dc5244b5324b06bfeb2be34d29cefb71aa9352ac",
           "rowIdHash": "944904a79992980824bc6031c07c7d74639f8c194bef2b3afe65e58367f83bc2",
           "row": 13,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "8d765376eb314da76cac5ffbfe8446005092625347a9b97bb92d52f510e635cd",
+            "branch": "98cd3f9fec21d6e2be34e62a060a471091529e594edc7a5a4c4889e29dafe579",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "f3528537e239e22023222a0798a9d99fa8806b01b2b4ddba5126549b00cdde25",
+            "branchHalfScenario": "b3e9316334383f73af37119efea08b2709941c331104151fb6d0c73f51d63a19",
+            "cinemaScenarioWindow": "56119ab7706ee4122e893ead9070353b56624bbfa64f6ba9bb2116f6569f76a6",
+            "branchCombo": "21dd7b5f261198afe4bd4af23725b7cd08b60078abf9b42e3afa8044fa52a4a3"
+          }
         },
         {
           "businessKey": "c0aa45fefdd38689306a127ade0a382804d9c711139fd9f432da1b9e8df8bd1d",
           "rowIdHash": "77c8e91a16f678f6aa826efed4f830e19f12c255b4d9897a50ba31193f9cd2da",
           "row": 14,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "a26e8e8e9d50fab34160339d2b86fae0c9883edce59f4d9213768b8d6a3e0c3e",
+            "branch": "5876c88a5fc9b28397cc684ea6aa37ad1a8920a35c122930a6bddb5d594b33fe",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "76a9f1672e1c721e5dff1de36e2c9af22d9ef227e02c3910f5c5c9569a599a30",
+            "branchHalfScenario": "2ff36999f5f19b1aa0b8cb58c1e8f4d8cdd75b45861f25c35ec6df1609020bb1",
+            "cinemaScenarioWindow": "73a2394cd92f78e1fd7ae46c786e9bb9d64c79cf6b4b03e8e422199e19b2dc74",
+            "branchCombo": "660c9db05ba19ab56c75cc218d12673091e750541fb13c5aa65d005a48e18e77"
+          }
         },
         {
           "businessKey": "ef29f24f868266b8e7bc744df9eee5b3619acdf20997f3d449e21764bf5b9791",
           "rowIdHash": "79ce44bdf53a0fc883a78fb5b4e90d0aae92787dfe14dd02df9eeb0a49c4906d",
           "row": 15,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "5fd6eb60afaac45dfa4a3c662a0ebdacf268264e70f5d24966b34f92f744cf96",
+            "branch": "e52bb548f729af9e6243d0915178f3e65c6eace2b5961b77eca009b84d7b5d79",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "4625224e6a7c420481f62fa963cc1e8dc136c7175eafc455f6b8e03454353bcd",
+            "branchHalfScenario": "e2f7cd2cb256ba76d6c2dc0d05c96dee216e64a6b2432550b381d5f1b88671f2",
+            "cinemaScenarioWindow": "730ae341c48ed56d94874597373277cc30488f166f71969e0a5bdf524cbbbb09",
+            "branchCombo": "53dcb4bfc9fef3ff844b7d44f34b232e1cdd5fe797546e8c64d46bf320e6edbc"
+          }
         },
         {
           "businessKey": "37e391cc7037bf9d9f116d9de4a37adab529c94e944d67e68f9a93694352ea78",
           "rowIdHash": "cb4b36b06d8c8828e58f3ca48c6691bd7ccde797fc612769e4ba9fbc8c95b0c2",
           "row": 16,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "042ffda2b47670010dee9e5102247e7e7673c4020dc842e5687530188a225307",
+            "branch": "227897a8a057c0490eb7688fe71e9e7ca1aa82b0f4c95e98e54d2f14225e051b",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "444591227b3cf2eab9f3321c19fbfa1bf764795296b6142b9f86231a5c5d660d",
+            "branchHalfScenario": "27236825ddfbfe8f7bb881c92da77f1709d0d41ac1d649558ebdd936af0121fe",
+            "cinemaScenarioWindow": "6384caaba12ac9a496ef7dc37fa1c54437c976c25274e4fcdd831ff541172a93",
+            "branchCombo": "de699ffe34117c2dc89e1728c8ea054241ebc50aca0f8752fbfff7463d3694ab"
+          }
         },
         {
           "businessKey": "26f06e23880762900c0212fa1684aec4a583e1aa52ca6b86dadfbb91360ed6c8",
           "rowIdHash": "f197f88369e235c593dcd5773bff79a9099943dfcfe9f9d31d9ee10031b3505f",
           "row": 17,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "929e5d6d3feada8d274c1180306b8764474eda5c95e3adfcd14272470516e6d9",
+            "branch": "e18810ac510b51f6fd2bf8c498e0464dd4a206119b24b0d23833c78ad11b892b",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "acbeacef884744b75ac0ad65d03d60e8a3e9d4239e77a7266506decb87a2a1b6",
+            "branchHalfScenario": "874c0cdf40bdd2585ea5711d82672105cf5454cf033aa9991666109980a0cd0a",
+            "cinemaScenarioWindow": "8bcb6d38857c1101fd965f4df6befc3c0834c11448f3b26f92a7e1e17de2ed02",
+            "branchCombo": "04c14ec7e51e3be29d68596264d8eaf1da9a9b033c05847fe75a7d7616e50c89"
+          }
         },
         {
           "businessKey": "c954fa38b20b7767207eb6ec2f187d303df182c3637e6386d8ff753861303844",
           "rowIdHash": "76fab8f06ba715d249ed8779e5d868f2aa07504f9d2c483e00a62a0f8dcefe98",
           "row": 18,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "e13eea2f765bb2d5a5b9a8da438038f525784cc21c2ef10a2950030fa90b1c76",
+            "branch": "cd36ee9a99d2a445a065c54c5622ce42bb52b3fe10b4811dca9909e3d80ac2cc",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "4b59dac8a079b63eeb61a5609b1c09058102f9249accbd796857b3131443fdbf",
+            "branchHalfScenario": "25ebeebf9d67f16d24bebd20037acdcb0fd3591ecf3944c086720adc1a30f77c",
+            "cinemaScenarioWindow": "68fe0b4c951a8036680d9c867dac43d8407358ecd166a5b007c1cd76f372c856",
+            "branchCombo": "5a8147daefedb39f0389d2bc2531cae97a7bc8eb0b2281d83574bf558187a489"
+          }
         },
         {
           "businessKey": "7b3a41cd63600daaa250a10de8dede6ff1c6653b51f1c31f2fd9d057884b85be",
           "rowIdHash": "657f17feb3d5606ae0dbad97075b66987d114ccb323fc428986a72839c9c688b",
           "row": 19,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "a6415183a4ab84e3095de812dea28ed5bff0cb1b282ca8bff2c6e9df23a6c2f5",
+            "branch": "81fb5a52da47f0ff9779dcb586de6b1f18a3aa7ba77b9381ee60167e8492d11d",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "e6d11069adec62d750401b90ea728a5058e0c0e120e8eaa9f86ce0b1083c6078",
+            "branchHalfScenario": "146dcddf01fc653ab4b337861b8877830def68cd6b6d902da9bee8271246de4d",
+            "cinemaScenarioWindow": "a35390d8550821e3b6d3281cc2d7a15044d6621108f3e7510affde608d734732",
+            "branchCombo": "33729e2b1843efde123679e3145a34c1db46d453374326ec2a59b436a6283040"
+          }
         },
         {
           "businessKey": "efaca246784772c697bc2055cf6c7540e702af17760eec72f37c9f90254adafe",
           "rowIdHash": "b70f5dc182b6011ba5ee2b2ab54645e987c9496607bd9b748b09861904697661",
           "row": 20,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "e4e7f387f173c8ee700c2ffa072273f99d9fd856e90fb995a053e7f5d576b9c4",
+            "branch": "5144caf0d1eb90b4d7b7a4dc4f336ed35cbce89e93c9dc3acea9ccdfe8763eaa",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "cb4c1b08755366fa7ff1cfc7c93c82c791631483b08f7289108e5c4b537259ae",
+            "branchHalfScenario": "2ec4690b26cc6c10799b9a20e1edb01f7231786fd91786469401331e735cafe1",
+            "cinemaScenarioWindow": "93fff848ce4f1eceeeac4f1cacf61db5ad96a821a5c3d12cc7e31f0c6e95f82f",
+            "branchCombo": "d1aa78094cd07f9efbc6edb81a2ae5cf91e3dd25eeacfb07a701213c3296cca2"
+          }
         },
         {
           "businessKey": "38f5ab9383e2bbd82077a4866994e913397249f4e1a2c4e13d34beb7f271950e",
           "rowIdHash": "f31b3864f26c5d39337d935ace2b5c041b1dac49692e8e78a7b000c1bec30d8d",
           "row": 21,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "8a87bab750d01330bf293ac70229f251e82524bce681e18f1f8a98b6d1297a00",
+            "branch": "ca2e814d196feb8bb9fbd910c518fc21611ad09622602cd3f344f05270fcbc93",
+            "half": "69304c80ac6f29a1b867b9705e3528ddaacb5f144aac4fe6f8892f4305d64b41",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "5894454086d226b85e539fef7a7addfd05fad998e98cf4988ad4b961842be1fe",
+            "branchHalfScenario": "36ce438535121ddd37cb2e0d5482ff0cc8c6f0277340cd5ffde922b8fddaf4ea",
+            "cinemaScenarioWindow": "3fc738508d2d3f038f397f33987dddb017db81ef4e218c2e21dd90f01af7d847",
+            "branchCombo": "6af4916f52efb92d114a902e24556fd98ca3ae264df594bad484cfae2e99c7e9"
+          }
         },
         {
           "businessKey": "ac998af12e02f904f516e9487359c8f6234779d7ea5bcc1d5997d5b9b7295f96",
           "rowIdHash": "df92dfa8201af74d98d18cbf0f7b2ecf9336743ba799949ed8450a5aa3611f90",
           "row": 22,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "861e1149442866d9023a16255d7aab5409657902f53a61947061c1eac5d09e68",
+            "branch": "e5fa2627f4e03247100c16119837f0a929fe028d60b0c2157638923da5b414a9",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "9034c90acafd8cd322204d3065febf489f8ea5a8bae9732eb144743fd008e41e",
+            "branchHalfScenario": "f2089b6b3631011fc6b83be5aa5cdc22be483427c0d09cfba237662b2412437f",
+            "cinemaScenarioWindow": "05082d1c46c4f37204d55280cf946bcd8c8f692f9ea28722330315ef2bdbe05a",
+            "branchCombo": "9a976e597b198d30dcb4a370b4a7380cff90e21ff3b156931bbcccdf37766c25"
+          }
         },
         {
           "businessKey": "b89a0981fb6976a6628ce7cbfff9db378a27bab045f946483fdf278a4d8f17d6",
           "rowIdHash": "affceddc43391527befd2d730902576509049096e80d610a3bff57c897ba6d4e",
           "row": 23,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "aee9c0632a7a359e55ac5edc85e2af5c2144ff6e0cf544218f599feade0be1b1",
+            "branch": "f4a92e32bb0b07ec5d3696673c4e56285fe023ebbeeaeabd40e2691cb0927c57",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "d68599058ca7091819545e647f10df95afbf4dc31f5a0e73feacbfb406290b7d",
+            "branchHalfScenario": "777ce14c6f785016b3689a46739308bc5f01d877071e840360c5911c64a7595e",
+            "cinemaScenarioWindow": "95a373b3810573ecaf1350825b1d62291b0a989b75e0386d09e9af617c431698",
+            "branchCombo": "709a5f2bbdf639d907e1d55d3d748d5f75940d7293c8d10734f8073837212ac1"
+          }
         },
         {
           "businessKey": "a43161a4a95afe9b626823e2d3471040bf8f66b5783327a7e3d4118d21470c59",
           "rowIdHash": "69b9c0706a534d6245ed99d8bf7f8310e9f7e1abac69fc23adef77852c7b2378",
           "row": 24,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "ad10490b0930360374e48a8ba61dafc1b8b6cc782efb7cf8fb0ae36d820719bc",
+            "branch": "3f11b3514504591306f99522f895442c9b80836af108022dfda9813235b25045",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "0ec415a3a87144ccd4d09d01d3024bbb08a341be4defc3cacad620efd0f336cf",
+            "branchHalfScenario": "dce0cc14c91948c601618379a851dd75136b5a69dbcb6fd3c21d9f87fff5e332",
+            "cinemaScenarioWindow": "8ef82898ca5628a14a39e6d143f8c46eff0d1d077b33df48eff30bd90cb0f815",
+            "branchCombo": "b81518587ed49d6715f80853a5b2fcd6ee51def6a9ad7712735db735c3ebada0"
+          }
         },
         {
           "businessKey": "1c0dc0cda6a984185c2e68ba6936273aac6ac9da74b5140c72d325f2cc6d215e",
           "rowIdHash": "c53f4a1675a11f4aa8233eaa7bb78cd017c4d0241f2ce5615060d263f39be454",
           "row": 25,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "ae5cb6820ea694e25e6c0d97252c2184434fb1ad64586f24e7d82b35b81758d5",
+            "branch": "be0139e598c5609db9261873b2af6e0c0dec8d73e91bbb27c1fbd1b34422788c",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "cd3a1e2aa590a802c8e5f3b430f7d5d4979688340af8ad4ab76614059a6b0895",
+            "branchHalfScenario": "ad841acbee5901882941446d94423eda4b3b8cec66c92f55322b323978babb31",
+            "cinemaScenarioWindow": "34d7361e855bebcd537d672c1c31804c51e1ca9d8f841a22443b06ec8a8c99b3",
+            "branchCombo": "aab5c1522765a072c2235e897d8fff17d1a218308a37337b7ce07adbe5b79b31"
+          }
         },
         {
           "businessKey": "bd9350dac81c9ba6751362164f5ae93efd3bbb0a3bbd2e65b441393f89725388",
           "rowIdHash": "02c5aefd0ce3a0eb42bf5bffa69116cbee8ea0ad1c5094748074eb71446e1062",
           "row": 26,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "70793a5ca551309550e45cbbdfb699979c258f6346e4b84f50a9d5487ec1c81e",
+            "branch": "52df3111dc49c1ebf1cf0ca4d75e7e43787ea735e38b25e1128cfaa5ff2514d5",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "47896048f3793fffe1c8815b68846150bc5b659ad127c9779db27e9f6ccfcd55",
+            "branchHalfScenario": "b29c45d51785362af4b75e87faae079890c0f2fce7012022522347463dca2c25",
+            "cinemaScenarioWindow": "7be5628b0f5f76f401a167600f28772a15861787c90c8ce3a4e3b7fa02ec102f",
+            "branchCombo": "b9d658fa47b36c146995befd03c646454ab1eefe6a604a7e984631e0c69e05bc"
+          }
         },
         {
           "businessKey": "621b6cde005284d98135785c7b5c0c76e3006ee22ee28cde803d8951dbd60205",
           "rowIdHash": "6a6ce21665f8a983a3e0b76e04c84ae26541a4e35e1a051ef92f35ef75413769",
           "row": 27,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "0427ed42adebd516e62ff54256d82233de96293ceb007bd1d4273d238e152183",
+            "branch": "3f452b0580ec572263bf16dd0587ad8e8b4f2765011217faede97705c5a77bdc",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "650d0b260288b2b1777a84c796ab631e3ce864026497df8272d3bb597e862d43",
+            "branchHalfScenario": "524b99bc606b1624fc6083431c994d4e253e9cf6a5740a979ceb0342691680c3",
+            "cinemaScenarioWindow": "c691887cc9669e3f2cf197108d197dcf1d3e0e0d5bee037377c1cf5b55bd78eb",
+            "branchCombo": "3853ca86600a9407fa002c0ebd2209bae32ee3cd98c8cb055a5713db8efb8edd"
+          }
         },
         {
           "businessKey": "5606aff7a54f6487a88ec41bff212bd1f26c1e09e60a58a97082a185b394107d",
           "rowIdHash": "be4ae8368a6e12b4d64f64a8aff8fc7235780e45683184fb9522bacec8aaa3e8",
           "row": 28,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "b2e35b87669bb6c980131d8c8497388ac8acc8b99a6e96c882a9021cb4510054",
+            "branch": "662bd0fc7711295879184d808927f40e9a932ff9f648cd84743cac221074aa7b",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "1d60afdfd9d97268e7dc423dc5af87ce854c546c0017505522730e29fbed74d9",
+            "branchHalfScenario": "410cebbc6fd31f69d7ccc12a6ec0b766710c06b3ec9a56b675d6e4b8891da9d9",
+            "cinemaScenarioWindow": "f530b19d0900b808fc43417cdad9e38f459609bfcd8d8be9f598c5742516d55e",
+            "branchCombo": "5c487a4902b267a572ad769196e7585740059bddcb438af6222523881bb3c9af"
+          }
         },
         {
           "businessKey": "fce380ce35d3764cbc041d37855edc9dbe6b6986465e79577bdbc8172d034a84",
           "rowIdHash": "f7409bee42d1a26385d8940456e0ed19aed901eb2733dd92b8d7303607905096",
           "row": 29,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "7d5863ba84d7c9e809f9839adbfaf77bd0077e36dd284472fb7d53feb23ec368",
+            "branch": "35ea5d50b5d2d6fa3c724e7d00a2c164227db2a7616609c5acb3e3525f713581",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "1e96f5fe42fe503b8fc604be40e7d76305866171487a774762bf1084bc998fbb",
+            "branchHalfScenario": "6dc498fde978bd47ff958c299b3fbcdd23a446070f5c23390fd3dfcff9e62810",
+            "cinemaScenarioWindow": "43fa51c24ec72c02d9a389ec5495dca79a1724ae6c3884633e0054b6aa205cc2",
+            "branchCombo": "4e0322fc48b79a26cc29112258635df7d1d7d9a3b2055df736db9fcff7798a40"
+          }
         },
         {
           "businessKey": "24dd08306e2bb11c737e9d2b28c32736d304b4eb3acfe797cd81785a6cacae31",
           "rowIdHash": "4674af4f4ee42b4445c1d65e93dc48a92f2e28fb7ad6800ca8610ec042cb49ce",
           "row": 30,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "8d765376eb314da76cac5ffbfe8446005092625347a9b97bb92d52f510e635cd",
+            "branch": "98cd3f9fec21d6e2be34e62a060a471091529e594edc7a5a4c4889e29dafe579",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "85e89f840e1040fa9cb09f93ed871cf520ed0cf4e50bfb70e6eec8b1ca1bbef0",
+            "branchHalfScenario": "79d71f4512edf268d5b83ae093eadeed2498ba6a85a714c66ad44510581d2c12",
+            "cinemaScenarioWindow": "18c5109e0f31ded1f4e1e2d58ef5aeb14ca0000a064c86897e258d425c3928e9",
+            "branchCombo": "4c9cbfc72e5652bca78706c65f3035cfc780438c42a7a507bb9cdd1804be1738"
+          }
         },
         {
           "businessKey": "0326617b98bd89207196eb480f708be6a8af1d602d91de5fb80e3dec67dfa826",
           "rowIdHash": "2644ea18461bd46a338fcd357c931119c6c17cdda4128a6f7bcad8f1859599ad",
           "row": 31,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "a26e8e8e9d50fab34160339d2b86fae0c9883edce59f4d9213768b8d6a3e0c3e",
+            "branch": "5876c88a5fc9b28397cc684ea6aa37ad1a8920a35c122930a6bddb5d594b33fe",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "3cf77427c50c73f8784a46302098199d445daa26b72db8b263af9faea8b0321c",
+            "branchHalfScenario": "23fef294635fd41cf3a1adcd86b6e11e91776eb186575174f9eff468f126fcd8",
+            "cinemaScenarioWindow": "d77c4ea25e04b369ae6fccaf9a9a8b3d5e57610793083485437c6b77c8eb3260",
+            "branchCombo": "521562ff3dbce23cd5cfcb1ac63944b0b8266764fb5ebba24217ae829b3897c0"
+          }
         },
         {
           "businessKey": "1676dce1c5dab6900d4818f044201dea7a550f33f89df0b0c6bb3507e48f7f55",
           "rowIdHash": "01f5396348390f0235ce4751b0475bb882ee627eacf9526e4e270d51a83d34f8",
           "row": 32,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "5fd6eb60afaac45dfa4a3c662a0ebdacf268264e70f5d24966b34f92f744cf96",
+            "branch": "e52bb548f729af9e6243d0915178f3e65c6eace2b5961b77eca009b84d7b5d79",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "5dfe806e2fd8408a792bd4cf7555f6f3aa0b8d42285a1531f9ed46eaf9675086",
+            "branchHalfScenario": "dcec1c39e733c6f6176d1be35a7a95f85389c0ab47a065e97bd3961a6a83724e",
+            "cinemaScenarioWindow": "17a156e8914f7d19d2d8c333e155dec391a9e94e9534d57db915c5a04d756e3e",
+            "branchCombo": "443766deb55358cad90b2d80038fd439e87de79526b62c020aba107ce65f456c"
+          }
         },
         {
           "businessKey": "8fc59a8c1430b49a71794ae191505670a50984cefc9d67d416b8f9c17899b1bd",
           "rowIdHash": "a8ec3d7587a713692bded98999c0e8ef5c976737f02403d334d3cd0f1d2806c0",
           "row": 33,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "042ffda2b47670010dee9e5102247e7e7673c4020dc842e5687530188a225307",
+            "branch": "227897a8a057c0490eb7688fe71e9e7ca1aa82b0f4c95e98e54d2f14225e051b",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "b94268a4bc6485b10eaa30e0a267b8d8607a1075a2f21d4eefd9b35147582212",
+            "branchHalfScenario": "5aea6a6415b11fdc38eaa88f36d7c44ab404238e36fb582434216e6c016153f4",
+            "cinemaScenarioWindow": "dda062eef356c0644cc4fdbb5691eb25c6a1ca8728c0bafe9624d3942cbe2345",
+            "branchCombo": "b8aa486ea99789875099c5f5b8a2b7eccb20d9e19ff32a38aaba3d691cf139bd"
+          }
         },
         {
           "businessKey": "1e6af0aab6c236b14483c72694511fac664491517021108772e7eb0696c1a99b",
           "rowIdHash": "603364192dc8e990a77c73ec91f7cd21cc3e8afb4ad3c952e7514eac87f5e33e",
           "row": 34,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "929e5d6d3feada8d274c1180306b8764474eda5c95e3adfcd14272470516e6d9",
+            "branch": "e18810ac510b51f6fd2bf8c498e0464dd4a206119b24b0d23833c78ad11b892b",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "b1dd8ac82caa95e0be7f7d80d680c180e7f8b5202cc5307c143b3b8b54c7b90a",
+            "idHalfScenario": "daa7077b07ccbdef6eb911c18fc14dec74d2fc463d331719f6b2457430f75b95",
+            "branchHalfScenario": "f926af007967acfedd52c33cb2d36c5bccc953304065c6e15922b4a281442b92",
+            "cinemaScenarioWindow": "5743a3fe7acfd8f1285e3f13cbe9878181dc1d9710f0312e958c0ae176f9776b",
+            "branchCombo": "e7b86e1512ccf06e2d401d1bb0bdcd854a5276871b54c19229fc5927e542859f"
+          }
         },
         {
           "businessKey": "560097b3b8bf40f871c711a6e273e21e05aa38acf809ec7a8328fe839440b966",
           "rowIdHash": "af380148abeeba2777b12a2f50af2bb4548959475e1d74aa3ee8e7d41b8fc53d",
           "row": 35,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "e13eea2f765bb2d5a5b9a8da438038f525784cc21c2ef10a2950030fa90b1c76",
+            "branch": "cd36ee9a99d2a445a065c54c5622ce42bb52b3fe10b4811dca9909e3d80ac2cc",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "00678fac865f6df98f1765bc52bedf5afac9df83116a5abc33e7971d50782c56",
+            "branchHalfScenario": "40f6bc586c9eb94cc0d526f94a5738ab8374006e2b244a7731ae3dcff56af56a",
+            "cinemaScenarioWindow": "1a2a87d058dd2bf9801eb48e6ea7eff53d765d7f79f9671b76baf8435b59ba48",
+            "branchCombo": "acb24dc891320d35090494469e9df0d51a255bd013a36ad17abd22c0e88c74c1"
+          }
         },
         {
           "businessKey": "49e5b8ae10879316cbff1326f486c2a9925b437a14b280277bf40e3ec4d05912",
           "rowIdHash": "86486fb0eaf43753017ca8237bbc3bde847397dddd5588b0f5b79e94f4472e86",
           "row": 36,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "a6415183a4ab84e3095de812dea28ed5bff0cb1b282ca8bff2c6e9df23a6c2f5",
+            "branch": "81fb5a52da47f0ff9779dcb586de6b1f18a3aa7ba77b9381ee60167e8492d11d",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "4191b9818fcfcea8415d30dee478ba11d9a145eb5541eba3c33ab522bb306ed9",
+            "branchHalfScenario": "bd02dbfba6e7373d6018944869770231388841fc02841be7609c4dea04b633f4",
+            "cinemaScenarioWindow": "aab43bed7c61f2fa9ec3a5e9202f09e58dc4a9002ecd43ef0dd309b5e821552a",
+            "branchCombo": "10dcbd243bda06818cdeaf1e5bb5c96cbca7ec6caf0c05411ff49a2078506300"
+          }
         },
         {
           "businessKey": "86601a6b94b01f95e10c4bb310860919cd7ddec523fa590a8357487aba095bed",
           "rowIdHash": "fb7d4a9bfe48956acf0689e2e6801490f79c2ef17a158af6430c8574856bb8bf",
           "row": 37,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "e4e7f387f173c8ee700c2ffa072273f99d9fd856e90fb995a053e7f5d576b9c4",
+            "branch": "5144caf0d1eb90b4d7b7a4dc4f336ed35cbce89e93c9dc3acea9ccdfe8763eaa",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "1ffed6fe2dfd9533868ff065f01b5fa417451a1babedfbf1d95e5e00cd63efcc",
+            "scenario": "8d02a6e8c2826da87f9119484431aa83700e97395b7af8208f221d6b4e19f129",
+            "idHalfScenario": "6f5e9d5272761c805f639d600627496a85281e08153a5709924d9e7de5acc9aa",
+            "branchHalfScenario": "0e8b77b701f6ab697f5d91f4422a051a6c7a8b3dc22cc748a571da6d1259fb2d",
+            "cinemaScenarioWindow": "8a96431de605d24d6b93304baefd8a6bd7162e36e854efddafe37732abaa394d",
+            "branchCombo": "b30ccc056ad32c15ba591439727a4d44f1433572414e4523ca6c48e2172ad064"
+          }
         },
         {
           "businessKey": "97b3fd8c35d7bf68b259e0cad872074dece1904ece2a538a9bf0520c2772c269",
           "rowIdHash": "8481c0dd8e25de1888425977e890b2141b1fc634fb7617c39bcd5131d3a850cf",
           "row": 38,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "8a87bab750d01330bf293ac70229f251e82524bce681e18f1f8a98b6d1297a00",
+            "branch": "ca2e814d196feb8bb9fbd910c518fc21611ad09622602cd3f344f05270fcbc93",
+            "half": "4fa170c8afdbfcc207cf774d84e0f52910f7f25935ebb6c92d129a0e0aeae085",
+            "window": "c5fba9e0f5f7b36de8b403b4280924d696d3538c015313b6c9c55726b101fe7d",
+            "scenario": "702a29fa519b0eb9b7fd7b3729afa7b0136745581f813b5111bbd32f7ef690e1",
+            "idHalfScenario": "a229bb9b96dbe09288ab1ee23dff2cca39dd487c59029bf5dc5089009fcab1b8",
+            "branchHalfScenario": "b23c61bf97df207d9a55199c784fd2f9ff5af2db779acdf7de275680b09a3fd7",
+            "cinemaScenarioWindow": "c96d56d804797d03998a252e56d3df393471bf3daf639e608aa7c179b8f95b65",
+            "branchCombo": "503f83039b2ec2918d731ac5bbe86bdb22aa40ce6055b86c6c1352df1e921c4d"
+          }
         },
         {
           "businessKey": "8e09e1e813c9d64f0976b41786097bf4f9580e3e903e0db96235342e639d789f",
           "rowIdHash": "a3549666b8ec1fbb01b6cab9164285e9f741b4f39bcddc46f25c0838e7757f3d",
           "row": 48,
           "realized": false,
-          "cinemaIdIsNumeric": false
+          "cinemaIdIsNumeric": false,
+          "confirmedReconciliationFooter": true,
+          "candidateKeys": {
+            "cinema": "a523adacfbae718adb323ed373a6919b817a9978236a9662da72beadb1ab36c9",
+            "branch": "70f572b2df9afc1b830e6514e69502a3165aba82c06d45dc35e0096f48d29299",
+            "half": null,
+            "window": "b97ff2ead4e52866bb3a65257455af65333615f24cb9b7977d7cf45cbb72a400",
+            "scenario": null,
+            "idHalfScenario": null,
+            "branchHalfScenario": null,
+            "cinemaScenarioWindow": null,
+            "branchCombo": null
+          }
         },
         {
           "businessKey": "7a935916fd12bef06a6dee339751f1f46456db1620fb4dcef4d25ef6e16198c6",
           "rowIdHash": "2ec0d727d5605d5370f9b47b6a12c7c46eebb7c108bc21faad34ada974335110",
           "row": 49,
           "realized": false,
-          "cinemaIdIsNumeric": false
+          "cinemaIdIsNumeric": false,
+          "confirmedReconciliationFooter": true,
+          "candidateKeys": {
+            "cinema": "54a1ed6b918e5db1cb14e113d689e87e2ff50bcd67aa4113b0bd4c28ff066213",
+            "branch": "85ea99a0d9e0039f9b9a5c9f46d6bbe5b73d31d2f3379ef5a3211803f5835807",
+            "half": null,
+            "window": "89a22b29039a163035ce1addc0c0d28fb98598570864b348e95e25a37d3086ef",
+            "scenario": null,
+            "idHalfScenario": null,
+            "branchHalfScenario": null,
+            "cinemaScenarioWindow": null,
+            "branchCombo": null
+          }
         },
         {
           "businessKey": "d75cf6e2c2d1d9beecc0685b166ba1f15877dc2015f880edad458166334811fb",
           "rowIdHash": "3a83fe3a93581f6ec022423e476bc0c3ef49d968d8813c0c60ce492ec88f20c4",
           "row": 50,
           "realized": false,
-          "cinemaIdIsNumeric": false
+          "cinemaIdIsNumeric": false,
+          "confirmedReconciliationFooter": true,
+          "candidateKeys": {
+            "cinema": "68191a519e28920244102c4b247940cc843c016ba7617000f755056537510901",
+            "branch": "8f16168d2239b5bc8bc7da6e5ffe451501d23c78d6880d5c8d78d34254ff9ad3",
+            "half": null,
+            "window": "8371fcc7bf8d2183b3bceb5842bb0686f8467ba4172b54943411461e7525eec4",
+            "scenario": null,
+            "idHalfScenario": null,
+            "branchHalfScenario": null,
+            "cinemaScenarioWindow": null,
+            "branchCombo": null
+          }
         },
         {
           "businessKey": "28793954a3228d34fba9059a385603f844018c77c2ab58befe46102fa35634be",
           "rowIdHash": "98262e73899486ec14a2e4a1f7b8cd1cd9d7bb50a81bacad29efafb0419e0468",
           "row": 52,
           "realized": false,
-          "cinemaIdIsNumeric": false
+          "cinemaIdIsNumeric": false,
+          "confirmedReconciliationFooter": true,
+          "candidateKeys": {
+            "cinema": "89f6a5e74e6ed28a00489d3998166d9797dad0075b42eb23e817c2b5f4679c59",
+            "branch": "ad1f42e89afa85479bc854e9f4cabff0ec92dce3be8cd8a07a446ed5dcc0b5a6",
+            "half": null,
+            "window": "865e536c7d54239bdc3b7ba66dc2e5b3aab98729dce4d56ff8635e59b6b59eb0",
+            "scenario": null,
+            "idHalfScenario": null,
+            "branchHalfScenario": null,
+            "cinemaScenarioWindow": null,
+            "branchCombo": null
+          }
         }
       ],
       "distinctBusinessKeys": 38
@@ -296,73 +752,231 @@
           "rowIdHash": "1fa9d8737d35da7e36f50d5152b9b6732ca2549b43b7198a431d1b132492889d",
           "row": 5,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "7fc4ca9af100dc47b8ad84f24081ca711a00e3152cc9c43ba8b9f7b83ea19e8f",
+            "branch": "e5a2d9d7c9355aa92469539f10dd1fb33f1fabb379b475774d4c365edd49ffbd",
+            "half": "dae5b2f8ec4e0c7730ccec70d1b761c158f5e7821aeca8b2a7eb4bfd6a381738",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "35bf7dad47d80b3d6af75b835dc895bd5031542a6e3887e570fb2de369a9b711",
+            "idHalfScenario": "4b99654e6ef4d56a9b67bdbbfe50b5d18b8815e03bc395086224d99ef3ef2cb0",
+            "branchHalfScenario": "8b8a18db44c64d53aaf21c5c9e960664a92e2f2316cce02b91f5be47f66a6762",
+            "cinemaScenarioWindow": "6d13e47b9d28873fc75e6035abbbffdf2dc08274a2a807a8435bf2cfce040b84",
+            "branchCombo": "b5ff23e05d03bbba566656779c82fd25dc59dc3714209189d3919f7151c538a6"
+          }
         },
         {
           "businessKey": "fd7dee8372e68028e2c6a4249ebe63ea2134804f4ce9050009b6277a297256e2",
           "rowIdHash": "b8a1eeece3f7678efbc870d6219b52899aac9dd074cfadec488bca0cfdea6aec",
           "row": 6,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "c01263b3caa40fbb27689dcf2bf30c80d1cfaf0b7dd0c9c6d1236790c467cf67",
+            "branch": "e4fa77c5071c5b5fb435668ccf31caea0060ebdd580953b536bead25ed334c3b",
+            "half": "dae5b2f8ec4e0c7730ccec70d1b761c158f5e7821aeca8b2a7eb4bfd6a381738",
+            "window": "4dc01af5f56275c31cea41f86f2e94abd306cff0d6360f444dd611910a485a33",
+            "scenario": "90f6453049bf331ae55506d16b6c88f4dcae0fc42b6f9d8c2d33f7dd6d25f037",
+            "idHalfScenario": "d04ca656b89d353b03d6d241358d578929cedeb393cb97d94522a5576e3354bb",
+            "branchHalfScenario": "6b2760cf0077a5b11b03069b65213f929eff15a559c8692c6c7025d5cbf2f772",
+            "cinemaScenarioWindow": "940bb0719ba5e48dbb1e64aec213448d6b7f9564f95d30638a09eb94ddb5775c",
+            "branchCombo": "404624e9c71ff1f26fa0d7941e3884f29aa6388772aed8273379b9ee6e702d76"
+          }
         },
         {
           "businessKey": "25e4bd097c118e2f03a68330124e6caf719631770d26d8ae67d58d3540d7fc4d",
           "rowIdHash": "8464858926ed4b5c3e1095da15827cf01a0ed7d01d292e7dd869fb17f0ae769f",
           "row": 7,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "cb5602729acbad4a2c0d036ebb8826ea1d08ff6645431f8c782a95fcfc376303",
+            "branch": "003b44d9101509a6c6801c224ed27b5005771ed55aeb02841fee1f3a2bb53b09",
+            "half": "dae5b2f8ec4e0c7730ccec70d1b761c158f5e7821aeca8b2a7eb4bfd6a381738",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "5c7d18a0b686c10338adcc57efeb790e77618553400ed85ab41740c115fc3db5",
+            "idHalfScenario": "d67e54d0239e41cc2986b590fcc9a62011f60a2a52d59e66eac8c5b78ba754ea",
+            "branchHalfScenario": "60f0ca68594367779891f5d2cbd5de0aacfe12bfe4dfb6bc5000080506921d45",
+            "cinemaScenarioWindow": "2673b4af9d95d5df03d564b0737c94759f9cc4e5b443a2a9b7ca4c9e77707350",
+            "branchCombo": "f1830cd6affd3c2a5ff2b46db11e6f167019c88dc6b2cd1a616c6aa551819cd8"
+          }
         },
         {
           "businessKey": "c5c403f68a66f5dc5c08dd45306083d0e78418517311c98157dbe9aaf9b213a9",
           "rowIdHash": "7c892631c1248960cbf415ed36b0e06f75c89e110a31797a185b6e4249b5c398",
           "row": 8,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "af7a7b2e33dabd94780be4435a2dbf273991a11bd160af7c58fd7807ba3a3e40",
+            "branch": "4f28b2d01a012dcc60b5618d7d81e009ec36b51928eaaab008ade98ceb56e43a",
+            "half": "dae5b2f8ec4e0c7730ccec70d1b761c158f5e7821aeca8b2a7eb4bfd6a381738",
+            "window": "4dc01af5f56275c31cea41f86f2e94abd306cff0d6360f444dd611910a485a33",
+            "scenario": "35bf7dad47d80b3d6af75b835dc895bd5031542a6e3887e570fb2de369a9b711",
+            "idHalfScenario": "a43511f098656b418328312d4e52f270496f06c2bfd7bfb26b5eac6fb8fbaac1",
+            "branchHalfScenario": "b5747bce1ad5481c31d035606bfbde635a3551bfbd80c7f2854ed11f043913fb",
+            "cinemaScenarioWindow": "c9655d134b8fa512f60e52e2854d304922f777bbb989be6950ee43eb4baeffbd",
+            "branchCombo": "65cecac1fae238231a8bbfa7c4f466e881985c80e5cf3ef012a4d94645fcd9ae"
+          }
         },
         {
           "businessKey": "641762703329ab42c74ebbf8795083171457777880e575d1d8fec7d663114b9e",
           "rowIdHash": "76fff9106110514a4745bf401529490eeb3f727e1707616dab93622bcfcd69eb",
           "row": 9,
           "realized": true,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "6ec90fbb04659c09f90253e3aa1ed557d45546172c1ebfab9c947da5df73e925",
+            "branch": "39f64e2bdf5875542823a9b5bee0602633720cc71ce2899a7fc973a6caefe840",
+            "half": "dae5b2f8ec4e0c7730ccec70d1b761c158f5e7821aeca8b2a7eb4bfd6a381738",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "90f6453049bf331ae55506d16b6c88f4dcae0fc42b6f9d8c2d33f7dd6d25f037",
+            "idHalfScenario": "0073c3612a776a65e969d80e0816b789d00cbbd080ab5c6f340865425dca2648",
+            "branchHalfScenario": "80a967cbc1a4b48786dd54e865e4b0bc872bd573cc450926a4df59193fb77f08",
+            "cinemaScenarioWindow": "2c026f3e60cc93c404a1213d26a648e117a7dcbe63da0d4702e1e442e78d82e6",
+            "branchCombo": "04d675e6ffccc4b6a7ac47c114447ebba33b94e087d5eab7db26c8ce5752d37b"
+          }
         },
         {
           "businessKey": "690eb59c22455b647532976b69b8c679eb9da0fcd48a6b0b32f3b945c86bff8c",
           "rowIdHash": "b323e729689c176b3ea4580ed9985b48aad0cf32e533ce9fc604d5464716306f",
           "row": 10,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "7fc4ca9af100dc47b8ad84f24081ca711a00e3152cc9c43ba8b9f7b83ea19e8f",
+            "branch": "e5a2d9d7c9355aa92469539f10dd1fb33f1fabb379b475774d4c365edd49ffbd",
+            "half": "003ea2e7d6bb5abe4aec79a26b84969fe5d459e571a8c5590fb6c4b0eef50cea",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "90f6453049bf331ae55506d16b6c88f4dcae0fc42b6f9d8c2d33f7dd6d25f037",
+            "idHalfScenario": "951b2b58b291bb735e2085536e904692d39799c7f42282ab588a7fc02e255402",
+            "branchHalfScenario": "962cb98300862272e1278b081bbca7da4a6f62ee4deee1489e77faaf39ff9842",
+            "cinemaScenarioWindow": "e5e6cdcfbba13343b54914f05cadf0a53ab0f214fe7c99870f59b3af91297b48",
+            "branchCombo": "722baf216fc12b3cb8719adfa49320af3f8d3517354b858e9ae3abc1fb6bd7e5"
+          }
         },
         {
           "businessKey": "9d5c808c8671088f6b51c5e9f132dc53b7427e3e5c68fcb76eb0b3cfe302e1dc",
           "rowIdHash": "5992fba2572cade517bc8b51dc73536ed08e09f9d98712b209377aecb414dfde",
           "row": 11,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "c01263b3caa40fbb27689dcf2bf30c80d1cfaf0b7dd0c9c6d1236790c467cf67",
+            "branch": "e4fa77c5071c5b5fb435668ccf31caea0060ebdd580953b536bead25ed334c3b",
+            "half": "003ea2e7d6bb5abe4aec79a26b84969fe5d459e571a8c5590fb6c4b0eef50cea",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "5c7d18a0b686c10338adcc57efeb790e77618553400ed85ab41740c115fc3db5",
+            "idHalfScenario": "d8ba13a84f1dae5f0982e9e4519ecf0755be9ea7e9e427ec72edc1e5a6bd5fca",
+            "branchHalfScenario": "80f8350faed4233867eebc6071b4b52d409ce85dd328555197d703b692c561de",
+            "cinemaScenarioWindow": "923b3ef79186a42de7db2055d727235041b9057254d7dfcc829b513ca5ac8365",
+            "branchCombo": "8d134cec3f33323c277ddaeb329416476a98edd274c604b0a691867a183d1922"
+          }
         },
         {
           "businessKey": "9b8e577585eaf2a055049c6cbfe70c5adcf1abbdaaca1c967b00e2a675f30904",
           "rowIdHash": "a9b276c29e18adff49c9b9fa2489152dc3a584686c85e682ba28671ae1e616cb",
           "row": 12,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "cb5602729acbad4a2c0d036ebb8826ea1d08ff6645431f8c782a95fcfc376303",
+            "branch": "003b44d9101509a6c6801c224ed27b5005771ed55aeb02841fee1f3a2bb53b09",
+            "half": "003ea2e7d6bb5abe4aec79a26b84969fe5d459e571a8c5590fb6c4b0eef50cea",
+            "window": "4dc01af5f56275c31cea41f86f2e94abd306cff0d6360f444dd611910a485a33",
+            "scenario": "35bf7dad47d80b3d6af75b835dc895bd5031542a6e3887e570fb2de369a9b711",
+            "idHalfScenario": "ced537c2bc767a572e94c1c0e3235c7dd82ba7a1e83271d0e264ab77e90d6df9",
+            "branchHalfScenario": "5b9fb61dc76c25a5adb9c566bf75508b64ed21859938ba515fde35f6b30dd891",
+            "cinemaScenarioWindow": "04f5ca0b7d089f44d95707ddab6b39bf339cbb536317279f83476bd31fb38b4f",
+            "branchCombo": "3e509e69952f89ed87a87b395cf5cfc1c22fd83d53c9b356d6f586f3750c373a"
+          }
         },
         {
           "businessKey": "aab28b82646b7e2fd374dd5d4a33bee1583df0aa0b72d08ece6fa4eb0ca35328",
           "rowIdHash": "d21675d821a3d642c731c6be17dfc24bf289ae20ef8116a7a806c47d93923232",
           "row": 13,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "af7a7b2e33dabd94780be4435a2dbf273991a11bd160af7c58fd7807ba3a3e40",
+            "branch": "4f28b2d01a012dcc60b5618d7d81e009ec36b51928eaaab008ade98ceb56e43a",
+            "half": "003ea2e7d6bb5abe4aec79a26b84969fe5d459e571a8c5590fb6c4b0eef50cea",
+            "window": "57b19b8b8b3686aa92d3d2958a3cd32a7b8b4d5e55a94da7c2667f91a7c399d2",
+            "scenario": "90f6453049bf331ae55506d16b6c88f4dcae0fc42b6f9d8c2d33f7dd6d25f037",
+            "idHalfScenario": "6a4d1e9f6f2f6b6f3726235bfd15b8b55a98804125422e9a08cd839a9b2dd1cb",
+            "branchHalfScenario": "47eb54650a82a339cf692bb27261da03fceeeb0ba194e390e5f649428d830a96",
+            "cinemaScenarioWindow": "b0d9bae3ed8297f7d96a432fb3169507c1ec282e8500cb319f9c1f937214980a",
+            "branchCombo": "5d3bc282dc21cca339b967ac019c3deb3ac5187072519163a24ef6e7eb08b2b1"
+          }
         },
         {
           "businessKey": "90e1f44f8a6e783be7b466ac9f46522f15920fa111f386d2f1124f8f23e8d554",
           "rowIdHash": "1395740cf4a1d1ef8a6eaf46a9e784d8474ab0bac14ee36046e6d3e42f54bbdf",
           "row": 14,
           "realized": false,
-          "cinemaIdIsNumeric": true
+          "cinemaIdIsNumeric": true,
+          "confirmedReconciliationFooter": false,
+          "candidateKeys": {
+            "cinema": "6ec90fbb04659c09f90253e3aa1ed557d45546172c1ebfab9c947da5df73e925",
+            "branch": "39f64e2bdf5875542823a9b5bee0602633720cc71ce2899a7fc973a6caefe840",
+            "half": "003ea2e7d6bb5abe4aec79a26b84969fe5d459e571a8c5590fb6c4b0eef50cea",
+            "window": "4dc01af5f56275c31cea41f86f2e94abd306cff0d6360f444dd611910a485a33",
+            "scenario": "5c7d18a0b686c10338adcc57efeb790e77618553400ed85ab41740c115fc3db5",
+            "idHalfScenario": "0d6e57633f06bedcc3b74fb514b2a2e22ef76b78a9d627fc5d26eb4a5441bc64",
+            "branchHalfScenario": "9bfc578c17d55a1618fb5b2b4d791e7e7c3e2331b46a2e39b2b90b1fdac99430",
+            "cinemaScenarioWindow": "93b5d3669946f5ce30bc7bc9336d62391ce62e2ba53a6957c6191cae09f5a068",
+            "branchCombo": "8c142dbda7c543ed24c57910082907429b351be13ae6d534cd75bc95071296cb"
+          }
         }
       ],
       "distinctBusinessKeys": 10
     }
-  ]
+  ],
+  "alternateBusinessKeys": {
+    "cinema": [
+      "cinemaId"
+    ],
+    "branch": [
+      "sucursal"
+    ],
+    "half": [
+      "quincena"
+    ],
+    "window": [
+      "franja"
+    ],
+    "scenario": [
+      "escenario"
+    ],
+    "idHalfScenario": [
+      "cinemaId",
+      "quincena",
+      "escenario"
+    ],
+    "branchHalfScenario": [
+      "sucursal",
+      "quincena",
+      "escenario"
+    ],
+    "cinemaScenarioWindow": [
+      "cinemaId",
+      "escenario",
+      "franja"
+    ],
+    "branchCombo": [
+      "sucursal",
+      "quincena",
+      "escenario",
+      "tipoCombo"
+    ]
+  }
 }

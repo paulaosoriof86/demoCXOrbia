@@ -45,11 +45,20 @@ try {
     const keys = rows.map(v=>hash([country,...originals.businessKeyFields.slice(1).map(k=>normalize(v[k]))]));
     const idKeys = new Set(rows.map(v=>hash(v.id || v.visitId)));
     const duplicates = keys.length-new Set(keys).size;
+    const visitRecords = records.filter(r=>!r.confirmedReconciliationFooter);
+    const dimensions = Object.fromEntries(Object.entries(originals.alternateBusinessKeys || {}).map(([id,fields])=>{
+      const originalKeys=visitRecords.map(r=>r.candidateKeys[id]).filter(Boolean);
+      const devKeys=rows.filter(v=>fields.every(k=>normalize(v[k]))).map(v=>hash([country,...fields.map(k=>normalize(v[k]))]));
+      const a=new Set(originalKeys),b=new Set(devKeys);
+      return [id,{original:originalKeys.length,dev:devKeys.length,uniqueOriginal:a.size,uniqueDev:b.size,intersection:[...a].filter(k=>b.has(k)).length}];
+    }));
     const match = new Map(rows.map((v,i)=>[keys[i],v]));
     const originalSet = new Set(records.map(r=>r.businessKey));
     const inBoth = records.filter(r=>match.has(r.businessKey));
     const originalOnly = records.filter(r=>!match.has(r.businessKey));
-    return {country, executionId, originalRows:records.length, devRows:rows.length,
+    return {country, executionId, originalRows:records.length, devRows:rows.length, dimensions,
+      originalVisitRows:visitRecords.length, reconciliationFooterRows:records.filter(r=>r.confirmedReconciliationFooter).map(r=>r.row),
+      originalVisitRealized:visitRecords.filter(r=>r.realized).length,
       duplicateBusinessKeysOriginal:records.length-originalSet.size, duplicateBusinessKeysDev:duplicates,
       commonIdentityKeys:records.filter(r=>idKeys.has(r.rowIdHash)).length,
       commonBusinessKeys:inBoth.length, devOnly:keys.filter(key=>!originalSet.has(key)).length,
