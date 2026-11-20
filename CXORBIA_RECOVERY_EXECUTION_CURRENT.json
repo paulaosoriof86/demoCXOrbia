@@ -418,8 +418,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
-          "gitBlob": "393114d618194837347301ae6aa1e68a520990fe",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+          "gitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
           "runId": 44034333358,
           "sourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
           "scope": "SIX_COMPLETE_DOMAINS_BENEFITS_RUN2588_PRESERVED__RUN2606_ROLE_PDF_SCOPED_EVIDENCE_ADDED_NO_FULL_DOMAIN_PROMOTION"
@@ -2288,8 +2288,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
-    "gitBlob": "393114d618194837347301ae6aa1e68a520990fe"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+    "gitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4289,8 +4289,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
-    "matrixBlob": "393114d618194837347301ae6aa1e68a520990fe",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+    "matrixBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 4,
       "MATCH": 6,
@@ -6246,12 +6246,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
-      "gitBlob": "393114d618194837347301ae6aa1e68a520990fe"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+      "gitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V692_2026-11-19.json",
-      "gitBlob": "0b5fefd47515752c45abba84eb1d2dfa8f6fad83"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+      "gitBlob": "f68e7be37e3786428271e9815cecdb2b87f446fd"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -7193,8 +7193,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V692_2026-11-19.json",
-  "findingsLedgerExpectedGitBlob": "0b5fefd47515752c45abba84eb1d2dfa8f6fad83",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+  "findingsLedgerExpectedGitBlob": "f68e7be37e3786428271e9815cecdb2b87f446fd",
   "nextFindingId": "VRM-360",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8214,7 +8214,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10808,7 +10808,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "393114d618194837347301ae6aa1e68a520990fe",
+  "moduleTruthExpectedGitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -24694,5 +24694,6 @@
       "postBenefitsProgressMatchModules": 6,
       "terminalArtifactProduced": false
     }
-  }
+  },
+  "controlDependencyOrder": "MATRIX_BLOB_THEN_LEDGER_BLOB_THEN_DESCRIPTOR_AND_CURRENT"
 }

@@ -224,8 +224,8 @@
   "productSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
   "productTreeAuthority": "c1389c28feb9dc9dd1eb2c1f37fd837d2bbf5cfa",
   "predecessorProductSourceSha": "836a498063987f0fc471599723b4c4772d1aba09",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V692_2026-11-19.json",
-  "findingsLedgerExpectedGitBlob": "0b5fefd47515752c45abba84eb1d2dfa8f6fad83",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+  "findingsLedgerExpectedGitBlob": "f68e7be37e3786428271e9815cecdb2b87f446fd",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,7 +244,7 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -4434,7 +4434,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "393114d618194837347301ae6aa1e68a520990fe",
+  "moduleTruthExpectedGitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -20087,12 +20087,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V365.json",
-      "gitBlob": "393114d618194837347301ae6aa1e68a520990fe"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+      "gitBlob": "65f70270ee006a86d00062bda0443f1017ac0f8e"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V692_2026-11-19.json",
-      "gitBlob": "0b5fefd47515752c45abba84eb1d2dfa8f6fad83"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V693_2026-11-19.json",
+      "gitBlob": "f68e7be37e3786428271e9815cecdb2b87f446fd"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -33818,5 +33818,6 @@
       "postBenefitsProgressMatchModules": 6,
       "terminalArtifactProduced": false
     }
-  }
+  },
+  "controlDependencyOrder": "MATRIX_BLOB_THEN_LEDGER_BLOB_THEN_DESCRIPTOR_AND_CURRENT"
 }
