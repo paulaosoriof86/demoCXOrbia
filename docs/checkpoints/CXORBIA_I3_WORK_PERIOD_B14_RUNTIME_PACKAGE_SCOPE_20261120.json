@@ -1,0 +1,56 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "predecessorProductSourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "expectedControlParent": "6b1911428f133288c2c0de0049390eaa662d5ba1",
+  "expectedControlTree": "38694e3604e4abbb4efa59e5c055c1705ea03603",
+  "priorScopeReceiptPath": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_CANONICAL_DELTA_SCOPE_20261120.json",
+  "priorScopeReceiptBlob": "28f5ecdc677e83d3d7faef7cd4861009aa699415",
+  "priorCanonicalProof": {
+    "runId": 44812774721,
+    "runNumber": 2657,
+    "conclusion": "success",
+    "source": "6fb939ce6d661ca00524cc57681828c67200ee25",
+    "control": "6b1911428f133288c2c0de0049390eaa662d5ba1"
+  },
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "exactOwner": "backend/runtime/hr-live-service/Dockerfile",
+  "ownerBeforeBlob": "5e8be5aa3c277384a796a0f2e484567e14926bb3",
+  "witness": {
+    "buildConfig": "backend/runtime/hr-live-service/cloudbuild.yaml",
+    "buildConfigBlob": "e9ec8e7c9b4fabe4d1f26d68bea284d56f2bde57",
+    "entrypoint": "backend/runtime/hr-live-service/server.mjs",
+    "entrypointBlob": "ba8627cbe50a5e4828ca28d841bfe4880b54631c",
+    "buildContext": "Git archive, then Dockerfile explicit COPY instructions",
+    "beforeMissingWhenStaged": [
+      "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+    ],
+    "beforeNodeModuleLoad": "ERR_MODULE_NOT_FOUND",
+    "afterMissingWhenStaged": [],
+    "afterNodeModuleLoad": "PASS",
+    "buildTimeGuard": "Node imports both actual providers at image build",
+    "fullContainerBuildExecuted": false
+  },
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261120-V367.json",
+    "gitBlob": "91321cebce1b1316826ebad5d5ff29d700480ea0",
+    "affected": "canonical-hr-state-adapters",
+    "upstreamWorkAndB14Preserved": true
+  },
+  "operationalReadsEnabled": false,
+  "hrWrites": 0,
+  "devDeploys": 0,
+  "production": false
+}

@@ -13,6 +13,8 @@ COPY backend/runtime/hr-live-service/legal-runtime.mjs ./backend/runtime/hr-live
 COPY backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs ./backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
 COPY backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs ./backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs
 COPY backend/runtime/cxorbia-project-command-provider-v1.mjs ./backend/runtime/cxorbia-project-command-provider-v1.mjs
+COPY backend/runtime/cxorbia-country-hr-binding-v1.mjs ./backend/runtime/cxorbia-country-hr-binding-v1.mjs
+COPY backend/runtime/cxorbia-make-graph-provider-v1.mjs ./backend/runtime/cxorbia-make-graph-provider-v1.mjs
 COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs
 COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
 COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js
@@ -24,6 +26,7 @@ COPY backend/config/tya-live-hr-tab-registry.source-safe.json ./backend/config/t
 COPY tools/hr-source ./tools/hr-source
 COPY tools/qa/tya-live-hr-read-probe-gate.mjs ./tools/qa/tya-live-hr-read-probe-gate.mjs
 
+RUN node --input-type=module -e "import './backend/runtime/cxorbia-country-hr-binding-v1.mjs'; import './backend/runtime/cxorbia-make-graph-provider-v1.mjs'"
 RUN test -f backend/runtime/hr-live-service/certification-runtime.mjs && node --check backend/runtime/hr-live-service/certification-runtime.mjs
 
 USER node
