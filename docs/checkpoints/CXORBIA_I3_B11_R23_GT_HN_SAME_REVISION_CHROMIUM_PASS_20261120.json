@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "cxorbia.i3.b11.r23.same-revision-acceptance.v1",
+  "date": "2026-11-20",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "d72275685d57941f6cfa0fcebc4823287942f786",
+  "canonicalMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261119-V366.json",
+  "readback": {
+    "runId": 44769697976,
+    "workflowNumber": 813,
+    "decision": "PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION",
+    "artifactId": 14645599971,
+    "artifactDigest": "sha256:a002b49c4e1655739357b14768b223eb027f7e7670b05954db4cec1e302d7192",
+    "role": "admin",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+    "independentHrRead": true,
+    "mainBrowserAndSecondReadSameRevision": true,
+    "pageErrors": 0,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "production": false,
+    "countries": [
+      {
+        "country": "GT",
+        "expected": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "observed": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "fields": [
+          "total",
+          "realizadas",
+          "liquidadas",
+          "enCurso"
+        ],
+        "match": true
+      },
+      {
+        "country": "HN",
+        "expected": [
+          8,
+          8,
+          0,
+          0
+        ],
+        "observed": [
+          8,
+          8,
+          0,
+          0
+        ],
+        "fields": [
+          "total",
+          "realizadas",
+          "liquidadas",
+          "enCurso"
+        ],
+        "match": true
+      }
+    ]
+  },
+  "rootCause": {
+    "earlierRun": 44769347014,
+    "code": "R23_SHOPPER_ROW_NOT_RENDERED",
+    "classification": "MAPPING_FAILURE",
+    "cause": "selector targeted superseded_exact_alias intentionally excluded from active UI",
+    "fixCommit": "e683e26f254b0441a0b7248169991ee8ac073008",
+    "productMutations": 0
+  },
+  "accounting": {
+    "domain": "dashboard-operation",
+    "scope": "Admin Shopper KPIs vs independent HR only",
+    "acceptedB11": true,
+    "completeOwnerRoleOperationReceipts": false,
+    "domainPromoted": false,
+    "currentMatch": 6,
+    "total": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "phaseAComplete": false
+  },
+  "sourcePromotion": false,
+  "productionAuthorization": false,
+  "nextExactAction": "Use exact PASS receipt for B11 obligations and prove remaining MiDia/Visits/Dashboard/Reports role and source/served owner parity. Do not re-run this B11 KPI proof without reproducible drift."
+}
