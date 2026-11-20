@@ -187,3 +187,13 @@ jobs:
           node --check app/core/router.js
           node --check app/adapters/tya-live-source-inplace-apply.js
           node --test tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs
+  i3-work-c3-import-verification:
+    if: ${{ contains(github.event.head_commit.message, '[i3-work-c3-import-qa]') }}
+    runs-on: ubuntu-24.04
+    permissions: { contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - name: Verify Work 28 receipts and 21-domain matrix exact source hashes
+        run: node --test tools/qa/cxorbia-i3-work-chrome-c3-evidence.test.mjs
