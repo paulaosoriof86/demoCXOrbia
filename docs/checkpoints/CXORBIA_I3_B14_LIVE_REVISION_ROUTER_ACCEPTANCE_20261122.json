@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.current-revision-app-router-receipt.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "verifiedUtc": "2026-11-22T23:34:51Z",
+  "controlPredecessor": "1ead44a3aa1447686ec6dc84c190c4657f2da716",
+  "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "hostingDevVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+  "runtimeRevision": "cxorbia-live-hr-dev-00382-f2t",
+  "scope": "AUTHENTICATED_ADMIN_CURRENT_ORIGINAL_GRAPH_READ_GT_HN_PLUS_3_SCOPED_SHOPPER_RELOADS_NOT_FULL_I3",
+  "appRun": 45083484203,
+  "appJob": 137396707729,
+  "appArtifactId": 14778252096,
+  "appArtifactDigest": "sha256:23b472f10d0340594fa7d814e7f4ace61a0444e2b7677fec10bf7013715d3eae",
+  "appDecision": "PASS_B14_APP_READ_AND_THREE_SCOPED_RELOADS",
+  "codeGuardRun": 45083484288,
+  "makeScenario": 10200465,
+  "makeLastEdit": "2026-11-22T23:30:03.327Z",
+  "makeActiveOnDemand": true,
+  "makeWrites": false,
+  "positiveMakeRuns": {
+    "GT": "2f2ed94fbb1d4cddabb1dd9caf44fbe1",
+    "HN": "332856896cf5496dbacfe4494923df8d"
+  },
+  "negativeMakeRuns": {
+    "badPeriod": "c5c3b9937fa644029c00196b89cb3a3e",
+    "badFingerprint": "27105404a54447cb89ae09f96a606d18",
+    "otherProject": "54ab69a278434196bcc830b88b9f6534"
+  },
+  "countriesOriginalRead": [
+    "GT",
+    "HN"
+  ],
+  "routerPass": [
+    "GT11",
+    "GT12",
+    "HN06"
+  ],
+  "fourGraphGetsEachCountry": true,
+  "secondAuthenticatedRequestSameRevision": true,
+  "fullOriginalHistoricalShaMatchesRequired": false,
+  "operationalHrSource": "google_sheets_external_read_only",
+  "originalRead": "excel_online_country_bound",
+  "hrRealizationDifferences": {
+    "GT": [
+      29,
+      37
+    ],
+    "HN": []
+  },
+  "remoteAckProven": false,
+  "operationalBidirectionalConnected": false,
+  "domainMatchesBefore": 6,
+  "domainMatchesAfter": 6,
+  "domainTotal": 21,
+  "sourceReadyDomains": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "production": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "authWrites": 0,
+  "devDeploys": 0,
+  "realDataReimported": false,
+  "next": "I3 F2/F3: Original Graph HR GT/HN verified via authenticated application current independent readback RUN45083484203; GT11/GT12/HN06 navigation PASS 3/3. Resolve only GT source-realization rows 29/37 against independent operational HR and make configured original Excel per-country/period the authorized operational source, then prove Make remote ACK/readback/replay/conflict/echo on isolated fixture. Preserve 6/21 MATCH, 21/21 sourceReady, all historical PASS, I3 HOLD; Gate20/Gate21 HOLD; I4 DO_NOT_TOUCH."
+}

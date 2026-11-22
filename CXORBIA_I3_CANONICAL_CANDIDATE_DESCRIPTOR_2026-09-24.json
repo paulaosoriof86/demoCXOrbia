@@ -217,15 +217,15 @@
     "promotionRule": "PRESERVE_LIVE_AUTHORITATIVE_C3_ALIASES_UNTIL_21_OF_21_AND_GATE20_21; THIS_LATEST_RUN_RECEIPT_SUPERSEDES_2482_FOR_Q2_COUNTS_ONLY",
     "nextExactAction": "I3-Q2 path-bound source and served-owner proof for 7 provenance and 51 served owner paths, rerun canonical C3 and only promote evidenced MATCH; then Q3 Admin-Shopper-HR cross-role, Q4 finance, Q5 21-domain functional visual, Q6 exact artifact Gate20/21; I4 requires explicit authorization"
   },
-  "status": "HOLD_I3_ROUTER_HOSTING_DEV_VERIFIED_C3_ROLE_E2E_PENDING_6_OF_21",
+  "status": "HOLD_I3_B14_ORIGINAL_GT_HN_APP_AND_ROUTER_PASS_F2_F3_PENDING_6_OF_21",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
   "productTreeAuthority": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
   "predecessorProductSourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V704_2026-11-22.json",
-  "findingsLedgerExpectedGitBlob": "52063b9202825f1af3bda3e0297910097772ca58",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V705_2026-11-22.json",
+  "findingsLedgerExpectedGitBlob": "a8aa2e78800779243d933457506825b02d8a26c5",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V377.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V378.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "ROUTER_3_AUTH_BROWSER_CASES_PENDING__GT_REALIZATION_2__B14_REMOTE_ACK__15_DOMAINS_PENDING",
+  "activeBlocker": "F2_GT_ORIGINAL_REALIZATION_ROWS_29_37__F3_B14_OPERATIONAL_HR_ACK__15_DOMAIN_CLAUSES_PENDING__GATE20_GATE21_HOLD",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 F1: on verified 6b0 DEV Hosting run45074999627 test GT11/GT12/HN06 authenticated Shopper view+period+owner after reload; preserve previous C3 as historical and repeat same-source C3 only after role proof. Then resolve GT original rows 29/37 against same HR revision and B14 real isolated provider ACK/replay/conflict; preserve 6 MATCH, Gate20/21 HOLD, I4 DO_NOT_TOUCH.",
+  "exactNextAction": "I3 F2/F3: Original Graph HR GT/HN verified via authenticated application current independent readback RUN45083484203; GT11/GT12/HN06 navigation PASS 3/3. Resolve only GT source-realization rows 29/37 against independent operational HR and make configured original Excel per-country/period the authorized operational source, then prove Make remote ACK/readback/replay/conflict/echo on isolated fixture. Preserve 6/21 MATCH, 21/21 sourceReady, all historical PASS, I3 HOLD; Gate20/Gate21 HOLD; I4 DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4395,7 +4395,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "3cb589959bbaf10730e2e314865d18f00da32b5e",
+  "moduleTruthExpectedGitBlob": "7ea081c9189a903418c41ef1feec3b144dfefa3f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -18596,7 +18596,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 F1: on verified 6b0 DEV Hosting run45074999627 test GT11/GT12/HN06 authenticated Shopper view+period+owner after reload; preserve previous C3 as historical and repeat same-source C3 only after role proof. Then resolve GT original rows 29/37 against same HR revision and B14 real isolated provider ACK/replay/conflict; preserve 6 MATCH, Gate20/21 HOLD, I4 DO_NOT_TOUCH.",
+  "nextExactAction": "I3 F2/F3: Original Graph HR GT/HN verified via authenticated application current independent readback RUN45083484203; GT11/GT12/HN06 navigation PASS 3/3. Resolve only GT source-realization rows 29/37 against independent operational HR and make configured original Excel per-country/period the authorized operational source, then prove Make remote ACK/readback/replay/conflict/echo on isolated fixture. Preserve 6/21 MATCH, 21/21 sourceReady, all historical PASS, I3 HOLD; Gate20/Gate21 HOLD; I4 DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -19026,7 +19026,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-22T21:26:19Z",
+  "updatedAt": "2026-11-22T23:34:51Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -20049,12 +20049,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V377.json",
-      "gitBlob": "3cb589959bbaf10730e2e314865d18f00da32b5e"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V378.json",
+      "gitBlob": "7ea081c9189a903418c41ef1feec3b144dfefa3f"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V704_2026-11-22.json",
-      "gitBlob": "52063b9202825f1af3bda3e0297910097772ca58"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V705_2026-11-22.json",
+      "gitBlob": "a8aa2e78800779243d933457506825b02d8a26c5"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -34020,6 +34020,27 @@
     "domainMatchesAfter": 6,
     "gates": "GATE20_HOLD_GATE21_HOLD",
     "sourceModified": false,
+    "production": false
+  },
+  "latestB14OriginalCurrentAndRouterScopedProof20261122": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_B14_LIVE_REVISION_ROUTER_ACCEPTANCE_20261122.json",
+    "receiptBlob": "c0a5a409ec476f63eeb782826640a6ab38a04b1c",
+    "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+    "appRunId": 45083484203,
+    "appArtifactId": 14778252096,
+    "makeScenarioId": 10200465,
+    "makeReaderActive": true,
+    "makeWriterActive": false,
+    "appReadCountries": [
+      "GT",
+      "HN"
+    ],
+    "routerPass": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ],
+    "strictDomainsMatch": 6,
     "production": false
   }
 }
