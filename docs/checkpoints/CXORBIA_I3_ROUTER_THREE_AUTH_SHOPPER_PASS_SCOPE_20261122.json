@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper-router-auth-dev-scoped-evidence.v1",
+  "iteration": "I3",
+  "dateLocal": "2026-11-22",
+  "status": "PASS_SCOPED_3_OF_3__I3_HOLD",
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+  "runtimeRevision": "cxorbia-live-hr-dev-00382-f2t",
+  "test": "tools/qa/cxorbia-i3-original-read-period-ui.mjs",
+  "testProvenance": {
+    "workflow": "CXOrbia I3 VRM286 Admin Read-Only DEV E2E",
+    "runId": 45076930448,
+    "jobId": 137376141389,
+    "jobConclusion": "failure_due_to_independent_B14_ADMIN",
+    "artifactId": 14774774516,
+    "artifactName": "cxorbia-i3-b11-stage-readonly-45076930448",
+    "artifactZipSha256": "ac14c447b5276bbad578c9d8dd45f45b858c5ca00a9f02fc43c22884e19268e6",
+    "resultPath": "i3-original-browser/result.json",
+    "resultSha256": "285f7606d0cf2920be4a9194e615bc0d98ce9b8d1536aa9f5742f3429dc5a4cc"
+  },
+  "cases": [
+    {
+      "id": "GT11",
+      "country": "GT",
+      "view": "visitas",
+      "selectedPeriod": "cinepolis-2026-10",
+      "periodPreservedAfterReload": true,
+      "viewPreservedAfterReload": true,
+      "ownerVerified": true,
+      "casePassed": true
+    },
+    {
+      "id": "GT12",
+      "country": "GT",
+      "view": "mireportes",
+      "selectedPeriod": "cinepolis-2026-10",
+      "periodPreservedAfterReload": true,
+      "viewPreservedAfterReload": true,
+      "ownerVerified": true,
+      "casePassed": true
+    },
+    {
+      "id": "HN06",
+      "country": "HN",
+      "view": "mireportes",
+      "selectedPeriod": "cinepolis-2026-10",
+      "periodPreservedAfterReload": true,
+      "viewPreservedAfterReload": true,
+      "ownerVerified": true,
+      "casePassed": true
+    }
+  ],
+  "protectedOriginalHrMeta": {
+    "adminRequestHttp200": true,
+    "country": "GT",
+    "periodId": "cinepolis-2026-11",
+    "rowsReturned": 140,
+    "independentReadsEqual": true,
+    "expectedHistoricalContentSha256": "d43fa327f01c5a770e586bf9f81fb1124b4d98d54e4ef45b5f5c1831058da2ca",
+    "observedCurrentContentSha256": "d4a75e99cc7028cd43c0e06b760653e043b0610fe890392321bd2247d4320ea0",
+    "observedBindingRevision": "856b185867f01ec363ee0cbf5ee2dfc6d9d4e8aac732a89dc135b1025f626794",
+    "defect": "MAPPING_FAILURE:APP_ORIGINAL_READ",
+    "countryHNReadNotAttemptedDueToGTGuard": true,
+    "classification": "HR_SOURCE_REVISION_OR_BINDING_CHANGED__INDEPENDENT_VERIFICATION_REQUIRED"
+  },
+  "scope": "THREE_AUTHENTICATED_SCOPED_QA_SESSIONS__NOT_PASSWORD_ENTRY__NOT_VISUAL_GATE20__NOT_WHOLE_DOMAIN",
+  "preservedExistingDomainMatches": 6,
+  "totalDomains": 21,
+  "matchedDomainsAfter": 6,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH",
+  "hrWrites": 0,
+  "devDeploys": 0,
+  "exactNextAction": "Consume these three independent PASS receipts without repeating router repair; investigate changed GT original workbook revision/binding independently, then close B14 remote ACK and remaining module clauses. No domain-wide MATCH granted by this scoped receipt."
+}
