@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "cxorbia.i3.b14.graph.two-country-readonly.v1",
+  "verifiedDate": "2026-11-22",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "periodId": "cinepolis-2026-11",
+  "scenarioId": 10200465,
+  "scenarioStatus": "active",
+  "countries": [
+    {
+      "country": "GT",
+      "executionId": "7ce249d063f64f98b61f0b8c71c4aa15",
+      "statuses": [
+        200,
+        200
+      ],
+      "rowCounts": [
+        140,
+        140
+      ],
+      "hashEquality": true
+    },
+    {
+      "country": "HN",
+      "executionId": "9bfa4f70f2ca4e2abf0976ff45e7132f",
+      "statuses": [
+        200,
+        200
+      ],
+      "rowCounts": [
+        140,
+        140
+      ],
+      "hashEquality": true
+    }
+  ],
+  "GraphMethods": [
+    "GET",
+    "GET"
+  ],
+  "operationalWriteProven": false,
+  "production": false,
+  "hrWrites": 0
+}

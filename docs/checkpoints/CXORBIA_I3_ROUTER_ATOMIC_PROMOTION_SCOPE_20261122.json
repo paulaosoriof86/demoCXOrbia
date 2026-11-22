@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "cxorbia.i3.router.scope.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "predecessorProductSourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "allowedProductFiles": [
+    "app/core/router.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-original-read-period-ui.mjs",
+    "tools/qa/cxorbia-i3-work-period-reload-scoped.test.mjs"
+  ],
+  "provenP0": "GT11 GT12 HN06 route reset during protected HR hydration",
+  "owner": "app/core/router.js",
+  "localTestsPass": 10,
+  "localTestsFail": 0,
+  "previousDevSource": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "previousDevHosting": "sites/cxorbia-backend-dev/versions/df1bfd4592671e5d",
+  "production": false,
+  "hrWrites": 0,
+  "deploys": 0
+}
