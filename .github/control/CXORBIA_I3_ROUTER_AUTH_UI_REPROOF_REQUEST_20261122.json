@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.i3.router.auth-ui-reproof-request.v1",
+  "iteration": "I3",
+  "predecessorControlHead": "78848070e79ac674a24f4ed0a1a6a980c6b7ace6",
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "servingHostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+  "previousBrowserFailures": [
+    "GT11",
+    "GT12",
+    "HN06"
+  ],
+  "scope": "READ_ONLY_AUTHENTICATED_DEV_BROWSER_SOURCE_MUST_BE_DERIVED_FROM_CANONICAL_DESCRIPTOR",
+  "allowedWorkflow": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml",
+  "changedSourceFiles": 0,
+  "hrWrites": 0,
+  "production": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "noAdditionalDevDeploy": true,
+  "referenceReceipt": "docs/checkpoints/CXORBIA_I3_ROUTER_HOSTING_DEV_CROSS_RUN_READBACK_20261122.json"
+}

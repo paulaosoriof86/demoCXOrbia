@@ -171,7 +171,7 @@ jobs:
     timeout-minutes: 25
     permissions: { contents: read, id-token: write }
     env:
-      FOCAL_SOURCE: ${{ contains(github.event.head_commit.message, '[i3-original-app-ui]') && 'ea0def43f653b014a271d7404df5604f2a9e2805' || 'd72275685d57941f6cfa0fcebc4823287942f786' }}
+      FOCAL_SOURCE: ${{ contains(github.event.head_commit.message, '[i3-original-app-ui]') && 'DERIVE_FROM_CANONICAL_DESCRIPTOR' || 'd72275685d57941f6cfa0fcebc4823287942f786' }}
       EXPECTED_HR_REVISION: 3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8
       EXPECTED_PERIOD_ID: cinepolis-2026-11
       B14_UI: ${{ contains(github.event.head_commit.message, '[i3-original-app-ui]') }}
@@ -192,6 +192,11 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null
           npx --no-install playwright install chromium >/dev/null
           if [[ "$B14_UI" == true ]]; then
+            FOCAL_SOURCE="$(jq -er '.productSourceSha | select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+            expected_tree="$(jq -er '.productTreeAuthority | select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+            test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$expected_tree"
+            git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
+            export FOCAL_SOURCE
             node tools/qa/cxorbia-i3-original-read-period-ui.mjs
             exit 0
           fi
