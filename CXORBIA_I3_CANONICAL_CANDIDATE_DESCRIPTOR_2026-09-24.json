@@ -33998,5 +33998,28 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
     "sourceQaRunId": 45074999627,
     "scope": "READBACK_ONLY_NO_I3_CERTIFICATION"
+  },
+  "latestRouterChromeScopedProof20261122": {
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_ROUTER_THREE_AUTH_SHOPPER_PASS_SCOPE_20261122.json",
+    "receiptBlob": "9be4688c2781a67d14147754cb2a73c98a8d7f6a",
+    "runId": 45076930448,
+    "jobId": 137376141389,
+    "artifactId": 14774774516,
+    "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+    "passes": [
+      "GT11",
+      "GT12",
+      "HN06"
+    ],
+    "caseCount": 3,
+    "casePass": 3,
+    "adminOriginalHrRead": "HOLD_CHANGED_HR_CONTENT_SHA_REQUIRE_INDEPENDENT_CROSS_PROVIDER_REVIEW",
+    "jobConclusion": "failure_due_to_B14_ADMIN__SCOPED_SHOPPER_CASES_PASS",
+    "domainMatchesBefore": 6,
+    "domainMatchesAfter": 6,
+    "gates": "GATE20_HOLD_GATE21_HOLD",
+    "sourceModified": false,
+    "production": false
   }
 }
