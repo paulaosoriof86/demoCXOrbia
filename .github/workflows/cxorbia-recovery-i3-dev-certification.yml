@@ -6220,9 +6220,11 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$EVIDENCE/hosting-before.json"
       jq -e '.release.version.name | length > 0' "$EVIDENCE/hosting-before.json" >/dev/null
+      bash .github/control/cxorbia-i3-hosting-cdn-readback.sh pre
       curl -fsSL -H 'Cache-Control: no-cache' "$PRODUCTION_URL" -o "$EVIDENCE/production-before.html"
       sha256sum "$EVIDENCE/production-before.html" | awk '{print $1}' > "$EVIDENCE/production-before.sha256"
    - name: Publish DEV Hosting
+     if: ${{ !contains(github.event.head_commit.message,'[i3-router-reproof-after-cdn]') }}
      run: |
       set -Eeuo pipefail
       TOKEN="$(gcloud auth print-access-token)"
@@ -6241,21 +6243,18 @@ jobs:
       BEFORE="$(jq -r '.release.version.name' "$EVIDENCE/hosting-before.json")"
       AFTER="$(jq -r '.release.version.name' "$EVIDENCE/hosting-after.json")"
       test -n "$AFTER"
-      test "$AFTER" != "$BEFORE"
+      bash .github/control/cxorbia-i3-hosting-cdn-readback.sh version "$BEFORE" "$AFTER"
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/runtime-after.json"
       jq -e --arg rev "$EXPECTED_RUNTIME_REVISION" '.status.latestReadyRevisionName==$rev and ([.status.traffic[]?|select(.revisionName==$rev and .percent==100)]|length)==1' "$EVIDENCE/runtime-after.json"
       jq -S '[.status.traffic[]?|{revisionName,percent}]|sort_by(.revisionName)' "$EVIDENCE/runtime-after.json" > "$EVIDENCE/traffic-after.json"
       cmp -s "$EVIDENCE/traffic-before.json" "$EVIDENCE/traffic-after.json"
       gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$EVIDENCE/revision-after.json"
       test "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-before.json")" = "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")"
-      for FILE in $ASSET_FILES; do
-       curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store' "$HOSTING_URL/$FILE?i3=$GITHUB_RUN_ID" -o "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
-       cmp -s "$SOURCE_DIR/app/$FILE" "$EVIDENCE/served-$(printf '%s' "$FILE" | tr '/' '-')"
-      done
+      bash .github/control/cxorbia-i3-hosting-cdn-readback.sh assets
       curl -fsSL -H 'Cache-Control: no-cache' "$PRODUCTION_URL" -o "$EVIDENCE/production-after.html"
       sha256sum "$EVIDENCE/production-after.html" | awk '{print $1}' > "$EVIDENCE/production-after.sha256"
       cmp -s "$EVIDENCE/production-before.sha256" "$EVIDENCE/production-after.sha256"
-      jq -n -S --arg source "$SOURCE" --arg tree "$SOURCE_TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg rev "$EXPECTED_RUNTIME_REVISION" --arg digest "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")" --arg prod "$(cat "$EVIDENCE/production-after.sha256")" '{decision:"PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY",sourceSha:$source,sourceTree:$tree,hostingBefore:$before,hostingAfter:$after,runtimeRevision:$rev,runtimeDigest:$digest,productionIndexSha256:$prod,hostingDeploys:1,cloudRunBuilds:0,cloudRunDeploys:0,rulesDeploys:0,hrWrites:0,firestoreDirectWrites:0,productionDeploys:0,productionUnchanged:true,phaseAComplete:false,gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE/readback.json"
+      jq -n -S --arg source "$SOURCE" --arg tree "$SOURCE_TREE" --arg before "$BEFORE" --arg after "$AFTER" --arg rev "$EXPECTED_RUNTIME_REVISION" --arg digest "$(jq -r '.status.imageDigest' "$EVIDENCE/revision-after.json")" --arg prod "$(cat "$EVIDENCE/production-after.sha256")" --argjson deploys "$HOSTING_DEPLOYS" '{decision:(if $deploys==0 then "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_READBACK_ONLY" else "PASS_I3_CURRENT_SOURCE_HOSTING_DEV_ONLY" end),sourceSha:$source,sourceTree:$tree,hostingBefore:$before,hostingAfter:$after,runtimeRevision:$rev,runtimeDigest:$digest,productionIndexSha256:$prod,hostingDeploys:$deploys,cloudRunBuilds:0,cloudRunDeploys:0,rulesDeploys:0,hrWrites:0,firestoreDirectWrites:0,productionDeploys:0,productionUnchanged:true,phaseAComplete:false,gate20:"HOLD",gate21:"HOLD"}' > "$EVIDENCE/readback.json"
       node --input-type=module <<'NODE'
       import fs from 'node:fs';
       import crypto from 'node:crypto';
