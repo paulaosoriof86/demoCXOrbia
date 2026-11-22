@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.router.hosting-only-dispatch.v1",
+  "decision": "DISPATCH_EXACT_DEV_HOSTING_ONLY_NOT_TERMINAL_CERTIFICATION",
+  "date": "2026-11-22",
+  "iteration": "I3",
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "observedDevBefore": {
+    "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/df1bfd4592671e5d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00382-f2t"
+  },
+  "canonicalControlRun": {
+    "id": 45073238683,
+    "conclusion": "success"
+  },
+  "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "existingJob": "i3-current-source-hosting-dev",
+  "transport": "GitHub existing push-triggered job; no new workflow",
+  "allowedProviderDeployment": "Firebase Hosting DEV only",
+  "providerProject": "cxorbia-backend-dev",
+  "productionTarget": "tya-plataforma.web.app",
+  "production": "DO_NOT_TOUCH",
+  "allowedBuilds": 0,
+  "allowedCloudRunDeploys": 0,
+  "allowedHostingDevDeploys": 1,
+  "hrWrites": 0,
+  "payments": 0,
+  "expectedPostDeploy": [
+    "Hosting version changed",
+    "All listed assets byte identical to certified source",
+    "Cloud Run revision and digest unchanged",
+    "Production HTML SHA unchanged",
+    "GT11 GT12 HN06 browser proof still independent and pending"
+  ],
+  "strictDomainMatchesBefore": 6,
+  "totalDomains": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}
