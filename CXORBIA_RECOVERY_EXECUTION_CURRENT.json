@@ -1070,7 +1070,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 F1: on verified 6b0 DEV Hosting run45074999627 test GT11/GT12/HN06 authenticated Shopper view+period+owner after reload; preserve previous C3 as historical and repeat same-source C3 only after role proof. Then resolve GT original rows 29/37 against same HR revision and B14 real isolated provider ACK/replay/conflict; preserve 6 MATCH, Gate20/21 HOLD, I4 DO_NOT_TOUCH.",
+    "immediateAction": "I3 F2/F3: Original Graph HR GT/HN verified via authenticated application current independent readback RUN45083484203; GT11/GT12/HN06 navigation PASS 3/3. Resolve only GT source-realization rows 29/37 against independent operational HR and make configured original Excel per-country/period the authorized operational source, then prove Make remote ACK/readback/replay/conflict/echo on isolated fixture. Preserve 6/21 MATCH, 21/21 sourceReady, all historical PASS, I3 HOLD; Gate20/Gate21 HOLD; I4 DO_NOT_TOUCH.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
