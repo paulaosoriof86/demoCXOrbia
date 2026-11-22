@@ -3,6 +3,8 @@ set -Eeuo pipefail
 case "${1:?mode}" in
  pre)
    CURRENT="$(jq -er '.release.version.name' "$EVIDENCE/hosting-before.json")"
+   jq -S '[.status.traffic[]?|{revisionName,percent}]|sort_by(.revisionName)' "$EVIDENCE/runtime-before.json" > "$EVIDENCE/traffic-before.json"
+   test -s "$EVIDENCE/traffic-before.json"
    if git log -1 --pretty=%B | grep -Fq '[i3-router-reproof-after-cdn]'; then
      PROOF=docs/checkpoints/CXORBIA_I3_ROUTER_CDN_AFTER_DEPLOY_20261122.json
      test -s "$PROOF"
