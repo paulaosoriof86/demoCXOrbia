@@ -6261,7 +6261,13 @@
       "gitBlob": "66b7c1bc435878902e2ef8c778eb27e2d7cdc8c1",
       "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
       "runId": 44826503959,
-      "scope": "RUN2676_C3_PAIRED_DEV_ONLY_NO_TERMINAL_GO"
+      "scope": "RUN2676_C3_PAIRED_DEV_ONLY_NO_TERMINAL_GO",
+      "artifactDigest": "sha256:a4d838792a7eb751293ddfdc12d4a800cdd671809ea970938988d9e1c3dd7f93",
+      "artifactId": 14673776926,
+      "terminalCertified": false,
+      "production": false,
+      "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+      "proofScope": "PROVIDER_ARTIFACT_METADATA_ONLY_NOT_INDEPENDENT_I4_CERTIFICATE"
     },
     "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
     "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
