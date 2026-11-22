@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.i3.router.cdn-reproof-dispatch.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "priorRealHostingDeployRun": 45073563003,
+  "priorDeployArtifact": 14774795563,
+  "expectedHostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+  "readbackAfterDeployProofPath": "docs/checkpoints/CXORBIA_I3_ROUTER_CDN_AFTER_DEPLOY_20261122.json",
+  "readbackMode": "ALREADY_PUBLISHED_HOSTING;REPROOF_ONLY",
+  "noHostingDeploy": true,
+  "noCloudRunDeploy": true,
+  "noProdDeploy": true,
+  "noProviderWrites": true,
+  "canonicalGuardSuccessRun": 45074471434,
+  "workflow": "CXOrbia Recovery I3 DEV Certification",
+  "existingJob": "i3-current-source-hosting-dev",
+  "readbackExpected": [
+    "29 selected script asset source digests match served",
+    "latestReadyRevisionName unchanged",
+    "traffic 100% unchanged",
+    "production SHA before and after unchanged",
+    "Hosting version remains the already-published version"
+  ],
+  "wholeDomainCertified": false,
+  "matchModules": 6,
+  "totalDomains": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD"
+}
