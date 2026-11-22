@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.dev-hosting-only-trigger.v1",
+  "iteration": "I3",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "purpose": "Trigger preexisting i3-current-source-hosting-dev job on the approved single candidate; no new runner/workflow",
+  "exactWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "exactExistingJob": "i3-current-source-hosting-dev",
+  "dispatchReceiptPath": "docs/checkpoints/CXORBIA_I3_ROUTER_HOSTING_ONLY_DISPATCH_20261122.json",
+  "dispatchReceiptGitBlob": "7def5396c0334231a139a1245286d3f97768bcb9",
+  "priorCanonicalSuccessRun": 45073238683,
+  "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "sourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "devServingBefore": {
+    "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/df1bfd4592671e5d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00382-f2t"
+  },
+  "allowedWrites": [
+    "Firebase Hosting cxorbia-backend-dev DEV only"
+  ],
+  "forbiddenWrites": [
+    "production",
+    "Firestore",
+    "Storage",
+    "Cloud Run",
+    "HR original",
+    "Make B14 operational write",
+    "payments"
+  ],
+  "expectedPostDeploy": [
+    "source/Hosting asset bytes equal",
+    "runtime digest unchanged",
+    "production index hash unchanged"
+  ],
+  "GT11_GT12_HN06": "PENDING_REAL_SAME_DEV_CHROME",
+  "domainMatches": 6,
+  "totalDomains": 21,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false
+}
