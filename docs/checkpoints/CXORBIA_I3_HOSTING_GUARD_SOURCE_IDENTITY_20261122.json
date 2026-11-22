@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.i3.hosting-control-guard-source-identity.v1",
+  "date": "2026-11-22",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "before": "Seven hardcoded historical SHA assertions on critical guard/test files in current DEV Hosting job",
+  "after": "Validate critical control/test files as exact Git blobs of the single approved PRODUCT_SOURCE_SHA; retain all tests, exact source commit ancestry, product diff guard, full served-asset byte parity and production fingerprint unchanged",
+  "scope": "EXISTING_WORKFLOW_ONLY_NO_NEW_WORKFLOW",
+  "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "devServingSourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+  "protectedFiles": [
+    "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs",
+    "tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs"
+  ],
+  "originalWorkflowBlob": "2c720c16ee3f1df6cc3aedf8c8f0bf2992dc08ef",
+  "newWorkflowBlob": "cb52f64f7807f9b63d41235131a218b968360d4a",
+  "oldBytes": 509591,
+  "newBytes": 509363,
+  "workflowGuardByteLimit": 510000,
+  "sourceChanged": false,
+  "devDeployed": false,
+  "production": false,
+  "hrWrites": 0,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "matchModules": 6
+}

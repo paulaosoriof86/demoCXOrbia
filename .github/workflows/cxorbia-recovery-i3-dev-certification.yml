@@ -6172,13 +6172,12 @@ jobs:
       test "$(git rev-parse "$SOURCE^{tree}")" = "$SOURCE_TREE"
       git merge-base --is-ancestor "$SOURCE" "$GITHUB_SHA"
       git diff --quiet "$SOURCE" "$GITHUB_SHA" -- app backend tools firebase.json .firebaserc firestore.rules storage.rules ':!tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs' ':!tools/qa/cxorbia-i3-certification-project-continuity.test.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.mjs' ':!tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs' ':!tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs' ':!tools/qa/cxorbia-i3-shock-continuity-guard.mjs' ':!tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs' ':!tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs'
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs")" = "69abb51282b7190394d6f923a0e11b34f5579a51"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-certification-project-continuity.test.mjs")" = "1d663cc151e638150185eb51b82566455e09f18b"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.mjs")" = "a67508d2403eabe11b69f0ef0d2f358340919b86"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs")" = "ba04db9064fe364b7190dc088157cfe0629c1ff5"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-shock-continuity-guard.mjs")" = "b4853f5e2d95103ef69f26c50c5ccb7348f97a41"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs")" = "62dd0657bc1385325d5cb1ee3b4ee9b72ecd5984"
-      test "$(git rev-parse "$GITHUB_SHA:tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs")" = "a60621985a3dcb1c5eda83562f900e880c45cc16"
+       # Verify approved canonical source, not historical hardcoded guard blobs.
+       # A non-product HEAD may evolve control evidence, but must not shadow source guards.
+       PROTECTED_CONTROL_OWNERS=(tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs tools/qa/cxorbia-i3-certification-project-continuity.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-i3-shock-continuity-guard.mjs tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs)
+       for PROTECTED_PATH in "${PROTECTED_CONTROL_OWNERS[@]}"; do
+         test "$(git rev-parse "$GITHUB_SHA:$PROTECTED_PATH")" = "$(git rev-parse "$SOURCE:$PROTECTED_PATH")"
+       done
       [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == HOLD_I3_* ]]
       test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE"
       test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$SOURCE_TREE"
