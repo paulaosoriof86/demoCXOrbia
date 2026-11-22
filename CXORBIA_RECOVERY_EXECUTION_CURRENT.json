@@ -1070,7 +1070,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 F1: publish exact scoped router6b0 to existing DEV Hosting; source/served hashes and GT11/GT12/HN06 view+period+owner reload PASS required. Then verify GT 29/37 realization parity and B14 isolated ACK/replay/conflict; preserve 6 MATCH, Gate20/21 HOLD and I4 DO_NOT_TOUCH.",
+    "immediateAction": "I3 F1: on verified 6b0 DEV Hosting run45074999627 test GT11/GT12/HN06 authenticated Shopper view+period+owner after reload; preserve previous C3 as historical and repeat same-source C3 only after role proof. Then resolve GT original rows 29/37 against same HR revision and B14 real isolated provider ACK/replay/conflict; preserve 6 MATCH, Gate20/21 HOLD, I4 DO_NOT_TOUCH.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
