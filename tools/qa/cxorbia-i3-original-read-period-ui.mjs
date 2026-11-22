@@ -47,15 +47,33 @@ try {
   const {page,context}=await session(staff);
   try{
    for(const country of expectations.countries){stage='APP_ORIGINAL_GET';
-    const read=await page.evaluate(async({api,country,period})=>{
+    const readCurrent=()=>page.evaluate(async({api,country,period})=>{
      const bearer=await firebase.auth().currentUser.getIdToken();
      const start=new Date().toISOString();
      const response=await fetch(api+'?'+new URLSearchParams({format:'b14-provider-meta',countryCode:country,periodId:period}),{cache:'no-store',headers:{Authorization:'Bearer '+bearer}});
      const p=await response.json();
-     return {http:response.status,start,end:new Date().toISOString(),country:p.countryCode,period:p.periodId,purpose:p.bindingPurpose,revision:p.sourceRevision,worksheets:p.worksheetCount,readSha:p.worksheetProofs?.[0]?.sourceContentSha256,rows:p.worksheetProofs?.[0]?.rowsReturned,equalIndependentReads:p.externalRevisionIndependentlyVerified,privateRowsExposed:!!(p.privateProviderRows||p.privateRows||p.values1||p.values2),reason:typeof p.error==='string'?p.error.slice(0,90):undefined,hrWrites:p.hrWrites};
+     return {http:response.status,start,end:new Date().toISOString(),country:p.countryCode,period:p.periodId,purpose:p.bindingPurpose,revision:p.sourceRevision,bindingFingerprint:p.bindingFingerprint,
+      worksheets:p.worksheetCount,worksheetFingerprint:p.worksheetProofs?.[0]?.worksheetFingerprint,
+      readSha:p.worksheetProofs?.[0]?.sourceContentSha256,rows:p.worksheetProofs?.[0]?.rowsReturned,
+      equalIndependentReads:p.externalRevisionIndependentlyVerified,
+      privateRowsExposed:!!(p.privateProviderRows||p.privateRows||p.values1||p.values2),reason:typeof p.error==='string'?p.error.slice(0,90):undefined,hrWrites:p.hrWrites};
     },{api,country:country.country,period});
-    result.appReads.push({...read,expectedCountry:country.country});
-    check(read.http===200&&read.purpose==='original_readback'&&read.country===country.country&&read.period===period&&read.readSha===country.contentSha256&&read.equalIndependentReads===true&&read.rows===140&&read.privateRowsExposed===false&&[0,false].includes(read.hrWrites),'MAPPING_FAILURE:APP_ORIGINAL_READ');
+    // Two separate authenticated application requests, each backed by two independent Graph GETs.
+    // A legitimately edited HR must not be compared with a frozen 2026-11-20 content hash.
+    const read=await readCurrent();
+    const reread=await readCurrent();
+    const both=[read,reread];
+    const currentStable=both.every(x=>x.http===200&&x.purpose==='original_readback'&&x.country===country.country&&x.period===period&&
+      /^[a-f0-9]{64}$/.test(String(x.revision||''))&&/^[a-f0-9]{64}$/.test(String(x.readSha||''))&&
+      /^[a-f0-9]{64}$/.test(String(x.bindingFingerprint||''))&&x.worksheets===1&&x.rows===140&&
+      x.equalIndependentReads===true&&x.privateRowsExposed===false&&[0,false].includes(x.hrWrites))&&
+      read.revision===reread.revision&&read.readSha===reread.readSha&&
+      read.bindingFingerprint===reread.bindingFingerprint&&read.worksheetFingerprint===reread.worksheetFingerprint;
+    result.appReads.push({...read,expectedCountry:country.country,historicalContentSha256Matched:read.readSha===country.contentSha256,
+      secondCurrentRead:{http:reread.http,start:reread.start,end:reread.end,revision:reread.revision,readSha:reread.readSha,
+        bindingFingerprint:reread.bindingFingerprint,worksheetFingerprint:reread.worksheetFingerprint},
+      currentRevisionStable:currentStable,verification:'FOUR_GRAPH_GETS_VIA_TWO_INDEPENDENT_AUTHENTICATED_APPLICATION_REQUESTS'});
+    check(currentStable,'MAPPING_FAILURE:APP_ORIGINAL_CURRENT_REVISION_DRIFT_OR_READ');
    }
   }finally{await context.close()}
  });
