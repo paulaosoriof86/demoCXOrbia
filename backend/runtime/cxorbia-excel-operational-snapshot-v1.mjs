@@ -37,9 +37,24 @@ function matchDurable(source,scope,previous){
      const sourceKeys=fields(source,keys);
      return sourceKeys.every(Boolean)&&same(sourceKeys,fields(row,keys));
    }));
-   if(!strong.every(rows=>rows.length===1&&rows[0]===strong[0][0]))
+   // Duplicate historical documents may refer to the SAME visit. Require
+   // the exact same document cohort across all business-key groups rather than
+   // falsely treating the duplicates as separate visits.
+   const ids=rows=>rows.map(v=>str(v.id)).sort();
+   const cohort=strong[0];
+   if(!cohort.length||!strong.every(rows=>rows.length&&same(ids(rows),ids(cohort))))
       fail('EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY');
-   return {primary:strong[0][0],cohort:[strong[0][0]]};
+   const candidates=cohort.filter(v=>str(v.periodId)===scope.periodId);
+   const exact=candidates.filter(v=>str(v.id)===str(source.id));
+   if(exact.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   let selected=exact[0]||null;
+   if(!selected){
+     const canonical=candidates.filter(v=>/^hr_20\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+     if(canonical.length===1)selected=canonical[0];
+     else if(canonical.length===0&&candidates.length===1)selected=candidates[0];
+   }
+   if(!selected)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   return {primary:selected,cohort};
  }
  if(rowFamily.length){
    const exact=pool.filter(v=>str(v.id)===str(source.id));

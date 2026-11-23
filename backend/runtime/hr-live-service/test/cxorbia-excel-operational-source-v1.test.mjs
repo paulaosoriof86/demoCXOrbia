@@ -164,3 +164,23 @@ test('a contradictory active legacy row is not silently dropped even with a stro
  await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
    /UNMATCHED_ACTIVE_DURABLE_VISITS/);
 });
+
+test('historical two-document cohort with obsolete foreign row preserves one canonical owner and both aliases',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+  tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+  values('GT'),columnMap,cinemaRegistry);
+ const original=parsed.visits[0];
+ const foreign={...original,id:'obsolete_row',periodId:'cinepolis-2026-11',
+   cinemaId:'9999',sucursal:'Different branch',_archived:true};
+ const canonical={...original,id:'hr_2026-11_gt_canonical',visitId:'hr_2026-11_gt_canonical',
+   hrRowId:'NOVIEMBRE 26!77',sourceRow:77,periodId:'cinepolis-2026-11'};
+ const shadow={...canonical,id:'shadow_legacy',visitId:'shadow_legacy'};
+ const db=fixture({durableVisits:[foreign,canonical,shadow]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const out=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ const picked=out.snapshot.visits.find(x=>x.country==='GT');
+ assert.equal(picked.id,canonical.id);
+ assert.equal(out.proof.matchedDurable,2);
+ assert.equal(out.proof.historicalAliasesPreserved,1);
+ assert.equal(out.proof.firestoreWrites,0);
+});
