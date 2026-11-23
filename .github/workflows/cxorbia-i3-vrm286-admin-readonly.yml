@@ -10,7 +10,6 @@ jobs:
     if: ${{ contains(github.event.head_commit.message, '[i3-vrm286-admin-readonly]') || contains(github.event.head_commit.message, '[i3-recert-safe-09eed-20261105]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
-    env:
     steps:
       - uses: actions/checkout@v4
         with:
