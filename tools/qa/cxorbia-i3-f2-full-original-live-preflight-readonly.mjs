@@ -9,6 +9,7 @@ import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
 import {readExcelPeriodThroughMake} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+import {diagnoseOriginalVisitJoin} from './cxorbia-i3-f2-original-conflict-diagnostic.mjs';
 
 const root='tenants/tya/projects/cinepolis';
 const out='.tmp/i3-f2-live-excel-source-preflight/result.json';
@@ -18,6 +19,7 @@ const proof={schemaVersion:'cxorbia.i3.f2.original-excel-operational-preflight.v
   authWrites:0,production:false,sourceSwitch:false,excelReadCalls:0};
 const fail=code=>{throw Error(code)};
 let client;
+let diagnosticScope=null;
 try {
  if(process.env.GITHUB_REF!=='refs/heads/recovery/cxorbia-phase-a-20260831'
    ||process.env.GITHUB_REPOSITORY!=='paulaosoriof86/demoCXOrbia')
@@ -82,6 +84,7 @@ try {
  proof.stage='LOAD_MAPPING_CONTRACT';
  const columnMap=JSON.parse(fs.readFileSync('backend/contracts/tya-hr-column-map-r20-v1.json','utf8'));
  const registry=JSON.parse(fs.readFileSync('backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json','utf8'));
+ diagnosticScope={db:virtualDb,plan,columnMap,cinemaRegistry:registry,readings:[]};
  const runScenario=async input=>{
    proof.excelReadCalls++;
    const reply=await client.callTool({name:tool.name,arguments:{...input,operation:'read'}},
@@ -99,8 +102,11 @@ try {
  };
  proof.stage='READ_38_ORIGINAL_COUNTRY_PERIODS';
  const snapshot=await readExcelOriginalProjectSnapshot({db:virtualDb,plan,
-   columnMap,cinemaRegistry:registry,readBinding:b=>readExcelPeriodThroughMake({
-     binding:b,columnMap,runScenario})});
+   columnMap,cinemaRegistry:registry,readBinding:async b=>{
+     const response=await readExcelPeriodThroughMake({binding:b,columnMap,runScenario});
+     diagnosticScope.readings.push({binding:b,response});
+     return response;
+   }});
  if(!snapshot.proof.independentlyVerified||snapshot.proof.hrWrites!==0
    ||snapshot.proof.unmatchedActive!==0)fail('MAPPING_FAILURE:SOURCE_SNAPSHOT_UNSAFE');
  proof.projection={revision:snapshot.proof.sourceRevision,periodReads:snapshot.proof.periodReads,
@@ -118,6 +124,10 @@ try {
  proof.errorSourceSite=site?site[0]:null;
  proof.errorCode=/^(MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE|SOURCE_FAILURE|RELEASE_COMPOSITION_FAILURE):[A-Z0-9_]+$/.test(String(e?.message||''))?
      e.message:'ENVIRONMENT_FAILURE:F2_FULL_SOURCE_PREFLIGHT';
+ if(proof.errorCode==='MAPPING_FAILURE:F2_DURABLE_VISIT_AMBIGUOUS' && diagnosticScope?.readings.length===38){
+   try{proof.identityDiagnostic=await diagnoseOriginalVisitJoin(diagnosticScope)}
+   catch(ex){proof.diagnosticFailure=/^(MAPPING_FAILURE|SOURCE_FAILURE):[A-Z0-9_]+$/.test(String(ex?.message))?ex.message:'ENVIRONMENT_FAILURE:DIAGNOSTIC_UNAVAILABLE'}
+ }
  process.exitCode=1;
 }finally{
  await client?.close().catch(()=>{});
