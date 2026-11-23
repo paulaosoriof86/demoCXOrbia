@@ -54,6 +54,8 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
         allBusinessKeysSameDocCohort:groupSameDocs,
         stableCinemaCutMatches:stableOwners.length,
         stableCinemaCutCanonicalOwners:stableOwners.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id))).length,
+        stableCinemaCutCurrentPeriodOwners:stableOwners.filter(v=>str(v.periodId)===scope.periodId).length,
+        stableCinemaCutLegacyUnprefixedOwners:stableOwners.filter(v=>/^(?:20\\d{2})-(?:0[1-9]|1[0-2])$/.test(str(v.periodId))).length,
         stableCinemaCutExactSourceId:stableOwners.filter(v=>str(v.id)===str(row.id)).length,
         stableOwnersWithSameSourceCoordinate:stableOwners.filter(v=>coord.some(c=>str(c.id)===str(v.id))).length
       });
@@ -83,6 +85,23 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
   countryPeriodsChecked:Object.keys(groups).length,counts,conflictsByCountryPeriod:Object.values(groups)
     .filter(x=>x.conflicts).map(x=>({country:x.country,period:x.period,source:x.source,durable:x.durable,conflicts:x.conflicts})),
   firstConflicts:failures,exactCoordinateCollisionCount:exactRowCollisions.length,
-  exactCoordinateCollisions:exactRowCollisions.slice(0,60),
+  exactCoordinateCollisionSummary:{
+    sameBusinessCohort:exactRowCollisions.filter(x=>x.allBusinessKeysSameDocCohort).length,
+    differentBusinessCohort:exactRowCollisions.filter(x=>!x.allBusinessKeysSameDocCohort).length,
+    zeroStableMatches:exactRowCollisions.filter(x=>x.stableCinemaCutMatches===0).length,
+    uniqueCurrentPeriodOwner:exactRowCollisions.filter(x=>x.stableCinemaCutCurrentPeriodOwners===1).length,
+    noCurrentPeriodOwner:exactRowCollisions.filter(x=>x.stableCinemaCutCurrentPeriodOwners===0).length,
+    multipleCurrentPeriodOwners:exactRowCollisions.filter(x=>x.stableCinemaCutCurrentPeriodOwners>1).length,
+    byCountryPeriod:Object.values(exactRowCollisions.reduce((m,x)=>{
+      const k=x.country+'|'+x.period;
+      const v=m[k]||{country:x.country,period:x.period,total:0,cohortMismatch:0,unprovenOwner:0};
+      v.total++;if(!x.allBusinessKeysSameDocCohort)v.cohortMismatch++;
+      if(x.stableCinemaCutCurrentPeriodOwners!==1)v.unprovenOwner++;
+      m[k]=v;return m;
+    },{})),
+  },
+  exactCoordinateCollisionExceptions:exactRowCollisions.filter(x=>!x.allBusinessKeysSameDocCohort
+    ||x.stableCinemaCutMatches===0||x.stableCinemaCutCurrentPeriodOwners!==1).slice(0,30),
+  exactCoordinateCollisionSamples:exactRowCollisions.slice(0,2),
   rowsExposed:false,personalDataExposed:false,writes:0,production:false};
 }
