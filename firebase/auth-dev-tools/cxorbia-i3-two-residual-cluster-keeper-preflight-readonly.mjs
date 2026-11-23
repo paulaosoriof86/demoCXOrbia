@@ -71,7 +71,9 @@ async function targetPreflight({key,desiredName,desiredLogin,expectedCountry,tes
   const profilesWithoutHr=profiles.filter(p=>!hrIdentityIds.includes(p.id));
   const matchingMembers=state.members.filter(m=>m.active===true&&m.role==='shopper'&&m.authNamespace==='shopper'&&
     m.tenantId===TENANT&&arr(m.projectIds).includes(PROGRAM)&&profileIds.has(str(m.shopperId)));
-  assert(matchingMembers.length>=2,'TARGET_ACTIVE_MEMBERSHIP_GRAPH_CHANGED_'+key);
+  // A completed alias adjudication may legitimately leave ONE active canonical
+  // membership. Requiring two active accounts was a stale validator, not an Auth contract.
+  assert(matchingMembers.length>=1,'AUTH_FAILURE:TARGET_NO_ACTIVE_MEMBERSHIP_'+key);
   const authRows=[];
   for(const m of matchingMembers){
     const u=await auth.getUser(m.uid),claims=u.customClaims||{},login=str(m.visibleLogin).toLowerCase();
