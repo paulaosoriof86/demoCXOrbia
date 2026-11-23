@@ -87,7 +87,19 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
     postDeploy.hostingVersion===seal.hostingVersion&&postDeploy.runtimeRevision===seal.runtimeRevision&&
     (pendingFromPaired||(current.sourceMaterialized===true&&current.materializationScope==='RUNTIME_AND_HOSTING'))&&
     typeof preC3.previousRuntimeRevision==='string'&&preC3.production===false;
-  const c3PredecessorAfterServing=c3PredecessorAfterHosting||c3PredecessorAfterPaired;
+  // I3/F2: original Excel source-only P0 can follow a Hosting-only
+  // release. Preserve the immutable paired predecessor C3 as evidence,
+  // never re-label it as a certificate of the unserved new runtime.
+  const c3PredecessorFromHostingSourceOnly=pendingHostingOnly&&
+    preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
+    preC3.sourceSha===hosting.sourceSha&&preC3.sourceTree===hosting.sourceTree&&
+    preC3.previousC3SourceSha===c3.sourceSha&&
+    preC3.previousC3SourceTree===c3.sourceTree&&
+    preC3.previousHostingVersion===c3.hostingVersion&&
+    preC3.previousRuntimeRevision===c3.runtimeRevision&&
+    JSON.stringify(preC3)===JSON.stringify(p?.i3Q2HostingReleaseC3Pending||null)&&
+    JSON.stringify(preC3)===JSON.stringify(l?.i3Q2HostingReleaseC3Pending||null);
+  const c3PredecessorAfterServing=c3PredecessorAfterHosting||c3PredecessorAfterPaired||c3PredecessorFromHostingSourceOnly;
   check(Boolean(ledgerPath)&&p?.findingsLedgerPath===ledgerPath,'CURRENT_LEDGER_PATH_DESYNC');
   check(Boolean(d?.findingsLedgerExpectedGitBlob)&&p?.findingsLedgerExpectedGitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_LEDGER_BLOB_DESYNC');
   check(l?.governance?.findingCount===count&&l?.findingCount===count,'CURRENT_FINDING_COUNT_DESYNC');
@@ -301,7 +313,14 @@ export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,re
   const h=d.currentHostingOnlyDevMaterialization||{};
   check(seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&latest.kind==='EXACT_HOSTING_ONLY_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE','LATEST_EXECUTION_KIND');
   check(JSON.stringify(h)===JSON.stringify(p.currentHostingOnlyDevMaterialization||null),'LATEST_HOSTING_POINTER');
-  check(h.sourceSha===d.productSourceSha&&h.sourceTree===d.productTreeAuthority,'LATEST_HOSTING_SOURCE');
+  const sourceOnlyF2=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+    d.pendingDevSuccessor.scope==='RUNTIME_AND_HOSTING'&&
+    d.pendingDevSuccessor.devPublished===false&&d.pendingDevSuccessor.production===false&&
+    h.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&
+    h.sourceTree===d.pendingDevSuccessor.servingHosting?.sourceTree&&
+    d.pendingDevSuccessor.sourceSha===d.productSourceSha&&
+    d.pendingDevSuccessor.sourceTree===d.productTreeAuthority;
+  check((h.sourceSha===d.productSourceSha&&h.sourceTree===d.productTreeAuthority)||sourceOnlyF2,'LATEST_HOSTING_SOURCE');
   check(h.runtimeRevision===seal.runtimeRevision&&h.runtimeDigest===seal.runtimeDigest,'LATEST_HOSTING_RUNTIME_SEAL');
   check(Boolean(h.receiptPath&&h.receiptBlob)&&gitBlob(h.receiptPath)===h.receiptBlob,'LATEST_HOSTING_RECEIPT_BLOB');
   let r={};try{r=readJson(h.receiptPath);}catch{check(false,'LATEST_HOSTING_RECEIPT_UNREADABLE');}

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.original-excel-operational-source-successor.v1",
+  "iteration": "I3",
+  "dateLocal": "2026-11-22",
+  "classification": "MAPPING_FAILURE",
+  "disposition": "SOURCE_ONLY_PENDING_CANONICAL_QA_AND_DEV",
+  "sourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+  "sourceTree": "f7326204978e71fe1325ab1d4f7d3f227d37da70",
+  "sourceParentSha": "fe9615a67d7da30c3db2ddfaca8596203f14b1c9",
+  "prevApprovedServedSource": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "registeredOriginalExcelBindings": {
+    "GT": 19,
+    "HN": 19,
+    "first": "2025-05",
+    "last": "2026-11",
+    "runId": 45095970552,
+    "firestoreConfigWrites": 2,
+    "operationalHrWrites": 0,
+    "productionWrites": 0,
+    "readbackVerified": true
+  },
+  "filesChanged": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs"
+  ],
+  "canonical": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V380.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V707_2026-11-22.json",
+    "integralMatches": 6,
+    "total": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "gates": {
+    "sourceQA": "PENDING",
+    "runtimeDev": "NOT_DEPLOYED",
+    "excelSelectedInDev": "NO",
+    "adminShopperOperationalE2E": "PENDING",
+    "bidirectionalProviderACK": "PENDING"
+  },
+  "next": "Canonical CI focal source QA; on success one DEV materialization; then scoped Firestore operational selector switch with before-after/readback if historical identity complete; prove no duplicates and same revision."
+}
