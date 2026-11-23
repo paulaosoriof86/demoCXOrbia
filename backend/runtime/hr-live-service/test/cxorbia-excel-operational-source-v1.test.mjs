@@ -166,8 +166,13 @@ test('a contradictory active legacy row is not silently dropped even with a stro
    hrRowId:'NOVIEMBRE 26!77',sourceRow:77,periodId:'cinepolis-2026-11'};
  const db=fixture({durableVisits:[foreign,correct]});
  const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
- await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
-   /UNMATCHED_ACTIVE_DURABLE_VISITS/);
+ const output=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.equal(output.snapshot.visits.length,2);
+ assert.equal(output.snapshot.visits.find(v=>v.country==='GT').id,correct.id);
+ assert.equal(output.proof.unmatchedActive,1);
+ assert.equal(output.snapshot.issues[0].code,'DURABLE_NOT_IN_CURRENT_EXTERNAL_SOURCE');
+ assert.equal(output.snapshot.issues[0].writesAllowed,false);
+ assert.equal(output.proof.firestoreWrites,0);
 });
 
 test('historical two-document cohort with obsolete foreign row preserves one canonical owner and both aliases',async()=>{
