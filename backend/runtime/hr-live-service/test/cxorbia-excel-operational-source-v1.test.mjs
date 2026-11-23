@@ -243,3 +243,35 @@ test('unprefixed legacy HR document is preserved without inventing an extra acti
  assert.equal(out.proof.historicalUnprefixedDocsPreserved,1);
  assert.equal(out.proof.firestoreWrites,0);
 });
+
+test('different month scenario, cinema and film do not require historical reconciliation',async()=>{
+ const prior={id:'durable_prior_october',periodId:'cinepolis-2026-10',country:'GT',
+   cinemaId:'completely_different_previous_cinema',sucursal:'Other former city',
+   quincena:'1Q',escenario:'OLD_MOVIE',tipoCombo:'OLD_COMBO'};
+ const db=fixture({durableVisits:[prior]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const output=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.equal(output.snapshot.visits.length,2);
+ assert.equal(output.proof.unmatchedActive,0);
+ assert.equal(output.proof.otherPeriodsNotReconciled,true);
+ assert.equal(output.proof.periodScopesVerified,2);
+ assert.equal(output.proof.firestoreWrites,0);
+});
+test('same cinema and cut can have two distinct source rows in one month',async()=>{
+ const db=fixture();
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const doubleRead=async binding=>{
+  const r=await readBinding(binding);
+  if(binding.scope.countryCode==='GT'){
+    const tab=r.privateProviderRows[0],second=[...tab.values[1]];
+    second[col('tipoCombo')]='OTHER_COMBO';
+    tab.values.push(second);
+  }
+  return r;
+ };
+ const output=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding:doubleRead});
+ const gt=output.snapshot.visits.filter(v=>v.country==='GT');
+ assert.equal(gt.length,2);
+ assert.notEqual(gt[0].visitId,gt[1].visitId);
+ assert.equal(output.proof.firestoreWrites,0);
+});

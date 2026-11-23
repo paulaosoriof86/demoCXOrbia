@@ -124,10 +124,12 @@ function matchDurable(source,scope,previous){
  return {primary:selected,cohort};
 }
 function newVisitId(source,scope){
- // ID must survive a scenario/combo edit within the same country-month.
- const key=fields(source,['cinemaId','sucursal','quincena']);
- if(key.some(x=>!x))fail('NEW_VISIT_IDENTITY_MISSING');
- return 'hr_excel_'+sha([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,...key].join('|')).slice(0,28);
+ // A visit belongs to its OWN configured month/worksheet/row. Neither cinema
+ // nor scenario/film is a cross-period invariant; multiple visits at the same
+ // cinema and cut are distinct when the source has distinct rows.
+ const sourceTab=str(source.sourceTab),sourceRow=Number(source.sourceRow);
+ if(!sourceTab||!Number.isSafeInteger(sourceRow)||sourceRow<1)fail('NEW_VISIT_IDENTITY_MISSING');
+ return 'hr_excel_'+sha([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,sourceTab,sourceRow].join('|')).slice(0,28);
 }
 const headerFields=rows=>{
  const n=x=>norm(x).replace(/[^a-z0-9 ]/g,'').trim();
@@ -253,9 +255,12 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
  // never rewritten or treated as a second current-period assignment.
  // Only the canonical project-scoped operational docs must match every HR visit.
  const unprefixedHistory=durable.filter(v=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId)));
- const unsupportedLegacy=unprefixedHistory.filter(v=>!/^hr_20\d{2}/i.test(str(v.id))||!str(v.hrRowId));
- if(unsupportedLegacy.length)fail('HISTORICAL_ALIAS_FORMAT_UNPROVEN');
- const missing=durable.filter(v=>!matched.has(str(v.id))&&!v._archived&&
+ // A new month, new country or changed list of cinemas must NEVER be rejected
+ // because a different month's durable visits are not in this period's HR.
+ // Cross-period records remain untouched, accessible by their durable owners.
+ const requestedScopes=new Set(plan.bindings.map(b=>b.scope.countryCode+'|'+b.scope.periodId));
+ const missing=durable.filter(v=>requestedScopes.has(getCountry(v)+'|'+getPeriod(v,projectId))&&
+   !matched.has(str(v.id))&&!v._archived&&
    !/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId))&&
    !['cancelada','cancelled','archived','archivada'].includes(norm(v.estado||v.status)));
  if(missing.length)fail('UNMATCHED_ACTIVE_DURABLE_VISITS');
@@ -285,5 +290,6 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
    matchedSourceVisits,newSourceVisits:visits.length-matchedSourceVisits,
    historicalAliasesPreserved:matched.size-matchedSourceVisits,
    historicalUnprefixedDocsPreserved:unprefixedHistory.length,
+   periodScopesVerified:requestedScopes.size,otherPeriodsNotReconciled:true,
    independentlyVerified:true,hrWrites:0,firestoreWrites:0,production:false}};
 }
