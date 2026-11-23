@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.one-candidate-paired-dev-dispatch.v1",
+  "localDate": "2026-11-23",
+  "iteration": "I3",
+  "state": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedControlParent": "347e9900558bd97da1a28acaecca897854bfc876",
+  "certificationSourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
+  "certificationSourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+  "canonicalCI": {
+    "runId": 45196598557,
+    "conclusion": "success",
+    "job": "canonical-candidate-authority"
+  },
+  "liveOriginalExcelRead": {
+    "runId": 45192668808,
+    "conclusion": "success",
+    "reads": 38,
+    "visits": 836,
+    "unmatchedActive": 0,
+    "hrWrites": 0
+  },
+  "devTarget": {
+    "firebaseProject": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "hostingTarget": "cxorbia-dev",
+    "runtimeAndHostingSingleLane": true
+  },
+  "scope": "ONE_APPROVED_PRODUCT_SOURCE__CONTROL_ONLY_DISPATCH__PRODUCTION_PROTECTED",
+  "untilDeployed": "F2_NOT_YET_RUNTIME_SERVING",
+  "selectorState": "EXCEL_SWITCH_REQUIRES_PROVEN_READBACK_BEFORE_MATCH",
+  "expectedNoOriginalExcelWrites": true,
+  "expectedNoGoogleWrites": true,
+  "terminalI3Go": false,
+  "authorizationI4": false,
+  "production": "DO_NOT_TOUCH"
+}
