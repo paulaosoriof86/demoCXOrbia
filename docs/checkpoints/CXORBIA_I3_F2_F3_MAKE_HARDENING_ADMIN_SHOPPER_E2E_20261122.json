@@ -1,0 +1,198 @@
+{
+  "schemaVersion": "cxorbia.i3.f2-f3.make-hardening-admin-shopper-same-source.evidence.v1",
+  "dateLocal": "2026-11-22",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "officialState": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "8d67be7c0950c488d25b984ed85299710a6661ba",
+  "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "canonical": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V379.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
+    "sourceReady": 21,
+    "domainMatch": 6,
+    "totalDomains": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "i4Authorized": false
+  },
+  "authority": {
+    "f2": "Excel Online TyA ORIGINAL_GT_HN",
+    "googleSheets": "OUTDATED_MIRROR_NON_AUTHORITATIVE_NO_RECONCILIATION_OR_WRITES"
+  },
+  "make": {
+    "scenarioId": 10200465,
+    "name": "CXOrbia B14 — proveedor Graph delegado de lectura por scope (DEV / on-demand)",
+    "active": true,
+    "onDemand": true,
+    "lastEdit": "2026-11-23T01:00:03.390Z",
+    "connectionsHealthy": true,
+    "incompleteExecutions": 0,
+    "before": "DEV filter validated tenant, project, country, driveId, itemId; worksheetId and periodId by regex only. Scope-invalid worksheet could reach Graph.",
+    "after": "Same scenario, same modules, same Graph connection, exact authorized November 2026 worksheet GUID and periodId per GT/HN. No country/project/global defaults changed.",
+    "novemberRead": {
+      "GT": {
+        "runId": "1dbd1eb928794ee483ea4b5c2175b4f6",
+        "http": [
+          200,
+          200
+        ],
+        "rows": [
+          140,
+          140
+        ],
+        "hashesEqual": true
+      },
+      "HN": {
+        "runId": "c1289a9439c14985aac862e6a74660fb",
+        "http": [
+          200,
+          200
+        ],
+        "rows": [
+          140,
+          140
+        ],
+        "hashesEqual": true
+      }
+    },
+    "negativeScopeChecks": [
+      {
+        "case": "wrong_valid_period_with_nov_sheet",
+        "executionId": "870df25f7dcb40f5bbdedc3013de254f",
+        "graphCalls": 0,
+        "outputsAbsent": true
+      },
+      {
+        "case": "unknown_valid_guid",
+        "executionId": "e2c6a101530748c0af75b88157dd27ed",
+        "graphCalls": 0,
+        "outputsAbsent": true
+      },
+      {
+        "case": "cross_country_sheet",
+        "executionId": "001212094fe743138c2297a32814e7e0",
+        "graphCalls": 0,
+        "outputsAbsent": true
+      }
+    ],
+    "writes": 0,
+    "nextPeriodPolicy": "TEMPORARILY_FAIL_CLOSED: automatic provider registry validation for future months is required before widening; never use a global hardcode or new scenario."
+  },
+  "github": {
+    "originalProviderRead": {
+      "runId": 45091867826,
+      "jobId": 137423012104,
+      "result": "SUCCESS",
+      "originalVsDev": {
+        "GT": {
+          "visits": 34,
+          "matched": 34,
+          "originalRealized": 19,
+          "devServedRealized": 17,
+          "originalRowsWithRealizationDivergence": [
+            29,
+            37
+          ]
+        },
+        "HN": {
+          "visits": 10,
+          "matched": 10,
+          "originalRealized": 5,
+          "devServedRealized": 5
+        }
+      },
+      "idsOneToOne": true,
+      "providerWriteCount": 0
+    },
+    "chromeAdminShopper": {
+      "runId": 45092468655,
+      "jobId": 137424888988,
+      "jobResult": "SUCCESS",
+      "workflowResult": "FAILURE_OTHER_JOB",
+      "decision": "PASS_B14_APP_READ_AND_THREE_SCOPED_RELOADS",
+      "appOriginalGT_HN": {
+        "twoAuthenticatedCallsPerCountry": true,
+        "remoteRevisionStable": true,
+        "privateRowsExposed": false
+      },
+      "shopperReloads": [
+        {
+          "case": "GT11",
+          "view": "visitas",
+          "pass": true
+        },
+        {
+          "case": "GT12",
+          "view": "mireportes",
+          "pass": true
+        },
+        {
+          "case": "HN06",
+          "view": "mireportes",
+          "pass": true
+        }
+      ],
+      "production": false,
+      "hrWrites": 0
+    },
+    "scopedAuthReadOnly": {
+      "runId": 45092667820,
+      "jobId": 137425515060,
+      "workflowResult": "SUCCESS",
+      "adminProjectPeriodReadModel": "PASS",
+      "currentAccountInventory": "PASS",
+      "twoKeeperEligibility": "PASS_READONLY_TWO_KEEPERS_ELIGIBLE",
+      "providerMutations": 0
+    }
+  },
+  "sourceCorrections": [
+    {
+      "commit": "015dc97c24fe9781b89c4846842a2e9f34cbc4a9",
+      "scope": "read-only Admin test source pinned from descriptor, historical pin superseded"
+    },
+    {
+      "commit": "f1b8f43defc3e5619af037b639f2a557605d129d",
+      "scope": "fix invalid temporary empty env YAML"
+    },
+    {
+      "commit": "2db07b8370ddf9d27f7c0e1d24b440930c66bb16",
+      "scope": "two read-only identity scripts derive source from descriptor"
+    },
+    {
+      "commit": "8d67be7c0950c488d25b984ed85299710a6661ba",
+      "scope": "remove invalid requirement of two simultaneously active Shopper memberships"
+    }
+  ],
+  "remainingP0": {
+    "F2": {
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+        "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+      ],
+      "problem": "Operational /hr-live still selected google_sheets; original Graph only Admin proof endpoint, and current Excel configuration has only November periodSheets; full historical period registry, exact durable identity and revised original state must precede switch.",
+      "exactNext": "Complete private original period-sheet registry with provider-validated monthly identities; use current 44/44 one-to-one mapping and exact shopper crosswalk to build same-source canonical snapshot; update operational selector only after full historical and readback pass."
+    },
+    "F3": {
+      "classification": "PROVIDER_FAILURE",
+      "problem": "Actual application bidirectional writer and remote field ACK not connected; historical isolated QA provider ACK PASS does not replace real app ACK",
+      "exactNext": "Connect exact field-scoped idempotent writer with last valid event, ACK/readback/retry/echo, isolated QA before operational writes."
+    },
+    "otherDomains": "Keep strict V379 residual clauses for remaining non-MATCH domains and preserve all previous PASS; a green control-only workflow is not a new domain certificate."
+  },
+  "safety": {
+    "newProductCode": false,
+    "devDeployment": false,
+    "productionDeployment": false,
+    "hrOriginalWrites": 0,
+    "googleMirrorWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "providerWriteRequests": 0,
+    "duplicateVisitsCreated": 0
+  },
+  "production": "DO_NOT_TOUCH"
+}
