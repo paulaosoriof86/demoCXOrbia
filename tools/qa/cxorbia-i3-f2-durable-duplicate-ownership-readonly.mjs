@@ -50,9 +50,11 @@ try{
  }
  const duplicated=[...groups.entries()].filter(([,rows])=>rows.length>1);
  const same=x=>new Set(x.map(v=>val(v))).size===1;
+ const idsShared=rows=>rows.every(v=>val(v.hrRowId))&&same(rows.map(v=>v.hrRowId));
  const summaries=duplicated.map(([k,rows])=>{
   const parts=k.split('|'),type=rows.map(v=>kind(v.id)).sort().join('+');
-  const linkCounts=rows.map(v=>[...new Set([v.id,v.hrRowId].map(val).filter(Boolean))].reduce((n,id)=>n+(links.get(id)?.total||0),0));
+  const linkCounts=rows.map(v=>links.get(v.id)?.total||0);
+  const sharedHrRowRefs=idsShared(rows)?(links.get(val(rows[0].hrRowId))?.total||0):0;
   const origin=rows.map(v=>val(v.sourceTab||v.hrManaged?.sourceTab)),sr=rows.map(v=>val(v.sourceRow||v.hrManaged?.sourceRow));
   const ids=rows.map(v=>val(v.hrRowId));
   const assigned=rows.map(v=>Boolean(v.shopperId||v.canonicalShopperId));
@@ -60,7 +62,8 @@ try{
   return {country:parts[1],period:parts[0].slice(-7),count:rows.length,type,sourceTabEqual:same(origin),
    sourceRowEqual:same(sr),sourceRowsPresent:sr.filter(Boolean).length,hrRowIdEqual:same(ids),
    hrRowIdsPresent:ids.filter(Boolean).length,linkedOwners:linkCounts.filter(n=>n>0).length,
-   linksPerCandidate:linkCounts,assignedOwners:assigned.filter(Boolean).length,
+   linksPerCandidate:linkCounts,sharedHrRowRefs,assignedOwners:assigned.filter(Boolean).length,
+   directOwnerCategories:rows.map((v,i)=>({kind:kind(v.id),directLinks:linkCounts[i],paid:finance[i]})),
    confirmedPayments:finance.filter(Boolean).length,
    versionClass:rows.map(v=>Number(v.version||0)).sort((a,b)=>a-b),
    fingerprint:sha(k)};
@@ -75,6 +78,8 @@ try{
  proof.bySourceCoordinate=countBy(z=>z.sourceTabEqual&&z.sourceRowEqual&&z.sourceRowsPresent===z.count?'SAME_SOURCE_ROW':'DIFFERENT_OR_MISSING_COORD');
  proof.byStableHrRowId=countBy(z=>z.hrRowIdEqual&&z.hrRowIdsPresent===z.count?'SAME_HR_ROW':'DIFFERENT_OR_MISSING_HR_ROW');
  proof.byRelationships=countBy(z=>z.linkedOwners===0?'NONE':z.linkedOwners===1?'ONE_LINKED':'MULTIPLE_LINKED');
+ proof.bySharedHrCoordReferences=countBy(z=>z.sharedHrRowRefs>0?'SHARED_COORD_REFERENCED':'NONE');
+ proof.byConfirmedPaymentOwnership=countBy(z=>z.confirmedPayments===0?'NO_PAYMENT':z.confirmedPayments===1?'ONE_PAID':'MULTIPLE_PAID');
  proof.samples=summaries.filter(x=>['2025-06','2026-07','2026-09','2026-10'].includes(x.period)).slice(0,16);
  proof.refsScanned=Object.fromEntries(sets.map(([label,snap])=>[label,snap.size]));
  proof.decision='PASS_DURABLE_DUPLICATE_PROVENANCE_INVENTORY_READONLY';
