@@ -86,6 +86,21 @@ try{
    fingerprint:sha(k)};
  });
  const countBy=(fn)=>summaries.reduce((a,z)=>(a[fn(z)]=(a[fn(z)]||0)+1,a),{});
+ const other=visits.docs.map(x=>({id:x.id,...(x.data()||{})})).filter(x=>
+  !/^cinepolis-20\d\d-(0[1-9]|1[0-2])\|(?:GT|HN)\|/.test(key(x)));
+ const tally=(f)=>other.reduce((a,x)=>{const k=f(x);a[k]=(a[k]||0)+1;return a;},{});
+ const periodClass=x=>{const p=pkey(x);return /^cinepolis-20\d\d-(0[1-9]|1[0-2])$/.test(p)?'canonical':
+   /^20\d\d-(0[1-9]|1[0-2])$/.test(p)?'unprefixed':!p?'missing':'other'};
+ const countryClass=x=>{const c=country(x);return ['GT','HN'].includes(c)?c:
+   ['GUATEMALA','HONDURAS'].includes(c)?c:'OTHER_OR_EMPTY'};
+ proof.unclassified={count:other.length,periodFormats:tally(x=>periodClass(x)),countryFormats:tally(x=>countryClass(x)),
+   jointByFormat:tally(x=>periodClass(x)+'|'+countryClass(x)),
+   byPeriod:tally(x=>pkey(x).replace(/^cinepolis-/,'').slice(0,7)||'missing'),
+   idKinds:tally(x=>kind(x.id)),
+   directRefs:other.filter(x=>(links.get(x.id)?.total||0)>0).length,
+   paymentConfirmed:other.filter(x=>x.canonicalFacets?.paymentConfirmed===true||x.paymentConfirmed===true).length,
+   archived:other.filter(x=>x._archived===true||['archived','archivada','cancelled','cancelada'].includes(norm(x.estado||x.status))).length,
+   hrRowIdPresent:other.filter(x=>val(x.hrRowId)).length};
  proof.totalDurableVisits=visits.size;
  proof.groupCount=groups.size;
  proof.duplicateBusinessKeyGroups=summaries.length;
