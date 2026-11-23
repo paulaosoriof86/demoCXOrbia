@@ -64,18 +64,22 @@ try {
    countryCounts:Object.fromEntries(['GT','HN'].map(x=>[x,plan.bindings.filter(b=>b.scope.countryCode===x).length]))};
  if(plan.proof.periodCount!==19||plan.proof.jobCount!==38)
    fail('MAPPING_FAILURE:EXCEL_HISTORICAL_19X2_INCOMPLETE');
+ proof.stage='MAKE_SECRET_REFERENCE';
  const key=execFileSync('gcloud',['secrets','versions','access','1',
    '--secret=cxorbia-dev-b14-make-toolbox','--project','cxorbia-backend-dev'],
    {stdio:['ignore','pipe','ignore'],encoding:'utf8'}).trim();
  if(!key)fail('AUTH_FAILURE:B14_TOOLBOX_TOKEN_NOT_AVAILABLE');
+ proof.stage='MAKE_CLIENT_CONNECT';
  const url=new URL('https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6');
  client=new Client({name:'cxorbia-f2-original-readonly',version:'1.0.0'});
  await client.connect(new StreamableHTTPClientTransport(url,
    {requestInit:{redirect:'error',headers:{Authorization:'Bearer '+key}}}));
+ proof.stage='MAKE_LIST_READ_TOOLS';
  const list=await client.listTools();
  if(list.nextCursor||list.tools.length!==1||list.tools[0].annotations?.readOnlyHint!==true)
    fail('MAPPING_FAILURE:B14_ONLY_READ_TOOL_REQUIRED');
  const tool=list.tools[0];
+ proof.stage='LOAD_MAPPING_CONTRACT';
  const columnMap=JSON.parse(fs.readFileSync('backend/contracts/tya-hr-column-map-r20-v1.json','utf8'));
  const registry=JSON.parse(fs.readFileSync('backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json','utf8'));
  const runScenario=async input=>{
@@ -93,6 +97,7 @@ try {
    if(Array.isArray(obj)&&obj.length===1)obj=obj[0];
    return obj?.outputs||obj?.output||obj;
  };
+ proof.stage='READ_38_ORIGINAL_COUNTRY_PERIODS';
  const snapshot=await readExcelOriginalProjectSnapshot({db:virtualDb,plan,
    columnMap,cinemaRegistry,readBinding:b=>readExcelPeriodThroughMake({
      binding:b,columnMap,runScenario})});
@@ -103,8 +108,10 @@ try {
    unmatchedActive:snapshot.proof.unmatchedActive,
    countryVisitCounts:snapshot.snapshot.counts.byCountry,
    periods:snapshot.snapshot.periods.length};
+ proof.stage='FULL_PREVIEW_SOURCE_VALIDATED';
  proof.decision='PASS_F2_FULL_ORIGINAL_EXCEL_PREVIEW_READONLY__NO_DEV_SWITCH';
 }catch(e){
+ proof.errorName=String(e?.name||'Error').replace(/[^A-Za-z]/g,'').slice(0,50);
  proof.errorCode=/^(MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE|SOURCE_FAILURE|RELEASE_COMPOSITION_FAILURE):[A-Z0-9_]+$/.test(String(e?.message||''))?
      e.message:'ENVIRONMENT_FAILURE:F2_FULL_SOURCE_PREFLIGHT';
  process.exitCode=1;
