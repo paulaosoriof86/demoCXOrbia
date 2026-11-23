@@ -214,6 +214,24 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  i3-f2-exact-owner-source-test:
+    if: ${{ contains(github.event.head_commit.message, '[i3-f2-match-qa]') }}
+    runs-on: ubuntu-24.04
+    permissions: {contents: read}
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Exact P0 historical original HR row matcher source tests, no provider writes
+        run: |
+          set -Eeuo pipefail
+          node --check backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs
+          echo "CXORBIA_F2_SOURCE_ONLY_QA=PASS_NO_DEV_DEPLOY" >> "$GITHUB_STEP_SUMMARY"
+
   i3-b11-r23-same-revision-readonly:
     if: ${{ contains(github.event.head_commit.message, '[i3-b11-r23-readonly]') }}
     runs-on: ubuntu-24.04
