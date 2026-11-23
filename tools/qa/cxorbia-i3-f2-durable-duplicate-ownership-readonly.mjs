@@ -132,6 +132,28 @@ try{
    maxGroupSize:Math.max(...grouped.map(x=>x.length)),
    differingHrRow,differingSourceCoord,byDirectRefs,byPayment,
    expectedAllRows:visits.size,groupedRows:grouped.reduce((n,x)=>n+x.length,0)};
+ const exactLegacy=visits.docs.map(x=>({id:x.id,...(x.data()||{})}))
+   .filter(d=>/^20\d\d-(0[1-9]|1[0-2])$/.test(pkey(d))&&['GT','HN'].includes(country(d)));
+ const canon=visits.docs.map(x=>({id:x.id,...(x.data()||{})}))
+   .filter(d=>/^cinepolis-20\d\d-(0[1-9]|1[0-2])$/.test(pkey(d))&&['GT','HN'].includes(country(d)));
+ const sameHr=(a,b)=>val(a.hrRowId)&&val(a.hrRowId)===val(b.hrRowId);
+ const sameCoord=(a,b)=>val(a.sourceTab)&&val(a.sourceTab)===val(b.sourceTab)&&
+   val(a.sourceRow)&&val(a.sourceRow)===val(b.sourceRow);
+ const matchKeys=countByType=>exactLegacy.reduce((m,x)=>{
+   const candidates=canon.filter(y=>pkey(y)==='cinepolis-'+pkey(x)&&country(y)===country(x)
+     &&sameHr(x,y));
+   const coordinateConsistent=candidates.length&&candidates.every(y=>sameCoord(x,y));
+   const label=countByType(x,candidates,coordinateConsistent);m[label]=(m[label]||0)+1;return m;
+ },{});
+ proof.legacyExactHrRowJoin={
+   legacyRows:exactLegacy.length,canonicalRows:canon.length,
+   byCandidates:matchKeys((x,m)=>String(m.length)),
+   byCoordinate:matchKeys((x,m,ok)=>m.length?ok?'MATCHED_COORD':'MISMATCH_COORD':'NO_HR_ROW_JOIN'),
+   byDirectLink:matchKeys((x,m)=>String((links.get(x.id)?.total||0)>0)+'|'+String(m.length)),
+   byBusinessFields:matchKeys((x)=>['cinemaId','sucursal','quincena','escenario']
+     .map(k=>val(x[k]??x.hrManaged?.[k])?'1':'0').join('')),
+   noAutomaticMerge:true,sourceWrites:0,firestoreWrites:0
+ };
  proof.totalDurableVisits=visits.size;
  proof.groupCount=groups.size;
  proof.duplicateBusinessKeyGroups=summaries.length;
