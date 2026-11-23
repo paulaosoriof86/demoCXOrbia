@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.tya-original-excel-current-independent-read.v1",
+  "dateLocal": "2026-11-22",
+  "status": "PASS_SCOPED_ORIGINAL_HR_READ_ONLY__HOLD_OPERATIONAL_SWITCH",
+  "iteration": "I3",
+  "authorityDecisionId": "CXORBIA-I3-F2-ORIGINAL-EXCEL-TYA-AUTHORITY-20261122",
+  "controlParentSha": "03dba76ebb5ea8f6a9dff92261e7390f2b40fbca",
+  "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "project": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11"
+  },
+  "sourceAuthority": "excel_online_original_tya",
+  "googleSheets": "stale_non_authoritative_mirror_not_read_for_this_proof_not_to_be_updated",
+  "makeScenario": {
+    "id": 10200465,
+    "active": true,
+    "mode": "on-demand",
+    "writes": false
+  },
+  "countries": {
+    "GT": {
+      "executionId": "9521badac96149ac8c394aa14120eabb",
+      "http": [
+        200,
+        200
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "hash1": "94a74aca32b30dfacb3037bb47c3d5d0ed5d5da38fc8660bed948d9e24586ac9",
+      "hash2": "94a74aca32b30dfacb3037bb47c3d5d0ed5d5da38fc8660bed948d9e24586ac9",
+      "visits": 34,
+      "realized": 19,
+      "uniqueBusinessKeys": 34
+    },
+    "HN": {
+      "executionId": "9aa241d338f54e4f9a27977bc007a8f1",
+      "http": [
+        200,
+        200
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "hash1": "084267361520add36478511fb51ddef09a4e8d59d7c28c554b6a2df165c48e09",
+      "hash2": "084267361520add36478511fb51ddef09a4e8d59d7c28c554b6a2df165c48e09",
+      "visits": 10,
+      "realized": 5,
+      "uniqueBusinessKeys": 10
+    }
+  },
+  "originalVisitTotal": 44,
+  "originalRealizedTotal": 24,
+  "independentReadbacksIdentical": true,
+  "rawHrRowsPersisted": false,
+  "personalDataLogged": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "productionWrites": 0,
+  "devDeploys": 0,
+  "sourceAndControlUnchanged": true,
+  "canonicalControls": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V379.json",
+    "continuityRun": 45087746914,
+    "continuityConclusion": "success"
+  },
+  "certification": {
+    "integralMatch": 6,
+    "total": 21,
+    "gate20": "HOLD",
+    "gate21": "HOLD",
+    "I4Authorized": false
+  },
+  "remainingP0": {
+    "classification": "MAPPING_FAILURE",
+    "owner": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+    ],
+    "failure": "Normal operational hr-live route still uses google_sheets; original Make/Graph currently used for b14-provider-meta original_readback only.",
+    "exactNext": "Implement single original-Excel project/country/period operational reader and preserve stable visit and shopper identities/historical scope before changing Firestore project operationalSource; then prove provider ACK/idempotence/replay/conflict and same-artifact Admin/Shopper E2E. Never mutate Google or backfill it."
+  }
+}
