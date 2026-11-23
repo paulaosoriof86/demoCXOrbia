@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.original-hr-same-source-readonly-run-request.v1",
+  "dateLocal": "2026-11-22",
+  "iteration": "I3",
+  "sourceHead": "f1b8f43defc3e5619af037b639f2a557605d129d",
+  "sourceProductSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "targetExistingWorkflow": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml",
+  "job": "b14-delegated-toolbox-readonly",
+  "targetMakeScenarioId": 10200465,
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "countries": [
+      "GT",
+      "HN"
+    ]
+  },
+  "sourceAuthority": "TyA ORIGINAL Excel Online",
+  "googleSheets": "non_authoritative_obsolete_mirror",
+  "requestedProof": [
+    "delegated_scoped_make_graph_get",
+    "two_independent_reads",
+    "original_vs_served_stable_visit_identity",
+    "country_scope_gt_hn",
+    "same_snapshot_revision"
+  ],
+  "allowedWrites": {
+    "excelOperational": 0,
+    "google": 0,
+    "hr": 0,
+    "production": 0,
+    "devDeployment": 0,
+    "firestore": 0,
+    "auth": 0
+  },
+  "cannotConfer": [
+    "I3_GO",
+    "MODULE_MATCH",
+    "B14_ACK",
+    "I4"
+  ]
+}
