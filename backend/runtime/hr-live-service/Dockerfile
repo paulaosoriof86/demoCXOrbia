@@ -15,6 +15,7 @@ COPY backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs ./backend/runtime/
 COPY backend/runtime/cxorbia-project-command-provider-v1.mjs ./backend/runtime/cxorbia-project-command-provider-v1.mjs
 COPY backend/runtime/cxorbia-country-hr-binding-v1.mjs ./backend/runtime/cxorbia-country-hr-binding-v1.mjs
 COPY backend/runtime/cxorbia-make-graph-provider-v1.mjs ./backend/runtime/cxorbia-make-graph-provider-v1.mjs
+COPY backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs ./backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs
 COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs
 COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
 COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js

@@ -97,7 +97,22 @@ const c3AfterPaired=preC3.state==='DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING'&
   preC3.previousC3SourceSha===c3.sourceSha&&preC3.previousC3SourceTree===c3.sourceTree&&
   preC3.previousHostingVersion===c3.hostingVersion&&preC3.previousRuntimeRevision===c3.runtimeRevision&&
   (pendingFromPaired||mt.productSource?.authorityState==='RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E');
-const c3PredecessorOnly=(pendingHostingOnly&&
+// I3/F2: a new bounded runtime+hosting source may follow an already
+// hosting-only published predecessor. The C3 receipt stays HISTORICAL;
+// do not fabricate a current same-source E2E or permit terminal promotion.
+const pendingFromCurrentHosting=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
+  d.pendingDevSuccessor.scope==='RUNTIME_AND_HOSTING'&&
+  d.pendingDevSuccessor.predecessorProductSourceSha===d.currentHostingOnlyDevMaterialization?.sourceSha&&
+  d.pendingDevSuccessor.sourceSha===d.productSourceSha&&
+  d.pendingDevSuccessor.sourceTree===d.productTreeAuthority&&
+  JSON.stringify(d.pendingDevSuccessor.servingHostingOnlyMaterialization)===JSON.stringify(d.currentHostingOnlyDevMaterialization)&&
+  d.postDeployRunSeal?.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&
+  mt.productSource?.authorityState==='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV'&&
+  c3.sourceSha===d.currentMaterialization?.sourceSha&&
+  c3.sourceTree===d.currentMaterialization?.sourceTree&&
+  c3.hostingVersion===d.currentMaterialization?.hostingVersion&&
+  c3.runtimeRevision===d.currentMaterialization?.runtimeRevision;
+const c3PredecessorOnly=(pendingFromCurrentHosting||(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
   c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting||c3AfterPaired||

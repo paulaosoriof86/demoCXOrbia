@@ -14,6 +14,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import {pathToFileURL} from 'node:url';
 import process from 'node:process';
 import {
   applyCanonicalVisitState,
@@ -374,5 +375,9 @@ async function providerAuthSelfTest(){
 if(process.argv.includes('--provider-auth-self-test'))providerAuthSelfTest().catch(error=>{console.error(error);process.exit(1);});
 else if(process.argv.includes('--mapping-self-test'))mappingSelfTest();
 else if(process.argv.includes('--assignment-self-test'))assignmentSelfTest();
-else main().catch(error=>{reportHrSourceFailure(error);process.exit(1);});
+else if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url) main().catch(error=>{reportHrSourceFailure(error);process.exit(1);});
+
+// Reuse the accepted R20 canonical parser for original Excel Graph values.
+// Module import must NEVER trigger the legacy Google source reader.
+export {parseTab,buildPeriods,buildShoppers};
 

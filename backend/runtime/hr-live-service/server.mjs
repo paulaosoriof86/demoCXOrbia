@@ -17,6 +17,7 @@ import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } fr
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
 import { readExcelPeriodThroughMake } from '../cxorbia-make-graph-provider-v1.mjs';
+import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../cxorbia-excel-operational-snapshot-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -187,6 +188,9 @@ async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,r
   if(!project.exists)fail('PROJECT_MISSING');
   const raw=project.data()||{},selected=raw.operationalSource?'operationalSource':'routeSource',source=raw[selected]||{};
   if(raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');
+  // I3/F2 P0: respect the project's durable Excel selection. Never silently
+  // fall back to the obsolete Google mirror after this source is selected.
+  if(source.providerType==='excel_online')return resolveExcelOriginalProjectPlan({db,scope});
   if(source.mode!=='external'||source.providerType!=='google_sheets'||source.readPolicy!=='external_live'||source.writePolicy!=='external_read_only')fail('SOURCE_POLICY');
   const bindingId=source.providerBindingId||source.integrationSettingId||source.providerRef;
   if(!valid(bindingId))fail('REFERENCE_REQUIRED');
@@ -452,6 +456,32 @@ async function refreshSnapshot(binding){
   lastRefreshStartedAt=new Date().toISOString();
   const started=Date.now();
   inFlight=(async()=>{
+    if(binding.proof.providerType==='excel_online'){
+      const stagesMs={},stageStart=Date.now();
+      const columnMap=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
+      const cinemaRegistry=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json'),'utf8'));
+      const source=await readExcelOriginalProjectSnapshot({db:ensureAdmin().db,plan:binding,columnMap,cinemaRegistry,
+        readBinding:countryPeriod=>readOriginalThroughToolbox(countryPeriod,columnMap)});
+      stagesMs.readOriginalExcel=Date.now()-stageStart;
+      const current=await withDurableProjectConfig(source.snapshot);
+      const after=await resolveProjectHrReadBinding(binding.scope);
+      if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)
+        throw Error('MAPPING_FAILURE:EXCEL_BINDING_CHANGED_DURING_READ');
+      const actual=snapshotScope(current);
+      if(actual.tenantId!==binding.scope.tenantId||actual.projectId!==binding.scope.projectId)
+        throw Error('MAPPING_FAILURE:EXCEL_OPERATIONAL_SCOPE_DRIFT');
+      const next=materialize(current,'runtime_excel_online_original',source.identity);
+      next.bindingProof={...binding.proof,readerCount:source.proof.periodReads,
+        runtimeConsumptionVerified:true,sourceRevision:source.proof.sourceRevision,rawRowsExposed:false};
+      cache=next;
+      lastRefreshStagesMs={...stagesMs};
+      lastRefreshProviderReads={excelOnlineOriginal:{periodReads:source.proof.periodReads,
+        matchedDurable:source.proof.matchedDurable,unmatchedActive:source.proof.unmatchedActive}};
+      lastRefreshError=null;
+      lastRefreshFinishedAt=new Date().toISOString();
+      lastRefreshDurationMs=Date.now()-started;
+      return cache;
+    }
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-hr-live-'));
     const payload=path.join(dir,'snapshot.js');
     const runtimeRegistry=path.join(dir,'tab-registry.source-safe.json');
