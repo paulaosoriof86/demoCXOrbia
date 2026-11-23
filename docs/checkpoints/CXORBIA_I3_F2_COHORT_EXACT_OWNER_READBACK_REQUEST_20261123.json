@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.cohort-owner-readback-request.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "38 original GT/HN Excel monthly read-only scopes",
+  "ownerBlob": "93007eeec45dd40464948251eca6cbe443bb01a8",
+  "unitRunId": 45184728836,
+  "unitOutcome": "SUCCESS",
+  "cumulativeRule": "three exact independent business-key sets, canonical durable owner unique, aliases retained, no active document dropped",
+  "prevFullAttempt": 45183943229,
+  "prevFailure": "MAPPING_FAILURE:F2_EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY",
+  "noWrites": true,
+  "production": false,
+  "certification": "NOT_CLAIMED",
+  "approvedCodeSourceOnly": true
+}
