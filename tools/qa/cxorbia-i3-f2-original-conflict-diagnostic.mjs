@@ -14,7 +14,7 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
  const snapshots=await db.collection('tenants').doc(plan.scope.tenantId).collection('projects')
    .doc(plan.scope.projectId).collection('visits').get();
  const durable=snapshots.docs.map(x=>({...x.data(),id:x.id}));
- const groups={},failures=[],counts={MATCH:0,NEW_UNMATCHED:0,KEY_AMBIGUOUS:0},seen=new Set();
+ const groups={},failures=[],exactRowCollisions=[],counts={MATCH:0,NEW_UNMATCHED:0,KEY_AMBIGUOUS:0},seen=new Set();
  for(const {binding,response} of readings){
   const scope=binding.scope,periodKey=scope.periodId.slice(-7),country=scope.countryCode;
   const period=groups[country+'|'+periodKey]||{country,period:periodKey,source:0,durable:durable.filter(x=>scoped(x,scope)).length,conflicts:0};
@@ -32,6 +32,32 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
       const a=select(row,cols),b=select(d,cols);
       return a.every(Boolean)&&a.every((v,i)=>v===b[i]);
     }));
+    // Exact original Excel row collision is a different class from historical
+    // multiple-document alias cohorts. Never export names, IDs or row contents.
+    const coord=pool.filter(v=>str(v.hrRowId)===str(row.hrRowId)
+      &&str(v.sourceTab)===str(row.sourceTab)&&str(v.sourceRow)===str(row.sourceRow));
+    const conflicting=coord.filter(v=>{
+      const a=select(row,['cinemaId','sucursal']),b=select(v,['cinemaId','sucursal']);
+      return a.every(Boolean)&&b.every(Boolean)&&a[0]!==b[0]&&a[1]!==b[1];
+    });
+    if(conflicting.length){
+      const stable=select(row,['cinemaId','quincena']);
+      const stableOwners=pool.filter(v=>stable.every(Boolean)&&stable.every((k,i)=>k===select(v,['cinemaId','quincena'])[i]));
+      const groupSameDocs=matches.every(m=>m.length===matches[0].length
+        &&m.every(x=>matches[0].some(y=>str(y.id)===str(x.id))));
+      exactRowCollisions.push({
+        country,period:periodKey,sourceRow:row.sourceRow,sourceTabMatches:coord.length,
+        exactCoordinateContradictions:conflicting.length,
+        contradictionActive:conflicting.filter(v=>!v._archived
+          &&!['cancelada','cancelled','archived','archivada'].includes(norm(v.estado||v.status))).length,
+        businessKeyCardinalities:matches.map(m=>m.length),
+        allBusinessKeysSameDocCohort:groupSameDocs,
+        stableCinemaCutMatches:stableOwners.length,
+        stableCinemaCutCanonicalOwners:stableOwners.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id))).length,
+        stableCinemaCutExactSourceId:stableOwners.filter(v=>str(v.id)===str(row.id)).length,
+        stableOwnersWithSameSourceCoordinate:stableOwners.filter(v=>coord.some(c=>str(c.id)===str(v.id))).length
+      });
+    }
     const cards=matches.map(m=>m.length);
     const unique=matches.every(m=>m.length===1&&m[0]===matches[0][0]);
     const empty=matches.every(m=>m.length===0);
@@ -56,5 +82,7 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
   sourceRowsChecked:Object.values(groups).reduce((n,x)=>n+x.source,0),durableRowsAvailable:durable.length,
   countryPeriodsChecked:Object.keys(groups).length,counts,conflictsByCountryPeriod:Object.values(groups)
     .filter(x=>x.conflicts).map(x=>({country:x.country,period:x.period,source:x.source,durable:x.durable,conflicts:x.conflicts})),
-  firstConflicts:failures,rowsExposed:false,personalDataExposed:false,writes:0,production:false};
+  firstConflicts:failures,exactCoordinateCollisionCount:exactRowCollisions.length,
+  exactCoordinateCollisions:exactRowCollisions.slice(0,60),
+  rowsExposed:false,personalDataExposed:false,writes:0,production:false};
 }
