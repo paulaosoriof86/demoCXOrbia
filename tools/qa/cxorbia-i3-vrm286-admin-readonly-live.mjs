@@ -12,7 +12,7 @@ const PROJECT = 'cxorbia-backend-dev';
 const TENANT = 'tya';
 const PROJECT_ID = 'cinepolis';
 const ROOT = 'https://cxorbia-backend-dev.web.app';
-const SOURCE = '09eed4f012f9ad04e49d53569aabd86bd4c832a9';
+const SOURCE = String(process.env.CXORBIA_PRODUCT_SOURCE_SHA || '').trim();
 const OUT = '.tmp/cxorbia-i3-vrm286-admin-readonly';
 const str = x => String(x ?? '').trim();
 const arr = x => Array.isArray(x) ? x : [];
@@ -33,7 +33,8 @@ fs.mkdirSync(OUT, {recursive: true});
 let browser;
 
 async function run() {
-  if (str(process.env.CXORBIA_PRODUCT_SOURCE_SHA) !== SOURCE)
+  if (!/^[a-f0-9]{40}$/.test(SOURCE) ||
+      SOURCE !== JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8')).productSourceSha)
     fail('RELEASE_COMPOSITION_FAILURE:VRM286_SOURCE_PIN');
   const credentialFile = str(process.env.GOOGLE_APPLICATION_CREDENTIALS);
   if (!credentialFile) fail('AUTH_FAILURE:DEV_SERVICE_ACCOUNT_NOT_AVAILABLE');

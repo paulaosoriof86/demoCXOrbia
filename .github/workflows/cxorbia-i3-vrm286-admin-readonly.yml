@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      CXORBIA_PRODUCT_SOURCE_SHA: 09eed4f012f9ad04e49d53569aabd86bd4c832a9
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,8 +18,11 @@ jobs:
       - name: Pin frozen product candidate without deployment
         run: |
           set -Eeuo pipefail
-          test "$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "$CXORBIA_PRODUCT_SOURCE_SHA"
+          CXORBIA_PRODUCT_SOURCE_SHA="$(jq -r '.productSourceSha' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$CXORBIA_PRODUCT_SOURCE_SHA" = "$(jq -r '.productSourceSha' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)"
+          test "$(git rev-parse "$CXORBIA_PRODUCT_SOURCE_SHA^{tree}")" = "$(jq -r '.productTreeAuthority' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           git diff --quiet "$CXORBIA_PRODUCT_SOURCE_SHA" HEAD -- app backend firestore.rules storage.rules firebase.json .firebaserc
+          echo "CXORBIA_PRODUCT_SOURCE_SHA=$CXORBIA_PRODUCT_SOURCE_SHA" >> "$GITHUB_ENV"
           node --check tools/qa/cxorbia-i3-vrm286-admin-readonly-live.mjs
       - uses: actions/setup-node@v4
         with:
