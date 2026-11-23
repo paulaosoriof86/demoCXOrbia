@@ -190,6 +190,30 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  i3-f2-durable-owner-readonly:
+    if: ${{ contains(github.event.head_commit.message, '[i3-f2-duplicate-owner-readonly]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions: {contents: read, id-token: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Inspect durable visit provenance and cross-module references without mutations
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
+          node tools/qa/cxorbia-i3-f2-durable-duplicate-ownership-readonly.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-f2-duplicate-owner-${{ github.run_id }}
+          path: .tmp/i3-f2-duplicate-durable-ownership/result.json
+          if-no-files-found: error
+          retention-days: 30
+
   i3-b11-r23-same-revision-readonly:
     if: ${{ contains(github.event.head_commit.message, '[i3-b11-r23-readonly]') }}
     runs-on: ubuntu-24.04
