@@ -70,12 +70,17 @@ test('legacy Google selection cannot silently pass as operational Excel',async()
  const db=fixture({projectOverride:{...project,operationalSource:{...source,providerType:'google_sheets'}}});
  await assert.rejects(resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}}),/SOURCE_POLICY/);
 });
-test('existing nonarchived durable visits cannot disappear during source switch',async()=>{
+test('old durable row absent from current Excel remains untouched but does not block live reading',async()=>{
  const db=fixture({durableVisits:[{id:'durable_existing',tenantId:'tya',projectId:'cinepolis',
    periodId:'cinepolis-2026-11',country:'GT',cinemaId:'wrong',sucursal:'Another',
    quincena:'2Q',escenario:'APP',tipoCombo:'B'}]});
  const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
- await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),/UNMATCHED_ACTIVE_DURABLE_VISITS/);
+ const r=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.equal(r.snapshot.visits.length,2);
+ assert.equal(r.proof.unmatchedActive,1);
+ assert.equal(r.snapshot.issues[0].severity,'review');
+ assert.equal(r.snapshot.safeState.unmatchedDurableHistoricalReviewRequired,true);
+ assert.equal(r.proof.firestoreWrites,0);
 });
 test('provider revision without independent proof cannot publish a snapshot',async()=>{
  const db=fixture(),plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});

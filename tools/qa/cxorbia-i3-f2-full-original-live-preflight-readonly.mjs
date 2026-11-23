@@ -107,8 +107,11 @@ try {
      diagnosticScope.readings.push({binding:b,response});
      return response;
    }});
- if(!snapshot.proof.independentlyVerified||snapshot.proof.hrWrites!==0
-   ||snapshot.proof.unmatchedActive!==0)fail('MAPPING_FAILURE:SOURCE_SNAPSHOT_UNSAFE');
+ if(!snapshot.proof.independentlyVerified||snapshot.proof.hrWrites!==0)
+   fail('MAPPING_FAILURE:SOURCE_SNAPSHOT_UNSAFE');
+ // A stale durable record does not invalidate an independent original Excel
+ // read. It remains preserved and marked for owner review; never auto-deleted.
+ proof.historicalReadModelReviewCount=snapshot.proof.unmatchedActive;
  proof.projection={revision:snapshot.proof.sourceRevision,periodReads:snapshot.proof.periodReads,
    visits:snapshot.proof.visits,matchedDurable:snapshot.proof.matchedDurable,
    unmatchedActive:snapshot.proof.unmatchedActive,

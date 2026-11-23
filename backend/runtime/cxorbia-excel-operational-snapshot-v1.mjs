@@ -289,7 +289,10 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
    !matched.has(str(v.id))&&!v._archived&&
    !/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId))&&
    !['cancelada','cancelled','archived','archivada'].includes(norm(v.estado||v.status)));
- if(missing.length)fail('UNMATCHED_ACTIVE_DURABLE_VISITS');
+ // A live Excel source is authoritative. Unmatched historical Firestore rows
+ // are preserved and reported, never replayed into current HR or treated as
+ // available visits. This is read-only review, not interperiod reconciliation.
+ // Writes remain gated separately by exact remote field ACK and identity proof.
  const periods=buildPeriods(visits,tabs),history=validateCanonicalHistory(visits,periods);
  if(history.decision!=='PASS_CANONICAL_HISTORY')fail('HISTORY');
  const shoppers=buildShoppers(visits),summary=summarizeCanonicalPeriods(visits);
@@ -309,8 +312,11 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
   tenantConfig:{tenantId,tenantName:'TyA',configurable:true},projectConfig:{...plan.project,projectId,hrSourceType:'excel_online_original'},
   sourceRevision:revision,sourceSafe:true,imported:false,firestoreWrites:0,production:false,
   periods,visits,shoppers,counts,periodOperationalSummary:summary,
-  tabsRead:tabs.map(x=>({country:x.country,periodKey:x.key,scenarioKey:x.scenarioKey})),issues:[],
-  safeState:{writes:false,imports:false,deploy:false,production:false,payments:false}};
+  tabsRead:tabs.map(x=>({country:x.country,periodKey:x.key,scenarioKey:x.scenarioKey})),
+  issues:missing.length?[{code:'DURABLE_NOT_IN_CURRENT_EXTERNAL_SOURCE',severity:'review',count:missing.length,
+    writesAllowed:false,sourceAuthority:'excel_online_original'}]:[],
+  safeState:{writes:false,imports:false,deploy:false,production:false,payments:false,
+    unmatchedDurableHistoricalReviewRequired:missing.length>0}};
  return {snapshot,identity,proof:{bindingFingerprint:plan.proof.bindingFingerprint,sourceRevision:revision,
    periodReads:responses.length,visits:visits.length,matchedDurable:matched.size,unmatchedActive:missing.length,
    matchedSourceVisits,newSourceVisits:visits.length-matchedSourceVisits,
