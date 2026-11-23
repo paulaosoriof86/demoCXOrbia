@@ -90,6 +90,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // I3/F2: original Excel source-only P0 can follow a Hosting-only
   // release. Preserve the immutable paired predecessor C3 as evidence,
   // never re-label it as a certificate of the unserved new runtime.
+  const c3=d?.currentC3PreterminalAudit||{};
   const c3PredecessorFromHostingSourceOnly=pendingHostingOnly&&
     preC3.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&
     preC3.sourceSha===hosting.sourceSha&&preC3.sourceTree===hosting.sourceTree&&
@@ -130,7 +131,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   // The current 21-domain C3 audit is distinct from archived 20-domain
   // terminal evidence. A stale lastModuleTruthProof previously survived every
   // canonical CI run and caused later conversations to re-enter old gates.
-  const c3=d?.currentC3PreterminalAudit||{};
+
   // Current aliases are checked only at the top level. Historical receipts may
   // retain their original field names and identities without being reclassified.
   for(const object of [d,p,l,m].filter(Boolean))for(const [key,value]of Object.entries(object)){
