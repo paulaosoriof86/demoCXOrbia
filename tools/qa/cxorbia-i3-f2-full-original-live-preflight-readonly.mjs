@@ -124,7 +124,7 @@ try {
  proof.errorSourceSite=site?site[0]:null;
  proof.errorCode=/^(MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE|SOURCE_FAILURE|RELEASE_COMPOSITION_FAILURE):[A-Z0-9_]+$/.test(String(e?.message||''))?
      e.message:'ENVIRONMENT_FAILURE:F2_FULL_SOURCE_PREFLIGHT';
- if(proof.errorCode==='MAPPING_FAILURE:F2_DURABLE_VISIT_AMBIGUOUS' && diagnosticScope?.readings.length===38){
+ if(['MAPPING_FAILURE:F2_DURABLE_VISIT_AMBIGUOUS','MAPPING_FAILURE:F2_EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY','MAPPING_FAILURE:F2_UNMATCHED_ACTIVE_DURABLE_VISITS'].includes(proof.errorCode) && diagnosticScope?.readings.length===38){
    try{proof.identityDiagnostic=await diagnoseOriginalVisitJoin(diagnosticScope)}
    catch(ex){proof.diagnosticFailure=/^(MAPPING_FAILURE|SOURCE_FAILURE):[A-Z0-9_]+$/.test(String(ex?.message))?ex.message:'ENVIRONMENT_FAILURE:DIAGNOSTIC_UNAVAILABLE'}
  }
