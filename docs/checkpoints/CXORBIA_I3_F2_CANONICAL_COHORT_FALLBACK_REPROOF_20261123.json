@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.canonical-cohort-fallback-reproof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlHead": "5bb5b70f75c3f427a0bcb2779e19433a07204598",
+  "matcherBlob": "0ed3d7a987012b030267b78ed5deb063aa10a935",
+  "focalRunId": 45185438695,
+  "focalStatus": "PASS",
+  "readOnly38Originals": true,
+  "previousSourceFailure": "MAPPING_FAILURE:F2_DURABLE_VISIT_AMBIGUOUS",
+  "scope": "one existing canonical source successor, read-only, no Firebase writes, no HR writes, no new scenario",
+  "expected": "PASS exact cohort history or narrow classified FAIL",
+  "newDomainsCertified": 0,
+  "production": false
+}
