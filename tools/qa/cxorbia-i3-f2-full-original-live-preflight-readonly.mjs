@@ -99,7 +99,7 @@ try {
  };
  proof.stage='READ_38_ORIGINAL_COUNTRY_PERIODS';
  const snapshot=await readExcelOriginalProjectSnapshot({db:virtualDb,plan,
-   columnMap,cinemaRegistry,readBinding:b=>readExcelPeriodThroughMake({
+   columnMap,cinemaRegistry:registry,readBinding:b=>readExcelPeriodThroughMake({
      binding:b,columnMap,runScenario})});
  if(!snapshot.proof.independentlyVerified||snapshot.proof.hrWrites!==0
    ||snapshot.proof.unmatchedActive!==0)fail('MAPPING_FAILURE:SOURCE_SNAPSHOT_UNSAFE');
