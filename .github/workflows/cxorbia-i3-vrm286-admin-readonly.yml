@@ -170,7 +170,11 @@ jobs:
           SOURCE="$(jq -er '.productSourceSha|select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
           test "$SOURCE" = "$(jq -r '.productSource.sha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V380.json)"
           git merge-base --is-ancestor "$SOURCE" HEAD
-          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          # Diagnostic source-only successor has exactly one owner change beyond
+          # the pinned F2 source. This QA is NOT a release or composition PASS.
+          delta="$(git diff --name-only "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**')"
+          test "$delta" = "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs"
+          test "$(git rev-parse HEAD:backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs)" = "044d75a45a2cd8bc53bf9f4ccc036ca39b316f8c"
           node --check tools/qa/cxorbia-i3-f2-full-original-live-preflight-readonly.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
           echo "CXORBIA_F2_EXACT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
