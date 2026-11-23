@@ -7,7 +7,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 
 const PROJECT='cxorbia-backend-dev', TENANT='tya', PROJECT_ID='cinepolis';
-const SOURCE='09eed4f012f9ad04e49d53569aabd86bd4c832a9';
+const SOURCE=String(process.env.CXORBIA_PRODUCT_SOURCE_SHA||'').trim();
 const OUTPUT='.tmp/cxorbia-i3-two-authorized-name-logins-readonly';
 const str=x=>String(x??'').trim(), arr=x=>Array.isArray(x)?x:[];
 const hash=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
@@ -18,7 +18,7 @@ const result={schemaVersion:'cxorbia.i3.two-authorized-name-logins.dev.readonly.
 fs.mkdirSync(OUTPUT,{recursive:true});
 
 try{
-  if(str(process.env.CXORBIA_PRODUCT_SOURCE_SHA)!==SOURCE)throw Error('RELEASE_COMPOSITION_FAILURE:SOURCE_PIN');
+  if(!/^[a-f0-9]{40}$/.test(SOURCE)||SOURCE!==JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8')).productSourceSha)throw Error('RELEASE_COMPOSITION_FAILURE:SOURCE_PIN');
   const path=str(process.env.GOOGLE_APPLICATION_CREDENTIALS);
   if(!path)throw Error('AUTH_FAILURE:SERVICE_ACCOUNT_UNAVAILABLE');
   const sa=JSON.parse(fs.readFileSync(path,'utf8'));

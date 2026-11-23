@@ -13,7 +13,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 import CredentialRule from '../../app/core/shopper-credential-rule.js';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
-const SOURCE='09eed4f012f9ad04e49d53569aabd86bd4c832a9';
+const SOURCE=String(process.env.CXORBIA_PRODUCT_SOURCE_SHA||'').trim();
 const ENDPOINT=`https://${PROJECT}.web.app/api/${TENANT}/${PROGRAM}/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV`;
 const OUTPUT='.tmp/cxorbia-i3-residual-keeper-preflight';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
@@ -120,7 +120,7 @@ async function targetPreflight({key,desiredName,desiredLogin,expectedCountry,tes
 }
 
 try{
-  assert(str(process.env.CXORBIA_PRODUCT_SOURCE_SHA)===SOURCE,'SOURCE_PIN_NOT_CURRENT');
+  assert(/^[a-f0-9]{40}$/.test(SOURCE)&&SOURCE===JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8')).productSourceSha,'SOURCE_PIN_NOT_CURRENT');
   assert(['',PROJECT].includes(str(process.env.GOOGLE_CLOUD_PROJECT)),'PROJECT_GUARD');
   if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
   const db=getFirestore(),auth=getAuth(),hr=await readHr(),state=await readDev(db);
