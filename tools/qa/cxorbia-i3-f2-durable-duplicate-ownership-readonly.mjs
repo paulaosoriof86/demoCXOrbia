@@ -64,6 +64,8 @@ try{
    hrRowIdsPresent:ids.filter(Boolean).length,linkedOwners:linkCounts.filter(n=>n>0).length,
    linksPerCandidate:linkCounts,sharedHrRowRefs,assignedOwners:assigned.filter(Boolean).length,
    directOwnerCategories:rows.map((v,i)=>({kind:kind(v.id),directLinks:linkCounts[i],paid:finance[i]})),
+   linkedKinds:rows.filter((v,i)=>linkCounts[i]>0).map(v=>kind(v.id)).sort().join('+')||'NONE',
+   paidKinds:rows.filter((v,i)=>finance[i]).map(v=>kind(v.id)).sort().join('+')||'NONE',
    confirmedPayments:finance.filter(Boolean).length,
    versionClass:rows.map(v=>Number(v.version||0)).sort((a,b)=>a-b),
    fingerprint:sha(k)};
@@ -80,6 +82,9 @@ try{
  proof.byRelationships=countBy(z=>z.linkedOwners===0?'NONE':z.linkedOwners===1?'ONE_LINKED':'MULTIPLE_LINKED');
  proof.bySharedHrCoordReferences=countBy(z=>z.sharedHrRowRefs>0?'SHARED_COORD_REFERENCED':'NONE');
  proof.byConfirmedPaymentOwnership=countBy(z=>z.confirmedPayments===0?'NO_PAYMENT':z.confirmedPayments===1?'ONE_PAID':'MULTIPLE_PAID');
+ proof.byDirectLinkedKind=countBy(z=>z.linkedKinds);
+ proof.byPaidKind=countBy(z=>z.paidKinds);
+ proof.byLinkAndPaidKind=countBy(z=>z.linkedKinds+'|'+z.paidKinds);
  proof.samples=summaries.filter(x=>['2025-06','2026-07','2026-09','2026-10'].includes(x.period)).slice(0,16);
  proof.refsScanned=Object.fromEntries(sets.map(([label,snap])=>[label,snap.size]));
  proof.decision='PASS_DURABLE_DUPLICATE_PROVENANCE_INVENTORY_READONLY';
