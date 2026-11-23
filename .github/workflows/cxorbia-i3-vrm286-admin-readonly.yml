@@ -174,7 +174,7 @@ jobs:
           # the pinned F2 source. This QA is NOT a release or composition PASS.
           delta="$(git diff --name-only "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**')"
           test "$delta" = "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs"
-          test "$(git rev-parse HEAD:backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs)" = "044d75a45a2cd8bc53bf9f4ccc036ca39b316f8c"
+          test "$(git rev-parse HEAD:backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs)" = "131d6392474900951cb5920f51113b5678ade48f"
           node --check tools/qa/cxorbia-i3-f2-full-original-live-preflight-readonly.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
           echo "CXORBIA_F2_EXACT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"

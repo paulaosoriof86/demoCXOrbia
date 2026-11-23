@@ -131,3 +131,36 @@ test('two equally authoritative HR owner documents for the same original row fai
  await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
    /CANONICAL_DURABLE_OWNER_NOT_PROVEN/);
 });
+
+test('a moved original Excel row uses three exact business keys, never a foreign coordinate',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry);
+ const original=parsed.visits[0];
+ const foreign={...original,id:'obsolete_same_row',periodId:'cinepolis-2026-11',
+   cinemaId:'9999',sucursal:'Other cinema',_archived:true};
+ const correct={...original,id:'durable_correct_business',visitId:'durable_correct_business',
+   hrRowId:'NOVIEMBRE 26!77',sourceRow:77,periodId:'cinepolis-2026-11'};
+ const db=fixture({durableVisits:[foreign,correct]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const output=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ const selected=output.snapshot.visits.find(x=>x.country==='GT');
+ assert.equal(selected.id,'durable_correct_business');
+ assert.equal(selected.hrRowId,original.hrRowId);
+ assert.equal(output.proof.matchedDurable,1);
+ assert.equal(output.proof.firestoreWrites,0);
+});
+test('a contradictory active legacy row is not silently dropped even with a strong replacement',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry);
+ const original=parsed.visits[0];
+ const foreign={...original,id:'active_conflicting_row',periodId:'cinepolis-2026-11',
+   cinemaId:'9999',sucursal:'Other cinema'};
+ const correct={...original,id:'durable_correct_business',visitId:'durable_correct_business',
+   hrRowId:'NOVIEMBRE 26!77',sourceRow:77,periodId:'cinepolis-2026-11'};
+ const db=fixture({durableVisits:[foreign,correct]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
+   /UNMATCHED_ACTIVE_DURABLE_VISITS/);
+});

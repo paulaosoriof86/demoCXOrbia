@@ -30,7 +30,17 @@ function matchDurable(source,scope,previous){
    const a=fields(source,['cinemaId','sucursal']),b=fields(v,['cinemaId','sucursal']);
    return a.every(Boolean)&&b.every(Boolean)&&a[0]!==b[0]&&a[1]!==b[1];
  });
- if(foreign.length)fail('EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY');
+ if(foreign.length){
+   // A worksheet row can move. Never reuse a mismatched historical coordinate.
+   // Require three independent business-key joins to one durable owner.
+   const strong=groups.map(keys=>pool.filter(row=>{
+     const sourceKeys=fields(source,keys);
+     return sourceKeys.every(Boolean)&&same(sourceKeys,fields(row,keys));
+   }));
+   if(!strong.every(rows=>rows.length===1&&rows[0]===strong[0][0]))
+      fail('EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY');
+   return {primary:strong[0][0],cohort:[strong[0][0]]};
+ }
  if(rowFamily.length){
    const exact=pool.filter(v=>str(v.id)===str(source.id));
    if(exact.length>1||exact.length===1&&!matchesHrRow(exact[0]))
