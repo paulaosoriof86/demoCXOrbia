@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "cxorbia.i3.f2-f3.original-source-drift-isolated-graph-qa.v1",
+  "iteration": "I3",
+  "status": "HOLD",
+  "date": "2026-11-22",
+  "controlParentBeforeCommit": "a35f662597279a4b265387af63e619bdbc7c1dd4",
+  "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "productSourceTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
+  "devHostingVersion": "sites/cxorbia-backend-dev/versions/7b5824d96573134c",
+  "devRuntimeRevision": "cxorbia-live-hr-dev-00382-f2t",
+  "F2": {
+    "decision": "P0_PROVEN_SOURCE_ROUTING_MISMATCH_NOT_RESOLVED",
+    "classification": "MAPPING_FAILURE",
+    "origin": "Excel Online originals authorized per country; operational DEV still Google Sheets external_read_only; original readback is separate from operational data",
+    "scopes": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-11",
+      "countries": [
+        "GT",
+        "HN"
+      ]
+    },
+    "identityCrosswalk": {
+      "GT": {
+        "originalVisits": 34,
+        "operationalVisits": 34,
+        "uniqueMatched": 34,
+        "matchingKey": [
+          "cinemaId",
+          "quincena",
+          "tipoCompra"
+        ],
+        "rowsWithAnyDifference": 33,
+        "cellDifferences": 134
+      },
+      "HN": {
+        "originalVisits": 10,
+        "operationalVisits": 10,
+        "uniqueMatched": 10,
+        "matchingKey": [
+          "cinemaId",
+          "quincena",
+          "tipoCompra"
+        ],
+        "rowsWithAnyDifference": 10,
+        "cellDifferences": 39
+      }
+    },
+    "originalVsOperationalRealization": {
+      "GT": {
+        "originalRealized": 19,
+        "operationalRealized": 17
+      },
+      "HN": {
+        "originalRealized": 5,
+        "operationalRealized": 5
+      }
+    },
+    "exactGTDateDifferences": [
+      {
+        "originalRow": 29,
+        "operationalRow": 26,
+        "originalRealizedDate": "2026-11-17",
+        "operationalRealizedDate": null,
+        "ownerIdentityMatched": true,
+        "sourceProgrammedDate": "2026-11-17",
+        "mirrorProgrammedDate": null,
+        "otherDifferentColumns": [
+          "H",
+          "P",
+          "Q",
+          "R",
+          "T",
+          "V",
+          "W",
+          "X",
+          "Z",
+          "AB",
+          "AC"
+        ]
+      },
+      {
+        "originalRow": 37,
+        "operationalRow": 34,
+        "originalRealizedDate": "2026-11-19",
+        "operationalRealizedDate": null,
+        "ownerIdentityMatched": true,
+        "sourceProgrammedDate": "2026-11-19",
+        "mirrorProgrammedDate": "2026-11-20",
+        "otherDifferentColumns": [
+          "H",
+          "P",
+          "R",
+          "T"
+        ]
+      }
+    ],
+    "finding": "Not a two-cell parser defect: operational mirror is different content, including some shopper, questionnaire, financial and submitted fields. Do not overwrite two statuses in isolation.",
+    "readBackEvidence": {
+      "googleOperationalSheetNames": [
+        "NOVIEMBRE",
+        "NOVIEMBRE HN"
+      ],
+      "originalMakeReadGT": "61d93f7e394f4994af6d69f21b8a1d91",
+      "originalMakeReadHN": "457a00cb475046da97b50ef13db403c9"
+    },
+    "operationalWrites": 0,
+    "realDataReimports": 0
+  },
+  "F3": {
+    "decision": "PASS_ISOLATED_GRAPH_TEMP_WORKSHEET_ACK_READBACK_CLEANUP__OPERATIONAL_SYNC_STILL_HOLD",
+    "makeOperationalReaderScenario": {
+      "id": 10200465,
+      "status": "active",
+      "kind": "on-demand",
+      "writeCapability": false
+    },
+    "gtTest": {
+      "scenarioId": 10199316,
+      "executionId": "c9491291ff9e4abca24b1542ba067d30",
+      "createHttp": 201,
+      "patchHttp": 200,
+      "firstReadHttp": 200,
+      "firstReadValueMatches": false,
+      "laterReadback2And3": true,
+      "deleteHttp": 204,
+      "finalStatus": "inactive"
+    },
+    "hnTest": {
+      "scenarioId": 10199340,
+      "executionId": "65ca6157bb6a442db2d7feb1e3ace8c6",
+      "createHttp": 201,
+      "patchHttp": 200,
+      "firstReadHttp": 200,
+      "firstReadValueMatches": false,
+      "laterReadback2And3": true,
+      "deleteHttp": 204,
+      "finalStatus": "inactive"
+    },
+    "cleanup": {
+      "scenarioId": 10196061,
+      "executionId": "e3a74b24f8ec4266aadfaf670c9d858b",
+      "gtInventoryTabs": 35,
+      "hnInventoryTabs": 34,
+      "temporaryTabsAbsent": true,
+      "independentGraphReadEqual": true,
+      "finalStatus": "inactive"
+    },
+    "operationalHrRowWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "productionWrites": 0,
+    "notCertified": [
+      "Real assignment request to workbook acknowledged per visit/field",
+      "idempotent lost-response replay",
+      "conflict and echo ordering",
+      "App role+period+project readback after reload",
+      "Bidirectional operational configuration"
+    ]
+  },
+  "moduleTruthAuthority": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V378.json",
+    "matches": 6,
+    "domains": 21,
+    "sourceReady": 21,
+    "phaseAComplete": false
+  },
+  "continuity": {
+    "fixedControlCommit": "a35f662597279a4b265387af63e619bdbc7c1dd4",
+    "canonicalRun": 45084835181,
+    "conclusion": "success",
+    "certificationScope": "CONTROL_ONLY_NOT_21_DOMAIN_CERTIFICATION"
+  },
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "I4Authorization": false,
+  "production": "DO_NOT_TOUCH",
+  "nextExactAction": "F2/F3 single owner: configure and validate original Excel Online country/period bindings as the actual operational provider (not separate 'original_readback') with current-source revision/identity and historic coverage checks. Implement ACK/idempotency/read-after-write bounded retry and conflict/echo audit in existing provider/command bridge; prove isolated fixture first, then same-artifact Admin+Shopper E2E; do not patch only 2 mirrored dates, reimport 44 real rows or overwrite an unproven later edit. Re-run exact affected 21-domain clauses and retain 6 MATCH and historical approvals until certified.",
+  "safety": {
+    "noProductChange": true,
+    "noNewBranch": true,
+    "noNewScenario": true,
+    "noNewCandidate": true,
+    "hrOriginalMonthTabsMutated": false,
+    "noRealGoogleMirrorMutation": true,
+    "productionUnchanged": true
+  }
+}
