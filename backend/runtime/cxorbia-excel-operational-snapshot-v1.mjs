@@ -78,8 +78,24 @@ function matchDurable(source,scope,previous){
    const first=fields(source,keys);return first.every(Boolean)&&same(first,fields(row,keys));
  }));
  if(hits.every(x=>x.length===0))return null;
- if(!hits.every(x=>x.length===1&&x[0]===hits[0][0]))fail('DURABLE_VISIT_AMBIGUOUS');
- return {primary:hits[0][0],cohort:[hits[0][0]]};
+ // Original row moved or its old tab reference differs. Historical aliases
+ // may legitimately produce several *documents* for one business visit.
+ // Every independent key set must identify exactly the same cohort.
+ const ids=rows=>rows.map(v=>str(v.id)).sort();
+ const cohort=hits[0];
+ if(!cohort.length||!hits.every(rows=>rows.length&&same(ids(rows),ids(cohort))))
+   fail('DURABLE_VISIT_AMBIGUOUS');
+ const candidates=cohort.filter(v=>str(v.periodId)===scope.periodId);
+ const exact=candidates.filter(v=>str(v.id)===str(source.id));
+ if(exact.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+ let selected=exact[0]||null;
+ if(!selected){
+   const canonical=candidates.filter(v=>/^hr_20\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+   if(canonical.length===1)selected=canonical[0];
+   else if(canonical.length===0&&candidates.length===1)selected=candidates[0];
+ }
+ if(!selected)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+ return {primary:selected,cohort};
 }
 function newVisitId(source,scope){
  const key=fields(source,['cinemaId','sucursal','quincena','escenario','tipoCombo']);

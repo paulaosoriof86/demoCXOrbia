@@ -184,3 +184,33 @@ test('historical two-document cohort with obsolete foreign row preserves one can
  assert.equal(out.proof.historicalAliasesPreserved,1);
  assert.equal(out.proof.firestoreWrites,0);
 });
+
+test('moved historical row with two equivalent durable aliases selects one approved canonical owner',async()=>{
+ const original=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry).visits[0];
+ const canonical={...original,id:'hr_2026-11_gt_canonical',visitId:'hr_2026-11_gt_canonical',
+   hrRowId:'NOVIEMBRE 26!77',sourceTab:'NOVIEMBRE 26',sourceRow:77,
+   periodId:'cinepolis-2026-11'};
+ const alias={...canonical,id:'shadow_moved_legacy',visitId:'shadow_moved_legacy'};
+ const db=fixture({durableVisits:[canonical,alias]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const x=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ const visit=x.snapshot.visits.find(x=>x.country==='GT');
+ assert.equal(visit.id,canonical.id);
+ assert.equal(x.proof.matchedDurable,2);
+ assert.equal(x.proof.historicalAliasesPreserved,1);
+ assert.equal(x.proof.firestoreWrites,0);
+});
+test('moved historical row with two competing canonical durable owners still fails closed',async()=>{
+ const original=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry).visits[0];
+ const one={...original,id:'hr_2026-11_gt_owner_a',periodId:'cinepolis-2026-11',
+   hrRowId:'NOVIEMBRE 26!77',sourceTab:'NOVIEMBRE 26',sourceRow:77};
+ const two={...one,id:'hr_2026-11_gt_owner_b'};
+ const db=fixture({durableVisits:[one,two]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
+   /CANONICAL_DURABLE_OWNER_NOT_PROVEN/);
+});
