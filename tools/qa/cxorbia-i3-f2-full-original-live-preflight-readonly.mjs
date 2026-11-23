@@ -112,6 +112,10 @@ try {
  proof.decision='PASS_F2_FULL_ORIGINAL_EXCEL_PREVIEW_READONLY__NO_DEV_SWITCH';
 }catch(e){
  proof.errorName=String(e?.name||'Error').replace(/[^A-Za-z]/g,'').slice(0,50);
+ const defined=String(e?.message||'').match(/^([A-Za-z_$][A-Za-z0-9_$]*) is not defined$/);
+ proof.referenceName=defined?defined[1]:null;
+ const site=String(e?.stack||'').match(/(?:cxorbia-excel-operational-snapshot-v1|cxorbia-make-graph-provider-v1|cxorbia-i3-f2-full-original-live-preflight-readonly)\.mjs:\d+:\d+/);
+ proof.errorSourceSite=site?site[0]:null;
  proof.errorCode=/^(MAPPING_FAILURE|PROVIDER_FAILURE|AUTH_FAILURE|SOURCE_FAILURE|RELEASE_COMPOSITION_FAILURE):[A-Z0-9_]+$/.test(String(e?.message||''))?
      e.message:'ENVIRONMENT_FAILURE:F2_FULL_SOURCE_PREFLIGHT';
  process.exitCode=1;
