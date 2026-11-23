@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.original-operational-source-qa-proof.v1",
+  "dateLocal": "2026-11-22",
+  "iteration": "I3",
+  "sourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+  "sourceTree": "f7326204978e71fe1325ab1d4f7d3f227d37da70",
+  "predecessorProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
+  "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "I3-F2-EXCEL-OPERATIONAL-READER",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "backend/runtime/hr-live-service/server.mjs",
+      "cause": "Normal /hr-live path still used obsolete google_sheets while original Excel was available only at B14 proof endpoint"
+    }
+  ],
+  "sourceTestsPass": 30,
+  "sourceTestsFail": 0,
+  "proofRunId": 45098209776,
+  "proofJobId": 137442701712,
+  "proofArtifactId": 14784386732,
+  "proofUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/45098209776",
+  "decision": "PASS_F2_ORIGINAL_EXCEL_SOURCE_QA_ONLY",
+  "scope": "EXACT_SOURCE_CONTRACT_FOCAL_NODE_AND_R20_PARSER",
+  "devPublished": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "production": false,
+  "i3Go": false,
+  "domainMatchesAdded": 0
+}

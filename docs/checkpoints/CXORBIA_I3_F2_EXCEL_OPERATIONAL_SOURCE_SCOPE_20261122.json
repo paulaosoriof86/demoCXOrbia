@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.proven-source-scope.v1",
+  "dateLocal": "2026-11-22",
+  "classification": "P0_PROVEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+  "sourceTree": "f7326204978e71fe1325ab1d4f7d3f227d37da70",
+  "predecessorProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs"
+  ],
+  "forbidden": [
+    "production",
+    "Google mirror updates",
+    "HR original writes",
+    "bulk backfill",
+    "new repository",
+    "new candidate",
+    "new workflow"
+  ],
+  "safety": {
+    "devPending": true,
+    "production": false,
+    "authorizedScope": "read-original-excel-and-preserve-durable-identities"
+  }
+}

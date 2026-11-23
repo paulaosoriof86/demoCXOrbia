@@ -369,7 +369,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     }else{
     check(JSON.stringify(x)===JSON.stringify(c3AfterHostingP||null)&&
       x.state==='DEV_HOSTING_VERIFIED_C3_PENDING'&&x.production===false&&
-      x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority&&
+      (pendingDev.pass ? (x.sourceSha===d.pendingDevSuccessor.predecessorProductSourceSha&&x.sourceTree===latestHostingD.sourceTree) : (x.sourceSha===d.productSourceSha&&x.sourceTree===d.productTreeAuthority))&&
       x.hostingVersion===latestHostingD.hostingVersion&&
       x.runtimeRevision===latestHostingD.runtimeRevision&&
       x.previousC3SourceSha===d.currentC3PreterminalAudit?.sourceSha&&
@@ -380,7 +380,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
       receipt.sourceSha===x.sourceSha&&receipt.sourceTree===x.sourceTree&&
       receipt.hostingAfter===x.hostingVersion&&receipt.runtimeRevision===x.runtimeRevision&&
       hasVerifiedHostingAssets(receipt,x.previousC3SourceSha)&&receipt.productionUnchanged===true&&
-      m.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',
+      (m.productSource?.authorityState==='HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E'||(pendingDev.pass&&m.productSource?.authorityState==='SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV')),
       'RELEASE_COMPOSITION_FAILURE:HOSTING_DEV_C3_TRANSITION_RECEIPT');
     }
   }

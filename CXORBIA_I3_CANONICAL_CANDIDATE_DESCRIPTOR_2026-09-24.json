@@ -34143,7 +34143,49 @@
     ],
     "sourceTests": "PENDING_CANONICAL_CI",
     "devDeploy": "PENDING_AFTER_SOURCE_PASS",
-    "humanApproval": "NOT_IMPLIED"
+    "humanApproval": "NOT_IMPLIED",
+    "rulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "servingRuntimeSeal": {
+      "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "runId": 44824377418,
+      "runNumber": 2672,
+      "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+      "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+      "artifactDigest": "sha256:767d6ffaa2c612846bc22da163aefc7a9d4862629c1fb0aa0e72231ed88d3538",
+      "runtimeRevision": "cxorbia-live-hr-dev-00382-f2t",
+      "runtimeDigest": "sha256:046a3acf7a70f57b4d5139613bbea481a779005b76872783086dcbecf48768b5",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/df1bfd4592671e5d",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795211948710000",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2672_CANONICAL_PAIRED_DEV_CONSUMPTION_20261120.json",
+      "receiptBlob": "045e8164956a2a89c832057adb7d8e89d5795ce0",
+      "liveE2e": "PAIRED_DEV_EXACT__USE_SEPARATE_FUNCTIONAL_RECEIPTS",
+      "hrLiveVerified": true,
+      "certifiable": false,
+      "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": false
+    },
+    "sourceTestsPass": 30,
+    "sourceTestsFail": 0,
+    "allowedProductFiles": [
+      "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "backend/runtime/hr-live-service/Dockerfile",
+      "backend/runtime/hr-live-service/server.mjs",
+      "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+    ],
+    "allowedTestFiles": [
+      "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs"
+    ],
+    "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
+    "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_QA_PROOF_20261122.json",
+    "proofReceiptBlob": "67570bcb675744dc193f6a7c04197d3172eb0767",
+    "proofRunId": 45098209776
   },
   "f2ExcelOriginalSourceOnly": {
     "sourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
