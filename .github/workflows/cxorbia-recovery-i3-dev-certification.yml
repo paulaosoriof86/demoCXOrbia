@@ -178,12 +178,14 @@ jobs:
       path: .tmp/canonical-source-qa/
       if-no-files-found: error
       retention-days: 30
-   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'}}
+   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
      uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
-   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'}}
+   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
      uses: google-github-actions/setup-gcloud@v2
      with: {project_id: cxorbia-backend-dev}
+   - if: ${{contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
+     run: npm i --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 && CXORBIA_F2_DEV_OPERATIONAL_SWITCH_GATE=PAULA_I3_F2_EXCEL_ORIGINAL_DEV_ONLY_20261123 node tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs
    - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'}}
      run: node tools/qa/cxorbia-i3-vrm134-a05-runtime-readback.mjs --activate-exact-dev
    - name: G03 protected CRM read-only DEV

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.operational-selector-execution-lock.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "lastControlParent": "04ecbced829771a487685901b2eb3417b1d10fae",
+  "productSourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+  "productSourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
+  "pairedDev": {
+    "runId": 45245908604,
+    "artifactId": 14854770999,
+    "decision": "PASS_I3_F2_READER_SOURCE_DEV_MATERIALIZATION",
+    "runtimeRevision": "cxorbia-live-hr-dev-00384-dmj",
+    "runtimeDigest": "sha256:d77bef8e601bc59224dc0e86f2e61e8df5fb714b98107d7c4a27937e1046f2eb",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bf538792596bce30",
+    "filesReadback": 41,
+    "productionUnchanged": true
+  },
+  "beforeReadback": {
+    "provider": "google_sheets",
+    "readMode": "sheets_api_service_account",
+    "hrRevision": "3ab4e64df295282e4b4134070a9feca9631dc69b6bb848e890fb58572903beb8"
+  },
+  "targetProject": "cxorbia-backend-dev",
+  "scopedFirestorePath": "tenants/tya/projects/cinepolis",
+  "desiredProvider": "excel_online",
+  "countryPeriodJobs": 38,
+  "originalExcelVisits": 836,
+  "operationalSelectorScript": "tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs",
+  "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "runCondition": "[i3-f2-selector-dev-once]",
+  "writeScope": "DEV_PROJECT_OPERATIONAL_SOURCE_SINGLE_TRANSACTION_ONLY",
+  "rollbackMode": "CAS if readback fails",
+  "newProductSource": false,
+  "newBuild": false,
+  "newDeploy": false,
+  "realExcelWrites": 0,
+  "obsoleteGoogleWrites": 0,
+  "visitWrites": 0,
+  "authWrites": 0,
+  "production": "DO_NOT_TOUCH",
+  "terminalCertified": false
+}

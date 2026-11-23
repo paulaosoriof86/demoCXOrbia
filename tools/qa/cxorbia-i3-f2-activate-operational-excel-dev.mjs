@@ -15,11 +15,11 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const out='.tmp/i3-f2-operational-dev/receipt.json';
 const projectId='cinepolis',tenantId='tya',project='cxorbia-backend-dev';
 const host='https://cxorbia-backend-dev.web.app';
-const expectedRuntime='cxorbia-live-hr-dev-00383-dl6';
-const expectedDigest='sha256:436ab2b32141bc98e5b24c2aa7024d5d53d02b17b51b1da504d2a1e8300248e8';
-const expectedHosting='sites/cxorbia-backend-dev/versions/b2c3e6be97c92c62';
-const expectedSource='7db39f1688eae61ab288f6ac7f8bcaff55df3bcf';
-const expectedTree='2bd564ca98a271c35331f021d048e140723e85aa';
+const expectedRuntime='cxorbia-live-hr-dev-00384-dmj';
+const expectedDigest='sha256:d77bef8e601bc59224dc0e86f2e61e8df5fb714b98107d7c4a27937e1046f2eb';
+const expectedHosting='sites/cxorbia-backend-dev/versions/bf538792596bce30';
+const expectedSource='9d51a76d0bcc76e778669ac20393209e42bacb74';
+const expectedTree='0cccf405900acfdb8f60961c822c560ba2798db3';
 const report={schemaVersion:'cxorbia.i3.f2.original-excel-live-selector-dev.v1',
   iteration:'I3',decision:'HOLD',environment:project,tenantId,projectId,
   periodIndependence:'NO_CROSS_PERIOD_RECONCILIATION',
