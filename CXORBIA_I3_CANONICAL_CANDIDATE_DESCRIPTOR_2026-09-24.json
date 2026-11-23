@@ -225,7 +225,7 @@
   "productTreeAuthority": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
   "predecessorProductSourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
-  "findingsLedgerExpectedGitBlob": "c6d7c404ce7a72e74e1aafdb28b5ad5098aa5f6f",
+  "findingsLedgerExpectedGitBlob": "960dc524d6a3652743e796e6d785f86e6e5ee1f5",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -20054,7 +20054,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
-      "gitBlob": "c6d7c404ce7a72e74e1aafdb28b5ad5098aa5f6f"
+      "gitBlob": "960dc524d6a3652743e796e6d785f86e6e5ee1f5"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",

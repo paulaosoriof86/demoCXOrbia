@@ -6254,7 +6254,7 @@
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
-      "gitBlob": "c6d7c404ce7a72e74e1aafdb28b5ad5098aa5f6f"
+      "gitBlob": "960dc524d6a3652743e796e6d785f86e6e5ee1f5"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7187,7 +7187,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V706_2026-11-22.json",
-  "findingsLedgerExpectedGitBlob": "c6d7c404ce7a72e74e1aafdb28b5ad5098aa5f6f",
+  "findingsLedgerExpectedGitBlob": "960dc524d6a3652743e796e6d785f86e6e5ee1f5",
   "nextFindingId": "VRM-360",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",

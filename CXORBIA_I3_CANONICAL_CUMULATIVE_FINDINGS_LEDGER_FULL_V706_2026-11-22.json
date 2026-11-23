@@ -33667,8 +33667,8 @@
     }
   },
   "currentTruth": {
-    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V378.json",
-    "moduleTruthGitBlob": "7ea081c9189a903418c41ef1feec3b144dfefa3f",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V379.json",
+    "moduleTruthGitBlob": "0c8748954f6941250da2cc6b7b88e6cb402e38cb",
     "productSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
     "productTree": "6c7b2618fae065a0c25f4f62890aaa3cfdaa6589",
     "moduleTruthCurrent": true,
