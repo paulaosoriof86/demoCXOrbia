@@ -1076,7 +1076,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 F2: Excel original 38/38 read-only PASS run 45192668808, no inter-period matching. Promote sole candidate 7db39f1688 to DEV through existing canonical lane; verify operational /hr-live Admin+Shopper exact source; then F3 field-scoped remote ACK and remaining 15 domains. I4 not authorized.",
+    "immediateAction": "I3 F2: original Excel GT/HN 38/38 country-period reads and 836 visits PASS on source 9d51a76d; run ONE canonical paired DEV runtime+hosting deployment, verify Admin+Shopper operational /hr-live with same source/artifact; F3 remote field ACK and remaining 15 module clauses afterward. Never reconcile branches/scenarios/films across months. No I4.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -4297,8 +4297,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V381.json",
-    "matrixBlob": "a180d429034fa3fab5a8270726f3087ee8edcb48",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V382.json",
+    "matrixBlob": "c66077565454ebc2960995637ae49d794645b7dd",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 4,
       "MATCH": 6,
@@ -4309,7 +4309,7 @@
       "SOURCE_FIXED_PENDING_DEV_MATERIALIZATION_AND_LIVE_E2E": 2
     },
     "derivedAt": "2026-11-23",
-    "meaning": "F2_ORIGINAL_38X_READ_PASS_SOURCE_ONLY_7DB__HISTORICAL_C3_PREDECESSOR_AND_6_MATCH_PRESERVED"
+    "meaning": "F2_EXCEL_PERIOD_INDEPENDENT_SOURCE_9D51_READ_PASS__HISTORICAL_C3_PREDECESSOR_AND_6_MATCH_PRESERVED"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
   "activeMethodologyGuard": {
@@ -25130,8 +25130,8 @@
     ],
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
     "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
-    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R2.json",
-    "proofReceiptBlob": "38ec8a5fef09236cf9fc4bca043ab53ffa8c031b",
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R3.json",
+    "proofReceiptBlob": "5c12ea0f13bfb7575016a14b1212a46d538b0cd3",
     "proofRunId": 45204522876,
     "proofJobId": 137796516924
   },

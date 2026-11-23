@@ -34183,8 +34183,8 @@
     ],
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
     "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
-    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R2.json",
-    "proofReceiptBlob": "38ec8a5fef09236cf9fc4bca043ab53ffa8c031b",
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R3.json",
+    "proofReceiptBlob": "5c12ea0f13bfb7575016a14b1212a46d538b0cd3",
     "proofRunId": 45204522876,
     "proofJobId": 137796516924
   },
