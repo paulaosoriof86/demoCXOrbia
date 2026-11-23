@@ -154,6 +154,42 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+  i3-f2-full-original-operational-preflight:
+    if: ${{ contains(github.event.head_commit.message, '[i3-f2-full-original-preflight]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions: {contents: read, id-token: write}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Verify exact source SHA and test syntax
+        run: |
+          set -Eeuo pipefail
+          SOURCE="$(jq -er '.productSourceSha|select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$SOURCE" = "$(jq -r '.productSource.sha' RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V380.json)"
+          git merge-base --is-ancestor "$SOURCE" HEAD
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-f2-full-original-live-preflight-readonly.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
+          echo "CXORBIA_F2_EXACT_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Read originals through existing Make B14 and compare exact DEV durable visits
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 @modelcontextprotocol/sdk@1.26.0 >/dev/null
+          node tools/qa/cxorbia-i3-f2-full-original-live-preflight-readonly.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-f2-full-original-preflight-${{ github.run_id }}
+          path: .tmp/i3-f2-live-excel-source-preflight/result.json
+          if-no-files-found: error
+          retention-days: 30
+
   i3-b11-r23-same-revision-readonly:
     if: ${{ contains(github.event.head_commit.message, '[i3-b11-r23-readonly]') }}
     runs-on: ubuntu-24.04
