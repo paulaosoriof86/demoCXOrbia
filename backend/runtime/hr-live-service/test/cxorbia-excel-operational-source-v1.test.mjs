@@ -275,3 +275,30 @@ test('same cinema and cut can have two distinct source rows in one month',async(
  assert.notEqual(gt[0].visitId,gt[1].visitId);
  assert.equal(output.proof.firestoreWrites,0);
 });
+
+test('two visits in the same country/month/cinema/cut never reuse a single durable visit ID',async()=>{
+ const original=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Noviembre',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry).visits[0];
+ const previous={...original,periodId:'cinepolis-2026-11',id:original.id};
+ const db=fixture({durableVisits:[previous]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const twoRows=async binding=>{
+   const response=await readBinding(binding);
+   if(binding.scope.countryCode==='GT'){
+     const originalRow=response.privateProviderRows[0].values[1];
+     const next=[...originalRow]; next[col('tipoCompra')]='Scenario B';
+     next[col('tipoCombo')]='Different combo';
+     response.privateProviderRows[0].values.push(next);
+   }
+   return response;
+ };
+ const result=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding:twoRows});
+ const rows=result.snapshot.visits.filter(x=>x.country==='GT');
+ assert.equal(rows.length,2);
+ assert.equal(new Set(rows.map(x=>x.visitId)).size,2);
+ assert.equal(rows[0].visitId,previous.id);
+ assert.notEqual(rows[1].visitId,previous.id);
+ assert.equal(rows[1].escenario,'Scenario B');
+ assert.equal(result.proof.firestoreWrites,0);
+});

@@ -15,7 +15,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const validScope=s=>s&&/^[a-z0-9_-]+$/i.test(str(s.tenantId))&&/^[a-z0-9_-]+$/i.test(str(s.projectId));
 const validPeriod=(p,v)=>str(v).startsWith(p+'-')&&/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v).slice(p.length+1));
 const stamp=s=>({seconds:s?.updateTime?.seconds??null,nanoseconds:s?.updateTime?.nanoseconds??null});
-function matchDurable(source,scope,previous){
+function matchDurable(source,scope,previous,{sourceSiblings=1}={}){
  // Original row identity is a stronger join than financial state, and must
  // preserve ALL historical documents that refer to the same HR row.
  const pool=previous.filter(v=>getCountry(v)===scope.countryCode&&getPeriod(v,scope.projectId)===scope.periodId);
@@ -24,6 +24,22 @@ function matchDurable(source,scope,previous){
  // Historical duplicate documents are aliases, not extra assignments.
  const stableKeys=['cinemaId','quincena'],stable=fields(source,stableKeys);
  const stableMatches=stable.every(Boolean)?pool.filter(v=>same(fields(v,stableKeys),stable)):[];
+ // Two independently listed rows in THIS month are two separate visits,
+ // even if cinema and execution cut agree. They must not share a durable ID.
+ // Exact scoped source coordinates are the only automatic join in this case.
+ if(sourceSiblings>1){
+   const precise=pool.filter(v=>str(v.hrRowId)===str(source.hrRowId)&&
+     str(v.sourceTab)===str(source.sourceTab)&&str(v.sourceRow)===str(source.sourceRow)
+     &&fields(v,['cinemaId','sucursal','quincena']).every((x,i)=>
+       x===fields(source,['cinemaId','sucursal','quincena'])[i]));
+   if(!precise.length)return null;
+   const sameId=precise.filter(v=>str(v.id)===str(source.id));
+   const canonical=precise.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+   const chosen=sameId.length===1?sameId[0]:canonical.length===1?canonical[0]:
+     precise.length===1?precise[0]:null;
+   if(!chosen)return null; // ambiguous old references stay durable, no write/merge
+   return {primary:chosen,cohort:precise};
+ }
  if(stableMatches.length){
    const branch=fields(source,['sucursal'])[0];
    if(branch&&stableMatches.some(v=>fields(v,['sucursal'])[0]&&fields(v,['sucursal'])[0]!==branch))
@@ -211,18 +227,28 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
  for(const {binding,read}of responses){
   const scope=binding.scope,key=scope.periodId.slice(-7),year=Number(key.slice(0,4)),month=Number(key.slice(5));
   sourceRevisions.push({country:scope.countryCode,periodId:scope.periodId,sha:read.proof.sourceRevision});
-  for(const rawTab of read.privateProviderRows){
+  // Count rows from THIS country/period only. Never inspect another month
+  // to decide whether the current source describes a separate visit.
+  const periodTabs=read.privateProviderRows.map(rawTab=>{
    const sheet=binding.privateProvider.worksheets.find(x=>x.worksheetId===rawTab.worksheetId);
    if(!sheet)fail('TAB_UNBOUND');
    const tab={country:scope.countryCode,key,year,month,tabTitle:sheet.worksheetName,label:key,fullLabel:key,
      scenarioKey:sheet.scenarioKey||null};
    const parsed=parseTab(tab,rawTab.values,columnMap,cinemaRegistry);
    if(parsed.issues.some(x=>x.severity==='critical'))fail('COLUMN_MAPPING');
+   return {rawTab,tab,parsed};
+  });
+  const sameCutCounts=new Map();
+  for(const {parsed} of periodTabs)for(const visit of parsed.visits){
+   const marker=JSON.stringify(fields(visit,['cinemaId','quincena']));
+   sameCutCounts.set(marker,(sameCutCounts.get(marker)||0)+1);
+  }
+  for(const {rawTab,tab,parsed} of periodTabs){
    if(!parsed.visits.length)continue;
    tabs.push(tab);
    const indexes=headerFields(rawTab.values);
    for(const source of parsed.visits){
-    const owner=matchDurable(source,scope,durable);
+    const owner=matchDurable(source,scope,durable,{sourceSiblings:sameCutCounts.get(JSON.stringify(fields(source,['cinemaId','quincena'])))||1});
     const prior=owner?.primary||null;
     const stable=prior?str(prior.id):newVisitId(source,scope);
     if(!stable||used.has(stable))fail('DUPLICATE_VISIT_ID');used.add(stable);
