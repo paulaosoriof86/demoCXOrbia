@@ -137,7 +137,7 @@ try{
     'HOLD_READONLY_KEEPER_CREDENTIAL_SAFE_MIGRATION_REQUIRED';
 }catch(e){report.decision='HOLD_READONLY_PREFLIGHT_ERROR';report.errorCode=str(e.message).replace(/[^A-Z0-9_]/gi,'_').slice(0,110);process.exitCode=1;}
 finally{fs.writeFileSync(OUTPUT+'/result.json',JSON.stringify(report,null,2)+'\n');
-  process.stdout.write(JSON.stringify({decision:report.decision,targets:report.targets.map(t=>({
+  process.stdout.write(JSON.stringify({decision:report.decision,errorCode:report.errorCode||null,targets:report.targets.map(t=>({
     target:t.target,hrSourceCount:t.hrSourceCount,activeAuthCount:t.activeAuthCount,status:t.status,
     candidateKeeperLogin:t.candidateKeeperLogin,domainRowsToRetarget:t.domainRowsToRetarget
   })),safety:report.safety},null,2)+'\n');}

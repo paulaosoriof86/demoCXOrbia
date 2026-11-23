@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.original-app-admin-shopper-readonly-request.v1",
+  "iteration": "I3",
+  "dateLocal": "2026-11-22",
+  "sourceHead": "2db07b8370ddf9d27f7c0e1d24b440930c66bb16",
+  "productSource": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "workflow": ".github/workflows/cxorbia-i3-vrm286-admin-readonly.yml",
+  "existingReadOnlyJobs": [
+    "admin-project-period-readonly",
+    "i3-b11-stage-current-hr-readonly"
+  ],
+  "runCodeMarkers": [
+    "[i3-vrm286-admin-readonly]",
+    "[i3-original-app-ui]"
+  ],
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "countries": [
+      "GT",
+      "HN"
+    ]
+  },
+  "expectedReadbacks": [
+    "Admin UI projects/periods current served source",
+    "Two authenticated original readbacks per GT/HN",
+    "Shopper UI period October/November navigation and reload",
+    "Safe two keeper preflight error code if still HOLD"
+  ],
+  "safe": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "devDeploys": 0,
+    "productionWrites": 0
+  },
+  "humanApproval": "NOT_CLAIMED",
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "moduleMatch": "NOT_IMPLIED"
+}
