@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.original-operational-source-qa-proof.v1",
+  "dateLocal": "2026-11-23",
+  "iteration": "I3",
+  "sourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
+  "sourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+  "predecessorProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
+  "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "I3-F2-EXCEL-OPERATIONAL-READER",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "owner": "backend/runtime/hr-live-service/server.mjs",
+      "cause": "Normal /hr-live path still used obsolete google_sheets while original Excel was available only at B14 proof endpoint"
+    }
+  ],
+  "sourceTestsPass": 33,
+  "sourceTestsFail": 0,
+  "proofRunId": 45192668808,
+  "proofJobId": 137754828455,
+  "proofUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/45192668808",
+  "decision": "PASS_F2_ORIGINAL_EXCEL_38_OF_38_PERIOD_INDEPENDENT_SOURCE_ONLY",
+  "scope": "EXACT_SOURCE_FOCAL_17_PLUS_BINDING_16__FULL_ORIGINAL_READ_ONLY_38_SCOPES",
+  "devPublished": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "production": false,
+  "i3Go": false,
+  "domainMatchesAdded": 0,
+  "priorSourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+  "priorProofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_QA_PROOF_20261122.json",
+  "priorProofReceiptBlob": "67570bcb675744dc193f6a7c04197d3172eb0767",
+  "providerLivePreflightRunId": 45192668808,
+  "providerLivePreflightJobId": 137754827927,
+  "providerLivePreflight": {
+    "decision": "PASS_F2_FULL_ORIGINAL_EXCEL_PREVIEW_READONLY__NO_DEV_SWITCH",
+    "periods": 19,
+    "countryPeriodReads": 38,
+    "visits": 836,
+    "byCountry": {
+      "GT": 646,
+      "HN": 190
+    },
+    "matchedDurable": 1452,
+    "unmatchedActive": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0
+  },
+  "periodIndependence": {
+    "policy": "EACH_PROJECT_COUNTRY_PERIOD_OWNS_ITS_ORIGINAL_WORKSHEET__NO_CROSS_PERIOD_SCENARIO_FILM_OR_BRANCH_RECONCILIATION",
+    "scenariosMayChange": true,
+    "filmsMayChange": true,
+    "sitesMayChange": true,
+    "sourceVisitIdScopedByPeriodWorksheetRow": true,
+    "priorPeriodDocumentsRemainPreservedWithoutJoin": true
+  }
+}
