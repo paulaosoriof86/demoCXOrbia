@@ -114,11 +114,15 @@ jobs:
         env:
           B14_PRIVATE_BINDINGS: ${{ secrets.CXORBIA_DEV_B14_ORIGINAL_WORKBOOK_BINDINGS }}
         run: node tools/qa/cxorbia-i3-b14-toolbox-readonly.mjs
+      - name: Read only DEV project period catalog for original Excel mapping
+        run: node tools/qa/cxorbia-i3-f2-excel-period-registry-readonly.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: 'cxorbia-i3-b14-toolbox-readonly-${{ github.run_id }}'
-          path: .tmp/i3-b14-toolbox/result.json
+          path: |
+            .tmp/i3-b14-toolbox/result.json
+            .tmp/i3-f2-period-registry/result.json
           if-no-files-found: warn
           retention-days: 30
 
