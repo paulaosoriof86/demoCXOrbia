@@ -4606,10 +4606,21 @@ jobs:
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
       npx playwright install chromium 2>&1 | tee "$FOCAL_OUT/browser-install.log"
       gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime-before.json"
-      test "$(jq -r '.status.latestReadyRevisionName' "$FOCAL_OUT/runtime-before.json")" = "$(jq -r '.postDeployRunSeal.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+      if [[ "$ACTIVE_STATUS" == 'HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21' ]]; then
+      F2_PREDEPLOY_RECEIPT=".github/control/CXORBIA_I3_F2_VERIFIED_SERVING_PREDECESSOR_20261123.json"
+        jq -e --arg sha "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '.proofRunId==45197074228 and .proofJobConclusion=="success" and .nextSourceSha==$sha and .nextSourceTree==$tree and .production=="DO_NOT_TOUCH"' "$F2_PREDEPLOY_RECEIPT" >/dev/null
+        PRIOR_RUNTIME="$(jq -er '.runtimeRevision' "$F2_PREDEPLOY_RECEIPT")"
+        PRIOR_HOSTING="$(jq -er '.hostingVersion' "$F2_PREDEPLOY_RECEIPT")"
+        test "$(jq -r '.spec.template.spec.containers[0].env[]|select(.name=="CXORBIA_RECOVERY_SOURCE_SHA")|.value' "$FOCAL_OUT/runtime-before.json")" = "$(jq -er '.sourceSha' "$F2_PREDEPLOY_RECEIPT")"
+        test "$(jq -r '.spec.template.spec.containers[0].image' "$FOCAL_OUT/runtime-before.json")" = "$(jq -er '.runtimeImageTag' "$F2_PREDEPLOY_RECEIPT")"
+      else
+        PRIOR_RUNTIME="$(jq -er '.postDeployRunSeal.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+        PRIOR_HOSTING="$(jq -er '.currentHostingOnlyDevMaterialization.hostingVersion // .currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+      fi
+      test "$(jq -r '.status.latestReadyRevisionName' "$FOCAL_OUT/runtime-before.json")" = "$PRIOR_RUNTIME"
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_OUT/hosting-before.json"
-      test "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")" = "$(jq -r '.currentHostingOnlyDevMaterialization.hostingVersion // .currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+      test "$(jq -r '.release.version.name' "$FOCAL_OUT/hosting-before.json")" = "$PRIOR_HOSTING"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-before.json"
       curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-before.html"
    - run: |
