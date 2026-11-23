@@ -96,17 +96,77 @@ export function classifyModules(matrix) {
 // control JSONs still pointed at RUN2322 and therefore agreed falsely.
 export function findNewerDevProviderReceipt({sourceSha, sealedRunId, receipts}) {
   return receipts.find(({path: receiptPath, value: r}) => {
-    const provider = r?.providerReceipt || r?.materialization;
+    const f2 = r?.schemaVersion === 'cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1';
+    const provider = r?.providerReceipt || r?.materialization || (f2 ? r?.devMaterialization : null);
     const runId = Number(r?.workflowRunId || provider?.runId || 0);
     const source = r?.productSourceSha || r?.source?.sha || provider?.sourceSha;
     const passed = /^PASS/.test(String(provider?.decision || r?.decision || ''));
+    // This witness can only fail a stale seal, never promote a certificate.
+    const devOnly = provider?.production === false || (f2 && r?.iteration === 'I3' &&
+      r?.state === 'HOLD' && r?.safety?.production === 'DO_NOT_TOUCH' &&
+      r?.safety?.i4Authorized === false && provider?.sourceHostedExact === true &&
+      provider?.runtimeTrafficExact === true);
     return source === sourceSha && runId > Number(sealedRunId || 0) &&
-      passed && provider?.production === false &&
+      passed && devOnly &&
       Boolean(provider?.runtimeRevision && provider?.hostingVersion &&
         provider?.hostingRelease) && Boolean(receiptPath);
   });
 }
 
+
+export function readDevProviderReceipts(proofDir = 'docs/checkpoints') {
+  return fs.existsSync(proofDir) ? fs.readdirSync(proofDir)
+    .filter(name => /^CXORBIA_I3_.*\.json$/.test(name))
+    .flatMap(name => {
+      const file = path.join(proofDir, name);
+      try { return [{path: file, value: readJson(file)}]; }
+      catch { return []; }
+    }) : [];
+}
+
+export function validateOperationalExcelReceipt({descriptor:d,gitBlob,
+  gitRead=args=>execFileSync('git',args,{encoding:'utf8'})}) {
+  const op=d.currentF2OperationalExcel,failures=[];
+  if(!op)return {present:false,pass:true,failures};
+  const check=(ok,code)=>{if(!ok)failures.push(code);};
+  const seal=d.postDeployRunSeal||{};
+  let receipt;
+  try {
+    check(typeof op.receiptPath==='string'&&op.receiptPath.startsWith('docs/checkpoints/')&&
+      /^[a-f0-9]{40}$/.test(op.receiptBlob||'')&&gitBlob(op.receiptPath)===op.receiptBlob,
+      'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_GIT_BLOB');
+    const raw=gitRead(['show','HEAD:'+op.receiptPath]);
+    const bytes=Buffer.isBuffer(raw)?raw:Buffer.from(raw,'utf8');
+    const computed=crypto.createHash('sha1').update(Buffer.from(`blob ${bytes.length}\0`)).update(bytes).digest('hex');
+    check(computed===op.receiptBlob,'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_CONTENT_BLOB');
+    receipt=JSON.parse(bytes.toString('utf8'));
+  }catch{
+    check(false,'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_UNREADABLE');
+    return {present:true,pass:false,failures};
+  }
+  const materialization=receipt.devMaterialization||{},selector=receipt.devOperationalSelector||{};
+  check(receipt.schemaVersion==='cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1'&&
+    receipt.iteration==='I3'&&receipt.state==='HOLD'&&receipt.productSourceSha===d.productSourceSha&&
+    receipt.productSourceTree===d.productTreeAuthority&&receipt.productSourceSha===op.sourceSha&&
+    receipt.productSourceTree===op.sourceTree&&receipt.safety?.production==='DO_NOT_TOUCH'&&
+    receipt.safety?.i4Authorized===false&&receipt.phaseA?.strictDomainPromotion===false,
+    'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_SCOPE');
+  check(/^PASS_/.test(materialization.decision||'')&&materialization.sourceHostedExact===true&&
+    materialization.runtimeTrafficExact===true&&materialization.runId===op.materializationRunId&&
+    materialization.runId===seal.runId&&['runtimeRevision','runtimeDigest','hostingVersion'].every(k=>
+      Boolean(materialization[k])&&materialization[k]===op[k]&&materialization[k]===seal[k]),
+    'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_MATERIALIZATION_RECEIPT');
+  const selectorFields=['runId','runNumber','jobId','decision','configWrites','configReadbackVerified',
+    'sourceRevision','hrRevision','bindingFingerprint','periodJobs','readbackPeriodJobs'];
+  check(selectorFields.every(k=>selector[k]!==undefined&&selector[k]===op[k])&&
+    /^PASS_/.test(selector.decision||'')&&selector.afterProvider===op.provider&&op.provider==='excel_online'&&
+    selector.configReadbackVerified===true&&selector.periodJobs===selector.readbackPeriodJobs&&
+    ['originalExcelWrites','obsoleteGoogleMirrorWrites','visitWrites','authWrites'].every(k=>
+      receipt.safety?.[k]===0&&op[k]===receipt.safety[k])&&op.production===false&&
+    op.strictDomainPromotion===false&&op.terminalCertified===false&&op.i4Authorized===false,
+    'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_SELECTOR_RECEIPT');
+  return {present:true,pass:failures.length===0,failures};
+}
 
 export function failedDevReadbackAllowsCorrection({descriptor:d,pointer:p,receipt:r,transition:x,pendingFromPaired,pendingProven}){
   const q=d.vrm356FreshReadPreflight||{},pending=d.pendingDevSuccessor||{},materialization=r.materialization||{},seal=d.postDeployRunSeal||{};
@@ -252,19 +312,13 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   const seal = d.postDeployRunSeal || {};
   // Check immutable, already-committed provider acknowledgements as a third
   // witness: two stale current pointers must never pass by agreeing together.
-  const proofDir = 'docs/checkpoints';
-  const providerReceipts = fs.existsSync(proofDir)
-    ? fs.readdirSync(proofDir)
-      .filter(name => /^CXORBIA_I3_RUN\d+_.*\.json$/.test(name))
-      .flatMap(name => {
-        const file = path.join(proofDir, name);
-        try { return [{path: file, value: readJson(file)}]; }
-        catch { return []; }
-      }) : [];
+  const providerReceipts = readDevProviderReceipts();
   const newerServedWitness = findNewerDevProviderReceipt({
     sourceSha: d.productSourceSha, sealedRunId: seal.runId, receipts: providerReceipts,
   });
   check(!newerServedWitness, 'MAPPING_FAILURE:PROVEN_DEV_RECEIPT_NEWER_THAN_SEAL');
+  const operationalReceipt=validateOperationalExcelReceipt({descriptor:d,gitBlob,gitRead});
+  failures.push(...operationalReceipt.failures);
   check(!(seal.mode === 'CURRENT_SOURCE_SERVING' &&
     /^SOURCE_ONLY/.test(String(m.productSource?.authorityState || ''))),
   'MAPPING_FAILURE:CURRENT_DEV_MATRIX_FALSE_SOURCE_ONLY');

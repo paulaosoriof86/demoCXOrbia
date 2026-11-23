@@ -614,3 +614,22 @@ test('predecessor finance receipt fails closed without explicit pending-source s
   for(const o of [v.descriptor,v.pointer,v.ledger])o.currentFinanceReadonlyEvidence=structuredClone(receipt);
   assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_FINANCE_READONLY_SCOPE_OR_CREDIT_INVALID'));
 });
+
+test('adopted F2 operational selector cannot retain predecessor runtime binding or a mixed execution receipt',()=>{
+  const v=fixture(),d=v.descriptor,p=v.pointer,l=v.ledger;
+  const op={sourceSha:d.productSourceSha,sourceTree:d.productSourceTree,provider:'excel_online',
+    materializationRunId:l.currentMaterialization.runId,runtimeRevision:'dev-370',hostingVersion:'hosting-370',
+    runId:101,hrRevision:'excel-hr',configReadbackVerified:true,production:false,strictDomainPromotion:false,i4Authorized:false,
+    receiptPath:'f2.json',receiptBlob:'f2-blob'};
+  const binding={sourceSha:op.sourceSha,sourceTree:op.sourceTree,runtimeRevision:op.runtimeRevision,
+    hostingVersion:op.hostingVersion,materializationRunId:op.materializationRunId,observedRunId:op.runId,
+    provider:op.provider,hrRevision:op.hrRevision,receiptPath:op.receiptPath,receiptBlob:op.receiptBlob};
+  const execution={runId:op.runId,sourceSha:op.sourceSha,hrRevision:op.hrRevision};
+  for(const o of [d,p,l]){o.currentF2OperationalExcel=structuredClone(op);o.currentRuntimeBinding=structuredClone(binding);o.currentExecutionReceipt=structuredClone(execution);}
+  d.lastExecutionReceipt=structuredClone(execution);
+  assert.equal(validateCurrentAuthorityAliases(v).pass,true);
+  p.currentRuntimeBinding.runtimeRevision='old-runtime';
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_RUNTIME_OPERATIONAL_BINDING_DESYNC'));
+  p.currentRuntimeBinding=structuredClone(binding);l.currentExecutionReceipt.runId=99;
+  assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC'));
+});

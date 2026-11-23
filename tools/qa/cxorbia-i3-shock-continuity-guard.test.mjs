@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt,hasVerifiedHostingAssets,failedDevReadbackAllowsCorrection} from './cxorbia-i3-shock-continuity-guard.mjs';
+import {validateShockContinuity, classifyModules, findNewerDevProviderReceipt,readDevProviderReceipts,validateOperationalExcelReceipt,hasVerifiedHostingAssets,failedDevReadbackAllowsCorrection} from './cxorbia-i3-shock-continuity-guard.mjs';
 import crypto from 'node:crypto';
 
 test('Hosting receipt verifies actual hashes and the changed owner, not a frozen count',()=>{
@@ -565,4 +565,70 @@ for(const [label,mutate]of[
  const f=withFailedPairedC3Pending(t);mutate(f);f.persist();const r=validateShockContinuity(f.a);
  assert.equal(r.pass,false);assert.ok(r.failures.includes('RELEASE_COMPOSITION_FAILURE:PAIRED_DEV_C3_TRANSITION_RECEIPT'));
  assert.ok(!r.failures.includes('RELEASE_COMPOSITION_FAILURE:PENDING_DEV_SUCCESSOR_UNPROVEN'),'valid pending lineage must reach the actual C3 receipt branch');
+});
+
+test('F2 named committed DEV receipt is discovered and blocks a mutually stale paired seal',t=>{
+  const dir=fs.mkdtempSync('/tmp/cxorbia-f2-receipt-');t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const source='9'.repeat(40),value={schemaVersion:'cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1',
+    productSourceSha:source,iteration:'I3',state:'HOLD',safety:{production:'DO_NOT_TOUCH',i4Authorized:false},
+    devMaterialization:{decision:'PASS_I3_F2_READER_SOURCE_DEV_MATERIALIZATION',runId:2748,
+      runtimeRevision:'runtime-2748',hostingVersion:'hosting-2748',hostingRelease:'release-2748',
+      sourceHostedExact:true,runtimeTrafficExact:true}};
+  const file=dir+'/CXORBIA_I3_F2_ORIGINAL_EXCEL_OPERATIONAL_DEV_PASS_20261123.json';
+  fs.writeFileSync(file,JSON.stringify(value));
+  const receipts=readDevProviderReceipts(dir);assert.equal(receipts.length,1);assert.equal(receipts[0].path,file);
+  assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:2672,receipts})?.path,file);
+  assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:2748,receipts}),undefined);
+  assert.equal(findNewerDevProviderReceipt({sourceSha:'a'.repeat(40),sealedRunId:2672,receipts}),undefined);
+  for(const field of ['sourceHostedExact','runtimeTrafficExact']){
+    const bad=structuredClone(receipts);bad[0].value.devMaterialization[field]=false;
+    assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:2672,receipts:bad}),undefined);
+  }
+  const failed=structuredClone(receipts);failed[0].value.devMaterialization.decision='HOLD_FAILED';
+  assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:2672,receipts:failed}),undefined);
+  const unsafe=structuredClone(receipts);unsafe[0].value.safety.i4Authorized=true;
+  assert.equal(findNewerDevProviderReceipt({sourceSha:source,sealedRunId:2672,receipts:unsafe}),undefined);
+});
+
+function operationalReceiptFixture(){
+  const source='9'.repeat(40),tree='a'.repeat(40);
+  const materialization={decision:'PASS_DEV',runId:2748,runtimeRevision:'runtime-2748',runtimeDigest:'sha256:runtime',
+    hostingVersion:'hosting-2748',sourceHostedExact:true,runtimeTrafficExact:true};
+  const selector={runId:2749,runNumber:2749,jobId:3000,decision:'PASS_EXCEL_SELECTOR',afterProvider:'excel_online',
+    configWrites:1,configReadbackVerified:true,sourceRevision:'source-revision',hrRevision:'hr-revision',
+    bindingFingerprint:'binding',periodJobs:38,readbackPeriodJobs:38};
+  const safety={production:'DO_NOT_TOUCH',i4Authorized:false,originalExcelWrites:0,obsoleteGoogleMirrorWrites:0,visitWrites:0,authWrites:0};
+  const receipt={schemaVersion:'cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1',iteration:'I3',state:'HOLD',
+    productSourceSha:source,productSourceTree:tree,devMaterialization:materialization,devOperationalSelector:selector,
+    safety,phaseA:{strictDomainPromotion:false}};
+  const raw=JSON.stringify(receipt)+'\n',bytes=Buffer.from(raw),gitBlob=crypto.createHash('sha1')
+    .update(Buffer.from(`blob ${bytes.length}\0`)).update(bytes).digest('hex');
+  const op={...selector,sourceSha:source,sourceTree:tree,provider:'excel_online',materializationRunId:2748,
+    runtimeRevision:materialization.runtimeRevision,runtimeDigest:materialization.runtimeDigest,hostingVersion:materialization.hostingVersion,
+    receiptPath:'docs/checkpoints/CXORBIA_I3_F2_FIXTURE.json',receiptBlob:gitBlob,
+    originalExcelWrites:0,obsoleteGoogleMirrorWrites:0,visitWrites:0,authWrites:0,
+    production:false,strictDomainPromotion:false,terminalCertified:false,i4Authorized:false};
+  const descriptor={productSourceSha:source,productTreeAuthority:tree,currentF2OperationalExcel:op,postDeployRunSeal:materialization};
+  return {descriptor,gitBlob:path=>path===op.receiptPath?gitBlob:'',gitRead:args=>{
+    assert.deepEqual(args,['show','HEAD:'+op.receiptPath]);return raw;},receipt};
+}
+test('operational Excel aliases are bound to the exact committed F2 receipt content',()=>{
+  assert.equal(validateOperationalExcelReceipt(operationalReceiptFixture()).pass,true);
+});
+for(const field of ['runId','jobId','sourceRevision','hrRevision','bindingFingerprint','periodJobs','runtimeDigest']){
+  test('operational Excel identical aliases cannot fabricate committed '+field,()=>{
+    const v=operationalReceiptFixture();v.descriptor.currentF2OperationalExcel[field]='fabricated';
+    assert.equal(validateOperationalExcelReceipt(v).pass,false);
+  });
+}
+test('operational Excel receipt requires a matching Git path and content blob',()=>{
+  const v=operationalReceiptFixture();v.gitBlob=()=> 'f'.repeat(40);
+  assert.ok(validateOperationalExcelReceipt(v).failures.includes('RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_GIT_BLOB'));
+  const altered=operationalReceiptFixture();altered.receipt.devOperationalSelector.hrRevision='forged';
+  altered.gitRead=()=>JSON.stringify(altered.receipt)+'\n';
+  assert.ok(validateOperationalExcelReceipt(altered).failures.includes('RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_CONTENT_BLOB'));
+});
+test('operational Excel receipt fails closed if committed receipt cannot be read',()=>{
+  const v=operationalReceiptFixture();v.gitRead=()=>{throw new Error('missing committed blob');};
+  assert.ok(validateOperationalExcelReceipt(v).failures.includes('RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_UNREADABLE'));
 });

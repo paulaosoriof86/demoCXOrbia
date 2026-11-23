@@ -260,6 +260,27 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
         accounting.domainPendingCount===m.modules.length-actual,'CURRENT_FUNCTIONAL_ACCOUNTING_COUNT_DESYNC');
     }
   }
+  const operational=d?.currentF2OperationalExcel;
+  if(operational){
+    const all=[d,p,l,...(m?[m]:[])];
+    check(all.every(o=>JSON.stringify(o.currentF2OperationalExcel)===JSON.stringify(operational)),
+      'CURRENT_OPERATIONAL_EXCEL_RECEIPT_DESYNC');
+    check(operational.sourceSha===source&&operational.sourceTree===tree&&operational.provider==='excel_online'&&
+      operational.materializationRunId===seal.runId&&operational.runtimeRevision===seal.runtimeRevision&&
+      operational.hostingVersion===seal.hostingVersion&&operational.configReadbackVerified===true&&
+      operational.production===false&&operational.strictDomainPromotion===false&&operational.i4Authorized===false,
+      'CURRENT_OPERATIONAL_EXCEL_IDENTITY_DESYNC');
+    const binding=d.currentRuntimeBinding;
+    check(Boolean(binding)&&all.every(o=>JSON.stringify(o.currentRuntimeBinding)===JSON.stringify(binding))&&
+      binding.sourceSha===source&&binding.sourceTree===tree&&binding.runtimeRevision===seal.runtimeRevision&&
+      binding.hostingVersion===seal.hostingVersion&&binding.materializationRunId===seal.runId&&
+      binding.observedRunId===operational.runId&&binding.provider===operational.provider&&
+      binding.hrRevision===operational.hrRevision&&binding.receiptPath===operational.receiptPath&&
+      binding.receiptBlob===operational.receiptBlob,'CURRENT_RUNTIME_OPERATIONAL_BINDING_DESYNC');
+    check(all.every(o=>JSON.stringify(o.currentExecutionReceipt)===JSON.stringify(d.currentExecutionReceipt))&&
+      d.currentExecutionReceipt?.runId===operational.runId&&d.currentExecutionReceipt?.sourceSha===source&&
+      d.currentExecutionReceipt?.hrRevision===operational.hrRevision,'CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC');
+  }
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }
 
