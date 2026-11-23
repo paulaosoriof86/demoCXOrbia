@@ -40,6 +40,21 @@ try{
     }
    }
  }
+ const aliasPeriodRows=visits.docs.map(doc=>({id:doc.id,...(doc.data()||{})}))
+   .filter(d=>/^20\\d{2}-(?:0[1-9]|1[0-2])$/.test(val(d.periodId))&&['GT','HN'].includes(country(d)));
+ const aliasByPeriod=aliasPeriodRows.reduce((m,row)=>{
+   const key=val(row.periodId);m[key]=(m[key]||0)+1;return m;
+ },{});
+ const aliasReferenced=aliasPeriodRows.filter(d=>(links.get(d.id)?.total||0)>0).length;
+ const aliasPaid=aliasPeriodRows.filter(d=>d.canonicalFacets?.paymentConfirmed===true||d.paymentConfirmed===true).length;
+ const aliasByIdKind=aliasPeriodRows.reduce((m,d)=>{const k=kind(d.id);m[k]=(m[k]||0)+1;return m},{});
+ const aliasSharedWithCanonical=aliasPeriodRows.filter(d=>
+   visits.docs.some(x=>{const v=x.data()||{};return val(v.periodId)==='cinepolis-'+val(d.periodId)
+     &&country(v)===country(d)&&val(v.hrRowId)&&val(v.hrRowId)===val(d.hrRowId);}
+   )).length;
+ proof.periodAlias={total:aliasPeriodRows.length,byPeriod:aliasByPeriod,
+   byIdKind:aliasByIdKind,directlyReferenced:aliasReferenced,paid:aliasPaid,
+   sameHrRowOnCanonicalPeriod:aliasSharedWithCanonical};
  const groups=new Map(),seen=new Set();
  for(const doc of visits.docs){
   const d={...doc.data(),id:doc.id},k=key(d);
