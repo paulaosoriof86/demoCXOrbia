@@ -221,11 +221,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
-  "productTreeAuthority": "2bd564ca98a271c35331f021d048e140723e85aa",
+  "productSourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+  "productTreeAuthority": "0cccf405900acfdb8f60961c822c560ba2798db3",
   "predecessorProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V708_2026-11-23.json",
-  "findingsLedgerExpectedGitBlob": "0bee29cfbd83290e5884f3964b6c5dea6f2d267e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V709_2026-11-23.json",
+  "findingsLedgerExpectedGitBlob": "86c5d92727c42d11fc28202c7b9234a69ac910c8",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V381.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V382.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "F2_EXCEL_ORIGINAL_SOURCE_PROVEN_38_OF_38_PENDING_EXACT_DEV__F3_REMOTE_ACK_NOT_CONNECTED__15_DOMAIN_CLAUSES_PENDING_GATE20_GATE21_HOLD",
+  "activeBlocker": "F2_ORIGINAL_EXCEL_READ_PASS_SOURCE_COMPOSED_PENDING_EXACT_DEV_ADMIN_SHOPPER_E2E__F3_REMOTE_ACK_NOT_CONNECTED__15_DOMAIN_CLAUSES_PENDING_GATE20_GATE21_HOLD",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 F2: Excel original 38/38 read-only PASS run 45192668808, no inter-period matching. Promote sole candidate 7db39f1688 to DEV through existing canonical lane; verify operational /hr-live Admin+Shopper exact source; then F3 field-scoped remote ACK and remaining 15 domains. I4 not authorized.",
+  "exactNextAction": "I3 F2: original Excel GT/HN 38/38 country-period reads and 836 visits PASS on source 9d51a76d; run ONE canonical paired DEV runtime+hosting deployment, verify Admin+Shopper operational /hr-live with same source/artifact; F3 remote field ACK and remaining 15 module clauses afterward. Never reconcile branches/scenarios/films across months. No I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1131,7 +1131,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+  "productSourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -4395,7 +4395,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a180d429034fa3fab5a8270726f3087ee8edcb48",
+  "moduleTruthExpectedGitBlob": "9e0c1c87ce866e5917d43c4141a4ee70cf67b6a9",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -18596,7 +18596,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 F2: Excel original 38/38 read-only PASS run 45192668808, no inter-period matching. Promote sole candidate 7db39f1688 to DEV through existing canonical lane; verify operational /hr-live Admin+Shopper exact source; then F3 field-scoped remote ACK and remaining 15 domains. I4 not authorized.",
+  "nextExactAction": "I3 F2: original Excel GT/HN 38/38 country-period reads and 836 visits PASS on source 9d51a76d; run ONE canonical paired DEV runtime+hosting deployment, verify Admin+Shopper operational /hr-live with same source/artifact; F3 remote field ACK and remaining 15 module clauses afterward. Never reconcile branches/scenarios/films across months. No I4.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -19026,7 +19026,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-23T14:28:00.000Z",
+  "updatedAt": "2026-11-23T15:26:00.000Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -20049,12 +20049,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V381.json",
-      "gitBlob": "a180d429034fa3fab5a8270726f3087ee8edcb48"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V382.json",
+      "gitBlob": "9e0c1c87ce866e5917d43c4141a4ee70cf67b6a9"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V708_2026-11-23.json",
-      "gitBlob": "0bee29cfbd83290e5884f3964b6c5dea6f2d267e"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V709_2026-11-23.json",
+      "gitBlob": "86c5d92727c42d11fc28202c7b9234a69ac910c8"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -20072,7 +20072,7 @@
     "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
     "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
     "production": false,
-    "sourceSemantics": "HISTORICAL_C3_PAIRED_RUNTIME_PREDECESSOR__F2_7DB_SOURCE_ONLY_PENDING_DEV"
+    "sourceSemantics": "HISTORICAL_C3_PAIRED_RUNTIME_PREDECESSOR__F2_NEW_SOURCE_ONLY_PENDING_DEV"
   },
   "run2259ExactDevContinuity": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2259_EXACT_DEV_CONTINUITY_RECONCILIATION_20261107.json",
@@ -34070,8 +34070,8 @@
   "pendingDevSuccessor": {
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
-    "sourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
-    "sourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+    "sourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+    "sourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
     "predecessorProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
     "servingHosting": {
       "sourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
@@ -34141,7 +34141,7 @@
       "backend/runtime/hr-live-service/Dockerfile",
       "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
     ],
-    "sourceTests": "PASS_SOURCE_17_AND_BINDING_16_FULL_EXCEL_38_PERIOD_READ_ONLY",
+    "sourceTests": "PASS_F2_READER18_BINDING16_AND_ORIGINAL38",
     "devDeploy": "PENDING_AFTER_SOURCE_PASS",
     "humanApproval": "NOT_IMPLIED",
     "rulesDeploys": 0,
@@ -34170,7 +34170,7 @@
       "gate21": "HOLD",
       "production": false
     },
-    "sourceTestsPass": 33,
+    "sourceTestsPass": 34,
     "sourceTestsFail": 0,
     "allowedProductFiles": [
       "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
@@ -34183,21 +34183,21 @@
     ],
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_EXCEL_OPERATIONAL_SOURCE_SCOPE_20261122.json",
     "scopeReceiptBlob": "4935e2aba508343ffc657f63c6a76c82b7975843",
-    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123.json",
-    "proofReceiptBlob": "eb7315c5df6d18abc06da142c8ddd66e66a18fe5",
-    "proofRunId": 45192668808,
-    "proofJobId": 137754828455
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R2.json",
+    "proofReceiptBlob": "38ec8a5fef09236cf9fc4bca043ab53ffa8c031b",
+    "proofRunId": 45204522876,
+    "proofJobId": 137796516924
   },
   "f2ExcelOriginalSourceOnly": {
-    "sourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
-    "sourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+    "sourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+    "sourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
     "registeredCountries": [
       "GT",
       "HN"
     ],
     "periodsPerCountry": 19,
     "configurationProviderAckRunId": 45095970552,
-    "sourceQA": "PASS_SOURCE_33_AND_ORIGINAL_38X_READ_ONLY",
+    "sourceQA": "PASS_READER18_BINDING16_ORIGINAL38",
     "devRuntime": "NOT_DEPLOYED",
     "integralMatch": 6,
     "pendingRequirement": "PROVE_F2_EXCEL_OPERATIONAL_HR_LIVE_SAME_SOURCE",
@@ -34205,17 +34205,19 @@
     "noInterPeriodReconciliation": true
   },
   "currentF2PeriodIndependenceSourceProof": {
-    "sourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
-    "sourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
-    "receiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123.json",
-    "gitBlob": "eb7315c5df6d18abc06da142c8ddd66e66a18fe5",
-    "runId": 45192668808,
+    "sourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+    "sourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_F2_PERIOD_INDEPENDENT_EXCEL_SOURCE_PROOF_20261123_R2.json",
+    "gitBlob": "38ec8a5fef09236cf9fc4bca043ab53ffa8c031b",
+    "runId": 45204522876,
+    "jobId": 137796516924,
     "role": "READ_ONLY_SOURCE_PROOF_NOT_RUNTIME_CERTIFICATE",
     "readCount": 38,
     "visits": 836,
     "noCrossPeriodComparison": true,
     "noProviderWrites": true,
     "devPublished": false,
-    "production": false
+    "production": false,
+    "ownerBlob": "8b5df405a6b8582a7c5c9abab3a7d16c74d72c9d"
   }
 }

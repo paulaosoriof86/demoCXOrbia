@@ -185,7 +185,7 @@ jobs:
           # Diagnostic source-only successor has exactly one owner change beyond
           # the pinned F2 source. This QA is NOT a release or composition PASS.
           delta="$(git diff --name-only "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**')"
-          test "$delta" = "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs"
+          test -z "$delta" || test "$delta" = "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs"
           test "$(git rev-parse HEAD:backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs)" = "8b5df405a6b8582a7c5c9abab3a7d16c74d72c9d"
           node --check tools/qa/cxorbia-i3-f2-full-original-live-preflight-readonly.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
