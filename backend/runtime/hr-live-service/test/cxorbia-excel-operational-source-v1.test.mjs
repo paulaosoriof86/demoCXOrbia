@@ -38,7 +38,7 @@ const values=code=>{
  for(const [k,v] of Object.entries({pais:code==='GT'?'Guatemala':'Honduras',
  idCinema:code==='GT'?'2022002':'2052001',ciudad:code==='GT'?'Ciudad QA':'Tegucigalpa',
  shopping:code==='GT'?'C. Miraflores':'C. Las Cascadas Honduras',
- quincena:'1Q',franja:'WKND',formato:'2D',tipoCompra:'Boletería',
+ quincena:'1Q',franja:'WKND',formato:'2D',tipoCombo:'Combo QA',tipoCompra:'Boletería',
  shopper:'p x asignar',controlDia:'P x asignar'}))row[col(k)]=v;
  return [header,row];
 };
