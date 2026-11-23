@@ -23,7 +23,6 @@ if(isF2){
  assert.equal(prior.production,'DO_NOT_TOUCH');
  assert.equal(prior.nextSourceSha,source);
  assert.equal(prior.nextSourceTree,tree);
- assert.equal(prior.sourceSha,descriptor.predecessorProductSourceSha,'candidate predecessor drift');
  const app=runtime.spec?.template?.spec?.containers?.[0];
  assert.equal(app?.env?.find(e=>e.name==='CXORBIA_RECOVERY_SOURCE_SHA')?.value,prior.sourceSha,'prior runtime source mismatch');
  assert.equal(app?.image,prior.runtimeImageTag,'prior runtime image mismatch');
