@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {excelVisitBusinessKey,reconcileOriginalExcelPeriod} from '../../cxorbia-excel-operational-lineage-v1.mjs';
+import {excelVisitBusinessKey,reconcileOriginalExcelPeriod} from './cxorbia-i3-f2-excel-operational-lineage-v1.mjs';
 const REV='a'.repeat(64), FP='b'.repeat(64);
 const scope={tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-11',countryCode:'GT'};
 const binding={scope,proof:{providerType:'excel_online',readPolicy:'external_live',writePolicy:'external_read_only',hrWrites:false,bindingFingerprint:FP}};
