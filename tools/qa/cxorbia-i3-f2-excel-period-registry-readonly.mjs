@@ -22,7 +22,7 @@ try{
  const periods=await db.collection('tenants/'+tenantId+'/projects/'+clientProject+'/periods').get();
  const raw=periods.docs.map(x=>({id:x.id,...(x.data()||{})}));
  const periodIds=[...new Set(raw.map(x=>val(x.periodId||x.id)).filter(x=>/^cinepolis-20\\d\\d-(?:0[1-9]|1[0-2])$/.test(x)))].sort();
- report.periods={count:raw.length,typedCount:periodIds.length,periodIds,otherIds:raw.length-periodIds.length};
+ report.periods={count:raw.length,typedCount:periodIds.length,periodIds,otherIds:raw.length-periodIds.length,safeCatalog:raw.map(p=>({docId:p.id,periodId:p.periodId,periodKey:p.periodKey,key:p.key,rootProjectId:p.rootProjectId,projectId:p.projectId,year:p.year,month:p.month,status:p.status,fields:Object.keys(p).filter(k=>/period|month|year|project|date|start|end/i.test(k)).sort().slice(0,25)}))};
  report.selectedProviderType=source.providerType;
  report.excel=[];
  for(const country of ['GT','HN']){
