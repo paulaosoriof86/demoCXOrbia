@@ -19,6 +19,32 @@ function matchDurable(source,scope,previous){
  // Original row identity is a stronger join than financial state, and must
  // preserve ALL historical documents that refer to the same HR row.
  const pool=previous.filter(v=>getCountry(v)===scope.countryCode&&getPeriod(v,scope.projectId)===scope.periodId);
+ // F2: physical Excel row, scenario and combo can change. In a single country,
+ // project and month, cinema ID + execution cut establish the stable visit.
+ // Historical duplicate documents are aliases, not extra assignments.
+ const stableKeys=['cinemaId','quincena'],stable=fields(source,stableKeys);
+ const stableMatches=stable.every(Boolean)?pool.filter(v=>same(fields(v,stableKeys),stable)):[];
+ if(stableMatches.length){
+   const branch=fields(source,['sucursal'])[0];
+   if(branch&&stableMatches.some(v=>fields(v,['sucursal'])[0]&&fields(v,['sucursal'])[0]!==branch))
+     fail('STABLE_SITE_BRANCH_CONTRADICTION');
+   const owners=stableMatches.filter(v=>str(v.periodId)===scope.periodId);
+   const canonical=owners.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+   if(canonical.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   const exact=owners.filter(v=>str(v.id)===str(source.id));
+   if(exact.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   const chosen=canonical.length===1?canonical[0]:exact.length===1?exact[0]:
+     owners.length===1?owners[0]:null;
+   if(!chosen)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   const sameCoordinate=pool.filter(v=>str(v.hrRowId)===str(source.hrRowId)&&
+     str(v.sourceTab)===str(source.sourceTab)&&str(v.sourceRow)===str(source.sourceRow));
+   // Preserve strictly coordinate-linked historical aliases that have NO
+   // competing cinema or branch identity; do not absorb an unrelated row.
+   const neutralAliases=sameCoordinate.filter(v=>str(v.id)!==str(chosen.id)&&
+     fields(v,['cinemaId','sucursal']).every(x=>!x));
+   const cohort=[...new Map([...stableMatches,...neutralAliases].map(v=>[str(v.id),v])).values()];
+   return {primary:chosen,cohort};
+ }
  const coord=v=>str(v.sourceTab)+'|'+str(v.sourceRow);
  const hrRow=str(source.hrRowId);
  const matchesHrRow=v=>hrRow&&str(v.hrRowId)===hrRow&&
@@ -98,8 +124,9 @@ function matchDurable(source,scope,previous){
  return {primary:selected,cohort};
 }
 function newVisitId(source,scope){
- const key=fields(source,['cinemaId','sucursal','quincena','escenario','tipoCombo']);
- if(key.slice(0,4).some(x=>!x))fail('NEW_VISIT_IDENTITY_MISSING');
+ // ID must survive a scenario/combo edit within the same country-month.
+ const key=fields(source,['cinemaId','sucursal','quincena']);
+ if(key.some(x=>!x))fail('NEW_VISIT_IDENTITY_MISSING');
  return 'hr_excel_'+sha([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,...key].join('|')).slice(0,28);
 }
 const headerFields=rows=>{
@@ -215,12 +242,21 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
     visits.push({...source,id:stable,visitId:stable,hrRowId:str(source.hrRowId||prior?.hrRowId),periodId:scope.periodId,
       shopperId:canonical,canonicalShopperId:canonical,sourceTab:source.sourceTab,
       sourceRow:source.sourceRow,excelSourceRow:source.sourceRow,
-      excelWorksheetFingerprint:sha(rawTab.worksheetId),sourceSafe:true,piiProtected:true});
+      excelWorksheetFingerprint:sha(rawTab.worksheetId),
+      durableAliasIds:owner?owner.cohort.map(v=>str(v.id)).filter(id=>id!==stable):[],
+      sourceSafe:true,piiProtected:true});
    }
   }
  }
  if(!visits.length||!tabs.length)fail('NO_VISITS');
+ // Original historical periodId=YYYY-MM docs are retained in Firestore,
+ // never rewritten or treated as a second current-period assignment.
+ // Only the canonical project-scoped operational docs must match every HR visit.
+ const unprefixedHistory=durable.filter(v=>/^20\\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId)));
+ const unsupportedLegacy=unprefixedHistory.filter(v=>!/^hr_20\\d{2}/i.test(str(v.id))||!str(v.hrRowId));
+ if(unsupportedLegacy.length)fail('HISTORICAL_ALIAS_FORMAT_UNPROVEN');
  const missing=durable.filter(v=>!matched.has(str(v.id))&&!v._archived&&
+   !/^20\\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId))&&
    !['cancelada','cancelled','archived','archivada'].includes(norm(v.estado||v.status)));
  if(missing.length)fail('UNMATCHED_ACTIVE_DURABLE_VISITS');
  const periods=buildPeriods(visits,tabs),history=validateCanonicalHistory(visits,periods);
@@ -248,5 +284,6 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
    periodReads:responses.length,visits:visits.length,matchedDurable:matched.size,unmatchedActive:missing.length,
    matchedSourceVisits,newSourceVisits:visits.length-matchedSourceVisits,
    historicalAliasesPreserved:matched.size-matchedSourceVisits,
+   historicalUnprefixedDocsPreserved:unprefixedHistory.length,
    independentlyVerified:true,hrWrites:0,firestoreWrites:0,production:false}};
 }

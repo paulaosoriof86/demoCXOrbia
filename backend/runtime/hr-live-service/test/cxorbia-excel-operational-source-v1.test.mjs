@@ -214,3 +214,32 @@ test('moved historical row with two competing canonical durable owners still fai
  await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
    /CANONICAL_DURABLE_OWNER_NOT_PROVEN/);
 });
+
+test('same cinema and cut preserve owner when the scenario and combo are edited',async()=>{
+ const original=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Noviembre',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry).visits[0];
+ const canonical={...original,id:'hr_2026-11_gt_stable_site',
+   periodId:'cinepolis-2026-11',escenario:'OLD_SCENARIO',tipoCombo:'OLD_COMBO'};
+ const alias={...canonical,id:'linked_legacy_visita',visitId:'linked_legacy_visita'};
+ const db=fixture({durableVisits:[canonical,alias]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const result=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ const current=result.snapshot.visits.find(v=>v.country==='GT');
+ assert.equal(current.visitId,canonical.id);
+ assert.deepEqual(current.durableAliasIds,[alias.id]);
+ assert.equal(current.escenario,original.escenario);
+ assert.equal(result.proof.matchedDurable,2);
+});
+test('unprefixed legacy HR document is preserved without inventing an extra active visit',async()=>{
+ const original=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+  tabTitle:'NOVIEMBRE 26',label:'Noviembre',fullLabel:'Noviembre 2026'},
+  values('GT'),columnMap,cinemaRegistry).visits[0];
+ const legacy={...original,id:'hr_2026-11_gt_legacy_evidence',periodId:'2026-11'};
+ const db=fixture({durableVisits:[legacy]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const out=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.equal(out.snapshot.visits.length,2);
+ assert.equal(out.proof.historicalUnprefixedDocsPreserved,1);
+ assert.equal(out.proof.firestoreWrites,0);
+});
