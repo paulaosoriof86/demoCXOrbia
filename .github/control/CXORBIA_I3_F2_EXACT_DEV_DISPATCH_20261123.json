@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.single-lane-dev-dispatch.v1",
+  "iteration": "I3",
+  "sourceSha": "7db39f1688eae61ab288f6ac7f8bcaff55df3bcf",
+  "sourceTree": "2bd564ca98a271c35331f021d048e140723e85aa",
+  "certificationRun": 45196598557,
+  "originalExcelLiveReadRun": 45192668808,
+  "originalCountryPeriodReadCount": 38,
+  "periodIndependent": true,
+  "continuityReceiptPath": "docs/checkpoints/CXORBIA_I3_F2_SAME_SOURCE_DEV_DISPATCH_20261123.json",
+  "continuityReceiptBlob": "c0e5665a1a4d3cb219684d7d31229d7406861d92",
+  "target": "cxorbia-backend-dev",
+  "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "existingJob": "vrm154-156-dev-materialization",
+  "selection": "ONE_CANDIDATE_ONE_DEPLOY",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "hrOriginalWrites": 0,
+  "googleMirrorWrites": 0
+}
