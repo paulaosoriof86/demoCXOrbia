@@ -112,7 +112,7 @@ const pendingFromCurrentHosting=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDIN
   c3.sourceTree===d.currentMaterialization?.sourceTree&&
   c3.hostingVersion===d.currentMaterialization?.hostingVersion&&
   c3.runtimeRevision===d.currentMaterialization?.runtimeRevision;
-const c3PredecessorOnly=(pendingFromCurrentHosting||(pendingHostingOnly&&
+const c3PredecessorOnly=pendingFromCurrentHosting||(pendingHostingOnly&&
   c3.sourceSha===d.currentHostingOnlyDevMaterialization.sourceSha&&
   c3.sourceTree===d.currentHostingOnlyDevMaterialization.sourceTree&&
   c3.hostingVersion===d.currentHostingOnlyDevMaterialization.hostingVersion)||c3AfterHosting||c3AfterPaired||
