@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.i3.f2.exact-row-conflict-reproof.v1",
+  "dateLocal": "2026-11-23",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "controlHead": "7e48aa8cc9000be0c8f3bb36840334679be4310a",
+  "sourceCandidate": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+  "sourceOnlyRepairedOwnerBlob": "131d6392474900951cb5920f51113b5678ade48f",
+  "scope": "38_original_GT_HN_country_period_reads_19_each",
+  "diagnostic": {
+    "run": 45182859920,
+    "sourceRowsChecked": 836,
+    "durableRowsAvailable": 2068,
+    "uniqueBusinessMatches": 113,
+    "newUnmatched": 60,
+    "ambiguousBusinessMatches": 663,
+    "originalHrWrites": 0,
+    "productionWrites": 0
+  },
+  "focalTest": {
+    "run": 45183743724,
+    "result": "SUCCESS",
+    "negativePreservesActiveHistoricalRow": true
+  },
+  "next": "Repeat current exact full original read-only preflight. If successful, compose only approved source with corrected owner and validated manifest; do not deploy unapproved HEAD or switch Firestore selector.",
+  "production": "DO_NOT_TOUCH",
+  "certifiedDomainMatchesAdded": 0
+}
