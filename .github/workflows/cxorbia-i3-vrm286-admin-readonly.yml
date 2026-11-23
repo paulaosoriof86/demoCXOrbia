@@ -284,3 +284,47 @@ jobs:
         with: { node-version: '24' }
       - name: Verify Work 28 receipts and 21-domain matrix exact source hashes
         run: node --test tools/qa/cxorbia-i3-work-chrome-c3-evidence.test.mjs
+
+  i3-f2-original-operational-source-qa:
+    if: \${{ contains(github.event.head_commit.message, '[i3-f2-source-qa]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Exact source-only P0 identity and no product drift
+        run: |
+          set -Eeuo pipefail
+          SOURCE="$(jq -er '.productSourceSha | select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          TREE="$(jq -er '.productTreeAuthority | select(test("^[a-f0-9]{40}$"))' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git merge-base --is-ancestor "$SOURCE" HEAD
+          git diff --quiet "$SOURCE" HEAD -- app backend tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.pendingDevSuccessor.devPublished' CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json)" = "false"
+          for file in backend/runtime/hr-live-service/server.mjs backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs tools/hr-source/tya-build-live-hr-source-safe-r20.mjs backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs; do node --check "$file"; done
+          echo "I3_F2_SOURCE_SHA=$SOURCE" >> "$GITHUB_ENV"
+          echo "I3_F2_SOURCE_TREE=$TREE" >> "$GITHUB_ENV"
+      - name: Run existing source and Excel integration regressions, NO data writes
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .tmp/i3-f2-source-qa
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
+          node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs | tee .tmp/i3-f2-source-qa/focal-tap.log
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --mapping-self-test > .tmp/i3-f2-source-qa/r20-mapping.log
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --assignment-self-test > .tmp/i3-f2-source-qa/r20-assignment.log
+          grep -Fq PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY .tmp/i3-f2-source-qa/r20-mapping.log
+          grep -Fq PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION .tmp/i3-f2-source-qa/r20-assignment.log
+          jq -n --arg source "$I3_F2_SOURCE_SHA" --arg tree "$I3_F2_SOURCE_TREE" --arg run "$GITHUB_RUN_ID" \
+            '{decision:"PASS_F2_ORIGINAL_EXCEL_SOURCE_QA_ONLY",sourceSha:$source,sourceTree:$tree,runId:($run|tonumber),
+              scope:"NODE_SYNTHETIC_AND_R20_PARSER_ONLY_NOT_DEV_OR_MODULE_MATCH",
+              hrWrites:0,firestoreWrites:0,deploys:0,production:false}' > .tmp/i3-f2-source-qa/result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-f2-source-qa-\${{ github.run_id }}
+          path: .tmp/i3-f2-source-qa
+          if-no-files-found: warn
+          retention-days: 30
