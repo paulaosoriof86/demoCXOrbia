@@ -101,6 +101,37 @@ try{
    paymentConfirmed:other.filter(x=>x.canonicalFacets?.paymentConfirmed===true||x.paymentConfirmed===true).length,
    archived:other.filter(x=>x._archived===true||['archived','archivada','cancelled','cancelada'].includes(norm(x.estado||x.status))).length,
    hrRowIdPresent:other.filter(x=>val(x.hrRowId)).length};
+ const normalizedGroups=new Map();
+ for(const doc of visits.docs){
+   const row={id:doc.id,...(doc.data()||{})},p=pkey(row);
+   const period=/^20\d\d-(0[1-9]|1[0-2])$/.test(p)?'cinepolis-'+p:p;
+   if(!/^cinepolis-20\d\d-(0[1-9]|1[0-2])$/.test(period)||!['GT','HN'].includes(country(row)))continue;
+   const k=[period,country(row),norm(row.cinemaId||row.hrManaged?.cinemaId),
+     norm(row.quincena||row.hrManaged?.quincena),norm(row.escenario||row.hrManaged?.escenario)].join('|');
+   if(!normalizedGroups.has(k))normalizedGroups.set(k,[]);
+   normalizedGroups.get(k).push(row);
+ }
+ const grouped=[...normalizedGroups.values()];
+ const countsBySize=grouped.reduce((m,rows)=>{
+   const k=rows.length;m[k]=(m[k]||0)+1;return m;
+ },{});
+ const sameValues=values=>new Set(values.map(val)).size===1;
+ const differingHrRow=grouped.filter(rows=>rows.length>1
+   &&(!rows.every(x=>val(x.hrRowId))||!sameValues(rows.map(x=>x.hrRowId)))).length;
+ const differingSourceCoord=grouped.filter(rows=>rows.length>1&&(
+   !sameValues(rows.map(x=>x.sourceTab))||!sameValues(rows.map(x=>x.sourceRow)))).length;
+ const byDirectRefs=grouped.filter(rows=>rows.length>1).reduce((m,rows)=>{
+   const n=rows.filter(x=>(links.get(x.id)?.total||0)>0).length;
+   const k=rows.length+'|'+n+'-referenced';m[k]=(m[k]||0)+1;return m;
+ },{});
+ const byPayment=grouped.filter(rows=>rows.length>1).reduce((m,rows)=>{
+   const n=rows.filter(x=>x.canonicalFacets?.paymentConfirmed===true||x.paymentConfirmed===true).length;
+   const k=rows.length+'|'+n+'-paid';m[k]=(m[k]||0)+1;return m;
+ },{});
+ proof.normalizedTripleLineage={groups:grouped.length,countsBySize,
+   maxGroupSize:Math.max(...grouped.map(x=>x.length)),
+   differingHrRow,differingSourceCoord,byDirectRefs,byPayment,
+   expectedAllRows:visits.size,groupedRows:grouped.reduce((n,x)=>n+x.length,0)};
  proof.totalDurableVisits=visits.size;
  proof.groupCount=groups.size;
  proof.duplicateBusinessKeyGroups=summaries.length;
