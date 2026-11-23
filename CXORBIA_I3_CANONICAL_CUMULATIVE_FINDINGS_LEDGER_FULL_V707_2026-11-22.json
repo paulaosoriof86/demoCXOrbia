@@ -33668,7 +33668,7 @@
   },
   "currentTruth": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261122-V380.json",
-    "moduleTruthGitBlob": "9c34eeaebb08220ed9d255c16eb0709d173d65e9",
+    "moduleTruthGitBlob": "044a35c2a29431909491ec8ef48a0a137c003812",
     "productSourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
     "productTree": "f7326204978e71fe1325ab1d4f7d3f227d37da70",
     "moduleTruthCurrent": true,

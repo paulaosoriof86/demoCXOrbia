@@ -33539,7 +33539,7 @@
     "domainPendingCount": 15,
     "nonAdditiveAccounting": "6/21 strict domains MATCH,15 pending;4/9 human functional blocks PASS preserved;2/7 frozen execution blocks closed. These denominators are distinct and not additive.",
     "falsePromotionForbidden": true,
-    "currentProductSourceSha": "6b0df94374a0af8e0494eea741da581cd8db0e37",
+    "currentProductSourceSha": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
     "historicalHumanAndSourcePassesPreserved": true,
     "frozenOwnerMappingsPreserved": true,
     "noNewAppOrProviderTestingImplied": true,
