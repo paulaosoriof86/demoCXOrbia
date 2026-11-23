@@ -53,9 +53,9 @@ export async function diagnoseOriginalVisitJoin({db,plan,readings,columnMap,cine
         businessKeyCardinalities:matches.map(m=>m.length),
         allBusinessKeysSameDocCohort:groupSameDocs,
         stableCinemaCutMatches:stableOwners.length,
-        stableCinemaCutCanonicalOwners:stableOwners.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id))).length,
+        stableCinemaCutCanonicalOwners:stableOwners.filter(v=>/^hr_20\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id))).length,
         stableCinemaCutCurrentPeriodOwners:stableOwners.filter(v=>str(v.periodId)===scope.periodId).length,
-        stableCinemaCutLegacyUnprefixedOwners:stableOwners.filter(v=>/^(?:20\\d{2})-(?:0[1-9]|1[0-2])$/.test(str(v.periodId))).length,
+        stableCinemaCutLegacyUnprefixedOwners:stableOwners.filter(v=>/^(?:20\d{2})-(?:0[1-9]|1[0-2])$/.test(str(v.periodId))).length,
         stableCinemaCutExactSourceId:stableOwners.filter(v=>str(v.id)===str(row.id)).length,
         stableOwnersWithSameSourceCoordinate:stableOwners.filter(v=>coord.some(c=>str(c.id)===str(v.id))).length
       });

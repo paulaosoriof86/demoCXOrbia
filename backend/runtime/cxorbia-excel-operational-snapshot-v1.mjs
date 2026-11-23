@@ -29,7 +29,7 @@ function matchDurable(source,scope,previous){
    if(branch&&stableMatches.some(v=>fields(v,['sucursal'])[0]&&fields(v,['sucursal'])[0]!==branch))
      fail('STABLE_SITE_BRANCH_CONTRADICTION');
    const owners=stableMatches.filter(v=>str(v.periodId)===scope.periodId);
-   const canonical=owners.filter(v=>/^hr_20\\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+   const canonical=owners.filter(v=>/^hr_20\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
    if(canonical.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
    const exact=owners.filter(v=>str(v.id)===str(source.id));
    if(exact.length>1)fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
@@ -252,11 +252,11 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
  // Original historical periodId=YYYY-MM docs are retained in Firestore,
  // never rewritten or treated as a second current-period assignment.
  // Only the canonical project-scoped operational docs must match every HR visit.
- const unprefixedHistory=durable.filter(v=>/^20\\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId)));
- const unsupportedLegacy=unprefixedHistory.filter(v=>!/^hr_20\\d{2}/i.test(str(v.id))||!str(v.hrRowId));
+ const unprefixedHistory=durable.filter(v=>/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId)));
+ const unsupportedLegacy=unprefixedHistory.filter(v=>!/^hr_20\d{2}/i.test(str(v.id))||!str(v.hrRowId));
  if(unsupportedLegacy.length)fail('HISTORICAL_ALIAS_FORMAT_UNPROVEN');
  const missing=durable.filter(v=>!matched.has(str(v.id))&&!v._archived&&
-   !/^20\\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId))&&
+   !/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v.periodId))&&
    !['cancelada','cancelled','archived','archivada'].includes(norm(v.estado||v.status)));
  if(missing.length)fail('UNMATCHED_ACTIVE_DURABLE_VISITS');
  const periods=buildPeriods(visits,tabs),history=validateCanonicalHistory(visits,periods);
