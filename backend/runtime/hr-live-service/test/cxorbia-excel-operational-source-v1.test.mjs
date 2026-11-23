@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../../cxorbia-excel-operational-snapshot-v1.mjs';
+import {parseTab} from '../../../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
 const columnMap=JSON.parse(fs.readFileSync(new URL('../../../contracts/tya-hr-column-map-r20-v1.json',import.meta.url),'utf8'));
 const cinemaRegistry=JSON.parse(fs.readFileSync(new URL('../../../contracts/tya-cinepolis-cinema-identity-r20-v1.json',import.meta.url),'utf8'));
 const source={mode:'external',authority:'external_source',providerType:'excel_online',
@@ -80,4 +81,53 @@ test('provider revision without independent proof cannot publish a snapshot',asy
  const db=fixture(),plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
  await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,
   readBinding:async binding=>({...await readBinding(binding),proof:{bindingFingerprint:binding.proof.bindingFingerprint,externalRevisionIndependentlyVerified:false}})}),/PROVIDER_READ_INVALID/);
+});
+
+test('three historical documents for one original HR row retain the exact live owner and all aliases',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry);
+ assert.equal(parsed.visits.length,1);
+ const gt=parsed.visits[0];
+ const canonical={...gt,id:gt.id,visitId:gt.id,periodId:'cinepolis-2026-11',version:62};
+ const shadow={...gt,id:'shadow_other_01',visitId:'shadow_other_01',
+   periodId:'cinepolis-2026-11',version:2440};
+ const historical={...gt,id:'historical_short_01',periodId:undefined,visitId:'historical_short_01',
+   cinemaId:undefined,sucursal:undefined,escenario:undefined,periodKey:'2026-11'};
+ const db=fixture({durableVisits:[historical,canonical,shadow]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const output=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ const live=output.snapshot.visits.find(x=>x.country==='GT');
+ assert.equal(output.snapshot.visits.length,2);
+ assert.equal(live.visitId,canonical.id);
+ assert.equal(live.hrRowId,gt.hrRowId);
+ assert.notEqual(live.visitId,live.hrRowId);
+ assert.equal(output.proof.matchedSourceVisits,1);
+ assert.equal(output.proof.matchedDurable,3);
+ assert.equal(output.proof.historicalAliasesPreserved,2);
+ assert.equal(output.proof.newSourceVisits,1);
+ assert.equal(output.proof.firestoreWrites,0);
+});
+test('a source-row clone with a conflicting cinema AND branch is blocked rather than silently joined',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry);
+ const actual=parsed.visits[0],bad={...actual,id:'bad_owner',
+   periodId:'cinepolis-2026-11',cinemaId:'9999',sucursal:'Different branch'};
+ const db=fixture({durableVisits:[bad]}),
+   plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
+   /EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY/);
+});
+test('two equally authoritative HR owner documents for the same original row fail closed',async()=>{
+ const parsed=parseTab({country:'GT',key:'2026-11',year:2026,month:11,
+   tabTitle:'NOVIEMBRE 26',label:'Nov 2026',fullLabel:'Noviembre 2026'},
+   values('GT'),columnMap,cinemaRegistry);
+ const source=parsed.visits[0],prefix='hr_2026-11_gt_';
+ const a={...source,id:prefix+'candidate_a',periodId:'cinepolis-2026-11'};
+ const b={...source,id:prefix+'candidate_b',periodId:'cinepolis-2026-11'};
+ const db=fixture({durableVisits:[a,b]});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ await assert.rejects(readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}),
+   /CANONICAL_DURABLE_OWNER_NOT_PROVEN/);
 });

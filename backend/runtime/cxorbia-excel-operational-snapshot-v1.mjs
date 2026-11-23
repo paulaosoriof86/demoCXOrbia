@@ -16,13 +16,45 @@ const validScope=s=>s&&/^[a-z0-9_-]+$/i.test(str(s.tenantId))&&/^[a-z0-9_-]+$/i.
 const validPeriod=(p,v)=>str(v).startsWith(p+'-')&&/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v).slice(p.length+1));
 const stamp=s=>({seconds:s?.updateTime?.seconds??null,nanoseconds:s?.updateTime?.nanoseconds??null});
 function matchDurable(source,scope,previous){
+ // Original row identity is a stronger join than financial state, and must
+ // preserve ALL historical documents that refer to the same HR row.
  const pool=previous.filter(v=>getCountry(v)===scope.countryCode&&getPeriod(v,scope.projectId)===scope.periodId);
+ const coord=v=>str(v.sourceTab)+'|'+str(v.sourceRow);
+ const hrRow=str(source.hrRowId);
+ const matchesHrRow=v=>hrRow&&str(v.hrRowId)===hrRow&&
+    str(v.sourceTab)===str(source.sourceTab)&&str(v.sourceRow)===str(source.sourceRow);
+ const rowFamily=pool.filter(matchesHrRow);
+ // Reject a source-row collision: when both original cinema and branch are
+ // known but DIFFER, it is not the same visit despite its physical row.
+ const foreign=rowFamily.filter(v=>{
+   const a=fields(source,['cinemaId','sucursal']),b=fields(v,['cinemaId','sucursal']);
+   return a.every(Boolean)&&b.every(Boolean)&&a[0]!==b[0]&&a[1]!==b[1];
+ });
+ if(foreign.length)fail('EXACT_HR_ROW_CONTRADICTORY_BUSINESS_IDENTITY');
+ if(rowFamily.length){
+   const exact=pool.filter(v=>str(v.id)===str(source.id));
+   if(exact.length>1||exact.length===1&&!matchesHrRow(exact[0]))
+     fail('SOURCE_VISIT_ID_COORDINATE_CONFLICT');
+   const candidates=rowFamily.filter(v=>str(v.periodId)===scope.periodId);
+   let chosen=exact[0]||null;
+   if(!chosen){
+     const hrKeys=candidates.filter(v=>/^hr_20\d{2}-(0[1-9]|1[0-2])_(gt|hn)_/i.test(str(v.id)));
+     if(hrKeys.length===1)chosen=hrKeys[0];
+     else if(candidates.length===1)chosen=candidates[0];
+   }
+   if(!chosen||str(chosen.periodId)!==scope.periodId)
+     fail('CANONICAL_DURABLE_OWNER_NOT_PROVEN');
+   if(rowFamily.some(v=>!matchesHrRow(v)))fail('HR_ROW_COHORT_DRIFT');
+   return {primary:chosen,cohort:rowFamily};
+ }
+ // Only for a reordered source worksheet: all three business identities
+ // must independently resolve to the SAME one durable identity.
  const hits=groups.map(keys=>pool.filter(row=>{
-  const first=fields(source,keys);return first.every(Boolean)&&same(first,fields(row,keys));
+   const first=fields(source,keys);return first.every(Boolean)&&same(first,fields(row,keys));
  }));
  if(hits.every(x=>x.length===0))return null;
  if(!hits.every(x=>x.length===1&&x[0]===hits[0][0]))fail('DURABLE_VISIT_AMBIGUOUS');
- return hits[0][0];
+ return {primary:hits[0][0],cohort:[hits[0][0]]};
 }
 function newVisitId(source,scope){
  const key=fields(source,['cinemaId','sucursal','quincena','escenario','tipoCombo']);
@@ -105,6 +137,7 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
    return {binding,read};
  });
  const identity=new Map(),visits=[],tabs=[],sourceRevisions=[],matched=new Set();
+ let matchedSourceVisits=0;
  for(const {binding,read}of responses){
   const scope=binding.scope,key=scope.periodId.slice(-7),year=Number(key.slice(0,4)),month=Number(key.slice(5));
   sourceRevisions.push({country:scope.countryCode,periodId:scope.periodId,sha:read.proof.sourceRevision});
@@ -119,10 +152,14 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
    tabs.push(tab);
    const indexes=headerFields(rawTab.values);
    for(const source of parsed.visits){
-    const prior=matchDurable(source,scope,durable);
-    const stable=str(prior?.hrRowId||prior?.visitId||prior?.id)||newVisitId(source,scope);
-    if(used.has(stable))fail('DUPLICATE_VISIT_ID');used.add(stable);
-    if(prior)matched.add(str(prior.id));
+    const owner=matchDurable(source,scope,durable);
+    const prior=owner?.primary||null;
+    const stable=prior?str(prior.id):newVisitId(source,scope);
+    if(!stable||used.has(stable))fail('DUPLICATE_VISIT_ID');used.add(stable);
+    if(owner){
+      matchedSourceVisits++;
+      for(const related of owner.cohort)matched.add(str(related.id));
+    }
     const alias=str(source.shopperId),canonical=alias?(aliases.get(alias)||alias):null;
     const original=rawTab.values[(source.sourceRow||0)-1]||[];
     if(alias&&canonical&&indexes){
@@ -134,9 +171,9 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
       if(!identity.has(alias))identity.set(alias,value);
      }
     }
-    visits.push({...source,id:stable,visitId:stable,hrRowId:stable,periodId:scope.periodId,
-      shopperId:canonical,canonicalShopperId:canonical,sourceTab:prior?.sourceTab||source.sourceTab,
-      sourceRow:prior?.sourceRow||source.sourceRow,excelSourceRow:source.sourceRow,
+    visits.push({...source,id:stable,visitId:stable,hrRowId:str(source.hrRowId||prior?.hrRowId),periodId:scope.periodId,
+      shopperId:canonical,canonicalShopperId:canonical,sourceTab:source.sourceTab,
+      sourceRow:source.sourceRow,excelSourceRow:source.sourceRow,
       excelWorksheetFingerprint:sha(rawTab.worksheetId),sourceSafe:true,piiProtected:true});
    }
   }
@@ -168,5 +205,7 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
   safeState:{writes:false,imports:false,deploy:false,production:false,payments:false}};
  return {snapshot,identity,proof:{bindingFingerprint:plan.proof.bindingFingerprint,sourceRevision:revision,
    periodReads:responses.length,visits:visits.length,matchedDurable:matched.size,unmatchedActive:missing.length,
+   matchedSourceVisits,newSourceVisits:visits.length-matchedSourceVisits,
+   historicalAliasesPreserved:matched.size-matchedSourceVisits,
    independentlyVerified:true,hrWrites:0,firestoreWrites:0,production:false}};
 }
