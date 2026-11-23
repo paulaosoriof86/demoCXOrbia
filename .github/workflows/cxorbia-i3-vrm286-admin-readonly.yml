@@ -127,7 +127,7 @@ jobs:
           retention-days: 30
 
   i3-f2-original-period-registry:
-    if: ${{ contains(github.event.head_commit.message, '[i3-f2-original-registry]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-f2-original-registry]') || contains(github.event.head_commit.message, '[i3-f2-activate-excel-dev]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions: {contents: read, id-token: write}
@@ -141,16 +141,27 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
       - name: Register ONLY private original Excel monthly binding metadata, transaction + independent readback
+        if: ${{ contains(github.event.head_commit.message, '[i3-f2-original-registry]') }}
         env:
           CXORBIA_F2_REGISTER_GATE: PAULA_DEV_ONLY_ORIGINAL_EXCEL_PERIOD_BINDING_20261122
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 @modelcontextprotocol/sdk@1.26.0 >/dev/null
           node tools/qa/cxorbia-i3-f2-register-original-periods-dev.mjs
+      - name: Activate exact original Excel operational selector in DEV only, with remote ACK and rollback
+        if: ${{ contains(github.event.head_commit.message, '[i3-f2-activate-excel-dev]') }}
+        env:
+          CXORBIA_F2_DEV_OPERATIONAL_SWITCH_GATE: PAULA_I3_F2_EXCEL_ORIGINAL_DEV_ONLY_20261123
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
+          node --check tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs
+          node tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cxorbia-i3-f2-original-registry-${{ github.run_id }}
-          path: .tmp/i3-f2-register-original-periods/result.json
+          path: |
+            .tmp/i3-f2-register-original-periods/result.json
+            .tmp/i3-f2-operational-dev/receipt.json
           if-no-files-found: warn
           retention-days: 30
 
