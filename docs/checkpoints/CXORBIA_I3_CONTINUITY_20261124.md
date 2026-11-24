@@ -12,8 +12,8 @@ Checkpoint de continuidad del plan vigente y del trabajo paralelo. Complementa e
 | Plan congelado | `PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json`: **82 tareas**; 63 I3, 7 I4, 6 estabilización y 6 evolución |
 | Cobertura / aceptación | **21 dominios, 6 MATCH** conservados en su alcance documentado. Las aceptaciones **B4/B5/B6/B7** permanecen; no reabrirlas sin drift reproducible. Preparación de fuente y runner PASS no equivalen a cierre integral |
 | Parent observado del paquete | `123d62ea1664f0d7b70be254da34998faa519175`; referencia de integración, no puntero futuro |
-| Nuevo source / tree | `9b6ee21643406be44e822dad5cd0031de6c0ce9b` / `a73f5579a5d791012e911d5ca3e74d343b716a1d` |
-| Nuevo HEAD/control / matriz / ledger | `commit que contiene este checkpoint; resolver HEAD vivo en GitHub` / `RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V392.json` / `CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V719_2026-11-24.json` |
+| Nuevo source / tree | `9b952d348e7cdf06a7fa0ec1444d6856d270cbe7` / `4eb3d72c8d86c97212292020096bbf9dbd00e1fe` |
+| Nuevo HEAD/control / matriz / ledger | `commit que contiene este checkpoint; resolver HEAD vivo en GitHub` / `RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V393.json` / `CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V720_2026-11-24.json` |
 | Source realmente servido | `cbe7bb9d79805782d256fa432a406c1843beee85` |
 | Tree servido | `f07d810e2f2787df49f4df3e970a0aa2a5723175` |
 | Runtime DEV | `cxorbia-live-hr-dev-00389-p4r` |
@@ -25,7 +25,7 @@ Source y control quedan ligados por los hashes del descriptor. Resolver HEAD viv
 
 ## Evidencia nueva y trabajo integrado
 
-Root integró el paquete acumulativo y comprobó **584 pruebas locales en 24 suites, cero FAIL**, incluidos los 12 casos de preparación del secreto de correo sin red. La CI canónica del commit de control aporta el readback remoto correspondiente. Son pruebas de fuente/control; no acreditan autenticación SMTP, durabilidad real después de reinicio, escritura bidireccional remota ni aceptación integral de dominios.
+El paquete previo `9b6ee216` acreditó **584 pruebas locales en 24 suites, cero FAIL**, incluidos los 12 casos de preparación del secreto de correo sin red. La CI canónica del commit de control aporta el readback remoto correspondiente. Son pruebas de fuente/control; no acreditan autenticación SMTP, durabilidad real después de reinicio, escritura bidireccional remota ni aceptación integral de dominios.
 
 - **VRM-370:** el owner `materialize` conserva el digest original Excel en `source.sourceRevision` y publica la revisión runtime coherente en el nivel superior. La rematerialización durable es idempotente; se mantiene el guard de discrepancias.
 - **VRM-371:** vista interna HR durable por tenant/proyecto/binding/versión de lector; fragmentos inmutables y puntero transaccional en Firestore existente. Autenticación antes de persistir, frescura visible, sin fallback de comandos/KPI. El watcher descarta prefetch antiguo cuando detecta otra revisión.
@@ -36,7 +36,7 @@ Root integró el paquete acumulativo y comprobó **584 pruebas locales en 24 sui
 
 ## Bloqueos vigentes
 
-**Make — PROVIDER_FAILURE.** RUN2769 comprobó la organización pausada y capacidad agotada: 14067 consumidos sobre 14000 disponibles. El lector Graph no recupera servicio simplemente activando el escenario. No repetir D08/F3/A08 ni otros intentos que dependan de HR mientras siga este bloqueo. No hubo compra de créditos; precio e impuestos efectivos de la cuenta no están cotizados. La decisión de capacidad/coste pertenece a Paula cuando no pueda resolverse dentro de una autorización existente.
+**Make — capacidad recuperada.** Paula compró 2000 créditos. Readback 2026-11-24 14:44:40–14:44:46 UTC: 16000 totales, 14076 consumidos, **1924 disponibles**, organización y equipo sin pausa, lector/escritor activos bajo demanda, autoPurchase=false. El PROVIDER_FAILURE de RUN2769 queda histórico; la capacidad no acredita todavía una lectura HR fresca. El primer readback fresco se ejecutará dentro del mismo paired, sin añadir una lectura previa redundante. No hubo compra del asistente.
 
 **Correo — autenticación y configuración aún no acreditadas.** El PASS TLS de POP995/SMTP465 de RUN2766 comprueba transporte/certificado, no credencial ni envío/recepción. Falta credencial propia utilizable y activación protegida del buzón, seguida de una prueba consentida con ID/ACK externo, readback e aislamiento por usuario. No afirmar enviado ni repetir TLS por rutina.
 
@@ -82,3 +82,18 @@ Root integró el paquete acumulativo y comprobó **584 pruebas locales en 24 sui
 ## Preparación de activación de correo
 
 El updater DEV existente conserva o crea la clave de cifrado únicamente bajo las condiciones probadas, monta versión numérica y prepara MAILBOX=true / SEND=false. La política de proveedor permite la capacidad SMTP, pero la variable de envío permanece cerrada. No se creó un secreto, cambió IAM, autenticó un buzón ni envió correo en esta entrega. La preparación usa el carril único y no añade YAML/jobs. El inventario del siguiente paired DEV incluye 48 rutas, añadiendo core/data-source.js; el artefacto actualmente servido conserva sus 47 rutas acreditadas.
+
+
+## Actualización vigente: VRM-372 y reanudación con presupuesto
+
+Source acumulativo `9b952d348e7cdf06a7fa0ec1444d6856d270cbe7`, tree `4eb3d72c8d86c97212292020096bbf9dbd00e1fe`, conserva íntegro el paquete9b6ee216 y añade solo los dos owners demostrados del polling: `app/index-backend-dev.html` y `app/adapters/tya-live-source-refresh-watch-v2.js`.
+
+- **615 pruebas PASS, cero FAIL, 26 suites**. Focal:53 PASS. El reproducer previo tenía8FAIL de14casos; la revisión independiente confirmó corrección de los dos riesgos detectados.
+- Frecuencia automática predeterminada300s en lugar de20s; cero lecturas automáticas en pestaña oculta; intentos agrupados por tenant/proyecto/UID/rol/namespace. Refresh manual, editor cerrado, comandos y gates estrictos conservan `fresh=1`.
+- Una vista durable last_confirmed inicia la primera comprobación externa al publicarse. Solo una comprobación fresca con fecha real y contexto exacto permite omitir una repetición inmediata. El mapa de tiempos no es una nueva autoridad de datos.
+- Ahorro modelado del polling:15veces menos frecuencia por pestaña visible; el consumo real posterior requiere readback. No se cambian las38hojas originales ni el par de lecturas independientes por scope.
+- Scope, reproducer, pruebas y capacidad: `CXORBIA_I3_VRM372_HR_POLL_BUDGET_PRE_EDIT_TRUTH_20261124.json`, `CXORBIA_I3_VRM372_HR_POLL_BUDGET_SOURCE_PROOF_20261124.json`, `CXORBIA_I3_VRM372_CUMULATIVE_PUBLISHED_SOURCE_20261124.json`, `CXORBIA_I3_MAKE_CAPACITY_RESTORED_20261124.json`.
+
+**Orden vigente:** una sola materialización runtime+Hosting del source declarado por `[i3-paired-dev-once]`; sellar su readback exacto y la recuperación HR. Después seed durable autenticado, revisión de cuota y F3 aislado con reserva de restauración/limpieza; corrección del segundo anticipo con CAS nuevo por job posterior. D08/A08 se ejecutan sobre ese sello y con presupuesto medido. No combinar job financiero con el paired ni reducir las sesiones o negativas contractuales para ahorrar.
+
+La organización activa sustituye el hold histórico de cuota. Siguen **I3 HOLD,6MATCHde21 y B4/B5/B6/B7 preservados** hasta evidencias funcionales específicas. El paquete615PASS aún no constituye nuevo DEV ni cierre de dominio. I4 no autorizada; producción DO_NOT_TOUCH.
