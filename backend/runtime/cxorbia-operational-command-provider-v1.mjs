@@ -418,7 +418,11 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       'submittedAt','sourceSnapshotAt','boleto','comboAmt',
       // The HR snapshot owns these validation flags. Leaving their old outer
       // values while refreshing hrManaged creates false reviews on assigned rows.
-      'reviewRequired','reviewReasons'
+      'reviewRequired','reviewReasons',
+      // F3: refresh the same source-owned values at both durable read levels.
+      // Payment confirmations and other platform-owned finance fields are excluded.
+      'cinemaId','sucursal','ciudad','pais','country','quincena','franja','franjaCode',
+      'formato','escenario','tipoCombo','metodoPago','currency','honorario'
     ];
     const operationalHrPatch=Object.fromEntries(operationalHrFields
       .filter(key=>Object.hasOwn(hrManaged,key)||Object.hasOwn(candidate,key))
@@ -439,7 +443,14 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       // Explicit null from HR clears stale dates; unrelated CX financial state
       // is never inferred from a questionnaire or overwritten by this mirror.
       ...operationalHrPatch,
-      hrManaged:candidate.hrManaged
+      hrManaged:candidate.hrManaged,
+      // Preserve an existing platform request separately while HR keeps authority
+      // over current operational values. This record is never remote-write proof.
+      ...(platformPending&&!existing.hrPendingFields?.shopperId?{hrPendingFields:{
+        ...(existing.hrPendingFields||{}),shopperId:{eventId:null,status:'legacy_intent_requires_base',
+          requestedValue:durableShopper,origin:'platform',observedVersion:existing.version??null,
+          sourceRevisionAtObservation:sourceRevision,providerAck:false}
+      }}:{})
     });
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
     if(same)return {providerWrites:0,created:false,idempotentReplay:true};

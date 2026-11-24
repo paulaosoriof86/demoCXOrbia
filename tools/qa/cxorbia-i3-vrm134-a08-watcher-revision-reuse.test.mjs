@@ -63,7 +63,7 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
   };
   vm.runInNewContext(watcherSource, sandbox, { filename: 'tya-live-source-refresh-watch-v2.js' });
   return {
-    window, CX, requests, reconciliations, timerCallbacks,
+    window, CX, document, requests, reconciliations, timerCallbacks,
     setProviderRevision: rev => { providerRevision = rev; },
     authorityReady: async () => windowListeners.get('cx:protected-auth-hr-authority-ready')?.({ detail: window.CX_PROTECTED_AUTH_HR_AUTHORITY }),
     poll: async () => timerCallbacks[0]?.()
@@ -147,4 +147,47 @@ test('A08 keeps independent HR revision validation before atomic publication', (
   assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision)') >= 0);
   assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision)') < reconcile.indexOf('publishComposition(candidate)'));
   assert.match(authoritySource, /HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION/);
+});
+
+test('VRM364 same-revision protected polling finishes the updating badge',async()=>{
+  const h=setup();await h.poll();
+  assert.equal(h.CX.dataSource.updating,false);
+  assert.equal(h.CX.dataSource.runtimeReadActive,true);
+  assert.equal(h.CX.data.previewMeta.sourceRevision,'revision-a');
+});
+test('VRM364 fresh HR read clears its stale warning and preserves unrelated warnings',async()=>{
+  const h=setup();h.CX.dataSource.warnings=['Revisión de identidad pendiente','Lectura HR viva no disponible: HTTP 503'];
+  await h.poll();
+  assert.deepEqual(Array.from(h.CX.dataSource.warnings),['Revisión de identidad pendiente']);
+  h.document.activeElement={tagName:'INPUT'};h.setProviderRevision('revision-b');
+  await h.poll();await h.poll();
+  assert.equal(h.CX.dataSource.warnings.length,2);
+  assert.equal(h.CX.dataSource.warnings[0],'Revisión de identidad pendiente');
+});
+test('VRM364 editing defers protected recomposition and closing rereads the newest revision',async()=>{
+  const h=setup();h.document.activeElement={tagName:'INPUT'};
+  h.setProviderRevision('revision-b');await h.poll();
+  assert.equal(h.reconciliations.length,0);assert.equal(h.CX.dataSource.updating,false);
+  assert.equal(h.CX.dataSource.pendingLiveRevision,'revision-b');
+  assert.equal(h.CX.data.previewMeta.sourceRevision,'revision-a');
+  h.setProviderRevision('revision-c');h.document.activeElement=h.document.body;
+  const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();
+  assert.equal(result.revision,'revision-c');assert.equal(h.requests.length,2);
+  assert.deepEqual(h.reconciliations,[['live_watcher_revision_change',true]]);
+  assert.equal(h.CX.data.previewMeta.sourceRevision,'revision-a');
+});
+test('VRM364 visible modal also defers and a reverted source causes no stale recomposition',async()=>{
+  const h=setup();h.document.querySelectorAll=()=>[{getClientRects:()=>[{}]}];
+  h.setProviderRevision('revision-b');await h.poll();assert.equal(h.reconciliations.length,0);
+  h.setProviderRevision('revision-a');h.document.querySelectorAll=()=>[];
+  await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();
+  assert.equal(h.requests.length,2);assert.equal(h.reconciliations.length,0);
+  assert.equal(h.CX.dataSource.pendingLiveRevision,null);
+});
+test('VRM364 closing an editor never reuses the former authenticated context',async()=>{
+  const h=setup();h.document.activeElement={tagName:'TEXTAREA'};
+  h.setProviderRevision('revision-b');await h.poll();
+  h.CX.backendAuth.context=()=>({authenticated:false});h.document.activeElement=h.document.body;
+  await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();
+  assert.equal(h.requests.length,1);assert.equal(h.reconciliations.length,0);
 });

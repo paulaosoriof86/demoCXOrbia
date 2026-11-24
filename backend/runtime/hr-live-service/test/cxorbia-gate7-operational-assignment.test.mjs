@@ -528,3 +528,52 @@ test('VRM143 bulletin write failure rolls back request, receipt and audit togeth
  f.db._set=(p,...rest)=>{if(p.includes('/bulletins/'))throw new Error('SYNTHETIC_NOTICE_WRITE_FAILURE');return set(p,...rest);};
  const before=f.snapshot(),result=await f.service.execute('shopper-token',f.command('visit.cancel',1,'atomic-request',{requestOnly:true,reason:'request'}));assert.equal(result.providerAck,false);assert.equal(result.code,'SYNTHETIC_NOTICE_WRITE_FAILURE');assert.equal(f.snapshot(),before);
 });
+
+
+test('F3 / changed historical and current HR dimensions update both durable read levels',async()=>{
+  for(const periodId of ['project-a-2025-06','project-a-2026-11']){
+    const db=new FakeFirestore(),initial=hrSnapshot();
+    initial.currentPeriodId='unrelated-current-period';
+    Object.assign(initial.visits[0],{periodId,periodKey:periodId.slice(-7),escenario:'Boletería',tipoCombo:'Combo A',formato:'2D',
+      franja:'WK',franjaCode:'WK',metodoPago:'Efectivo',honorario:100});
+    await provider(db).reconcileSnapshot(initial,{sourceRevision:'revision-initial'});
+    const path=visitPath('HR!2'),prior=db.get(path);
+    db.seed(path,{...prior,financeMarker:{paid:true,amount:456},paymentState:'confirmed',platformNote:'preserve'});
+    const changed=structuredClone(initial);
+    Object.assign(changed.visits[0],{escenario:'APP',tipoCombo:'Combo B',formato:'3D',franja:'WKND',franjaCode:'WKND',metodoPago:'Tarjeta',honorario:125});
+    const result=await provider(db).reconcileSnapshot(changed,{sourceRevision:'revision-changed'}),row=db.get(path);
+    assert.equal(result.providerWrites,1);
+    for(const key of ['escenario','tipoCombo','formato','franja','franjaCode','metodoPago','honorario']){
+      assert.equal(row[key],changed.visits[0][key]);assert.equal(row.hrManaged[key],changed.visits[0][key]);
+    }
+    assert.deepEqual(row.financeMarker,{paid:true,amount:456});assert.equal(row.paymentState,'confirmed');assert.equal(row.platformNote,'preserve');
+    assert.equal(row.periodId,periodId);assert.equal(row.hrSourceRevision,'revision-changed');
+    assert.equal((await provider(db).reconcileSnapshot(changed,{sourceRevision:'revision-changed'})).providerWrites,0);
+    Object.assign(changed.visits[0],{escenario:null,tipoCombo:null,formato:null,metodoPago:null,honorario:null});
+    await provider(db).reconcileSnapshot(changed,{sourceRevision:'revision-cleared'});
+    const cleared=db.get(path);
+    for(const key of ['escenario','tipoCombo','formato','metodoPago','honorario']){assert.equal(cleared[key],null);assert.equal(cleared.hrManaged[key],null);}
+    assert.equal(cleared.paymentState,'confirmed');
+  }
+});
+test('F3 / pending platform assignment survives as intent while current HR remains authoritative',async()=>{
+  const db=new FakeFirestore(),path=visitPath('HR!2');
+  db.seed(path,{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',
+    hrRowId:'HR!2',estado:'asignada',shopperId:'shopper-platform',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4,
+    hrPendingFields:{tipoCombo:{eventId:'prior-event',requestedValue:'Combo new',status:'pending_hr'}}});
+  await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'revision-observed'});
+  const row=db.get(path),intent=row.hrPendingFields.shopperId;
+  assert.equal(row.shopperId,null);assert.equal(row.assignmentSyncStatus,null);
+  assert.equal(intent.requestedValue,'shopper-platform');assert.equal(intent.status,'legacy_intent_requires_base');
+  assert.equal(intent.providerAck,false);assert.equal(intent.eventId,null);assert.equal(intent.observedVersion,4);
+  assert.deepEqual(row.hrPendingFields.tipoCombo,{eventId:'prior-event',requestedValue:'Combo new',status:'pending_hr'});
+  assert.equal((await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'revision-observed'})).providerWrites,0);
+  assert.deepEqual(db.get(path).hrPendingFields,row.hrPendingFields);
+});
+test('F3 / existing causal intent is not relabelled or replaced by reconciliation',async()=>{
+  const db=new FakeFirestore(),path=visitPath('HR!2'),intent={eventId:'hfe-exact',eventDigest:'a'.repeat(64),requestedValue:'shopper-platform',status:'pending_hr',providerAck:false};
+  db.seed(path,{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',
+    estado:'asignada',shopperId:'shopper-platform',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4,hrPendingFields:{shopperId:intent}});
+  await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'revision-next'});
+  assert.deepEqual(db.get(path).hrPendingFields.shopperId,intent);
+});

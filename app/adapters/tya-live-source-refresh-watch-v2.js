@@ -24,7 +24,7 @@
   }
   function endpoint(){if(window.CX_TYA_LIVE_SOURCE_URL)return String(window.CX_TYA_LIVE_SOURCE_URL);const scope=runtimeScope();if(!scope.tenantId||!scope.projectId)return '';return '/api/tenants/'+encodeURIComponent(scope.tenantId)+'/projects/'+encodeURIComponent(scope.projectId)+'/hr-live';}
   const pollMs=Math.max(15000,Number(window.CX_TYA_LIVE_POLL_MS||20000));
-  let currentRevision=window.CX_TYA_HR_LIVE_META?.revision||null,checking=false,failures=0,pending=null,currentContentSignature=null;
+  let currentRevision=window.CX_TYA_HR_LIVE_META?.revision||null,checking=false,failures=0,pending=null,currentContentSignature=null,pendingProtectedRefresh=false;
   const VOLATILE=new Set(['generatedAt','sourceReadAt','sourceSnapshotAt','lastSnapshotAt','tabRegistryObservedAt','observedAt','refreshedAt','loadedAt','updatedAt','cacheAgeMs','refreshStartedAt','refreshFinishedAt','refreshDurationMs']);
   function stableValue(v){if(Array.isArray(v))return v.map(stableValue);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v).sort()){if(!VOLATILE.has(k)&&k!=='_runtime')o[k]=stableValue(v[k]);}return o;}return v;}
   function signature(snapshot){try{return JSON.stringify(stableValue({periods:snapshot?.periods||[],visits:snapshot?.visits||[],shoppers:snapshot?.shoppers||[],periodOperationalSummary:snapshot?.periodOperationalSummary||[]}));}catch(_){return '';}}
@@ -48,6 +48,14 @@
   }
   function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
+  function finishProtectedCheck(meta,deferred=false){
+    if(CX.dataSource){
+      const ownWarning=/^(Lectura HR viva no disponible:|Hay cambios en la hoja de ruta\. Se aplicarán al cerrar la edición\.$|Esperando autoridad canónica Auth \+ Firestore \+ HR|Esperando autenticación y autoridad canónica antes de leer HR viva|Validando lectura HR viva)/;
+      const otherWarnings=(Array.isArray(CX.dataSource.warnings)?CX.dataSource.warnings:[]).filter(warning=>!ownWarning.test(String(warning)));
+      CX.dataSource.updating=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.lastLiveCheckAt=new Date().toISOString();CX.dataSource.pendingLiveRevision=deferred?meta.revision:null;CX.dataSource.warnings=deferred?otherWarnings.concat('Hay cambios en la hoja de ruta. Se aplicarán al cerrar la edición.'):otherWarnings;
+    }
+    refreshBadge();
+  }
   function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length>0&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length>0);}
   function markLive(meta){
     window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
@@ -75,7 +83,7 @@
   function restoreModel(s){if(!CX.data||!s)return;if(s.periodId&&CX.data.projects?.some(p=>String(p.id)===String(s.periodId)))CX.data.currentPeriodId=s.periodId;if(s.projectId)CX.data.currentProjectId=s.projectId;if(CX.session&&s.view)CX.session.view=s.view;}
   function restoreScroll(s){if(!s)return;const run=()=>{const content=document.querySelector('.content'),rail=document.getElementById('rail');if(content){content.scrollTop=s.contentTop;content.scrollLeft=s.contentLeft;}if(rail)rail.scrollTop=s.railTop;window.scrollTo(s.windowX,s.windowY);};requestAnimationFrame(()=>requestAnimationFrame(run));}
   function emitOnce(reason,detail,state){if(!CX.bus?.emit)return {ok:false,reason:'bus_missing'};if(busy()){pending={reason,detail,state};return {ok:true,deferred:true};}pending=null;CX.bus.emit('visit-flow',Object.assign({reason,preserveUiState:true},detail||{}));restoreScroll(state);return {ok:true,deferred:false};}
-  function flush(){if(!pending||busy())return false;const p=pending;pending=null;emitOnce(p.reason,p.detail,p.state);return true;}
+  function flush(){if(busy())return false;if(pendingProtectedRefresh&&!checking){pendingProtectedRefresh=false;return check('editor_closed');}if(!pending)return false;const p=pending;pending=null;emitOnce(p.reason,p.detail,p.state);return true;}
   function applySilent(snapshot,runtime,reason){const fn=window.CX_TYA_APPLY_LIVE_SNAPSHOT;if(typeof fn!=='function')throw new Error('Adapter in-place no disponible');const state=capture(),original=CX.bus?.emit;let intercepted=0;if(original)CX.bus.emit=function(event,...args){if(event==='visit-flow'){intercepted++;return;}return original.call(CX.bus,event,...args);};try{return {result:fn(snapshot,runtime,{reason}),state,intercepted};}finally{if(original)CX.bus.emit=original;}}
   function recompose(reason){if(!fullVisual)return {ok:true,skipped:true};const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;if(typeof fn!=='function')return {ok:false,skipped:true,reason:'overlay_not_ready'};return fn(reason);}
   // VRM-134/A08: the protected authority bridge has just checked this revision
@@ -90,7 +98,7 @@
     if(String(authority.tenantId||'')!==scope.tenantId||String(authority.projectId||'')!==scope.projectId)return false;
     if(!user?.uid||String(authority.actorUid||'')!==String(user.uid))return false;
     if(!Number.isFinite(elapsed)||elapsed<0||elapsed>5000)return false;
-    currentRevision=revision;failures=0;
+    currentRevision=revision;failures=0;pendingProtectedRefresh=false;finishProtectedCheck({revision});
     return true;
   }
   async function check(reason){
@@ -110,11 +118,15 @@
         const protectedRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim();
         if(protectedRevision)currentRevision=protectedRevision;
         if(meta.revision!==currentRevision){
+          // Keep the user's open editor intact. Only queue the need for a fresh
+          // check, never a stale snapshot; session and scope are rechecked then.
+          if(busy()){pendingProtectedRefresh=true;finishProtectedCheck(meta,true);failures=0;return {ok:true,changed:true,deferred:true,revision:meta.revision,authority:'protected_auth_hr_reconcile'};}
+          pendingProtectedRefresh=false;
           window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('live_watcher_revision_change',true);
           failures=0;
           return {ok:true,changed:true,delegated:true,revision:meta.revision,authority:'protected_auth_hr_reconcile'};
         }
-        failures=0;
+        failures=0;pendingProtectedRefresh=false;finishProtectedCheck(meta);
         return {ok:true,changed:false,revision:meta.revision,authority:'protected_auth_hr_reconcile'};
       }
       const changed=!currentRevision||meta.revision!==currentRevision;

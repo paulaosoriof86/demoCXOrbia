@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-exact-owner-scope.v1",
+  "createdAt": "2026-11-24T08:54:20.564684+00:00",
+  "iteration": "I3",
+  "state": "P0_PROVEN_BEFORE_CODE",
+  "classification": "FUNCTIONAL_DEFECT",
+  "findingId": "VRM-363",
+  "ownerFunction": "reconcileVisitDoc",
+  "expectedParentSha": "7c06392ce4562dc67d8b895c0ad843696073fcda",
+  "productSourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V386.json",
+  "moduleTruthBlob": "b3a001e8ab9344636bc1e9d29024c57a136e6f94",
+  "moduleTruth": [
+    {
+      "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "latestApprovedSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "latestApprovedBlob": "7d0938f878ee8ded78daae37169d2bd0ee48e31a",
+      "F9": "Sealed module truth row and accepted source lineage",
+      "sourceSuccessor": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+      "head": "7c06392ce4562dc67d8b895c0ad843696073fcda",
+      "liveSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "liveRuntime": "cxorbia-live-hr-dev-00385-qvp",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    }
+  ],
+  "reproduction": {
+    "sourceRevisionChanges": true,
+    "nestedHrManagedChanges": true,
+    "outerScenarioComboFormatStaysOld": true,
+    "pendingAssignmentMayBeOverwrittenWithoutRetainedIntent": true,
+    "historicalAndCurrentPeriods": true,
+    "providerWrites": 0,
+    "realDataWrites": 0
+  },
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs"
+  ],
+  "allowedChanges": [
+    "Mirror explicit HR-owned visit fields at outer and nested read levels",
+    "Keep former pending platform intent as non-ACK audit state; HR remains current authority",
+    "Preserve finance confirmations, payment state and unrelated platform fields"
+  ],
+  "remoteAckClaimed": false,
+  "production": false,
+  "singleWriter": "root",
+  "requiredEvidence": [
+    "Historical and current field changes match",
+    "Same external revision replay writes zero",
+    "Explicit null clears source-owned values",
+    "Platform finance fields untouched",
+    "Existing pending causal event untouched",
+    "No automatic retry or synthetic remote ACK"
+  ]
+}
