@@ -31,7 +31,9 @@ const suites=[
   'tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs',
   'tools/qa/cxorbia-i3-finance-advance-metadata.test.mjs',
   'tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs',
-  'tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs'
+  'tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs',
+  'tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs',
+  'tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs'
 ];
 const test=spawnSync(process.execPath,['--test','--test-reporter=tap',...suites],{encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});
 const log=(test.stdout||'')+(test.stderr||'');fs.writeFileSync(path.join(out,'f3-review-mail-source.tap'),log);

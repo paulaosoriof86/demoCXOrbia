@@ -236,7 +236,7 @@ function protectedBrowser(){
       {suppressEvents:true,dataPatch:{sourceMode:'tya_hr_live_all_periods_plus_firestore_exact_overlay_dev'}});
     b.CX.dataSource.sourceRef='hr-live-all-periods+firestore-authenticated-exact-overlay';
     b.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,atomicPublication:true,tenantId:binding.scope.tenantId,
-      projectId:binding.scope.projectId,sourceRevision:revision,actorUid:'verified',externalReadCurrent,sourceReadAt,at:new Date().toISOString()};
+      projectId:binding.scope.projectId,sourceRevision:revision,actorUid:'verified',role:ctx.role,authNamespace:ctx.authNamespace,externalReadCurrent,sourceReadAt,at:new Date().toISOString()};
     b.window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE={ready:true,completed:true,sourceRevision:revision};
     return meta;
   };
@@ -264,21 +264,25 @@ test('actual watcher preserves stale freshness, confirms same revision and conve
   b.window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE=(...args)=>schedules.push(args);
   b.ctx.fetch=async url=>{calls.push(url);const value=responses.shift();if(value instanceof Error)throw value;return {ok:true,json:async()=>value};};
   vm.runInContext(watcher,b.ctx);
-  b.window.dispatchEvent({type:'cx:protected-auth-hr-authority-ready'});
-  assert.equal(calls.length,0);assert.equal(b.CX.data.previewMeta.externalReadCurrent,false);assert.equal(b.CX.data.previewMeta.sourceReadAt,first);
-  responses.push(Error('EXTERNAL_PROVIDER_DOWN'));assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('poll')).ok,false);
-  assert.equal(b.CX.data.previewMeta.externalReadCurrent,false);assert.equal(b.CX.data.previewMeta.sourceReadAt,first);
+  // A recovered durable view triggers an immediate background external check;
+  // a provider failure retains its real last-confirmed timestamp and revision.
+  responses.push(Error('EXTERNAL_PROVIDER_DOWN'));
+  await b.listeners['cx:protected-auth-hr-authority-ready'].at(-1)();
+  assert.equal(calls.length,1);assert.equal(b.CX.data.previewMeta.externalReadCurrent,false);assert.equal(b.CX.data.previewMeta.sourceReadAt,first);
+  // Subsequent transitions are explicit reads; automatic polling is separately
+  // covered with a virtual clock in the VRM372 budget tests.
   const meta=(revision,at)=>({revision,sourceReadAt:at,externalReadCurrent:true,sourceSafe:true,runtimeRead:true});
   responses.push(meta(a,'2026-11-24T09:00:00.000Z'));
-  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('poll')).changed,false);
+  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('qa_explicit_refresh')).changed,false);
   assert.equal(b.CX.data.previewMeta.externalReadCurrent,true);assert.equal(schedules.length,0);
   responses.push(meta(next,'2026-11-24T10:00:00.000Z'));
-  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('poll')).delegated,true);
+  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('qa_explicit_refresh')).delegated,true);
   assert.deepEqual(schedules,[['live_watcher_revision_change',true]]);
   b.publish(next,'2026-11-24T10:00:00.000Z',true);
-  b.window.dispatchEvent({type:'cx:protected-auth-hr-authority-ready'});
+  // The explicit next probe supplies the new independent observation; an
+  // additional ready event here would also be due for this historical timestamp.
   responses.push(meta(next,'2026-11-24T10:01:00.000Z'));
-  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('poll')).changed,false);assert.equal(schedules.length,1);
+  assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('qa_explicit_refresh')).changed,false);assert.equal(schedules.length,1);
   assert.equal(b.CX.data.previewMeta.sourceRevision,next);assert.equal(b.CX.data.previewMeta.sourceReadAt,'2026-11-24T10:01:00.000Z');
   assert.ok(calls.every(url=>new URL(url,'https://example.invalid').searchParams.get('fresh')==='1'));
 });

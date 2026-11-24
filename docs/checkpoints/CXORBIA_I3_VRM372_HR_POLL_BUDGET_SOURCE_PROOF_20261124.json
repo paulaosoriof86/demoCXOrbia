@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-372",
+  "iteration": "I3",
+  "state": "SOURCE_PROVEN_PENDING_CANONICAL_CI_DEV",
+  "expectedParentSha": "20a731a8dea3e7e6613d08c518da3be67baefac9",
+  "sourceScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM372_HR_POLL_BUDGET_PRE_EDIT_TRUTH_20261124.json",
+    "gitBlob": "be32afac6070127463f0481ac27f41173e28936b"
+  },
+  "recordedAt": "2026-11-24T14:58:02.216661+00:00",
+  "productOwnerBlobs": {
+    "app/index-backend-dev.html": "fa042239619022043866dbdd9e5a86da77b433e5",
+    "app/adapters/tya-live-source-refresh-watch-v2.js": "9e2b20ba5d0200e979d71197f6ed686ff70f440f"
+  },
+  "allProductChanges": [
+    "app/index-backend-dev.html",
+    "app/adapters/tya-live-source-refresh-watch-v2.js"
+  ],
+  "beforeReproducer": {
+    "tests": 14,
+    "pass": 6,
+    "fail": 8,
+    "logSha256": "a45d313df16b56cc1309c619f6c5f1ab47a8f83cf6103c378c892569bb8a4fe9"
+  },
+  "focalAfter": {
+    "tests": 53,
+    "pass": 53,
+    "fail": 0,
+    "logSha256": "7b24707d55514e120e0976c932a06124fdd6a11f1a1623db9e5e75b688fcc8fa"
+  },
+  "cumulativePackage": {
+    "schemaVersion": 1,
+    "scope": "FOCAL_SOURCE_ONLY",
+    "pass": true,
+    "tests": 615,
+    "failed": 0,
+    "suites": [
+      "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-f3-field-editor.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-hr-review-observations.test.mjs",
+      "backend/runtime/hr-live-service/test/mailbox-user-pop3.test.mjs",
+      "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+      "tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs",
+      "tools/qa/cxorbia-i3-hr-review-ui.test.mjs",
+      "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+      "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs",
+      "tools/qa/cxorbia-i3-vrm369-finance-metadata.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+      "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+      "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+      "backend/runtime/hr-live-service/test/mailbox-user-smtp.test.mjs",
+      "backend/runtime/hr-live-service/test/mailbox-user-mail-ui.test.mjs",
+      "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs",
+      "tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs",
+      "tools/qa/cxorbia-i3-finance-advance-metadata.test.mjs",
+      "tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs",
+      "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs",
+      "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+      "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs"
+    ],
+    "logSha256": "86afd151a4e06551be3f3e91f73c33ec632ea3a7af6d08ca8f7442ccc26afe23",
+    "providerAckProven": false,
+    "mailboxConnected": false,
+    "domainClosure": false,
+    "production": false
+  },
+  "independentReview": {
+    "sameOwnerOnly": true,
+    "recoveredViewFreshCheckImmediately": true,
+    "readyAuthorityRoleNamespaceExact": true
+  },
+  "budget": {
+    "periodicReadsReductionFactor": 15,
+    "defaultIntervalMs": 300000,
+    "hiddenAutomaticReads": 0,
+    "oneFullRefreshCredits": 76,
+    "visibleTabSteadyCreditsPerMinuteModel": 15.2,
+    "costIsNotLiveMeasuredAfterDeployment": true
+  },
+  "production": false,
+  "providerExecutions": 0,
+  "devPublished": false,
+  "newDomainPromotions": 0,
+  "terminalCertified": false
+}

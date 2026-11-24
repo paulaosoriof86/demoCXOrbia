@@ -9,6 +9,8 @@ const authoritySource = fs.readFileSync('app/adapters/tya-protected-auth-hr-auth
 function setup({ revision = 'revision-a', publishedRevision = revision, authorityAgeMs = 0, actorUid = 'admin-1', authenticated = true, protectedRuntime = true } = {}) {
   const windowListeners = new Map();
   const timerCallbacks = [];
+  let clockNow=Date.now(),pollIntervalMs=0;
+  class TestDate extends Date {static now(){return clockNow;}}
   const requests = [];
   const reconciliations = [];
   const ctx = { authenticated, tenantId: 'tya', projectIds: ['cinepolis'], role: 'admin' };
@@ -34,6 +36,7 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
     firebase: { auth: () => ({ currentUser: { uid: 'admin-1' } }) },
     CX_PROTECTED_AUTH_HR_AUTHORITY: {
       applied: true, atomicPublication: true, tenantId: 'tya', projectId: 'cinepolis',
+      role:'admin',authNamespace:'',externalReadCurrent:true,sourceReadAt:new Date(clockNow-authorityAgeMs).toISOString(),
       actorUid, sourceRevision: revision, at: new Date(Date.now() - authorityAgeMs).toISOString()
     },
     CX_PROTECTED_AUTH_HR_BOOT_RECONCILE: {
@@ -52,13 +55,13 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
     location: { search: protectedRuntime
       ? '?cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'
       : '?cxProjectId=cinepolis' },
-    URLSearchParams, console, Date,
+    URLSearchParams, console, Date:TestDate,
     fetch: async url => {
       requests.push(String(url));
       return { ok: true, json: async () => ({ sourceSafe: true, runtimeRead: true, revision: providerRevision }) };
     },
     setTimeout: () => 0,
-    setInterval: callback => { timerCallbacks.push(callback); return 1; },
+    setInterval: (callback,ms) => { timerCallbacks.push(callback); pollIntervalMs=ms; return 1; },
     requestAnimationFrame: callback => callback()
   };
   vm.runInNewContext(watcherSource, sandbox, { filename: 'tya-live-source-refresh-watch-v2.js' });
@@ -66,7 +69,7 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
     window, CX, document, requests, reconciliations, timerCallbacks,
     setProviderRevision: rev => { providerRevision = rev; },
     authorityReady: async () => windowListeners.get('cx:protected-auth-hr-authority-ready')?.({ detail: window.CX_PROTECTED_AUTH_HR_AUTHORITY }),
-    poll: async () => timerCallbacks[0]?.()
+    poll: async () => {clockNow+=pollIntervalMs;return timerCallbacks[0]?.();}
   };
 }
 

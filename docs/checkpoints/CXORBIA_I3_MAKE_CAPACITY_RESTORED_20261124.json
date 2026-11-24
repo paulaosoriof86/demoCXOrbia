@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "cxorbia.make.capacity-readonly.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAtUTC": "2026-11-24T14:44:46Z",
+  "observationStartedAtUTC": "2026-11-24T14:44:40Z",
+  "timestampAuthority": "clock__curr_time immediately before and after provider calls; observedAtUTC is completion boundary, not an invented provider timestamp",
+  "environment": {
+    "zone": "eu2.make.com",
+    "organizationId": 4090072,
+    "teamId": 1975919
+  },
+  "organization": {
+    "id": 4090072,
+    "name": "AyS - TyA",
+    "isPaused": false,
+    "licensedOperations": 10000,
+    "operations": "14076",
+    "operationsExt": "6000",
+    "unusedOperations": "1924",
+    "centicreditsConsumed": "1407600",
+    "centicreditsExtra": "600000",
+    "autoPurchasingActivated": false,
+    "autoPurchaseInProgress": false,
+    "lastReset": "2026-11-19T12:33:54.259Z",
+    "nextReset": "2026-12-19T12:33:54.259Z"
+  },
+  "team": {
+    "id": 1975919,
+    "organizationId": 4090072,
+    "name": "My Team",
+    "isPaused": false,
+    "operations": "14076",
+    "consumedOperations": 14076,
+    "operationsLimit": null
+  },
+  "reader": {
+    "scenario": {
+      "id": 10200465,
+      "name": "CXOrbia B14 — proveedor Graph delegado de lectura por scope (DEV / on-demand)",
+      "teamId": 1975919,
+      "status": "active",
+      "isLockedForEditing": false,
+      "isWaitingOnIncompleteExecutions": false,
+      "incompleteExecutions": 0,
+      "lastEdit": "2026-11-24T10:27:38.268Z"
+    },
+    "trigger": {
+      "moduleId": 1,
+      "module": "scenario-service:StartSubscenario",
+      "kind": "on-demand",
+      "scheduling": {
+        "type": "on-demand"
+      }
+    },
+    "connections": [
+      {
+        "id": 9089470,
+        "status": "ok",
+        "app": "azure",
+        "usedByModules": [
+          2,
+          3
+        ]
+      }
+    ],
+    "moduleCount": 4
+  },
+  "writer": {
+    "scenario": {
+      "id": 10199316,
+      "name": "CXOrbia B14 GT · TEMP TAB Graph ACK/readback/cleanup · QA AISLADO",
+      "teamId": 1975919,
+      "status": "active",
+      "isLockedForEditing": false,
+      "isWaitingOnIncompleteExecutions": false,
+      "incompleteExecutions": 0,
+      "lastEdit": "2026-11-24T10:18:18.118Z"
+    },
+    "trigger": {
+      "moduleId": 1,
+      "module": "scenario-service:StartSubscenario",
+      "kind": "on-demand",
+      "scheduling": {
+        "type": "on-demand"
+      }
+    },
+    "connections": [
+      {
+        "id": 9089470,
+        "status": "ok",
+        "app": "azure",
+        "usedByModules": [
+          12,
+          2,
+          3,
+          15,
+          36,
+          43,
+          20,
+          23
+        ]
+      }
+    ],
+    "moduleCount": 41
+  },
+  "recentHistory": {
+    "from": "2026-11-24T12:26:47Z",
+    "to": "2026-11-24T14:44:46Z",
+    "readerExecutions": 0,
+    "writerExecutions": 0,
+    "additional9OrganizationCreditsSincePreviousCheckAttributed": false
+  },
+  "toolboxes": {
+    "readerId": 4891,
+    "writerId": 4926,
+    "liveStatusVerifiedThisObservation": false,
+    "reason": "Current connected Make surface does not expose toolbox management/read tools. Existing runtime configuration references prior exact endpoints; no toolbox invocation or secret access attempted."
+  },
+  "actionsTaken": {
+    "organizationReads": 1,
+    "teamReads": 1,
+    "scenarioInspections": 2,
+    "readerExecutions": 0,
+    "writerExecutions": 0,
+    "mutations": 0,
+    "purchases": 0,
+    "autoPurchaseChanges": 0
+  }
+}

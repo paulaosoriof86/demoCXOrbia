@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-372",
+  "iteration": "I3",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "recordedAt": "2026-11-24T14:50:42.490615+00:00",
+  "expectedParentSha": "20a731a8dea3e7e6613d08c518da3be67baefac9",
+  "expectedParentTree": "5bd5bd5ffdbc005f09c2902254e573a59eb78191",
+  "existingCandidateSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+  "currentMaterialization": {
+    "builds": 0,
+    "decision": "PASS_I3_F3_SAME_ARTIFACT_ENV_REPAIR",
+    "hostingDeploys": 0,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795519183499000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
+    "hrRevision": "ae6146cde74e9b05677878751b99e3af0f33e723828f19dabef081264f761ce3",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
+    "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+    "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+    "storageRulesDeploys": 0,
+    "verifiedServedAssetCount": 47,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 45384571856,
+    "runNumber": 2767,
+    "runAttempt": 1,
+    "jobId": 138412428050,
+    "jobConclusion": "success",
+    "controlHeadAtDeploy": "3d83c887d1dffff7e8450a144fd4f6714d7a468f",
+    "artifactId": 14914904803,
+    "artifactDigest": "sha256:0b890ce627da82f008f41a7aa604cd909124ff39e9a534782c703ee4b96eacad",
+    "artifactDigestType": "GITHUB_ACTIONS_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2767_F3_SAME_ARTIFACT_ENV_PASS_20261124.json",
+    "originalBuildRunId": 45382309626,
+    "originalBuildReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2766_HR_REVIEW_MAIL_FINANCE_PAIRED_DEV_PASS_20261124.json",
+    "hrLiveVerified": true,
+    "state": "PASS_DEV_SAME_IMAGE_F3_ENV_FUNCTIONAL_C3_PENDING",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+    "fullTaskClosed": false
+  },
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V392.json",
+  "moduleTruthGitBlob": "eb3081c003f142fd9595add72767b37eb7cddfa8",
+  "moduleTruthBeforeEdit": [
+    {
+      "owner": "app/index-backend-dev.html",
+      "domains": [
+        {
+          "domain": "base-router-shell-cache",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "lastApprovedAuthority": "RUN237_PROTECTED_SHOPPER_FIREBASE_LOGIN_ROUTE_FIX",
+          "sourceCommit": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+          "currentCandidateSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+          "currentCandidateTree": "a73f5579a5d791012e911d5ca3e74d343b716a1d"
+        }
+      ],
+      "headGitBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "sourceSuccessorGitBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "servedGitBlob": "eec56cf5e4afc7624c1a6f73841bb28d18617280",
+      "liveSha256": "38460409bee133f1f746156de1e1e5fa3d5db0c7a22c6d0d0b36a64f947c0479",
+      "liveMatchesServedPredecessor": true,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "pendingAcceptedDelta": false
+    },
+    {
+      "owner": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "domains": [
+        {
+          "domain": "canonical-hr-state-adapters",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "lastApprovedAuthority": "P0_PROVEN_RUN285_SOLE_HUMAN_HR_WRITER_FIX",
+          "sourceCommit": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+          "currentCandidateSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+          "currentCandidateTree": "a73f5579a5d791012e911d5ca3e74d343b716a1d"
+        }
+      ],
+      "headGitBlob": "a3fc408138457148e3de45616c804eb5429a8082",
+      "sourceSuccessorGitBlob": "a3fc408138457148e3de45616c804eb5429a8082",
+      "servedGitBlob": "07255fab654487c1bb9a15d2575a9929f34409bd",
+      "liveSha256": "3171229710ad7354d2d4b89835a670c359655e349637281cb2d884407722025e",
+      "liveMatchesServedPredecessor": true,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "pendingAcceptedDelta": true
+    }
+  ],
+  "frozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "tasks": [
+    "A06",
+    "A05",
+    "G02",
+    "B14"
+  ],
+  "observed": {
+    "pageConfiguredPollMs": 20000,
+    "watcherMinimumMs": 15000,
+    "hiddenTabGuard": false,
+    "automaticTriggers": [
+      "poll",
+      "window_focus",
+      "visibility_resume",
+      "initial_load",
+      "backend_auth_ready",
+      "canonical_authority_ready"
+    ],
+    "forceFresh": true,
+    "bindingsPerFullRead": 38,
+    "creditsPerBinding": 2,
+    "creditsPerFullRead": 76,
+    "maximumSteadyCreditsPerMinutePerTab": 228,
+    "evidenceKind": "SOURCE_CONTROL_FLOW_AND_MEASURED_PROVIDER_UNIT_COST_NOT_TIMED_LIVE_BURN_TEST"
+  },
+  "allowedProductFiles": [
+    "app/index-backend-dev.html",
+    "app/adapters/tya-live-source-refresh-watch-v2.js"
+  ],
+  "allowedQaFiles": [
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs",
+    "tools/qa/cxorbia-i3-f3-review-mail-source-proof.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs"
+  ],
+  "afterContract": {
+    "defaultPollMs": 300000,
+    "hiddenAutomaticReads": 0,
+    "coalesceAutomaticTriggersByTenantProjectActor": true,
+    "manualFreshUnchanged": true,
+    "editorClosedFreshUnchanged": true,
+    "serverStrictCommandsAndCertificationUnchanged": true,
+    "independentProviderDoubleReadUnchanged": true,
+    "durableFreshnessLabelUnchanged": true,
+    "autoPurchase": false,
+    "production": false
+  },
+  "preserveIntegralMatch": 6,
+  "humanApprovalsPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "authorization": "Paula 2026-11-24: purchased 2000 credits, optimize and continue existing I3",
+  "providerCapacity": {
+    "schemaVersion": "cxorbia.make.capacity-readonly.v1",
+    "iteration": "I3",
+    "state": "HOLD",
+    "observedAtUTC": "2026-11-24T14:44:46Z",
+    "observationStartedAtUTC": "2026-11-24T14:44:40Z",
+    "timestampAuthority": "clock__curr_time immediately before and after provider calls; observedAtUTC is completion boundary, not an invented provider timestamp",
+    "environment": {
+      "zone": "eu2.make.com",
+      "organizationId": 4090072,
+      "teamId": 1975919
+    },
+    "organization": {
+      "id": 4090072,
+      "name": "AyS - TyA",
+      "isPaused": false,
+      "licensedOperations": 10000,
+      "operations": "14076",
+      "operationsExt": "6000",
+      "unusedOperations": "1924",
+      "centicreditsConsumed": "1407600",
+      "centicreditsExtra": "600000",
+      "autoPurchasingActivated": false,
+      "autoPurchaseInProgress": false,
+      "lastReset": "2026-11-19T12:33:54.259Z",
+      "nextReset": "2026-12-19T12:33:54.259Z"
+    },
+    "team": {
+      "id": 1975919,
+      "organizationId": 4090072,
+      "name": "My Team",
+      "isPaused": false,
+      "operations": "14076",
+      "consumedOperations": 14076,
+      "operationsLimit": null
+    },
+    "reader": {
+      "scenario": {
+        "id": 10200465,
+        "name": "CXOrbia B14 — proveedor Graph delegado de lectura por scope (DEV / on-demand)",
+        "teamId": 1975919,
+        "status": "active",
+        "isLockedForEditing": false,
+        "isWaitingOnIncompleteExecutions": false,
+        "incompleteExecutions": 0,
+        "lastEdit": "2026-11-24T10:27:38.268Z"
+      },
+      "trigger": {
+        "moduleId": 1,
+        "module": "scenario-service:StartSubscenario",
+        "kind": "on-demand",
+        "scheduling": {
+          "type": "on-demand"
+        }
+      },
+      "connections": [
+        {
+          "id": 9089470,
+          "status": "ok",
+          "app": "azure",
+          "usedByModules": [
+            2,
+            3
+          ]
+        }
+      ],
+      "moduleCount": 4
+    },
+    "writer": {
+      "scenario": {
+        "id": 10199316,
+        "name": "CXOrbia B14 GT · TEMP TAB Graph ACK/readback/cleanup · QA AISLADO",
+        "teamId": 1975919,
+        "status": "active",
+        "isLockedForEditing": false,
+        "isWaitingOnIncompleteExecutions": false,
+        "incompleteExecutions": 0,
+        "lastEdit": "2026-11-24T10:18:18.118Z"
+      },
+      "trigger": {
+        "moduleId": 1,
+        "module": "scenario-service:StartSubscenario",
+        "kind": "on-demand",
+        "scheduling": {
+          "type": "on-demand"
+        }
+      },
+      "connections": [
+        {
+          "id": 9089470,
+          "status": "ok",
+          "app": "azure",
+          "usedByModules": [
+            12,
+            2,
+            3,
+            15,
+            36,
+            43,
+            20,
+            23
+          ]
+        }
+      ],
+      "moduleCount": 41
+    },
+    "recentHistory": {
+      "from": "2026-11-24T12:26:47Z",
+      "to": "2026-11-24T14:44:46Z",
+      "readerExecutions": 0,
+      "writerExecutions": 0,
+      "additional9OrganizationCreditsSincePreviousCheckAttributed": false
+    },
+    "toolboxes": {
+      "readerId": 4891,
+      "writerId": 4926,
+      "liveStatusVerifiedThisObservation": false,
+      "reason": "Current connected Make surface does not expose toolbox management/read tools. Existing runtime configuration references prior exact endpoints; no toolbox invocation or secret access attempted."
+    },
+    "actionsTaken": {
+      "organizationReads": 1,
+      "teamReads": 1,
+      "scenarioInspections": 2,
+      "readerExecutions": 0,
+      "writerExecutions": 0,
+      "mutations": 0,
+      "purchases": 0,
+      "autoPurchaseChanges": 0
+    }
+  },
+  "qaScopeExtension": {
+    "recordedAt": "2026-11-24T14:55:09.191968+00:00",
+    "classification": "ENVIRONMENT_FAILURE",
+    "observed": "One integration test invokes poll four times without advancing time. After VRM372 these are intentionally coalesced. The test covers freshness/failure/revision transitions, so use explicit refresh for each transition; assertions and production code remain unchanged.",
+    "failingTest": "actual watcher preserves stale freshness, confirms same revision and converges after one different-revision composition"
+  }
+}

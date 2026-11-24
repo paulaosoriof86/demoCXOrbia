@@ -23,7 +23,22 @@
     return {tenantId,projectId,project};
   }
   function endpoint(){if(window.CX_TYA_LIVE_SOURCE_URL)return String(window.CX_TYA_LIVE_SOURCE_URL);const scope=runtimeScope();if(!scope.tenantId||!scope.projectId)return '';return '/api/tenants/'+encodeURIComponent(scope.tenantId)+'/projects/'+encodeURIComponent(scope.projectId)+'/hr-live';}
-  const pollMs=Math.max(15000,Number(window.CX_TYA_LIVE_POLL_MS||20000));
+  const configuredPollMs=Number(window.CX_TYA_LIVE_POLL_MS);
+  const pollMs=Number.isFinite(configuredPollMs)&&configuredPollMs>0?Math.max(15000,configuredPollMs):300000;
+  // A metadata check reads the full external HR, including historical periods.
+  // Bound automatic attempts per authenticated scope; no snapshot or freshness
+  // authority is stored here. Explicit refresh and pending-edit checks stay fresh.
+  const automaticReasons=new Set(['poll','window_focus','visibility_resume','initial_load','backend_auth_ready','canonical_authority_ready']);
+  const lastAutomaticAttempts=new Map();
+  function automaticScopeKey(scope){
+    let ctx=null;try{ctx=CX.backendAuth?.context?.()||null;}catch(_){}
+    const uid=String(window.firebase?.auth?.().currentUser?.uid||'');
+    return JSON.stringify([scope.tenantId,scope.projectId,uid,String(ctx?.role||''),String(ctx?.authNamespace||'')]);
+  }
+  function rememberAutomaticAttempt(scope,at=Date.now()){
+    const key=automaticScopeKey(scope);lastAutomaticAttempts.delete(key);lastAutomaticAttempts.set(key,at);
+    if(lastAutomaticAttempts.size>64)lastAutomaticAttempts.delete(lastAutomaticAttempts.keys().next().value);
+  }
   let currentRevision=window.CX_TYA_HR_LIVE_META?.revision||null,checking=false,failures=0,pending=null,currentContentSignature=null,pendingProtectedRefresh=false;
   const VOLATILE=new Set(['generatedAt','sourceReadAt','sourceSnapshotAt','lastSnapshotAt','tabRegistryObservedAt','observedAt','refreshedAt','loadedAt','updatedAt','cacheAgeMs','refreshStartedAt','refreshFinishedAt','refreshDurationMs']);
   function stableValue(v){if(Array.isArray(v))return v.map(stableValue);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v).sort()){if(!VOLATILE.has(k)&&k!=='_runtime')o[k]=stableValue(v[k]);}return o;}return v;}
@@ -101,11 +116,18 @@
     if(String(authority.tenantId||'')!==scope.tenantId||String(authority.projectId||'')!==scope.projectId)return false;
     if(!user?.uid||String(authority.actorUid||'')!==String(user.uid))return false;
     if(!Number.isFinite(elapsed)||elapsed<0||elapsed>5000)return false;
+    const authContext=CX.backendAuth?.context?.()||{};
+    if(String(authority.role||'')!==String(authContext.role||'')||String(authority.authNamespace||'')!==String(authContext.authNamespace||''))return false;
+    const readAt=Date.parse(authority.sourceReadAt||'');
+    if(authority.externalReadCurrent!==true||!Number.isFinite(readAt)||readAt>Date.now()||Date.now()-readAt>=pollMs)return false;
+    rememberAutomaticAttempt(scope,readAt);
     currentRevision=revision;failures=0;pendingProtectedRefresh=false;finishProtectedCheck({revision,externalReadCurrent:authority.externalReadCurrent,sourceReadAt:authority.sourceReadAt,hrFreshness:authority.hrFreshness});
     return true;
   }
   async function check(reason){
     const scope=runtimeScope();
+    const automatic=automaticReasons.has(reason);
+    if(automatic&&document.visibilityState==='hidden')return {ok:true,skipped:true,reason:'automatic_hr_hidden_tab'};
     if(scope.project?.operationalSource?.mode==='internal')return {ok:true,skipped:true,reason:'internal_project_firestore_authority'};
     if(!scope.projectId)return {ok:false,skipped:true,reason:'project_selection_required'};
     if(authenticatedHumanRuntime&&!canonicalHumanAuthReady())return {ok:false,skipped:true,reason:'authenticated_human_context_required'};
@@ -114,7 +136,11 @@
       window.CX_TYA_LIVE_SOURCE_AUTHORITY_LOCK={ready:false,blockedDirectApply:true,reason:'canonical_protected_authority_required',providerWrites:0,production:false,at:new Date().toISOString()};
       return {ok:false,skipped:true,reason:'canonical_protected_authority_required'};
     }
-    if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};checking=true;markUpdating();
+    if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};
+    const previousAttempt=lastAutomaticAttempts.get(automaticScopeKey(scope)),now=Date.now();
+    if(automatic&&Number.isFinite(previousAttempt)&&now>=previousAttempt&&now-previousAttempt<pollMs)
+      return {ok:true,skipped:true,reason:'automatic_hr_interval',nextCheckInMs:pollMs-(now-previousAttempt)};
+    rememberAutomaticAttempt(scope,now);checking=true;markUpdating();
     try{
       const meta=await getJson('meta',{fresh:'1'});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
