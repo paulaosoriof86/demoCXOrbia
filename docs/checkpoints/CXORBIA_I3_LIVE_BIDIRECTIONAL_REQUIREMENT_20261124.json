@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "cxorbia.i3.live-bidirectional-requirement-reaffirmed.v1",
+  "createdAt": "2026-11-24T08:37:37.751972+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "authority": "Paula current request 2026-11-24; reiterates frozen B02/B03/B04/B14, no new iteration or product",
+  "requirement": {
+    "allConfiguredHistoricalAndCurrentPeriods": true,
+    "perVisitValuesFromCurrentOriginalExcel": true,
+    "platformAndHrChangesMustPropagateBothWays": true,
+    "teamOperatesInPlatform": true,
+    "noFixedSnapshotAsOperationalTruth": true,
+    "normalSourceEditsAreNotMappingFailures": true,
+    "trueConcurrentEditsRequirePerFieldCausalConflictHandling": true,
+    "remoteAcknowledgementBeforeConfirmedUiSuccess": true,
+    "noDuplicateVisits": true,
+    "publishEachVerifiedCumulativePackage": true
+  },
+  "confirmed": {
+    "originalExcelReaderDev": "docs/checkpoints/CXORBIA_I3_RUN2755_EXISTING_DEV_READBACK_PASS_20261124.json",
+    "scenarioDimensionsAreLabelsNotFrozenVisitValues": true,
+    "makeDirectTransport": "docs/checkpoints/CXORBIA_I3_F3_MAKE_GT_HN_DIRECT_PROVIDER_PROOF_20261124.json"
+  },
+  "remainingProvenGaps": [
+    "Runtime writer is not connected to Make provider",
+    "No per-visit per-field HR write journal and causal readback integration",
+    "Complete D08 UI contracts and remaining domain clauses",
+    "Same-artifact Gate20/Gate21 and I4"
+  ],
+  "i4Authorization": "User requests publication and go-live; execute only when I3 GO and exact certified artifact exists; not authorized to bypass P0 gates",
+  "productionChanged": false,
+  "newDomainMatches": 0,
+  "browserFreshnessVerification": "Existing 20s watcher found; confirm authenticated refresh and safe merge while editing before classifying a UI defect."
+}
