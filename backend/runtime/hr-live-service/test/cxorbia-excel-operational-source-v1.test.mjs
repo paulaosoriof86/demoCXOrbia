@@ -66,6 +66,35 @@ test('original Excel values become the sourceSafe operational snapshot without p
  assert.equal(x.proof.hrWrites,0);
  assert.equal(x.proof.firestoreWrites,0);
 });
+test('Excel snapshot preserves arbitrary project scenario dimensions without substitution',async()=>{
+ const catalogs=[
+  [{key:'formaAtencion',label:'Forma de atención',icon:'📋',sourceField:'escenario',aliases:['canalAtencion']}],
+  [{key:'formaAtencion',label:'Forma de atención',sourceField:'escenario'},
+   {key:'modalidad',label:'Modalidad configurada',sourceField:'formato'}]
+ ];
+ for(const scenarioDimensions of catalogs){
+  const db=fixture({projectOverride:{...project,scenarioDimensions}});
+  const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+  const result=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+  assert.deepEqual(result.snapshot.projectConfig.scenarioDimensions,scenarioDimensions);
+  assert.equal(result.proof.firestoreWrites,0);assert.equal(result.proof.hrWrites,0);
+ }
+});
+test('Excel snapshot preserves an explicit empty catalog despite populated visit values',async()=>{
+ const db=fixture({projectOverride:{...project,scenarioDimensions:[]}});
+ const plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const result=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.deepEqual(result.snapshot.projectConfig.scenarioDimensions,[]);
+ assert.ok(result.snapshot.visits.some(v=>v.escenario&&v.tipoCombo));
+ assert.equal(result.proof.firestoreWrites,0);assert.equal(result.proof.hrWrites,0);
+});
+test('Excel snapshot does not manufacture a catalog omitted by project metadata',async()=>{
+ const db=fixture(),plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
+ const result=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});
+ assert.equal(Object.hasOwn(result.snapshot.projectConfig,'scenarioDimensions'),false);
+ assert.ok(result.snapshot.visits.some(v=>v.escenario&&v.tipoCombo));
+ assert.equal(result.proof.firestoreWrites,0);assert.equal(result.proof.hrWrites,0);
+});
 test('legacy Google selection cannot silently pass as operational Excel',async()=>{
  const db=fixture({projectOverride:{...project,operationalSource:{...source,providerType:'google_sheets'}}});
  await assert.rejects(resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}}),/SOURCE_POLICY/);

@@ -9,6 +9,14 @@ import {applicationDefault,initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {resolveExcelOriginalProjectPlan} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
 
+if(process.env.CXORBIA_F2_DEV_OPERATION==='RESTORE_SCENARIO_DIMENSIONS'){
+ const {runGthnExistingDevReadback}=await import('./cxorbia-i3-gthn-existing-dev-readback.mjs');
+ await runGthnExistingDevReadback();
+ process.exit(process.exitCode||0);
+}
+if(process.env.CXORBIA_F2_DEV_OPERATION&&process.env.CXORBIA_F2_DEV_OPERATION!=='ACTIVATE_OPERATIONAL_EXCEL')
+ throw Error('AUTH_FAILURE:F2_DEV_OPERATION_INVALID');
+
 const str=x=>String(x??'').trim();
 const fail=code=>{throw Error(code)};
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);

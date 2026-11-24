@@ -95,6 +95,7 @@ jobs:
       node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs
       node --test tools/qa/cxorbia-i3-f2-excel-operational-lineage-v1.test.mjs
       node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs
+      node --test tools/qa/cxorbia-i3-gthn-existing-dev-readback.test.mjs
       node --test tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs
       node --test tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs
       node --test tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs
@@ -178,14 +179,23 @@ jobs:
       path: .tmp/canonical-source-qa/
       if-no-files-found: error
       retention-days: 30
-   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
+   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')||contains(github.event.head_commit.message,'[i3-f2-scenario-metadata-dev-once]')}}
      uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
-   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
+   - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'||contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')||contains(github.event.head_commit.message,'[i3-f2-scenario-metadata-dev-once]')}}
      uses: google-github-actions/setup-gcloud@v2
      with: {project_id: cxorbia-backend-dev}
    - if: ${{contains(github.event.head_commit.message,'[i3-f2-selector-dev-once]')}}
      run: npm i --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 && CXORBIA_F2_DEV_OPERATIONAL_SWITCH_GATE=PAULA_I3_F2_EXCEL_ORIGINAL_DEV_ONLY_20261123 node tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs
+   - if: ${{contains(github.event.head_commit.message,'[i3-f2-scenario-metadata-dev-once]')}}
+     env:
+      GH_TOKEN: ${{ github.token }}
+      CXORBIA_F2_DEV_OPERATION: RESTORE_SCENARIO_DIMENSIONS
+      CXORBIA_F2_SCENARIO_METADATA_GATE: PAULA_I3_APPROVED_PROJECT_SCENARIOS_DEV_20261124
+     run: npm i --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 && node tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs
+   - if: ${{always()&&contains(github.event.head_commit.message,'[i3-f2-scenario-metadata-dev-once]')}}
+     uses: actions/upload-artifact@v4
+     with: {name: 'cxorbia-i3-existing-dev-scenario-readback-${{ github.run_id }}',path: .tmp/i3-f2-operational-dev/,if-no-files-found: warn,retention-days: 30}
    - if: ${{steps.authority.outputs.status=='HOLD_VRM134_A05_DEV_TRAFFIC_REQUIRED'}}
      run: node tools/qa/cxorbia-i3-vrm134-a05-runtime-readback.mjs --activate-exact-dev
    - name: G03 protected CRM read-only DEV

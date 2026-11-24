@@ -1,0 +1,1540 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.make-fixture-direct-provider-proof.v1",
+  "iteration": "I3",
+  "decision": "PASS_DIRECT_MAKE_FIXTURE_TRANSPORT_GT_HN__RUNTIME_INTEGRATION_PENDING",
+  "scenarioId": 10199316,
+  "teamId": 1975919,
+  "lastEdit": "2026-11-24T07:30:07.337Z",
+  "scope": {
+    "fixtureId": "qa_f3_20261123",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-11",
+    "countries": [
+      "GT",
+      "HN"
+    ],
+    "range": "A1:D2",
+    "provider": "make_graph_delegated"
+  },
+  "cases": [
+    {
+      "case": "inspect_baseline",
+      "country": "GT",
+      "executionId": "e43b49316979492daafaeff7f1f151a6",
+      "status": "error",
+      "error": {
+        "name": "BlueprintValidationError",
+        "message": "Cannot initialize the scenario because of the reason 'Scenario validation failed - 16 problem(s) found.'"
+      },
+      "observed": {}
+    },
+    {
+      "case": "inspect_baseline",
+      "country": "HN",
+      "executionId": "217fc5431a8349af96bb4911d0e65afe",
+      "status": "error",
+      "error": {
+        "name": "BlueprintValidationError",
+        "message": "Cannot initialize the scenario because of the reason 'Scenario validation failed - 16 problem(s) found.'"
+      },
+      "observed": {}
+    },
+    {
+      "case": "inspect_baseline_types_fixed",
+      "country": "GT",
+      "executionId": "732958831a254adbbfc3e45835ff35d2",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "25827394-ce36-4e13-8164-ca6e087e380f",
+        "readRequestId": "84c6d020-f6d3-4ae2-a245-f880723d5875",
+        "preReadRequestId": "fed69abe-7216-44f6-a589-7d5d2b0f6ceb",
+        "values1": null,
+        "values2": null
+      }
+    },
+    {
+      "case": "read_baseline",
+      "country": "GT",
+      "executionId": "f94ded124aed42ce819848e65d8a94d6",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "",
+        "remoteEventDigest": "",
+        "remoteFieldValue": "",
+        "providerRequestId": "5775e157-0518-4103-9f26-3507435df1a9",
+        "readRequestId": "a7c692ff-82d1-48c3-874f-0ad149d6ef05",
+        "preReadRequestId": "422732e7-7c3e-4348-a42e-2b47f8051287",
+        "values1": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ],
+        "values2": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "case": "inspect_baseline_types_fixed",
+      "country": "HN",
+      "executionId": "e8618184d8254d37ae93724bb1dc4404",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "2070555c-3546-4c50-b387-9a28241b488b",
+        "readRequestId": "e79d7446-912f-4175-8af8-280db2418ab1",
+        "preReadRequestId": "9bd5ac03-c77a-490d-9b7e-7a4d3c1585c6",
+        "values1": null,
+        "values2": null
+      }
+    },
+    {
+      "case": "create_fixture",
+      "country": "HN",
+      "executionId": "b2e56b6be84946f7b3ca9f17036e7e7c",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CREATE_ACK",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 201,
+        "readStatus1": 0,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "4ea76393-030c-4f6e-b791-fb74cff6599d",
+        "readRequestId": "11958a83-2d82-45e2-8a24-e4698f9bf44e",
+        "preReadRequestId": "509541c7-55d7-4ec3-983c-140d985b08fd",
+        "values1": null,
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_write",
+      "country": "GT",
+      "executionId": "56929c7d85fc49189fe72b1e161f4bf4",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "ACK_READBACK_PENDING",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 200,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "",
+        "remoteEventDigest": "",
+        "remoteFieldValue": "",
+        "providerRequestId": "7edafb3e-7d65-4010-9504-e0fd3cbfbf2a",
+        "readRequestId": "0494b286-7091-48a1-879d-10aeb50e1610",
+        "preReadRequestId": "1c35d0b7-907f-4cff-bc28-6c876adbacca",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e1_independent_read",
+      "country": "GT",
+      "executionId": "169cd495067c482999aa64d0f5d30c23",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": "8018f605-53f4-451d-bc04-365aeb62f624",
+        "readRequestId": "e40d0112-45e7-48ba-89e0-63050969bbc7",
+        "preReadRequestId": "6795b236-e4a7-4bcf-8ccf-1ee9b2d6e158",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "read_created_fixture",
+      "country": "HN",
+      "executionId": "cc6bd10014e44e039aee719e6008e2a1",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "",
+        "remoteEventDigest": "",
+        "remoteFieldValue": "",
+        "providerRequestId": "5079c92a-a0a3-4727-b8f6-9f601c62f2e7",
+        "readRequestId": "d19725be-34f7-4b11-8b31-da3d040bddb3",
+        "preReadRequestId": "02d58885-52d2-4794-8e2e-c2febd96c9b5",
+        "values1": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ],
+        "values2": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e1_write",
+      "country": "HN",
+      "executionId": "2ca20a10d32b4570b53cf0f25d9d6781",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "ACK_READBACK_PENDING",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 200,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "",
+        "remoteEventDigest": "",
+        "remoteFieldValue": "",
+        "providerRequestId": "db8e9d7f-a0af-44ca-af83-cfff386b7364",
+        "readRequestId": "c2fb3439-784e-4ada-9914-9f92417a3d26",
+        "preReadRequestId": "40eb839c-22b5-4b70-8b6a-d285a60f6a4f",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": [
+          [
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e1_identical_replay",
+      "country": "GT",
+      "executionId": "b98721a2e8154c3da585e58b0e5a3979",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "REPLAY_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "c136826f-f0a8-411c-8548-9082c90ab0f9",
+        "preReadRequestId": "c136826f-f0a8-411c-8548-9082c90ab0f9",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_changed_payload_conflict",
+      "country": "GT",
+      "executionId": "8d65a7e1316c4674a7c6a898c5f45f0a",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "7daaa0fe-39c4-43e5-8fec-4d4528766386",
+        "preReadRequestId": "7daaa0fe-39c4-43e5-8fec-4d4528766386",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e2_wrong_expected_conflict",
+      "country": "GT",
+      "executionId": "aa9d817aa7b34b4da5b76a0bfd346ed9",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "e22fd4f1-7344-4660-b803-6b2f21872e90",
+        "preReadRequestId": "e22fd4f1-7344-4660-b803-6b2f21872e90",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_identical_replay_trace",
+      "country": "GT",
+      "executionId": "b98721a2e8154c3da585e58b0e5a3979",
+      "status": "success",
+      "error": null,
+      "durationMs": 1599,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "REPLAY_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "c136826f-f0a8-411c-8548-9082c90ab0f9",
+        "preReadRequestId": "c136826f-f0a8-411c-8548-9082c90ab0f9",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_changed_payload_conflict_trace",
+      "country": "GT",
+      "executionId": "8d65a7e1316c4674a7c6a898c5f45f0a",
+      "status": "success",
+      "error": null,
+      "durationMs": 1598,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "7daaa0fe-39c4-43e5-8fec-4d4528766386",
+        "preReadRequestId": "7daaa0fe-39c4-43e5-8fec-4d4528766386",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e2_wrong_expected_conflict_trace",
+      "country": "GT",
+      "executionId": "aa9d817aa7b34b4da5b76a0bfd346ed9",
+      "status": "success",
+      "error": null,
+      "durationMs": 1515,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "e22fd4f1-7344-4660-b803-6b2f21872e90",
+        "preReadRequestId": "e22fd4f1-7344-4660-b803-6b2f21872e90",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_independent_read",
+      "country": "HN",
+      "executionId": "ba3c10703cd84eb3840845623e44adc2",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": "1de57fed-441e-434a-9a1e-e2627c4bdaa5",
+        "readRequestId": "e28d1693-bded-4227-8a6b-fe4921d3768c",
+        "preReadRequestId": "ed60576f-007b-48d0-95c0-a7706420c4d6",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e1_identical_replay",
+      "country": "HN",
+      "executionId": "b891863a6d534657bcdfea86aa9932de",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "REPLAY_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "4f0b38cc-09c6-4d76-ae6a-6fda222a323e",
+        "preReadRequestId": "4f0b38cc-09c6-4d76-ae6a-6fda222a323e",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_changed_payload_conflict",
+      "country": "HN",
+      "executionId": "8f149d4900da42008768e4b7097b0a56",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "4f3ab965-fbcf-4ffd-8a92-11e50bbc5a67",
+        "preReadRequestId": "4f3ab965-fbcf-4ffd-8a92-11e50bbc5a67",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e2_wrong_expected_conflict",
+      "country": "HN",
+      "executionId": "1e918042891e4b5f88693bfa42e22c4d",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "f71edbfa-4a22-40c7-a10a-c8c7c6b5d9a5",
+        "preReadRequestId": "f71edbfa-4a22-40c7-a10a-c8c7c6b5d9a5",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_identical_replay_trace",
+      "country": "HN",
+      "executionId": "b891863a6d534657bcdfea86aa9932de",
+      "status": "success",
+      "error": null,
+      "durationMs": 1227,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "REPLAY_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "4f0b38cc-09c6-4d76-ae6a-6fda222a323e",
+        "preReadRequestId": "4f0b38cc-09c6-4d76-ae6a-6fda222a323e",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_changed_payload_conflict_trace",
+      "country": "HN",
+      "executionId": "8f149d4900da42008768e4b7097b0a56",
+      "status": "success",
+      "error": null,
+      "durationMs": 942,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "4f3ab965-fbcf-4ffd-8a92-11e50bbc5a67",
+        "preReadRequestId": "4f3ab965-fbcf-4ffd-8a92-11e50bbc5a67",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e2_wrong_expected_conflict_trace",
+      "country": "HN",
+      "executionId": "1e918042891e4b5f88693bfa42e22c4d",
+      "status": "success",
+      "error": null,
+      "durationMs": 1061,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": null,
+        "readRequestId": "f71edbfa-4a22-40c7-a10a-c8c7c6b5d9a5",
+        "preReadRequestId": "f71edbfa-4a22-40c7-a10a-c8c7c6b5d9a5",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e2_write",
+      "country": "GT",
+      "executionId": "5ac1a9c36910418bb26903cbb1c53c3d",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "ACK_READBACK_PENDING",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 200,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_01",
+        "remoteEventDigest": "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_01",
+        "providerRequestId": "349883b7-e0f9-4cb3-b37e-90f6f639305c",
+        "readRequestId": "f5c65fd6-0b51-42a5-bb4e-5c7dde3005a1",
+        "preReadRequestId": "32c7e6eb-11b6-4256-b325-55acec0e5bcb",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_02",
+            "f3qa_20261124T073218_GT_02",
+            "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_01",
+            "f3qa_20261124T073218_GT_01",
+            "9014e7d5f61a59f8c1a57655970bb5b0dcd77cda6fb4d37df11977fc781b92f3"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e2_write",
+      "country": "HN",
+      "executionId": "0b4443bce41a4b209ae92f4aa1f84e90",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "ACK_READBACK_PENDING",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 200,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_01",
+        "remoteEventDigest": "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_01",
+        "providerRequestId": "ad855d57-fee7-4426-9ff4-1f7ec04eaec7",
+        "readRequestId": "a3af4a84-5b7f-4826-89b5-96e0f7d2a564",
+        "preReadRequestId": "4f0c54bf-c569-45db-86cc-ab0f6ace88f4",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_02",
+            "f3qa_20261124T073218_HN_02",
+            "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_01",
+            "f3qa_20261124T073218_HN_01",
+            "ae446e7bcdc52ed7f2786e72157027075ec321b544c1b32881465531421191c2"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e2_independent_read",
+      "country": "GT",
+      "executionId": "b960ad77996a40a69b4e91daa1a80337",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_02",
+        "remoteEventDigest": "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_02",
+        "providerRequestId": "b738578b-46ca-4802-9388-b30072d0ba36",
+        "readRequestId": "977ffa47-e7f1-4c8d-99fd-a96ec2784645",
+        "preReadRequestId": "f78e75e6-e0ad-48d8-94df-3e3ae9619d40",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_02",
+            "f3qa_20261124T073218_GT_02",
+            "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_02",
+            "f3qa_20261124T073218_GT_02",
+            "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e2_independent_read",
+      "country": "HN",
+      "executionId": "3459d122623640c381de00faa75b9b04",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_02",
+        "remoteEventDigest": "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_02",
+        "providerRequestId": "95eeaeaa-131b-4db1-bd74-2b1db637f45c",
+        "readRequestId": "a229ab9c-bdc4-4bba-81dc-272f166e4562",
+        "preReadRequestId": "0e2c80ea-40f9-4813-8ae0-0a632af00b24",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_02",
+            "f3qa_20261124T073218_HN_02",
+            "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1"
+          ]
+        ],
+        "values2": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_02",
+            "f3qa_20261124T073218_HN_02",
+            "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1"
+          ]
+        ]
+      }
+    },
+    {
+      "case": "e1_late_replay_after_e2",
+      "country": "GT",
+      "executionId": "dfcb2459e7b84cbb8b332954229d8a24",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_02",
+        "remoteEventDigest": "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_02",
+        "providerRequestId": null,
+        "readRequestId": "087ad916-7f2d-4a1e-89d7-0785bd5e6da1",
+        "preReadRequestId": "087ad916-7f2d-4a1e-89d7-0785bd5e6da1",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_02",
+            "f3qa_20261124T073218_GT_02",
+            "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_late_replay_after_e2",
+      "country": "HN",
+      "executionId": "debc76e2eed14307bd0162750b49beb9",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_02",
+        "remoteEventDigest": "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_02",
+        "providerRequestId": null,
+        "readRequestId": "2c9219d2-69b6-4e5a-abd5-3d0606454f2c",
+        "preReadRequestId": "2c9219d2-69b6-4e5a-abd5-3d0606454f2c",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_02",
+            "f3qa_20261124T073218_HN_02",
+            "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_late_replay_after_e2_trace",
+      "country": "GT",
+      "executionId": "dfcb2459e7b84cbb8b332954229d8a24",
+      "status": "success",
+      "error": null,
+      "durationMs": 1821,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_GT_02",
+        "remoteEventDigest": "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca",
+        "remoteFieldValue": "qa_f3_20261124T073218_GT_shopper_02",
+        "providerRequestId": null,
+        "readRequestId": "087ad916-7f2d-4a1e-89d7-0785bd5e6da1",
+        "preReadRequestId": "087ad916-7f2d-4a1e-89d7-0785bd5e6da1",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_GT",
+            "qa_f3_20261124T073218_GT_shopper_02",
+            "f3qa_20261124T073218_GT_02",
+            "c1106871bd3a0ffbbcab1087ce29004bf3b855a1f91776097b9dae6310782eca"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "e1_late_replay_after_e2_trace",
+      "country": "HN",
+      "executionId": "debc76e2eed14307bd0162750b49beb9",
+      "status": "success",
+      "error": null,
+      "durationMs": 1386,
+      "operations": 1,
+      "modules": [
+        {
+          "id": 1,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 12,
+          "invocations": 1,
+          "errors": 0
+        },
+        {
+          "id": 14,
+          "invocations": 1,
+          "errors": 0
+        }
+      ],
+      "observed": {
+        "decision": "CONFLICT_NOOP",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": "f3qa_20261124T073218_HN_02",
+        "remoteEventDigest": "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1",
+        "remoteFieldValue": "qa_f3_20261124T073218_HN_shopper_02",
+        "providerRequestId": null,
+        "readRequestId": "2c9219d2-69b6-4e5a-abd5-3d0606454f2c",
+        "preReadRequestId": "2c9219d2-69b6-4e5a-abd5-3d0606454f2c",
+        "values1": [
+          [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest"
+          ],
+          [
+            "qa_f3_20261123_HN",
+            "qa_f3_20261124T073218_HN_shopper_02",
+            "f3qa_20261124T073218_HN_02",
+            "1b77a0cfef69f93ffc7aec0cf7a965f47f5314430c04e5a692be52fa8b49d6d1"
+          ]
+        ],
+        "values2": null
+      }
+    },
+    {
+      "case": "cleanup_delete",
+      "country": "GT",
+      "executionId": "d0749c23c3a145c3979f0f7dcc057d2c",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "DELETE_ACK",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 204,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "c8213c64-a550-445e-879d-9f33ae12183c",
+        "readRequestId": "a9f7491b-dcea-48ce-ba04-7e9f7543a0ec",
+        "preReadRequestId": "f2ccf054-e6d6-4c56-84ad-546fb9650131",
+        "values1": null,
+        "values2": null
+      }
+    },
+    {
+      "case": "cleanup_delete",
+      "country": "HN",
+      "executionId": "e77f845de8c241218a757d764df474b7",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "DELETE_ACK",
+        "providerWriteRequests": 1,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 204,
+        "createStatus": 0,
+        "readStatus1": 0,
+        "readStatus2": 0,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "0975c3ef-5da4-4243-a124-f9fc05820b9c",
+        "readRequestId": "de9dc09e-937f-4467-a7cc-471442641445",
+        "preReadRequestId": "2ccffe55-e412-4756-bf8e-d30b15f9b49d",
+        "values1": null,
+        "values2": null
+      }
+    },
+    {
+      "case": "cleanup_independent_inventory",
+      "country": "GT",
+      "executionId": "6135c4deb3e84ca49298a543ca7d95bf",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "bfa8e7b0-b8c4-48bf-b4fa-f2db0a62ae8f",
+        "readRequestId": "0301e330-a6df-48c5-bffb-302507c26226",
+        "preReadRequestId": "76f13aab-8c0d-4b3b-8fee-69c73c77305d",
+        "values1": null,
+        "values2": null
+      },
+      "fixtureAbsent": true
+    },
+    {
+      "case": "cleanup_independent_inventory",
+      "country": "HN",
+      "executionId": "0a1a73edbf0f4112abe6f6f39daf3535",
+      "status": "success",
+      "error": null,
+      "observed": {
+        "decision": "READ_OBSERVED",
+        "providerWriteRequests": 0,
+        "providerAck": false,
+        "writeStatus": 0,
+        "deleteStatus": 0,
+        "createStatus": 0,
+        "readStatus1": 200,
+        "readStatus2": 200,
+        "preReadStatus": 200,
+        "remoteEventId": null,
+        "remoteEventDigest": null,
+        "remoteFieldValue": null,
+        "providerRequestId": "e4eb5c9d-7ccd-4588-9bb6-da5c9a1f4306",
+        "readRequestId": "a174c6d8-4997-4742-8942-72742d57ff81",
+        "preReadRequestId": "e5b2a1f8-5d3e-46ac-a922-2056578960dc",
+        "values1": null,
+        "values2": null
+      },
+      "fixtureAbsent": true
+    }
+  ],
+  "cleanup": {
+    "GT": true,
+    "HN": true,
+    "method": "DELETE exact QA worksheet after ownership/event/value/digest match; independent inventory absent"
+  },
+  "limits": {
+    "applicationEndpointProven": false,
+    "backendJournalProven": false,
+    "runtimeWriterProvisioned": false,
+    "production": false,
+    "realHrRowsWritten": 0,
+    "operationalAssignmentSyncCertified": false,
+    "readerScenarioChanged": false,
+    "readerToolboxId": 4891
+  },
+  "next": "Bind authenticated backend journal/lease/ACK/readback to separate writer transport for existing scenario; reader toolbox remains one read-only tool."
+}
