@@ -18,6 +18,22 @@ export function validIsoDate(value){if(!hasValue(value))return false;const text=
 export function periodYear(periodKey){const match=String(periodKey||'').match(/^(20\d{2})-[01]\d$/);return match?Number(match[1]):null;}
 export function dateReview(field,value,periodKey){if(!hasValue(value))return null;if(!validIsoDate(value))return field+'_invalid_date';const expected=periodYear(periodKey);const actual=Number(String(value).slice(0,4));if(expected&&Math.abs(actual-expected)>1)return field+'_outside_period_year';return null;}
 
+// Review observations belong to the external HR. A retained historical note
+// does not undo a confirmed submission or imply a financial decision.
+export function deriveHrReviewState({observation='',observationDigest=null,mapped=true,visit={}}={}){
+  const note=String(observation??'').trim(),text=normalizedText(note);
+  const results=[...text.matchAll(/(?:resultado|estado de revision)\s*:\s*(no aprobado|consultar al shopper|aprobado)\b/g)].map(x=>x[1]);
+  const distinct=[...new Set(results)];
+  const outcome=!note?'none':distinct.length===1?({'no aprobado':'rejected','consultar al shopper':'consult_shopper','aprobado':'approved'}[distinct[0]]):/^(?:sin observaciones|ninguna|ninguno|n\/a|[-—])\.?$/.test(text)?'approved':'observation';
+  const submitted=visit.canonicalFacets?.submitted===true||validIsoDate(visit.submittedAt);
+  const cancelled=visit.canonicalFacets?.cancelled===true||visit.cancelled===true;
+  const attention=mapped&&!!note&&!submitted&&!cancelled&&outcome!=='approved';
+  const state=!mapped?'not_mapped':cancelled?'cancelled':submitted?(note?'submitted_with_observation':'submitted'):attention?(outcome==='rejected'||outcome==='consult_shopper'?'pending_correction':'pending_review'):note?'ready_to_submit':'no_observation';
+  return {version:'cxorbia.hr-review.v1',source:'original_hr',sourceField:'observacionesRevision',mapped:mapped===true,
+    hasObservation:mapped&&!!note,observationDigest:mapped&&note?observationDigest:null,outcome:mapped?outcome:'unknown',state,
+    requiresAttention:attention,submissionBlockedByReview:attention,submissionConfirmed:submitted};
+}
+
 function acceptedDate(field,value,periodKey,reviewReasons){const issue=dateReview(field,value,periodKey);if(issue){reviewReasons.add(issue);return null;}return hasValue(value)?String(value).trim():null;}
 function explicitFinancialConfirmation(visit,kind){
   if(kind==='payment')return visit.paymentConfirmed===true||['confirmed','paid','pagada'].includes(normalizedText(visit.paymentState))||hasValue(visit.paymentConfirmedAt);

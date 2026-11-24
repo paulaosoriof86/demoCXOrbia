@@ -3,6 +3,8 @@
  * The returned values are PRIVATE TO THE BACKEND; only .proof may be sent to UI.
  */
 import crypto from 'node:crypto';
+import {resolveCountryHrPeriodBinding} from './cxorbia-country-hr-binding-v1.mjs';
+import {parseTab} from '../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
 const str=v=>String(v??'').trim();
 const digest=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const fail=(category,code)=>{throw new Error(category+':B14_'+code);};
@@ -58,9 +60,12 @@ export function verifyMakeGraphReadOutput(out,scope,worksheet,rangeAddress,contr
     sourceContentSha256:firstHash,rowsReturned:first.length,...mapping,independentReadback:true,remoteRevisionVerified:true,
     method:'GET_GRAPH_WORKBOOK_RANGE_VIA_MAKE',hrWrites:0,providerWriteRequests:0,production:false}};
 }
-export async function readExcelPeriodThroughMake({binding,token,scenarioId,rangeAddress='A1:AI140',columnMap,fetchImpl=fetch,runScenario}={}){
+export async function readExcelPeriodThroughMake({binding,token,scenarioId,rangeAddress,columnMap,fetchImpl=fetch,runScenario}={}){
   const scope=binding?.scope||{},provider=binding?.privateProvider||{},proof=binding?.proof||{};
-  if(proof.providerType!=='excel_online'||proof.readPolicy!=='external_live'||proof.writePolicy!=='external_read_only'||proof.hrWrites!==false)fail('MAPPING_FAILURE','SOURCE_POLICY');
+  const configuredRange=provider.readRangeAddress;
+  if(configuredRange!==undefined&&rangeAddress!==undefined&&rangeAddress!==configuredRange)fail('MAPPING_FAILURE','RANGE_BINDING_CONFLICT');
+  rangeAddress=rangeAddress??configuredRange??'A1:AI140';
+  if(proof.providerType!=='excel_online'||proof.readPolicy!=='external_live'||!['external_read_only','bidirectional_gated'].includes(proof.writePolicy)||proof.hrWrites!==false)fail('MAPPING_FAILURE','SOURCE_POLICY');
   if(![scope.tenantId,scope.projectId,scope.periodId].every(isId)||!/^[A-Z]{2}$/.test(str(scope.countryCode))||
     !/^[a-f0-9]{64}$/.test(str(proof.bindingFingerprint)))fail('MAPPING_FAILURE','BINDING_SCOPE_INVALID');
   if(!isPrivate(provider.driveId)||!isPrivate(provider.itemId)||!Array.isArray(provider.worksheets)||!provider.worksheets.length)fail('MAPPING_FAILURE','WORKBOOK_OR_SHEETS_MISSING');
@@ -122,4 +127,235 @@ export async function withMakeGraphToolboxReader({client,transport},consume){
   }finally{
     closing=true;await Promise.allSettled([...pending]);await client.close().catch(()=>{});
   }
+}
+
+// F3 uses the existing Make provider module. The read-only toolbox and source
+// policies remain unchanged. This explicit write capability must be separately
+// provisioned for the existing scenario; an old fixture protocol fails closed.
+const fieldCanonical=v=>Array.isArray(v)?v.map(fieldCanonical):v&&typeof v==='object'
+  ?Object.fromEntries(Object.keys(v).sort().map(k=>[k,fieldCanonical(v[k])])):v;
+const fieldDigest=v=>crypto.createHash('sha256').update(JSON.stringify(fieldCanonical(v))).digest('hex');
+const fieldSame=(a,b)=>fieldDigest(a??null)===fieldDigest(b??null);
+const FIELD_PROTOCOL='cxorbia.hr-field-transport.v1';
+const fieldScope=e=>({tenantId:e.tenantId,projectId:e.projectId,periodId:e.periodId,
+  countryCode:e.countryCode,visitId:e.visitId,hrRowId:e.hrRowId,fieldKey:e.fieldKey});
+export async function executeExcelFieldEventThroughMake({event,target,runScenario,recoveryOnly=false,prior={},maxReadbacks=3}={}){
+  if(event?.schemaVersion!=='cxorbia.hr-field-event.v1'||typeof runScenario!=='function'||
+    !/^[a-f0-9]{64}$/.test(str(event.eventDigest)))fail('MAPPING_FAILURE','FIELD_EVENT_REQUIRED');
+  const scope=fieldScope(event),cap=target?.writeCapability||{};
+  if(target?.schemaVersion!=='cxorbia.hr-field-target.v1'||target.resolvedFromPrivateBinding!==true||
+    cap.enabled!==true||cap.protocolVersion!==FIELD_PROTOCOL||cap.remoteEventReceipt!==true||
+    cap.observedBaseGuard!==true||!Array.isArray(cap.allowedFields)||!cap.allowedFields.includes(event.fieldKey))
+      fail('MAPPING_FAILURE','FIELD_WRITE_CAPABILITY_REQUIRED');
+  if(Object.entries(scope).some(([k,v])=>str(target[k])!==str(v))||
+    target.worksheetFingerprint!==event.worksheetFingerprint||
+    !/^[a-f0-9]{64}$/.test(str(target.bindingFingerprint))||!/^[a-f0-9]{64}$/.test(str(target.rowIdentityFingerprint))||
+    !/^[a-f0-9]{64}$/.test(str(target.headerFingerprint))||
+    ![target.driveId,target.itemId,target.worksheetId].every(isPrivate)||
+    !/^[A-Z]{1,2}[1-9][0-9]{0,5}$/.test(str(target.rangeAddress)))fail('MAPPING_FAILURE','FIELD_TARGET_SCOPE');
+  const decode=typeof target.decodeCell==='function'?target.decodeCell:v=>v===''?null:v;
+  if((!recoveryOnly&&!fieldSame(decode(target.expectedBeforeValue),event.before))||!fieldSame(decode(target.fieldValue),event.after))
+    fail('MAPPING_FAILURE','FIELD_TARGET_VALUE_MAPPING');
+  const request={protocolVersion:FIELD_PROTOCOL,...scope,eventId:event.eventId,eventDigest:event.eventDigest,
+    baseEventId:event.baseEventId??null,baseEventOrigin:event.baseEventOrigin??null,baseRevision:event.baseRevision,bindingFingerprint:target.bindingFingerprint,
+    worksheetFingerprint:event.worksheetFingerprint,rowIdentityFingerprint:target.rowIdentityFingerprint,
+    headerFingerprint:target.headerFingerprint,driveId:target.driveId,itemId:target.itemId,
+    worksheetId:target.worksheetId,rangeAddress:target.rangeAddress,
+    expectedBeforeValue:target.expectedBeforeValue,fieldValue:target.fieldValue,
+    headerRangeAddress:target.headerRangeAddress,rowRangeAddress:target.rowRangeAddress,
+    rowIdentityColumnIndexes:target.rowIdentityColumnIndexes,expectedHeaderValues:target.expectedHeaderValues,expectedRowIdentityValues:target.expectedRowIdentityValues};
+  let requests=0,writeAckVerified=prior.writeAckVerified===true;
+  const base=()=>({...scope,eventId:event.eventId,eventDigest:event.eventDigest,providerAck:false,
+    writeAckVerified,readbackVerified:false,providerWriteRequests:requests});
+  const verify=out=>{
+    if(!out||out.protocolVersion!==FIELD_PROTOCOL||Object.entries(scope).some(([k,v])=>str(out[k])!==str(v))||
+      out.eventId!==event.eventId||out.eventDigest!==event.eventDigest||
+      out.bindingFingerprint!==target.bindingFingerprint||out.rowIdentityFingerprint!==target.rowIdentityFingerprint||
+      out.worksheetFingerprint!==event.worksheetFingerprint||out.headerFingerprint!==target.headerFingerprint||
+      !fieldSame(out.observedHeaderValues,target.expectedHeaderValues)||!fieldSame(out.observedRowIdentityValues,target.expectedRowIdentityValues))
+        fail('PROVIDER_FAILURE','FIELD_RESPONSE_SCOPE');
+    return out;
+  };
+  const inspect=async()=>verify(await runScenario({...request,operation:'inspect_event'}));
+  const confirmed=out=>Number(out.readStatus)===200&&out.remoteReceiptVerified===true&&
+    Number(out.remoteWriteStatus)===200&&out.remoteEventId===event.eventId&&out.remoteEventDigest===event.eventDigest&&
+    out.currentEventId===event.eventId&&/^[a-f0-9]{32}$/i.test(str(out.providerExecutionId))&&fieldSame(decode(out.observedValue),event.after);
+  const ack=out=>({...base(),status:'committed',providerAck:true,writeAckVerified:true,readbackVerified:true,
+    observedValue:event.after,readbackDigest:fieldDigest({...scope,eventId:event.eventId,eventDigest:event.eventDigest,observedValue:event.after}),
+    providerExecutionId:str(out.providerExecutionId)});
+  let observed=await inspect();
+  if(confirmed(observed))return ack(observed);
+  if(observed.remoteEventDigest&&observed.remoteEventId===event.eventId&&observed.remoteEventDigest!==event.eventDigest)
+    return {...base(),status:'conflict',code:'HR_FIELD_EVENT_PAYLOAD_CONFLICT'};
+  // A prior HTTP request may have succeeded despite a lost response. Never retry
+  // its PATCH. Only an exact durable remote receipt plus independent read can ACK.
+  if(recoveryOnly){
+    if(Number(observed.readStatus)===200&&observed.remoteReceiptVerified===true&&observed.remoteEventId===event.eventId&&
+      ((observed.currentEventId&&observed.currentEventId!==event.eventId)||
+       (!fieldSame(decode(observed.observedValue),event.before)&&!fieldSame(decode(observed.observedValue),event.after))))
+      return {...base(),status:'conflict',code:'HR_FIELD_OLD_EVENT_NOT_CURRENT'};
+    return {...base(),status:'pending_hr',code:'HR_FIELD_REMOTE_RECEIPT_REQUIRED'};
+  }
+  if(Number(observed.readStatus)!==200)return {...base(),status:'pending_hr',code:'HR_FIELD_PREREAD_NOT_CONFIRMED'};
+  if(!fieldSame(decode(observed.observedValue),event.before)||observed.preconditionAllowed!==true)
+    return {...base(),status:'conflict',code:'HR_FIELD_REMOTE_BASE_CONFLICT'};
+  requests++;
+  const written=verify(await runScenario({...request,operation:'write_field'}));
+  writeAckVerified=Number(written.writeStatus)===200&&written.writeAttempted===true;
+  if(written.status==='CONFLICT_NOOP'&&written.writeAttempted===false)
+    return {...base(),status:'conflict',providerWriteRequests:0,code:'HR_FIELD_REMOTE_BASE_CONFLICT'};
+  if(!writeAckVerified)return {...base(),status:'pending_hr',code:'HR_FIELD_WRITE_ACK_UNCERTAIN'};
+  // Same-execution readback has proved stale in the real fixture. Always use a
+  // separately invoked inspection, bounded, without a second write request.
+  for(let i=0;i<Math.max(1,Math.min(3,maxReadbacks));i++){
+    observed=await inspect();if(confirmed(observed))return ack(observed);
+    if(observed.currentEventId&&observed.currentEventId!==event.eventId&&
+      !fieldSame(decode(observed.observedValue),event.before))
+        return {...base(),status:'pending_hr',code:'HR_FIELD_NEWER_OR_CONCURRENT_REMOTE_EVENT'};
+  }
+  return {...base(),status:'pending_hr',code:'HR_FIELD_INDEPENDENT_READBACK_PENDING'};
+}
+
+export async function withMakeGraphToolboxWriter({client,transport},consume){
+  const pending=new Set();let closing=false;
+  try{
+    await client.connect(transport);const list=await client.listTools(),tool=list?.tools?.[0];
+    if(list?.nextCursor||list?.tools?.length!==1||tool?.annotations?.readOnlyHint!==false||
+      !['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].every(k=>
+        Object.hasOwn(tool.inputSchema?.properties||{},k)))fail('MAPPING_FAILURE','WRITER_TOOLBOX_CONTRACT');
+    const runScenario=inputs=>{
+      if(closing)return Promise.reject(new Error('PROVIDER_FAILURE:B14_WRITER_TOOLBOX_CLOSED'));
+      const task=(async()=>{
+        const reply=await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});
+        if(reply.isError)fail('PROVIDER_FAILURE','WRITER_TOOLBOX_EXECUTION');
+        if(reply.structuredContent)return reply.structuredContent.outputs??reply.structuredContent;
+        const blocks=arrText(reply?.content);if(blocks.length!==1)fail('PROVIDER_FAILURE','WRITER_TOOLBOX_RESPONSE');
+        let value;try{value=JSON.parse(blocks[0]);}catch{fail('PROVIDER_FAILURE','WRITER_TOOLBOX_JSON');}
+        return value.outputs??value;
+      })();pending.add(task);task.finally(()=>pending.delete(task)).catch(()=>{});return task;
+    };
+    return await consume(runScenario);
+  }finally{closing=true;await Promise.allSettled([...pending]);await client.close().catch(()=>{});}
+}
+const arrText=content=>Array.isArray(content)?content.filter(x=>x.type==='text').map(x=>x.text):[];
+
+const targetSha=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
+const columnLetter=index=>{let n=index+1,value='';while(n>0){const r=(n-1)%26;value=String.fromCharCode(65+r)+value;n=Math.floor((n-1)/26);}return value;};
+export function encodeExcelHrFieldValue(value,kind){
+  // Graph PATCH null means "ignore". An intentional clear is an empty string.
+  if(value===null||value===undefined||value==='')return '';
+  if(kind==='money'){
+    if(typeof value!=='number'||!Number.isFinite(value)||value<0)fail('MAPPING_FAILURE','FIELD_AMOUNT_INVALID');return value;
+  }
+  const text=str(value);if(text.length>500||/^[=+@]/.test(text))fail('MAPPING_FAILURE','FIELD_TEXT_INVALID');
+  if(kind==='date'&&(!/^20\d{2}-\d{2}-\d{2}$/.test(text)||new Date(text+'T00:00:00Z').toISOString().slice(0,10)!==text))fail('MAPPING_FAILURE','FIELD_DATE_INVALID');
+  if(!['text','date','shopper'].includes(kind))fail('MAPPING_FAILURE','FIELD_KIND_UNSUPPORTED');return text;
+}
+export function decodeExcelHrFieldValue(value,kind,{periodId}={}){
+  if(value===null||value===undefined||str(value)==='')return null;
+  if(kind==='text'||kind==='shopper')return str(value);
+  if(kind==='money'){
+    if(typeof value==='number')return value;
+    const n=Number(str(value).replace(/[QL\s]/gi,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(/,/g,'.').replace(/[^0-9.-]/g,''));
+    if(!Number.isFinite(n))fail('MAPPING_FAILURE','FIELD_REMOTE_AMOUNT_INVALID');return n;
+  }
+  if(kind==='date'){
+    const raw=str(value);let iso;
+    if(typeof value==='number'||/^\d{3,6}(?:\.\d+)?$/.test(raw)){
+      const serial=Number(value);if(!Number.isFinite(serial)||serial<1||serial>100000)fail('MAPPING_FAILURE','FIELD_REMOTE_DATE_INVALID');
+      iso=new Date(Date.UTC(1899,11,30)+Math.floor(serial)*86400000).toISOString().slice(0,10);
+    }else if(/^20\d{2}-\d{2}-\d{2}$/.test(raw))iso=raw;
+    else{
+      const match=raw.match(/^([0-3]?\d)[/.-]([01]?\d)(?:[/.-](20\d{2}))?$/),year=match?.[3]||str(periodId).slice(-7,-3);
+      if(!match||!/^20\d{2}$/.test(year))fail('MAPPING_FAILURE','FIELD_REMOTE_DATE_INVALID');
+      iso=year+'-'+match[2].padStart(2,'0')+'-'+match[1].padStart(2,'0');
+    }
+    if(new Date(iso+'T00:00:00Z').toISOString().slice(0,10)!==iso)fail('MAPPING_FAILURE','FIELD_REMOTE_DATE_INVALID');return iso;
+  }
+  fail('MAPPING_FAILURE','FIELD_KIND_UNSUPPORTED');
+}
+export async function resolveExcelFieldWriteTarget({db,event,columnMap,cinemaRegistry,readBinding,resolveBinding=resolveCountryHrPeriodBinding}={}){
+  if(!db?.doc||event?.schemaVersion!=='cxorbia.hr-field-event.v1'||typeof readBinding!=='function')fail('MAPPING_FAILURE','FIELD_TARGET_DEPENDENCIES');
+  const scope=fieldScope(event),request={db,tenantId:scope.tenantId,projectId:scope.projectId,countryCode:scope.countryCode,periodId:scope.periodId,purpose:'operational'};
+  const binding=await resolveBinding(request),privateBinding=binding.privateProvider||{};
+  const settingSnap=await db.doc('tenants/'+scope.tenantId+'/integrationSettings/'+privateBinding.providerBindingId).get();
+  const setting=settingSnap.exists?settingSnap.data():{},cap=setting.fieldWriter||{},rule=cap.fieldMap?.[event.fieldKey];
+  if(binding.proof?.writePolicy!=='bidirectional_gated'||setting.hrWritesEnabled!==true||
+    cap.schemaVersion!=='cxorbia.hr-field-writer-binding.v1'||cap.enabled!==true||cap.protocolVersion!==FIELD_PROTOCOL||
+    cap.remoteEventReceipt!==true||cap.observedBaseGuard!==true||!Array.isArray(cap.allowedFields)||!cap.allowedFields.includes(event.fieldKey)||
+    !rule||!columnMap.columns?.[rule.columnKey]||!['text','date','money','shopper'].includes(rule.valueKind))fail('MAPPING_FAILURE','FIELD_WRITER_NOT_ENABLED');
+  const sheets=(privateBinding.worksheets||[]).filter(s=>targetSha(s.worksheetId)===event.worksheetFingerprint);
+  if(sheets.length!==1)fail('MAPPING_FAILURE','FIELD_WORKSHEET_OWNER');
+  const sheet=sheets[0],split=str(event.hrRowId).lastIndexOf('!'),row=Number(str(event.hrRowId).slice(split+1));
+  if(split<1||str(event.hrRowId).slice(0,split)!==sheet.worksheetName||!Number.isSafeInteger(row)||row<1)fail('MAPPING_FAILURE','FIELD_ROW_REFERENCE');
+  const read=await readBinding(binding);
+  if(read.proof?.bindingFingerprint!==binding.proof.bindingFingerprint||read.proof?.externalRevisionIndependentlyVerified!==true)fail('MAPPING_FAILURE','FIELD_SOURCE_READ_UNPROVEN');
+  const tabs=(read.privateProviderRows||[]).filter(x=>x.worksheetId===sheet.worksheetId);
+  if(tabs.length!==1||!Array.isArray(tabs[0].values))fail('MAPPING_FAILURE','FIELD_SOURCE_WORKSHEET_MISSING');
+  const values=tabs[0].values,mapping=validateGraphColumnMap(values,columnMap,scope.countryCode),header=values[mapping.headerRow-1];
+  if(row<=mapping.headerRow||row>values.length||!Array.isArray(values[row-1]))fail('MAPPING_FAILURE','FIELD_ROW_OUTSIDE_SOURCE');
+  const indexes={};
+  for(const [key,field] of Object.entries(columnMap.columns)){
+    const aliases=(field.aliases||[]).map(normalize),hits=header.map((cell,index)=>aliases.includes(normalize(cell))?index:-1).filter(x=>x>=0);
+    if(hits.length>1&&!field.duplicatePolicy)fail('MAPPING_FAILURE','FIELD_COLUMN_AMBIGUOUS');
+    indexes[key]=hits.length?hits.at(-1):null;
+  }
+  const column=indexes[rule.columnKey],identityKeys=cap.rowIdentityColumns;
+  if(column===null||!Array.isArray(identityKeys)||identityKeys.length<2||identityKeys.length>3||new Set(identityKeys).size!==identityKeys.length||
+    identityKeys.some(k=>indexes[k]===null||indexes[k]===undefined||k===rule.columnKey))fail('MAPPING_FAILURE','FIELD_IDENTITY_COLUMNS');
+  const raw=values[row-1],identityIndexes=identityKeys.map(k=>indexes[k]),identityValues=identityIndexes.map(i=>raw[i]??'');
+  if(identityValues.some(v=>!str(v)))fail('MAPPING_FAILURE','FIELD_BUSINESS_IDENTITY_EMPTY');
+  if(!cinemaRegistry?.cinemas)fail('MAPPING_FAILURE','FIELD_CINEMA_REGISTRY_REQUIRED');
+  const key=scope.periodId.slice(-7),parsed=parseTab({country:scope.countryCode,key,year:Number(key.slice(0,4)),
+    month:Number(key.slice(5)),tabTitle:sheet.worksheetName,label:key,fullLabel:key},values,columnMap,cinemaRegistry);
+  const sameRows=parsed.visits.filter(v=>Number(v.sourceRow)===row);
+  if(parsed.issues.some(x=>x.severity==='critical')||sameRows.length!==1||!event.sourceRowIdentity||
+    event.sourceRowIdentity.cinemaId!==str(sameRows[0].cinemaId)||event.sourceRowIdentity.sucursal!==str(sameRows[0].sucursal))
+      fail('MAPPING_FAILURE','FIELD_BUSINESS_IDENTITY_CHANGED');
+  // Sparse historical layouts use exactly the same approved cinema registry
+  // projection as the live reader. Raw guard columns are configured per binding.
+  let encode=value=>encodeExcelHrFieldValue(value,rule.valueKind),decode=value=>decodeExcelHrFieldValue(value,rule.valueKind,scope);
+  if(rule.valueKind==='shopper'){
+    const beforeRaw=raw[column]??'',afterBinding=event.providerValueBinding;
+    const currentSourceId=str(sameRows[0].shopperId);let currentShopper=currentSourceId||null;
+    if(currentSourceId){
+      const currentCross=await db.doc('tenants/'+scope.tenantId+'/shopperIdentityCrosswalk/'+currentSourceId).get();
+      if(currentCross.exists){
+        const mapped=currentCross.data();
+        if(mapped.tenantId!==scope.tenantId||mapped.sourceType!=='hr_external'||mapped.projectId&&mapped.projectId!==scope.projectId||!str(mapped.shopperId))
+          fail('MAPPING_FAILURE','FIELD_CURRENT_SHOPPER_CROSSWALK_INVALID');
+        currentShopper=str(mapped.shopperId);
+      }
+    }
+    if(!fieldSame(currentShopper,event.before)&&!fieldSame(currentShopper,event.after))fail('MAPPING_FAILURE','FIELD_SOURCE_BASE_CHANGED');
+    if(event.after!==null){
+      if(afterBinding?.kind!=='shopper'||afterBinding.canonicalShopperId!==event.after||!str(afterBinding.remoteLabel)||
+        afterBinding.sourceShopperId!=='shopper_'+scope.countryCode.toLowerCase()+'_'+targetSha(str(afterBinding.remoteLabel).toLowerCase()).slice(0,10))
+          fail('MAPPING_FAILURE','FIELD_SHOPPER_BINDING_REQUIRED');
+      const cross=await db.doc('tenants/'+scope.tenantId+'/shopperIdentityCrosswalk/'+afterBinding.sourceShopperId).get();
+      if(!cross.exists||cross.data().tenantId!==scope.tenantId||cross.data().sourceType!=='hr_external'||cross.data().projectId&&cross.data().projectId!==scope.projectId||cross.data().shopperId!==event.after)fail('MAPPING_FAILURE','FIELD_SHOPPER_CROSSWALK_CHANGED');
+    }
+    const afterRaw=event.after===null?'':afterBinding.remoteLabel;
+    encode=value=>value===null?'':value===event.after?afterRaw:fail('MAPPING_FAILURE','FIELD_SHOPPER_ENCODING');
+    decode=value=>{
+      if(str(value)==='')return null;
+      if(str(value)===str(afterRaw)&&event.after!==null)return event.after;
+      if(str(value)===str(beforeRaw))return currentShopper;
+      return 'unresolved_remote_shopper_label';
+    };
+  }
+  const beforeRaw=raw[column]??'',afterRaw=encode(event.after);
+  if(!fieldSame(decode(beforeRaw),event.before)&&!fieldSame(decode(beforeRaw),event.after))fail('MAPPING_FAILURE','FIELD_SOURCE_BASE_CHANGED');
+  const after=await resolveBinding(request);if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)fail('MAPPING_FAILURE','FIELD_BINDING_CHANGED_DURING_READ');
+  const end=columnLetter(Math.min(44,header.length-1)),expectedHeaderValues=header.map(v=>v??'');
+  return {schemaVersion:'cxorbia.hr-field-target.v1',...scope,resolvedFromPrivateBinding:true,
+    bindingFingerprint:binding.proof.bindingFingerprint,worksheetFingerprint:event.worksheetFingerprint,
+    headerFingerprint:fieldDigest(expectedHeaderValues),rowIdentityFingerprint:fieldDigest({tenantId:scope.tenantId,projectId:scope.projectId,
+      periodId:scope.periodId,countryCode:scope.countryCode,worksheetFingerprint:event.worksheetFingerprint,sourceRow:row,values:identityValues}),
+    driveId:privateBinding.driveId,itemId:privateBinding.itemId,worksheetId:sheet.worksheetId,rangeAddress:columnLetter(column)+row,
+    headerRangeAddress:'A'+mapping.headerRow+':'+end+mapping.headerRow,rowRangeAddress:'A'+row+':'+end+row,
+    rowIdentityColumnIndexes:identityIndexes,expectedHeaderValues,expectedRowIdentityValues:identityValues,
+    // Keep the event base when inspecting a lost response after the value changed.
+    expectedBeforeValue:fieldSame(decode(beforeRaw),event.before)?beforeRaw:encodeExcelHrFieldValue(event.before,rule.valueKind),
+    fieldValue:afterRaw,decodeCell:decode,writeCapability:cap};
 }

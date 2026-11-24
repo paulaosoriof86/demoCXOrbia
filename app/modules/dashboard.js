@@ -80,6 +80,7 @@ CX.module('dashboard', ({data,ui})=>{
     pendRealizar:phaseCount(BF.pendRealizar),
     cuestPend:phaseCount(BF.cuestPend),
     sinSubmitir:phaseCount(BF.sinSubmitir),
+    hrReview:phaseCount(v=>v.hrReview?.requiresAttention===true),
     liquidadas:phaseCount(BF.liquidadas),
     fueraRango:phaseCount(BF.fueraRango),
     postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)&&!pp._archived).length,
@@ -283,6 +284,8 @@ CX.module('dashboard', ({data,ui})=>{
     ${tile('fuera','Fuera de rango',k.fueraRango,'r')}
   </div>
 
+  <div class="grid" style="margin-bottom:18px">${tile('hrReview','Observaciones de T&A por atender',k.hrReview,'a')}</div>
+
   ${avanceHTML}
 
   <div class="card card-p" style="margin-bottom:18px">
@@ -347,7 +350,8 @@ CX.module('dashboard', ({data,ui})=>{
     const scan=CX.automations?CX.automations.scanPendientes():{atrasadas:[]};
     const proxim=all.filter(v=>['asignada','agendada'].includes(v.estado)&&v.agendada);
     const realPend=all.filter(v=>v.estado==='realizada');
-    const submitPend=all.filter(v=>v.estado==='cuestionario');
+    const reviewPend=all.filter(v=>v.hrReview?.requiresAttention===true);
+    const submitPend=all.filter(v=>BF.sinSubmitir(v)&&v.hrReview?.requiresAttention!==true);
     const porProgramar=all.filter(v=>v.estado==='asignada'&&!v.agendada);
     // Use the same canonical facets as the dashboard KPI. A realized visit
     // without an assigned shopper is a data-review case, not a pending offer.
@@ -365,6 +369,7 @@ CX.module('dashboard', ({data,ui})=>{
       </div>
       ${bucket('📅 Próximas — pendientes de realizar','brand',proxim,v=>'Prog: '+fmtD(v.agendada),'fecha','Recordatorio: tu visita está próxima, no olvides realizarla.')}
       ${bucket('📝 Realizadas — pendientes de cuestionario','amber',realPend,v=>'Real: '+fmtD(v.realizada),'fecha','Recordatorio: completa el cuestionario de tu visita realizada.')}
+      ${bucket('🔎 Observaciones de T&A por atender','red',reviewPend,v=>v.hrReview?.outcome==='consult_shopper'?'Consultar al shopper':'Requiere revisión','alerta')}
       ${bucket('📤 Cuestionario completo — pendientes de submitir','purple',submitPend,v=>'Cuest: '+fmtD(v.cuestFecha||v.realizada),'fecha','Recordatorio: envía (submit) tu cuestionario.')}
       ${bucket('🗓️ Pendientes por programar','green',porProgramar,v=>'Desde: '+fmtD(v.disponibleDesde),'fecha','Recordatorio: agenda la fecha de tu visita asignada.')}
       ${bucket('👤 Pendientes por asignar','purple',porAsignar,v=>'Sin shopper','fecha')}
@@ -517,7 +522,7 @@ CX.module('dashboard', ({data,ui})=>{
       total:()=>true, asign:BF.asignadas, sinasign:BF.sinAsignar,
       sinagend:BF.sinAgendar, real:BF.realizadas,
       pend:BF.pendRealizar, cuest:BF.cuestPend,
-      submit:BF.sinSubmitir, liq:BF.liquidadas, fuera:BF.fueraRango,
+      submit:BF.sinSubmitir, hrReview:v=>v.hrReview?.requiresAttention===true, liq:BF.liquidadas, fuera:BF.fueraRango,
       agend:BF.agendadas,
     };
     const WA={ sinasign:'Visitas sin cobertura — avisar a la red de shoppers.', sinagend:'Pídeles agendar fecha.', cuest:'Recuérdales enviar el cuestionario.', fuera:'Coordinar reprogramación.' };

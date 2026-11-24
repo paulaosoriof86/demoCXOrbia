@@ -3,8 +3,8 @@
    Import side effects: zero writes, zero provider initialization.
 */
 import crypto from 'node:crypto';
-import { createProjectCommandProvider } from '../cxorbia-project-command-provider-v1.mjs';
-import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
+import { createProjectCommandProvider, validateExcelCountryBindings } from '../cxorbia-project-command-provider-v1.mjs';
+import { createOperationalCommandProvider, dispatchOperationalHrFields } from '../cxorbia-operational-command-provider-v1.mjs';
 import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
 import { createFinanceCommandProvider } from '../cxorbia-finance-command-provider-v1.mjs';
 import { createCommercialCommandProvider } from '../cxorbia-commercial-command-provider-v1.mjs';
@@ -33,8 +33,13 @@ const hrScopedPredecessorRef=(collection,lock)=>{
 const hrAllowedJournalWrite=(path,scope,stage)=>{
   const parts=str(path).split('/');
   if(parts[0]!=='tenants'||parts[1]!==scope.tenantId)return false;
+  if(stage==='visits'&&parts.length===4&&parts[2]==='bulletins'&&
+    /^hr-review-[a-f0-9]{24}-[1-9][0-9]*-[a-f0-9]{16}-(?:staff|shopper)$/.test(parts[3]))return true;
   if(parts.length===4&&['shoppers','users','shopperIdentityCrosswalk','shopperIdentityReviews','reviewQueue'].includes(parts[2]))return true;
   if(parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&parts[4]==='visits')return true;
+  if(stage==='visits'&&parts[2]==='projects'&&parts[3]===scope.projectId&&
+    ((parts.length===6&&['hrFieldEvents','hrFieldHeads','hrFieldDeliveries'].includes(parts[4]))||
+     (parts.length===8&&parts[4]==='hrFieldDeliveries'&&parts[6]==='observations')))return true;
   return stage==='shoppers'&&(parts.length===4&&['shopperIdentityLinks','paymentReconciliations'].includes(parts[2])||
     parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&['certifications','liquidations','postulations','reservations'].includes(parts[4]));
 };
@@ -93,7 +98,7 @@ const hrSettledPredecessor=({oldRef,oldSnap,lock,intents,effects,stages,scope,so
 };
 
 export function createHrSnapshotReconciler({
-  verifyPrincipal,readSnapshot,ensureAdmin,shopperPolicy,operationalPolicy,
+  verifyPrincipal,readSnapshot,ensureAdmin,shopperPolicy,operationalPolicy,hrFieldJournalEnabled=false,
   shopperProviderFactory=createShopperCommandProvider,
   operationalProviderFactory=createOperationalCommandProvider,
   now=Date.now,leaseMs=120000
@@ -218,9 +223,11 @@ export function createHrSnapshotReconciler({
       const projectSnap=await db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId).get();
       const durableProject=projectSnap.exists?projectSnap.data()||{}:{};
       const sourceConfig=durableProject.operationalSource||durableProject.routeSource||{};
+      const sourceBindingValid=sourceConfig.providerType==='excel_online'
+        ? validateExcelCountryBindings(durableProject.countries,sourceConfig).length===0
+        : !!str(sourceConfig.providerBindingId||sourceConfig.integrationSettingId||sourceConfig.providerRef)&&!!str(sourceConfig.mappingRef);
       if(current.snapshot.sourceSafe!==true||current.snapshot.imported===true||Number(current.snapshot.firestoreWrites||0)!==0||
-        sourceConfig.mode!=='external'||sourceConfig.readPolicy!=='external_live'||
-        !str(sourceConfig.providerBindingId||sourceConfig.integrationSettingId||sourceConfig.providerRef)||!str(sourceConfig.mappingRef)){
+        sourceConfig.mode!=='external'||sourceConfig.readPolicy!=='external_live'||!sourceBindingValid){
         return stop('HR_RECONCILIATION_LIVE_SOURCE_CONFIG_REQUIRED',{httpStatus:409});
       }
       const freshPrincipal=await verifyPrincipal(req,scope);
@@ -292,18 +299,8 @@ export function createHrSnapshotReconciler({
         const natives=new WeakMap();
         const native=ref=>natives.get(ref)||ref;
         const allowed=ref=>{
-          const parts=str(native(ref)?.path).split('/');
-          const tenantOk=parts[0]==='tenants'&&parts[1]===scope.tenantId;
-          const shopperPath=parts.length===4&&['shoppers','users','shopperIdentityCrosswalk','shopperIdentityReviews','reviewQueue'].includes(parts[2]);
-          const visitPath=parts.length===6&&parts[2]==='projects'&&parts[3]===scope.projectId&&parts[4]==='visits';
-          // I3 A03: the signed staff/HR shopper stage may atomically transfer
-          // compatible identity aliases and historical ownership. Keep this
-          // exact scoped allowlist separate from the visit-reconciliation stage.
-          const shopperIdentityPath=stage==='shoppers'&&parts.length===4&&
-            ['shopperIdentityLinks','paymentReconciliations'].includes(parts[2]);
-          const shopperHistoryPath=stage==='shoppers'&&parts.length===6&&parts[2]==='projects'&&
-            parts[3]===scope.projectId&&['certifications','liquidations','postulations','reservations'].includes(parts[4]);
-          if(!tenantOk||!(shopperPath||visitPath||shopperIdentityPath||shopperHistoryPath))throw hrError('HR_RECONCILIATION_WRITE_PATH_DENIED');
+          // Live effects and predecessor verification use the same exact scope.
+          if(!hrAllowedJournalWrite(str(native(ref)?.path),scope,stage))throw hrError('HR_RECONCILIATION_WRITE_PATH_DENIED');
         };
         const transaction=async(callback)=>{
           const intent=await startIntent('firestore');
@@ -359,7 +356,8 @@ export function createHrSnapshotReconciler({
         const ref=receiptRef.collection('stages').doc(name),old=(await ref.get()).data();
         if(old?.status==='committed'&&old.sourceRevision===sourceRevision)return old.summary;
         const facade=journal(name);
-        const provider=factory({...facade,policy:policy(current.snapshot),hrSnapshot:current.snapshot,hrRevision:sourceRevision});
+        const provider=factory({...facade,policy:policy(current.snapshot),hrSnapshot:current.snapshot,hrRevision:sourceRevision,
+          hrFieldJournalEnabled:name==='visits'&&(typeof hrFieldJournalEnabled==='function'?hrFieldJournalEnabled(current.snapshot):hrFieldJournalEnabled)===true});
         const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision,identityByShopperId:current.identity});
         if(result?.ok!==true||result?.providerAck!==true||!HR_TERMINAL.has(result?.status))throw hrError('HR_RECONCILIATION_PROVIDER_ACK_REQUIRED');
         // Retain scalar counts, never identity payloads or unbounded provider queues.
@@ -466,6 +464,7 @@ export function createProviderForCommand(command,overrides={}){
   const academyPolicy=overrides.academyPolicy??globalThis.CXORBIA_ACADEMY_COMMAND_PROVIDER_POLICY??null;
   const hrSnapshot=overrides.hrSnapshot??globalThis.CXORBIA_COMMAND_HR_SNAPSHOT??null;
   const hrRevision=overrides.hrRevision??globalThis.CXORBIA_COMMAND_HR_REVISION??'';
+  const hrFieldJournalEnabled=overrides.hrFieldJournalEnabled===true;
   const hrIdentityByShopperId=overrides.hrIdentityByShopperId??globalThis.CXORBIA_COMMAND_HR_PRIVATE_IDENTITY??null;
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
   if(kind==='project'){
@@ -494,7 +493,7 @@ export function createProviderForCommand(command,overrides={}){
     catch(error){return {provider:null,kind,error:'ACADEMY_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
-  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy,hrSnapshot,hrRevision}),kind};}
+  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy,hrSnapshot,hrRevision,hrFieldJournalEnabled}),kind};}
   catch(error){return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
 }
 
@@ -520,11 +519,13 @@ export async function maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{hrSna
       const result=await hrSnapshotReconcile({req,command});
       return json(res,result?.httpStatus||(result?.ok===true?200:409),result);
     }
-    if(configure)await configure(command);
-    const {provider,error,kind,detail}=createProviderForCommand(command);
+    const configured=configure?await configure(command):{};
+    const {provider,error,kind,detail}=createProviderForCommand(command,configured||{});
     if(!provider)return json(res,409,blocked(error,{providerKind:kind,detail:detail||null,commandType:command?.commandType||null,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null}));
-    const result=await provider.execute(token,command);
-    return json(res,result?.ok===true?200:409,result);
+    const localResult=await provider.execute(token,command);
+    const result=await dispatchOperationalHrFields({db:configured?.db,command,result:localResult,
+      writeField:configured?.writeHrField});
+    return json(res,result?.ok===true?200:result?.status==='pending_hr'?202:409,result);
   }catch(error){
     return json(res,409,blocked(str(error?.message||error)));
   }

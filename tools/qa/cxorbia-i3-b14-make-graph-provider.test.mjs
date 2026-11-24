@@ -32,9 +32,9 @@ test('remote content drift, empty ACK and missing critical headers fail closed',
  assert.throws(()=>verifyMakeGraphReadOutput({...output(),status1:403},{...binding.scope,bindingFingerprint:binding.proof.bindingFingerprint},binding.privateProvider.worksheets[0],'A1:AI140',contract),/B14_GRAPH_ACK_MISSING/);
  assert.throws(()=>validateGraphColumnMap([['No','Map'],['x','y']],contract,'GT'),/B14_HEADER_AMBIGUOUS_OR_MISSING/);
 });
-test('source access gate refuses missing delegated token and forbidden write policy',async()=>{
+test('source access gate refuses missing delegated token and an unsupported source policy',async()=>{
  await assert.rejects(readExcelPeriodThroughMake({binding,scenarioId:'10200465',columnMap:contract}),/B14_MAKE_API_TOKEN_MISSING/);
- await assert.rejects(readExcelPeriodThroughMake({binding:{...binding,proof:{...binding.proof,writePolicy:'bidirectional_gated'}},token:'t',scenarioId:'10200465',columnMap:contract}),/B14_SOURCE_POLICY/);
+ await assert.rejects(readExcelPeriodThroughMake({binding:{...binding,proof:{...binding.proof,writePolicy:'platform_only'}},token:'t',scenarioId:'10200465',columnMap:contract}),/B14_SOURCE_POLICY/);
 });
 
 const hrContract = JSON.parse(readFileSync(new URL(
@@ -131,4 +131,10 @@ test('runtime shares the toolbox at full snapshot scope without weakening freshn
  assert.match(src,/withOriginalToolboxReader\(runScenario=>readExcelOriginalProjectSnapshot/);
  assert.match(src,/readBinding:countryPeriod=>readExcelPeriodThroughMake\(\{binding:countryPeriod,columnMap,runScenario\}\)/);
  assert.match(src,/EXCEL_BINDING_CHANGED_DURING_READ/);assert.match(src,/EXCEL_OPERATIONAL_SCOPE_DRIFT/);
+});
+
+test('F3 explicitly gated project can use the same read-only delegated reader without writes',async()=>{
+ const {result,requests}=await call(output(),{binding:{...binding,proof:{...binding.proof,writePolicy:'bidirectional_gated'}}});
+ assert.equal(result.proof.hrWrites,0);assert.equal(result.proof.providerWriteRequests,0);assert.equal(result.proof.externalRevisionIndependentlyVerified,true);
+ assert.equal(requests.length,1);assert.equal(JSON.parse(requests[0].input.body).data.operation,undefined);
 });

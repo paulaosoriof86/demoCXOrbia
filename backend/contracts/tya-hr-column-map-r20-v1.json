@@ -1,6 +1,6 @@
 {
   "contractId": "tya-hr-column-map-r20-v1",
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "historyScope": "all_detected_hr_periods",
@@ -194,6 +194,16 @@
       "critical": true,
       "domain": "submission",
       "duplicatePolicy": "coalesce_equal_or_single_nonempty"
+    },
+    "observacionesRevision": {
+      "aliases": [
+        "Observaciones de revisión",
+        "Observaciones de revision"
+      ],
+      "critical": false,
+      "domain": "external_review",
+      "privacy": "authenticated_staff_or_exact_assigned_shopper",
+      "historicalFallback": "not_mapped_without_inference"
     }
   },
   "rules": [
@@ -207,7 +217,10 @@
     "shopper phone/email are optional HR-managed profile data when present",
     "missing optional shopper phone/email never blocks shopper identity or login",
     "declared project_scoped_cinema_identity header may resolve missing Shopping only from the exact tenant/project cinema registry",
-    "project_scoped cinema identity accepts only exact known ID CINEMA values; unknown, empty or ambiguous IDs hold the build"
+    "project_scoped cinema identity accepts only exact known ID CINEMA values; unknown, empty or ambiguous IDs hold the build",
+    "review observations are optional across historical periods and resolved by unique normalized header aliases",
+    "a retained review observation never reverses a confirmed submission or confirms a payment",
+    "raw review observations are excluded from public source-safe payloads"
   ],
   "prohibitions": [
     "first_partial_match_wins",

@@ -56,7 +56,7 @@ export function finalDecision(result,before,after){
   const apis=result.apiProofs?.length===4&&result.apiProofs.every(x=>x.pass===true);
   const storage=result.storageProof?.pass===true&&result.storageProof?.objectStable===true;
   const errorFree=result.errors?.length===0;
-  const requestedScopePass=Boolean(seal&&passwords&&apis&&errorFree&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage));
+  const requestedScopePass=Boolean(seal&&passwords&&errorFree&&(result.scope?.executionMode==='PASSWORD_ONLY'||(apis&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage))));
   return {seal,passwords,apis,storage,requestedScopePass,pass:Boolean(seal&&passwords&&apis&&storage&&errorFree)};
 }
 
@@ -80,7 +80,7 @@ async function run(){
     need(process.env.CXORBIA_A08_RESIDUAL_READONLY==='PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY','SOURCE_FAILURE:A08_READONLY_GATE_REQUIRED');
     fs.rmSync(OUT+'/same-artifact-after.json',{force:true});
     const self=fileURLToPath(import.meta.url);
-    const proof=spawnSync(process.execPath,[self,...(process.argv.includes('--password-api-only')?['--password-api-only']:[])],{env:process.env,stdio:'ignore',timeout:30*60*1000});
+    const proof=spawnSync(process.execPath,[self,...(process.argv.includes('--password-only')?['--password-only']:process.argv.includes('--password-api-only')?['--password-api-only']:[])],{env:process.env,stdio:'ignore',timeout:30*60*1000});
     const after=spawnSync('bash',['tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'],{
       env:{...process.env,CXORBIA_A08_PREFLIGHT_PHASE:'after'},stdio:'ignore',timeout:5*60*1000});
     const final=spawnSync(process.execPath,[self,'--finalize'],{env:process.env,stdio:'ignore',timeout:30000});
@@ -102,7 +102,7 @@ async function run(){
       result.finalChecks=finalDecision(result,before,after);
       result.sameArtifactAfter=result.finalChecks.seal;
       result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':result.finalChecks.requestedScopePass?'HOLD_I3_A08_STORAGE_PENDING':'HOLD_I3_A08_RESIDUAL_READONLY';
-      result.scopeDecision=result.finalChecks.requestedScopePass?(result.scope.executionMode==='PASSWORD_API_ONLY'?'PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY':'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY'):'HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN';
+      result.scopeDecision=result.finalChecks.requestedScopePass?(result.scope.executionMode==='PASSWORD_ONLY'?'PASS_I3_A08_PASSWORD3_SCOPED_READONLY':result.scope.executionMode==='PASSWORD_API_ONLY'?'PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY':'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY'):'HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN';
       result.gate='HOLD';result.fullA08Certified=false;result.newDomainMatches=0;
       save(result);console.log(JSON.stringify({decision:result.decision,checks:result.finalChecks,fullA08Certified:false,newDomainMatches:0}));
       if(!result.finalChecks.requestedScopePass)process.exitCode=1;
@@ -115,7 +115,7 @@ async function run(){
   const result={schemaVersion:'cxorbia.i3.a08.password3-api-storage.residual.readonly.v1',iteration:'I3',gate:'HOLD',
     decision:'HOLD_I3_A08_RESIDUAL_READONLY',environment:PROJECT,fullA08Certified:false,newDomainMatches:0,
     sourceSha:null,sourceTree:null,runtimeRevision:null,runtimeDigest:null,hostingVersion:null,
-    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,executionMode:process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
+    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,executionMode:process.argv.includes('--password-only')?'PASSWORD_ONLY':process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
       apiOperation:'GET /api/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
       rolesRequiredForIntegralA08:['super','admin','ops','coordinador','shopper','cliente'],
       rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false},
@@ -186,12 +186,13 @@ async function run(){
     for(const id of EXCEPTION_IDS)await capture('password-'+id,async()=>{
       const output=OUT+'/r20-'+id;
       const proc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs'],{
-        env:{...process.env,R20_AUTHORIZED_TEST_SHOPPER_ID:id,R20_AUTHORIZED_TEST_LOGIN:'',R20_SOURCE_SHA:pin.sourceSha,
+        env:{...process.env,...(result.scope.executionMode==='PASSWORD_ONLY'?{R20_CREDENTIAL_AUTHORITY:'CURRENT_PROVIDER_VERIFIED_RULE_V1'}:{}),R20_AUTHORIZED_TEST_SHOPPER_ID:id,R20_AUTHORIZED_TEST_LOGIN:'',R20_SOURCE_SHA:pin.sourceSha,
           R20_HOSTING_URL:ROOT,R20_SAFE_OUT:output},encoding:'utf8',timeout:345000,maxBuffer:2*1024*1024,stdio:['ignore','pipe','pipe']});
       let proof=null;try{proof=read(output+'/result.json');}catch{}
       const pass=proc.status===0&&proof?.sourceSha===pin.sourceSha&&proof?.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&
-        ['EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS','EXACT_SEALED_HASH_EXISTING_LOGIN_ALIAS_AND_AUTH_CLAIMS'].includes(proof.credentialProvenance)&&proof.attemptedAccounts===1&&
+        ['EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS','EXACT_SEALED_HASH_EXISTING_LOGIN_ALIAS_AND_AUTH_CLAIMS','CURRENT_DURABLE_PROVIDER_RULE_AND_EXACT_KEEPER_AUTH'].includes(proof.credentialProvenance)&&proof.attemptedAccounts===1&&
         proof.selection?.boundedShopperIdQuery===true&&proof.selection?.requestedShopperId===id&&proof.selection?.selectedShopperMatchesRequested===true&&
+        (proof.credentialProvenance!=='CURRENT_DURABLE_PROVIDER_RULE_AND_EXACT_KEEPER_AUTH'||proof.selection?.durableProviderProof===true)&&proof.identityPreservedAfter===true&&
         proof.sessionLifecycle?.restore===true&&proof.sessionLifecycle?.logout===true&&proof.sessionLifecycle?.relogin===true&&
         proof.authWrites===0&&proof.passwordChanges===0&&proof.passwordResets===0&&proof.firestoreWrites===0&&proof.production===false;
       result.passwordProofs.push({shopperId:id,pass,decision:str(proof?.decision)||'HOLD_R20_RESULT_UNAVAILABLE',
@@ -201,7 +202,9 @@ async function run(){
         usernameCanonizationProven:false});
       need(pass,'AUTH_FAILURE:A08_EXACT_ORDINARY_PASSWORD_UNPROVEN');
     });
-    for(const id of [null,...EXCEPTION_IDS])await capture('api-'+(id||'anonymous'),async()=>{
+    if(result.scope.executionMode==='PASSWORD_ONLY')result.preservedEvidence.push({runNumber:2760,artifactId:14906482096,
+      artifactSha256:'ec78e422057ff95e8d062c58df9c57aff9e30ddec505303461b2e95daf700dfa',credit:'HISTORICAL_API_DENIALS_4_OF_4_PRESERVED_NOT_REEXECUTED',currentRunApiCalls:0});
+    else for(const id of [null,...EXCEPTION_IDS])await capture('api-'+(id||'anonymous'),async()=>{
       const token=id?await tokenFor(id):null;
       const response=await fetch(ROOT+A08_USER_ADMIN_PATH,{
         method:'GET',redirect:'error',headers:token?{authorization:'Bearer '+token,'cache-control':'no-store'}:{'cache-control':'no-store'},signal:AbortSignal.timeout(45000)});
@@ -214,7 +217,7 @@ async function run(){
         hostingHtmlFallback:response.status===200&&/text\/html/i.test(response.headers.get('content-type')||'')});
       need(pass,response.status===200&&/text\/html/i.test(response.headers.get('content-type')||'')?'ENVIRONMENT_FAILURE:A08_API_PROBE_ROUTE_NOT_REWRITTEN':'AUTH_FAILURE:A08_API_ACCESS_NOT_EXACTLY_DENIED');
     });
-    if(result.scope.executionMode==='PASSWORD_API_ONLY'){
+    if(['PASSWORD_ONLY','PASSWORD_API_ONLY'].includes(result.scope.executionMode)){
       result.storageDiscovery={executed:false,reason:'RUN2759_EMPTY_DISCOVERY_PRESERVED_NOT_REPEATED',priorRunId:45362203267,priorArtifactId:14904544042,priorArtifactSha256:'3fcedce58418ad9132a87be9fc0514ef41b87194cbff3c448662cc2e244cf1ac',priorDocumentsObserved:0,historicalDiscoveryOnly:true,notCurrentStorageDenial:true};
       result.storageProof={pass:false,skipped:true,reason:'ISOLATED_EXISTING_OBJECT_FIXTURE_REQUIRED_BEFORE_ACL_PROOF'};
     }else await capture('storage-existing-object',async()=>{

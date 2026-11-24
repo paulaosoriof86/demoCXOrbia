@@ -10,12 +10,29 @@ import crypto from 'node:crypto';
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
-  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
+  'visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
   'support.ticket.create','support.ticket.update','client.nps.submit','client.note.create','client.meeting.request'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
 export const RESERVATION_STATES=Object.freeze(['solicitada','asignada','aprobada','rechazada','cruzada','cancelada']);
+// F3: fields already owned by the external HR mapping. Finance confirmations,
+// payments, questionnaire answers and provider coordinates are never editable here.
+export const HR_EXTERNAL_VISIT_FIELDS=Object.freeze([
+  'cinemaId','sucursal','ciudad','pais','country','quincena','franja','franjaCode',
+  'formato','escenario','tipoCombo','metodoPago','currency','honorario',
+  'disponibleDesde','agendada','realizada','cuestFecha','submittedAt','boleto','comboAmt'
+]);
+export const HR_WRITABLE_VISIT_FIELDS=Object.freeze([
+  'escenario','tipoCombo','formato','metodoPago','franja','quincena',
+  'disponibleDesde','agendada','realizada','cuestFecha','submittedAt','shopperId',
+  'boleto','comboAmt','honorario'
+]);
+export const HR_FIELD_EVENT_SCHEMA='cxorbia.hr-field-event.v1';
+const HR_FIELD_DELIVERY_SCHEMA='cxorbia.hr-field-delivery.v1';
+const HR_FIELD_COMMANDS=new Set(['visit.assign','visit.reassign','visit.hr.fields.update',
+  'visit.state.update','visit.reschedule','visit.questionnaire.submit',
+  'application.status.update','reservation.status.update','visit.cancel']);
 const CLIENT_COLLABORATION=Object.freeze({
   'client.nps.submit':{entityType:'clientNps',kind:'nps',fields:['score','comment']},
   'client.note.create':{entityType:'clientNote',kind:'note',fields:['subject','detail']},
@@ -146,6 +163,7 @@ function refs(db,command){
     tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),reservations:project.collection('reservations'),
     visitEvidence:project.collection('visitEvidence'),resourceReadReceipts:project.collection('resourceReadReceipts'),resources:tenant.collection('resources'),bulletins:tenant.collection('bulletins'),
     receipt:tenant.collection('commandReceipts').doc(receiptId(command)),
+    hrFieldEvents:project.collection('hrFieldEvents'),hrFieldHeads:project.collection('hrFieldHeads'),hrFieldDeliveries:project.collection('hrFieldDeliveries'),
     audit:tenant.collection('entityAuditTrail').doc(CLIENT_COLLABORATION[command.commandType]?'client-'+receiptId(command):auditId(command)),
     review:tenant.collection('reviewQueue').doc('ops-'+auditId(command))
   };
@@ -359,7 +377,85 @@ export function visitsFromSnapshot(snapshot={}){
 function durableVisitReviewRef(db,tenantId,visitId){
   return db.collection('tenants').doc(tenantId).collection('reviewQueue').doc(`ops-visit-reconcile-${sha(visitId).slice(0,28)}`);
 }
-async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
+export async function prepareHrReviewNotices(tx,{db,existing={},candidate,sourceRevision}){
+  const review=candidate.hrReview;
+  if(review?.version!=='cxorbia.hr-review.v1'||review.mapped!==true)return {writes:[],state:existing.hrReviewNoticeState||null};
+  const scope={tenantId:str(candidate.tenantId),projectId:str(candidate.projectId),periodId:str(candidate.periodId),visitId:str(candidate.visitId)};
+  const prior=existing.hrReview||existing.hrManaged?.hrReview||{},old=existing.hrReviewNoticeState||{};
+  const digest=str(review.observationDigest),shopperId=str(candidate.shopperId),pending=review.requiresAttention===true;
+  const changedSubmitted=review.submissionConfirmed===true&&!!digest&&!!prior.observationDigest&&digest!==prior.observationDigest;
+  const newPending=pending&&(old.status!=='active'||old.kind!=='pending_correction'||old.digest!==digest||old.shopperId!==shopperId);
+  const createNotice=newPending||changedSubmitted,clear=!pending&&old.status==='active'&&old.kind==='pending_correction';
+  if(!createNotice&&!clear)return {writes:[],state:old.cycle?old:null};
+  const prefix='hr-review-'+sha([scope.tenantId,scope.projectId,scope.visitId]).slice(0,24)+'-';
+  const oldIds=arr(old.ids).filter(id=>str(id).startsWith(prefix));
+  const cycle=Math.max(0,Number.isSafeInteger(old.cycle)?old.cycle:0)+(createNotice?1:0);
+  const kind=pending?'pending_correction':'submitted_review_changed',ids=createNotice?
+    [prefix+cycle+'-'+digest.slice(0,16)+'-staff',...(shopperId?[prefix+cycle+'-'+digest.slice(0,16)+'-shopper']:[])]:[];
+  const collection=db.collection('tenants').doc(scope.tenantId).collection('bulletins'),writes=[],observedAt=now();
+  const records=new Map();
+  for(const id of new Set([...oldIds,...ids])){const ref=collection.doc(id),snap=await tx.get(ref);records.set(id,{ref,snap,row:snap.exists?snap.data():null});}
+  for(const id of oldIds){const {ref,row}=records.get(id);if(row&&row.tenantId===scope.tenantId&&row.projectId===scope.projectId&&row.entityId===scope.visitId&&row.status==='active')writes.push(['set',ref,{status:'resolved',resolvedAt:observedAt,resolvedSourceRevision:sourceRevision,resolution:createNotice?'superseded_by_external_review':'external_hr_review_resolved'},{merge:true}]);}
+  for(const id of ids){
+    const {ref,row}=records.get(id),shopper=id.endsWith('-shopper');
+    if(row){if(row.tenantId!==scope.tenantId||row.projectId!==scope.projectId||row.entityId!==scope.visitId||row.reviewDigest!==digest)throw new Error('OPS_HR_REVIEW_NOTICE_SCOPE_CONFLICT');continue;}
+    writes.push(['create',ref,{id,tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,status:'active',
+      toRole:shopper?'shopper':'admin',targetRoles:shopper?['shopper']:['super','admin','ops','coordinador'],
+      targetShopperIds:shopper?[shopperId]:[],targetProjectIds:[scope.projectId],entityType:'visit',entityId:scope.visitId,
+      eventKey:kind,reviewDigest:digest,reviewCycle:cycle,operational:true,idempotencyKey:id,type:'alert',priority:pending?'high':'normal',
+      title:pending?'Observación de T&A por atender':'T&A actualizó la revisión de una visita submitida',
+      body:pending?'Revisa la observación vigente de esta visita y atiende la corrección pendiente.':'Consulta la observación actualizada. La fecha de submitido sigue confirmada en la hoja de ruta.',
+      actionRoute:shopper?'misvisitas':'dashboard',createdAt:observedAt,sourceRevision,source:'original_hr_review'}]);
+  }
+  return {writes,state:{cycle,digest,shopperId,kind,status:createNotice?'active':'resolved',ids:createNotice?ids:oldIds}};
+}
+async function prepareHrFieldObservations(tx,{db,existing,candidate,sourceRevision}){
+  const project=db.collection('tenants').doc(candidate.tenantId).collection('projects').doc(candidate.projectId);
+  const events=project.collection('hrFieldEvents'),heads=project.collection('hrFieldHeads'),deliveries=project.collection('hrFieldDeliveries');
+  const prior=existing.hrManaged||existing,pendingFields={...(existing.hrPendingFields||{})},writes=[];
+  for(const fieldKey of HR_WRITABLE_VISIT_FIELDS){
+    if(!Object.hasOwn(candidate,fieldKey)&&!Object.hasOwn(candidate.hrManaged||{},fieldKey))continue;
+    const previous=Object.hasOwn(existing.hrManaged||{},fieldKey)?existing.hrManaged[fieldKey]:
+      Object.hasOwn(existing.hrPendingFields?.[fieldKey]||{},'baseValue')?existing.hrPendingFields[fieldKey].baseValue:prior[fieldKey];
+    const before=hrFieldValue(previous),after=hrFieldValue((candidate.hrManaged||candidate)[fieldKey]);
+    if(hrFieldEqual(before,after))continue;
+    const scope={tenantId:candidate.tenantId,projectId:candidate.projectId,periodId:candidate.periodId,
+      countryCode:visitCountry(candidate),visitId:candidate.visitId,hrRowId:candidate.hrRowId,fieldKey};
+    const key=sha([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,scope.visitId,fieldKey]),headRef=heads.doc(key);
+    const headSnap=await tx.get(headRef),head=headSnap.exists?headSnap.data():{};
+    const pendingRef=head.pendingEventId?events.doc(head.pendingEventId):null;
+    const pendingSnap=pendingRef?await tx.get(pendingRef):null,pending=pendingSnap?.exists?pendingSnap.data():null;
+    if(head.pendingEventId&&!pending)throw new Error('OPS_HR_FIELD_PENDING_EVENT_MISSING');
+    const observedId='obs-'+sha([key,sourceRevision,before,after,head.pendingEventId||null]);
+    if(pending&&hrFieldEqual(pending.after,after)){
+      const echoRef=deliveries.doc(pending.eventId).collection('observations').doc(observedId),echo=await tx.get(echoRef);
+      if(!echo.exists)writes.push(['create',echoRef,{schemaVersion:'cxorbia.hr-field-observation.v1',...scope,eventId:pending.eventId,
+        kind:'matching_pending_value',sourceRevision,observedValue:after,actorUid:null,sourceEditTime:null,observedAt:now(),providerAck:false}]);
+      // Observation is not a write ACK and never becomes another logical edit.
+      continue;
+    }
+    const eventId='hfe-'+sha([observedId,'hr']),eventRef=events.doc(eventId),known=await tx.get(eventRef);
+    if(known.exists)continue;
+    const conflict=!!pending&&!hrFieldEqual(pending.before,after);
+    const event={schemaVersion:HR_FIELD_EVENT_SCHEMA,eventId,...scope,durableVisitId:candidate.visitId,
+      worksheetFingerprint:candidate.excelWorksheetFingerprint,origin:'hr',actorUid:null,sourceEditTime:null,
+      before,after,baseRevision:sourceRevision,baseEventId:head.latestEventId||null,
+      causalSequence:Number(head.causalSequence||0)+1,causalEvidence:conflict?'concurrent_or_unknown':'external_value_change_observed',
+      idempotencyKey:observedId,commandReceiptId:null,createdAt:now()};event.eventDigest=hrEventDigest(event);
+    writes.push(['create',eventRef,event]);
+    writes.push(['set',headRef,{...head,...scope,causalSequence:event.causalSequence,
+      ...(conflict?{causalConflictEventId:eventId,lastExternalEventId:eventId,lastObservedValue:after}:
+        {latestEventId:eventId,confirmedValue:after,pendingEventId:head.pendingEventId||null})},{merge:false}]);
+    if(conflict){
+      writes.push(['set',deliveries.doc(pending.eventId),{status:'conflict',providerAck:false,code:'HR_FIELD_CAUSAL_CONFLICT',
+        conflictingEventId:eventId,observedValue:after,sourceRevision},{merge:true}]);
+      if(pendingFields[fieldKey]?.eventId===pending.eventId)pendingFields[fieldKey]={...pendingFields[fieldKey],status:'conflict',providerAck:false,conflictingEventId:eventId};
+    }
+  }
+  return {writes,pendingFields};
+}
+
+async function reconcileVisitDoc({db,policy,candidate,sourceRevision,hrFieldJournalEnabled=false}){
   const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),visitId=str(candidate.visitId);
   if(!tenantId||!projectId||!visitId||!str(sourceRevision))throw new Error('OPS_VISIT_RECONCILIATION_KEYS_REQUIRED');
   const commandScope={tenantId,projectId};
@@ -368,9 +464,11 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
   const reviewRef=durableVisitReviewRef(db,tenantId,visitId);
   return db.runTransaction(async tx=>{
     const snap=await tx.get(visitRef);
+    const notices=await prepareHrReviewNotices(tx,{db,existing:snap.exists?snap.data():{},candidate,sourceRevision});
     if(!snap.exists){
-      tx.create(visitRef,{...candidate,hrSourceRevision:sourceRevision,createdAt:now(),updatedAt:now(),version:1});
-      return {providerWrites:1,created:true,idempotentReplay:false};
+      tx.create(visitRef,{...candidate,...(notices.state?{hrReviewNoticeState:notices.state}:{}),hrSourceRevision:sourceRevision,createdAt:now(),updatedAt:now(),version:1});
+      for(const [method,ref,value,options] of notices.writes)tx[method](ref,value,options);
+      return {providerWrites:1+notices.writes.length,created:true,idempotentReplay:false};
     }
     const existing=snap.data()||{};
     const excel=isExcelVisit(candidate),existingStableVisitKey=excel?visitId:(str(existing.hrRowId)||sourceCoord(existing)||str(existing.visitId||existing.id||visitId));
@@ -379,6 +477,8 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
        (excel&&((str(existing.periodId)&&str(existing.periodId)!==str(candidate.periodId))||
        (visitCountry(existing)&&visitCountry(candidate)&&visitCountry(existing)!==visitCountry(candidate))||
        [existing.id,existing.visitId].filter(Boolean).some(id=>!aliases.has(str(id))))))throw new Error('OPS_VISIT_DURABLE_SCOPE_CONFLICT');
+    const observations=hrFieldJournalEnabled&&isExcelVisit(candidate)
+      ?await prepareHrFieldObservations(tx,{db,existing,candidate,sourceRevision}):{writes:[],pendingFields:null};
     const durableShopper=str(existing.shopperId),hrShopper=str(candidate.shopperId);
     const platformPending=str(existing.assignmentSource)==='platform'&&str(existing.assignmentSyncStatus)==='pending_hr'&&durableShopper;
     if(platformPending&&hrShopper&&hrShopper!==durableShopper){
@@ -418,11 +518,7 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       'submittedAt','sourceSnapshotAt','boleto','comboAmt',
       // The HR snapshot owns these validation flags. Leaving their old outer
       // values while refreshing hrManaged creates false reviews on assigned rows.
-      'reviewRequired','reviewReasons',
-      // F3: refresh the same source-owned values at both durable read levels.
-      // Payment confirmations and other platform-owned finance fields are excluded.
-      'cinemaId','sucursal','ciudad','pais','country','quincena','franja','franjaCode',
-      'formato','escenario','tipoCombo','metodoPago','currency','honorario'
+      'reviewRequired','reviewReasons','hrReview',...HR_EXTERNAL_VISIT_FIELDS
     ];
     const operationalHrPatch=Object.fromEntries(operationalHrFields
       .filter(key=>Object.hasOwn(hrManaged,key)||Object.hasOwn(candidate,key))
@@ -444,8 +540,10 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       // is never inferred from a questionnaire or overwritten by this mirror.
       ...operationalHrPatch,
       hrManaged:candidate.hrManaged,
-      // Preserve an existing platform request separately while HR keeps authority
-      // over current operational values. This record is never remote-write proof.
+      ...(notices.state?{hrReviewNoticeState:notices.state}:{}),
+      ...(observations.pendingFields?{hrPendingFields:observations.pendingFields}:{}),
+      // The authoritative HR value may change while a platform intent is pending.
+      // Preserve the durable intent separately; never present it as remote ACK.
       ...(platformPending&&!existing.hrPendingFields?.shopperId?{hrPendingFields:{
         ...(existing.hrPendingFields||{}),shopperId:{eventId:null,status:'legacy_intent_requires_base',
           requestedValue:durableShopper,origin:'platform',observedVersion:existing.version??null,
@@ -453,25 +551,206 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       }}:{})
     });
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
-    if(same)return {providerWrites:0,created:false,idempotentReplay:true};
+    const journalWrites=[...observations.writes,...notices.writes];
+    for(const [method,ref,value,options] of journalWrites)tx[method](ref,value,options);
+    if(same)return {providerWrites:journalWrites.length,created:false,idempotentReplay:journalWrites.length===0};
     tx.set(visitRef,{...desired,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
-    return {providerWrites:1,created:false,idempotentReplay:false,periodScopeRepaired:str(existing.periodId)!==str(candidate.periodId),hrOperationalStateReconciled:true};
+    return {providerWrites:1+journalWrites.length,created:false,idempotentReplay:false,periodScopeRepaired:str(existing.periodId)!==str(candidate.periodId),hrOperationalStateReconciled:true};
   });
 }
 
-async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
+
+const hrFieldValue=value=>value===undefined||value===null||value===''?null:
+  typeof value==='string'?value.trim():value;
+const hrFieldEqual=(a,b)=>sha(hrFieldValue(a))===sha(hrFieldValue(b));
+const hrEventScope=event=>({tenantId:event.tenantId,projectId:event.projectId,periodId:event.periodId,
+  countryCode:event.countryCode,visitId:event.visitId,hrRowId:event.hrRowId,fieldKey:event.fieldKey});
+const hrEventDigest=event=>sha(Object.fromEntries(Object.entries(event).filter(([key])=>key!=='eventDigest')));
+const hrPendingAck=(command,entityId,eventIds,extra={})=>ack(command,entityId,{
+  ok:false,status:'pending_hr',committed:false,localCommitted:true,persistenceAck:true,
+  providerAck:false,hrProviderAck:false,successUiAllowed:false,hrFieldEventIds:eventIds,...extra
+});
+function hrSourceVisit(ref,command,snapshot){
+  if(snapshot?.sourceSafe!==true||snapshot?.imported!==false||snapshot?.source?.providerType!=='excel_online'
+    ||str(snapshot.tenantId)!==command.tenantId||str(snapshot.projectId)!==command.projectId)
+      throw new Error('OPS_HR_FIELD_TRUSTED_SOURCE_REQUIRED');
+  const rows=arr(snapshot.visits).filter(row=>visitPeriodId(row,snapshot)===command.periodId&&
+    [row.id,row.visitId,row.hrRowId,...arr(row.durableAliasIds)].map(str).includes(ref.id));
+  if(rows.length!==1||!visitCountry(rows[0])||!str(rows[0].hrRowId)||
+    !/^[a-f0-9]{64}$/.test(str(rows[0].excelWorksheetFingerprint)))throw new Error('OPS_HR_FIELD_EXACT_SOURCE_REQUIRED');
+  return rows[0];
+}
+async function queueHrFieldEvents(tx,r,command,actor,mutations,snapshot,revision){
+  if(!/^[a-f0-9]{64}$/.test(str(revision)))throw new Error('OPS_HR_FIELD_REVISION_REQUIRED');
+  const pending=[],ids=[],identityWrites=[];
+  // All reads finish before the caller flushes the buffered transaction writes.
+  for(const {ref,patch} of mutations){
+    const source=hrSourceVisit(ref,command,snapshot),fields=Object.keys(patch).filter(k=>HR_WRITABLE_VISIT_FIELDS.includes(k));
+    const pendingFields={};
+    for(const fieldKey of fields){
+      const before=hrFieldValue(source[fieldKey]),after=hrFieldValue(patch[fieldKey]);
+      if(hrFieldEqual(before,after))continue;
+      const supplied=command.payload?.baseFieldValues||{};
+      if(!Object.hasOwn(supplied,fieldKey))throw new Error('OPS_HR_FIELD_BASE_REQUIRED');
+      if(!hrFieldEqual(supplied[fieldKey],before))throw new Error('OPS_HR_FIELD_BASE_CONFLICT');
+      const visitId=str(source.visitId||source.id),countryCode=visitCountry(source);
+      const key=sha([command.tenantId,command.projectId,command.periodId,countryCode,visitId,fieldKey]);
+      const eventId='hfe-'+sha([key,command.idempotencyKey]),headRef=r.hrFieldHeads.doc(key);
+      const headSnap=await tx.get(headRef),head=headSnap.exists?headSnap.data():{};
+      if(head.pendingEventId||head.causalConflictEventId)throw new Error('OPS_HR_FIELD_PREDECESSOR_UNSETTLED');
+      if(head.latestEventId&&!hrFieldEqual(head.confirmedValue,before))throw new Error('OPS_HR_FIELD_SOURCE_OBSERVATION_REQUIRED');
+      const eventRef=r.hrFieldEvents.doc(eventId),existing=await tx.get(eventRef);
+      if(existing.exists)throw new Error('OPS_HR_FIELD_EVENT_WITHOUT_COMMAND_RECEIPT');
+      let baseEventOrigin=null;
+      if(head.latestEventId){
+        const predecessor=await tx.get(r.hrFieldEvents.doc(head.latestEventId)),base=predecessor.exists?predecessor.data():null;
+        if(!base||!['hr','platform'].includes(base.origin)||base.tenantId!==command.tenantId||base.projectId!==command.projectId||
+          base.periodId!==command.periodId||base.countryCode!==countryCode||base.visitId!==visitId||base.fieldKey!==fieldKey||
+          base.eventDigest!==hrEventDigest(base)||!hrFieldEqual(base.after,before))throw new Error('OPS_HR_FIELD_PREDECESSOR_INVALID');
+        baseEventOrigin=base.origin;
+      }
+      let providerValueBinding=null;
+      if(fieldKey==='shopperId'&&after!==null){
+        const profileRef=r.tenant.collection('shoppers').doc(str(after)),profileSnap=await tx.get(profileRef),profile=profileSnap.exists?profileSnap.data():null;
+        if(!profile||str(profile.tenantId||command.tenantId)!==command.tenantId||visitCountry(profile)!==countryCode||profile.active===false||profile._archived===true)
+          throw new Error('OPS_HR_FIELD_SHOPPER_PROFILE_REQUIRED');
+        const label=str(profile.hrWriteLabel||profile.nombre||profile.name||[profile.firstName,profile.lastName].map(str).filter(Boolean).join(' '));
+        if(!label||label.length>200||/^[=+@]/.test(label)||/^shopper protegido$/i.test(label))throw new Error('OPS_HR_FIELD_SHOPPER_REMOTE_LABEL_REQUIRED');
+        const sourceShopperId='shopper_'+countryCode.toLowerCase()+'_'+sha(label.toLowerCase()).slice(0,10),crossRef=r.tenant.collection('shopperIdentityCrosswalk').doc(sourceShopperId);
+        const crossSnap=await tx.get(crossRef),cross=crossSnap.exists?crossSnap.data():null;
+        if(cross&&(str(cross.tenantId)!==command.tenantId||str(cross.shopperId)!==str(after)))throw new Error('OPS_HR_FIELD_SHOPPER_LABEL_COLLISION');
+        if(!cross)identityWrites.push([crossRef,{tenantId:command.tenantId,projectId:command.projectId,sourceType:'hr_external',
+          sourceStableKey:sourceShopperId,sourceShopperId,shopperId:str(after),matchMode:'exact_technical_keys_only',
+          bindingBasis:'explicit_platform_assignment',originEventId:eventId,actorUid:actor.uid,createdAt:now()}]);
+        providerValueBinding={kind:'shopper',canonicalShopperId:str(after),sourceShopperId,remoteLabel:label};
+      }
+      const event={schemaVersion:HR_FIELD_EVENT_SCHEMA,eventId,tenantId:command.tenantId,projectId:command.projectId,
+        periodId:command.periodId,countryCode,visitId,durableVisitId:ref.id,hrRowId:str(source.hrRowId),
+        worksheetFingerprint:str(source.excelWorksheetFingerprint),sourceRowIdentity:{cinemaId:str(source.cinemaId),sucursal:str(source.sucursal)},fieldKey,origin:'platform',actorUid:actor.uid,
+        before,after,providerValueBinding,baseRevision:revision,baseEventId:head.latestEventId||null,baseEventOrigin,
+        causalSequence:Number(head.causalSequence||0)+1,causalEvidence:'verified_base_value_and_unsettled_predecessor_absent',
+        idempotencyKey:command.idempotencyKey,commandReceiptId:r.receipt.id,createdAt:now()};
+      event.eventDigest=hrEventDigest(event);
+      pending.push({event,eventRef,headRef,head,ref});ids.push(eventId);
+      pendingFields[fieldKey]={eventId,status:'pending_hr',requestedValue:after,baseValue:before,
+        baseRevision:revision,eventDigest:event.eventDigest,providerAck:false};
+    }
+    if(Object.keys(pendingFields).length){
+      const visit=await tx.get(ref),prior=visit.exists?visit.data():{};
+      tx.set(ref,{hrPendingFields:{...(prior.hrPendingFields||{}),...pendingFields},hrSyncStatus:'pending_hr',
+        hrFieldJournalVersion:HR_FIELD_EVENT_SCHEMA},{merge:true});
+    }
+  }
+  for(const [ref,value] of identityWrites)tx.create(ref,value);
+  for(const {event,eventRef,headRef,head} of pending){
+    tx.create(eventRef,event);
+    tx.create(r.hrFieldDeliveries.doc(event.eventId),{schemaVersion:HR_FIELD_DELIVERY_SCHEMA,eventId:event.eventId,
+      eventDigest:event.eventDigest,status:'pending_hr',attempts:0,writeAckVerified:false,providerAck:false,createdAt:now()});
+    tx.set(headRef,{...head,...hrEventScope(event),confirmedValue:event.before,latestEventId:head.latestEventId||null,
+      causalSequence:event.causalSequence,pendingEventId:event.eventId,leaseOwner:null,leaseUntil:0},{merge:false});
+  }
+  return {ids,writes:pending.length*3+(pending.length?mutations.length:0)+identityWrites.length};
+}
+
+// Called by the authenticated existing /commands handler AFTER the transaction.
+// Every retry first reads its durable event/receipt. An uncertain dispatch is
+// recovery-only: it can inspect/ACK an existing remote event but may not PATCH again.
+export async function dispatchOperationalHrFields({db,command,result,writeField,nowMs=Date.now,leaseMs=90000}={}){
+  const ids=arr(result?.hrFieldEventIds);if(!ids.length)return result;
+  if(!db?.runTransaction||typeof writeField!=='function')return {...result,code:'HR_FIELD_WRITER_NOT_CONFIGURED'};
+  const r=refs(db,command),outcomes=[];
+  for(const eventId of ids){
+    const eventRef=r.hrFieldEvents.doc(eventId),deliveryRef=r.hrFieldDeliveries.doc(eventId);
+    const attemptId=crypto.randomUUID();let held;
+    try{held=await db.runTransaction(async tx=>{
+      const [eventSnap,deliverySnap]=await Promise.all([tx.get(eventRef),tx.get(deliveryRef)]);
+      if(!eventSnap.exists||!deliverySnap.exists)throw new Error('HR_FIELD_JOURNAL_MISSING');
+      const event=eventSnap.data(),delivery=deliverySnap.data();
+      if(event.schemaVersion!==HR_FIELD_EVENT_SCHEMA||event.eventDigest!==hrEventDigest(event)||
+        event.commandReceiptId!==r.receipt.id||event.idempotencyKey!==command.idempotencyKey||
+        event.tenantId!==command.tenantId||event.projectId!==command.projectId||event.periodId!==command.periodId||
+        delivery.eventDigest!==event.eventDigest)throw new Error('HR_FIELD_JOURNAL_SCOPE_CONFLICT');
+      if(delivery.status==='committed')return {terminal:true,event,delivery};
+      if(delivery.status==='conflict')return {terminal:true,event,delivery};
+      const key=sha([event.tenantId,event.projectId,event.periodId,event.countryCode,event.visitId,event.fieldKey]),headRef=r.hrFieldHeads.doc(key);
+      const headSnap=await tx.get(headRef),head=headSnap.exists?headSnap.data():{};
+      if(head.pendingEventId!==eventId||head.causalConflictEventId)throw new Error('HR_FIELD_CAUSAL_HEAD_CONFLICT');
+      if(head.leaseOwner&&Number(head.leaseUntil)>nowMs())return {busy:true,event,delivery};
+      const recoveryOnly=Number(delivery.attempts||0)>0;
+      tx.create(deliveryRef.collection('attempts').doc(attemptId+'-intent'),{attemptId,eventId,eventDigest:event.eventDigest,
+        recoveryOnly,startedAt:new Date(nowMs()).toISOString(),status:'pending'});
+      tx.set(headRef,{leaseOwner:attemptId,leaseUntil:nowMs()+leaseMs},{merge:true});
+      tx.set(deliveryRef,{status:'dispatching',attempts:Number(delivery.attempts||0)+1,lastAttemptId:attemptId},{merge:true});
+      return {event,delivery,headRef,recoveryOnly};
+    });}catch(error){outcomes.push({eventId,status:'pending_hr',code:str(error?.message)});continue;}
+    if(held.terminal){outcomes.push(held.delivery);continue;}
+    if(held.busy){outcomes.push({eventId,status:'pending_hr',code:'HR_FIELD_DISPATCH_IN_PROGRESS'});continue;}
+    let remote;
+    try{remote=await writeField(held.event,{recoveryOnly:held.recoveryOnly,prior:held.delivery});}
+    catch{remote={status:'pending_hr',code:'HR_FIELD_REMOTE_OUTCOME_UNCERTAIN',providerAck:false};}
+    const event=held.event,scope=hrEventScope(event);
+    const exact=remote&&Object.entries(scope).every(([key,value])=>str(remote[key])===str(value))&&
+      remote.eventId===event.eventId&&remote.eventDigest===event.eventDigest;
+    const committed=exact&&remote.status==='committed'&&remote.providerAck===true&&remote.writeAckVerified===true&&
+      remote.readbackVerified===true&&hrFieldEqual(remote.observedValue,event.after)&&
+      remote.readbackDigest===sha({...scope,eventId:event.eventId,eventDigest:event.eventDigest,observedValue:event.after});
+    const conflict=exact&&remote.status==='conflict'&&remote.providerWriteRequests===0;
+    const proof={eventId,eventDigest:event.eventDigest,...scope,status:committed?'committed':conflict?'conflict':'pending_hr',
+      providerAck:committed,writeAckVerified:held.delivery.writeAckVerified===true||(exact&&remote.writeAckVerified===true),
+      remoteWriteRequests:exact&&Number.isInteger(remote.providerWriteRequests)?remote.providerWriteRequests:null,
+      readbackVerified:committed,readbackDigest:committed?remote.readbackDigest:null,
+      providerExecutionId:exact&&/^[a-f0-9]{32}$/.test(str(remote.providerExecutionId))?remote.providerExecutionId:null,
+      code:committed?null:conflict?'HR_FIELD_CAUSAL_CONFLICT':exact?str(remote.code||'HR_FIELD_REMOTE_ACK_PENDING'):'HR_FIELD_REMOTE_PROOF_INVALID',
+      observedAt:new Date(nowMs()).toISOString()};
+    try{await db.runTransaction(async tx=>{
+      const headSnap=await tx.get(held.headRef),head=headSnap.exists?headSnap.data():{};
+      const visitRef=r.visits.doc(event.durableVisitId),visitSnap=await tx.get(visitRef),visit=visitSnap.exists?visitSnap.data():{};
+      if(head.pendingEventId!==eventId||head.causalConflictEventId||head.leaseOwner!==attemptId||Number(head.leaseUntil)<=nowMs())throw new Error('HR_FIELD_LEASE_LOST');
+      tx.create(deliveryRef.collection('attempts').doc(attemptId+'-effect'),{attemptId,...proof});
+      tx.set(deliveryRef,proof,{merge:true});
+      tx.set(held.headRef,{leaseOwner:null,leaseUntil:0,...(committed?{pendingEventId:null,latestEventId:eventId,confirmedValue:event.after}:{} )},{merge:true});
+      const pending={...(visit.hrPendingFields||{})};
+      if(pending[event.fieldKey]?.eventId===eventId){
+        if(committed)delete pending[event.fieldKey];else pending[event.fieldKey]={...pending[event.fieldKey],status:proof.status,providerAck:false};
+        const visitPatch={hrPendingFields:pending,hrSyncStatus:Object.keys(pending).length?proof.status:'synced',
+          ...(committed?{[event.fieldKey]:event.after,hrManaged:{...(visit.hrManaged||{}),[event.fieldKey]:event.after},
+            ...(event.fieldKey==='shopperId'?{assignmentSyncStatus:'synced',lastSyncedAt:proof.observedAt}:{}),
+            updatedAt:proof.observedAt,version:Number(visit.version||0)+1}: {})};
+        // Replace these whole maps. Firestore merge:true recursively retains
+        // removed keys and would leave a confirmed field falsely pending.
+        tx.set(visitRef,visitPatch,{mergeFields:Object.keys(visitPatch)});
+      }
+    });outcomes.push(proof);}catch{outcomes.push({eventId,status:'pending_hr',code:'HR_FIELD_LOCAL_ACK_PERSISTENCE_PENDING'});}
+  }
+  const committed=outcomes.length===ids.length&&outcomes.every(x=>x.status==='committed'&&x.providerAck===true&&x.readbackVerified===true);
+  if(committed)return ack(command,result.entityId,{hrFieldEventIds:ids,hrProviderAck:true,readbackVerified:true,hrFieldOutcomes:outcomes,
+    providerWrites:Number(result.providerWrites||0),providerWritesScope:'firestore_command_effects_only',idempotentReplay:result.idempotentReplay===true});
+  return {...result,status:outcomes.some(x=>x.status==='conflict')?'conflict':'pending_hr',code:'HR_FIELD_ACK_PENDING',
+    ok:false,committed:false,providerAck:false,hrProviderAck:false,successUiAllowed:false,hrFieldOutcomes:outcomes};
+}
+
+async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled=false){
   const r=refs(db,command),digest=sha(clean(command));
-  return db.runTransaction(async tx=>{
+  return db.runTransaction(async transaction=>{
+    const buffered=[],mutated=new Map();
+    const tx={get:ref=>transaction.get(ref),create:(...args)=>buffered.push(['create',args]),
+      delete:(...args)=>buffered.push(['delete',args]),set:(ref,value,...options)=>{
+        buffered.push(['set',[ref,value,...options]]);
+        if(ref.path.startsWith(r.visits.path+'/')&&ref.path.split('/').length===r.visits.path.split('/').length+1){
+          const prior=mutated.get(ref.path)||{ref,patch:{}};
+          Object.assign(prior.patch,value);mutated.set(ref.path,prior);
+        }
+      }};
     const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     const prior=await tx.get(r.receipt);
     const syncContext=command.commandType==='visit.sync.confirm'?await syncReflectionContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     if(prior.exists){
       const p=prior.data()||{};
-      if(clientContext&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
+      if((clientContext||arr(p.hrFieldEventIds).length)&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
       if(p.commandDigest!==digest)throw new Error('OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
       if(p.status==='committed'){
         const reflection=syncContext?validateSyncReflectionReplay(p,syncContext,command,actor,digest):null;
-        return ack(command,p.entityId,{idempotentReplay:true,providerWrites:0,...(reflection?{hrReflectionVerified:true,hrProviderAck:false,hrReflection:reflection,hrRevalidationRevision:hrRevision}:{})});
+        return (arr(p.hrFieldEventIds).length?hrPendingAck(command,p.entityId,p.hrFieldEventIds,{idempotentReplay:true,providerWrites:0}):ack(command,p.entityId,{idempotentReplay:true,providerWrites:0,...(reflection?{hrReflectionVerified:true,hrProviderAck:false,hrReflection:reflection,hrRevalidationRevision:hrRevision}:{})}));
       }
     }
     const payload=clean(command.payload||{});
@@ -639,6 +918,23 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
       if(!['abierto','en_proceso','resuelto'].includes(supportStatus))throw new Error('OPS_SUPPORT_STATUS_INVALID');
       tx.set(ticketRef,{supportStatus,supportNote:str(payload.note??payload.nota??ticket.supportNote),supportOwnerName:str(payload.ownerName??payload.responsable??ticket.supportOwnerName),managedBy:actor.uid,updatedAt:now(),version:Number(ticket.version||0)+1},{merge:true});
       providerWrites++;auditEntityType='supportTicket';
+    }
+    else if(command.commandType==='visit.hr.fields.update'){
+      if(!hrFieldJournalEnabled||!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_HR_FIELD_WRITE_NOT_ENABLED');
+      if(command.authorization?.permission!=='visit.hr.fields.update')throw new Error('OPS_HR_FIELD_PERMISSION_REQUIRED');
+      const visitId=str(payload.visitId||entityId),requested=payload.patch||{},keys=Object.keys(requested);
+      if(!keys.length||keys.some(k=>!HR_WRITABLE_VISIT_FIELDS.includes(k)))throw new Error('OPS_HR_FIELD_NOT_EDITABLE');
+      if(keys.some(k=>requested[k]!==null&&!['string','number'].includes(typeof requested[k])))throw new Error('OPS_HR_FIELD_VALUE_INVALID');
+      for(const key of keys){
+        if(typeof requested[key]==='string'&&(requested[key].length>500||/^[=+@]/.test(requested[key])))throw new Error('OPS_HR_FIELD_VALUE_INVALID');
+        if(['boleto','comboAmt','honorario'].includes(key)&&requested[key]!==null&&(!Number.isFinite(requested[key])||requested[key]<0))throw new Error('OPS_HR_FIELD_AMOUNT_INVALID');
+        if(['disponibleDesde','agendada','realizada','cuestFecha','submittedAt'].includes(key)&&requested[key]!==null&&
+          (!/^20\d{2}-\d{2}-\d{2}$/.test(str(requested[key]))||new Date(requested[key]+'T00:00:00Z').toISOString().slice(0,10)!==requested[key]))throw new Error('OPS_HR_FIELD_DATE_INVALID');
+      }
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId,{command,snapshot:hrSnapshot});
+      assertPeriod(command,resolved.data);assertVersion(command,resolved.data);entityId=resolved.logicalVisitId;
+      tx.set(resolved.ref,{...requested,updatedAt:now(),version:Number(resolved.data.version||0)+1},{merge:true});
+      providerWrites++;auditEntityType='visit';
     }
     else if(command.commandType==='visit.assign'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_ASSIGN_OPERATOR_ONLY');
@@ -827,13 +1123,18 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision){
         createdAt:notificationEventAt||now(),source:'cxorbia-operational-command-provider-v1'}, {merge:false});
       providerWrites++;
     }
-    tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now(),...(hrReflection?{hrReflection,hrProviderAck:false}:{})});providerWrites++;
+    const journal=hrFieldJournalEnabled&&HR_FIELD_COMMANDS.has(command.commandType)&&mutated.size
+      ?await queueHrFieldEvents(tx,r,command,actor,[...mutated.values()],hrSnapshot,hrRevision):{ids:[],writes:0};
+    providerWrites+=journal.writes;
+    tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now(),hrFieldEventIds:journal.ids,...(hrReflection?{hrReflection,hrProviderAck:false}:{})});providerWrites++;
     tx.set(r.audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityId,entityType:auditEntityType,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,reason:command.audit?.reason||null,createdAt:now(),...(hrReflection?{hrReflection,hrProviderAck:false}:{})},{merge:false});providerWrites++;
+    for(const [method,args] of buffered)transaction[method](...args);
+    if(journal.ids.length)return hrPendingAck(command,entityId,journal.ids,{providerWrites});
     return ack(command,entityId,{providerWrites,...(hrReflection?{hrReflectionVerified:true,hrProviderAck:false,hrReflection}:{})});
   });
 }
 
-export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
+export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision='',hrFieldJournalEnabled=false}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('OPS_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.verifyIdToken||!db?.collection||!db?.runTransaction)throw new Error('OPS_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
@@ -845,7 +1146,7 @@ export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null
       let actor;
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
       try{
-        const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision);
+        const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled);
         return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
       }catch(error){return blocked(command,str(error?.message||error));}
     },
@@ -862,7 +1163,7 @@ export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null
         while(true){
           const index=cursor++;
           if(index>=visits.length)return;
-          const result=await reconcileVisitDoc({db,policy,candidate:visits[index],sourceRevision:revision});
+          const result=await reconcileVisitDoc({db,policy,candidate:visits[index],sourceRevision:revision,hrFieldJournalEnabled});
           if(result.created)created++;
           if(result.idempotentReplay)replayed++;
           if(result.reviewRequired)reviews++;

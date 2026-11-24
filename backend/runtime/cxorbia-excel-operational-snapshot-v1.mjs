@@ -172,7 +172,7 @@ export async function resolveExcelOriginalProjectPlan({db,scope}={}){
  if(!raw||raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');
  const source=raw.operationalSource||raw.routeSource||{};
  if(source.mode!=='external'||source.providerType!=='excel_online'||source.readPolicy!=='external_live'||
-   source.writePolicy!=='external_read_only'||!Array.isArray(source.countryBindings))fail('SOURCE_POLICY');
+   !['external_read_only','bidirectional_gated'].includes(source.writePolicy)||!Array.isArray(source.countryBindings))fail('SOURCE_POLICY');
  const countries=[...(raw.countries||[])].sort(),jobs=[],settings=[];
  if(!countries.length||new Set(countries).size!==countries.length||countries.length!==source.countryBindings.length)fail('COUNTRY_SCOPE');
  for(const countryCode of countries){
@@ -181,8 +181,8 @@ export async function resolveExcelOriginalProjectPlan({db,scope}={}){
   const s=await db.doc('tenants/'+scope.tenantId+'/integrationSettings/'+found[0].providerBindingId).get();
   const row=s.exists?s.data():{};
   if(row.tenantId!==scope.tenantId||row.projectId!==scope.projectId||row.countryCode!==countryCode||
-     row.providerType!=='excel_online'||row.enabled!==true||row.hrWritesEnabled!==false||
-     row.readPolicy!=='external_live'||row.writePolicy!=='external_read_only'||row.mappingRef!==found[0].mappingRef||
+     row.providerType!=='excel_online'||row.enabled!==true||row.hrWritesEnabled!==(source.writePolicy==='bidirectional_gated')||
+     row.readPolicy!=='external_live'||row.writePolicy!==source.writePolicy||row.mappingRef!==found[0].mappingRef||
      !Array.isArray(row.periodSheets)||!row.periodSheets.length)fail('COUNTRY_SETTING');
   const periods=[...new Set(row.periodSheets.map(x=>str(x.periodId)))].sort();
   if(!periods.every(x=>validPeriod(scope.projectId,x)))fail('PERIOD_IDS');
@@ -193,7 +193,7 @@ export async function resolveExcelOriginalProjectPlan({db,scope}={}){
  const unique=new Set(jobs.map(x=>x.scope.countryCode+'|'+x.scope.periodId));
  if(unique.size!==jobs.length)fail('DUPLICATE_SCOPE');
  const proof={schemaVersion:'cxorbia.i3.f2.excel-original-plan.v1',...scope,providerType:'excel_online',
-   readPolicy:'external_live',projectStamp:stamp(project),settings,
+   readPolicy:'external_live',writePolicy:source.writePolicy,projectStamp:stamp(project),settings,
    bindingFingerprints:jobs.map(x=>x.proof.bindingFingerprint),periodCount:new Set(jobs.map(x=>x.scope.periodId)).size,
    jobCount:jobs.length,hrWrites:false,production:false};
  proof.bindingFingerprint=sha(proof);
@@ -206,9 +206,21 @@ async function limited(items,limit,fn){
  }));
  return out;
 }
+export function authorizedHrReviewObservation({visit,principal,scope,privateReviewNotes}={}){
+ const id=str(visit?.visitId||visit?.id),note=privateReviewNotes?.get?.(id);
+ if(!note||!scope?.tenantId||!scope?.projectId||note.tenantId!==scope.tenantId||note.projectId!==scope.projectId||
+   visit?.tenantId!==scope.tenantId||visit?.projectId!==scope.projectId||note.periodId!==visit.periodId||
+   note.observationDigest!==visit.hrReview?.observationDigest)return null;
+ const role=str(principal?.role),staff=['super','admin','ops','coordinador'].includes(role);
+ const owner=str(visit.canonicalShopperId||visit.shopperId),shopper=str(principal?.canonicalShopperId||principal?.shopperId);
+ if(!str(principal?.uid)||(!staff&&(role!=='shopper'||!owner||!shopper||owner!==shopper||note.shopperId!==owner)))return null;
+ return typeof note.observation==='string'?note.observation:null;
+}
+
 export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding}={}){
  if(!db?.doc||!plan?.scope||plan.proof?.providerType!=='excel_online'
-  ||typeof readBinding!=='function'||columnMap?.contractId!=='tya-hr-column-map-r20-v1'
+  ||typeof readBinding!=='function'||!str(columnMap?.contractId)||!plan.bindings?.length||
+  plan.bindings.some(binding=>binding.privateProvider?.mappingRef!==columnMap.contractId)
   ||!cinemaRegistry?.cinemas)fail('READER_CONTRACT');
  const {tenantId,projectId}=plan.scope,root=db.collection('tenants').doc(tenantId);
  const docs=await root.collection('projects').doc(projectId).collection('visits').get();
@@ -231,7 +243,7 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
        fail('PROVIDER_READ_INVALID');
    return {binding,read};
  });
- const identity=new Map(),visits=[],tabs=[],sourceRevisions=[],matched=new Set();
+ const identity=new Map(),privateReviewNotes=new Map(),visits=[],tabs=[],sourceRevisions=[],matched=new Set();
  let matchedSourceVisits=0;
  for(const {binding,read}of responses){
   const scope=binding.scope,key=scope.periodId.slice(-7),year=Number(key.slice(0,4)),month=Number(key.slice(5));
@@ -266,6 +278,9 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
       for(const related of owner.cohort)matched.add(str(related.id));
     }
     const alias=str(source.shopperId),canonical=alias?(aliases.get(alias)||alias):null;
+    const reviewNote=(parsed.privateReviewNotes||[]).find(note=>note.sourceRow===source.sourceRow);
+    if(reviewNote)privateReviewNotes.set(stable,{tenantId,projectId,periodId:scope.periodId,shopperId:canonical,
+      observation:reviewNote.observation,observationDigest:reviewNote.observationDigest});
     const original=rawTab.values[(source.sourceRow||0)-1]||[];
     if(alias&&canonical&&indexes){
      const displayName=str(original[indexes.shopper]);
@@ -276,7 +291,7 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
       if(!identity.has(alias))identity.set(alias,value);
      }
     }
-    visits.push({...source,id:stable,visitId:stable,hrRowId:str(source.hrRowId||prior?.hrRowId),periodId:scope.periodId,
+    visits.push({...source,tenantId,projectId,program:projectId,rootProjectId:projectId,id:stable,visitId:stable,hrRowId:str(source.hrRowId||prior?.hrRowId),periodId:scope.periodId,
       shopperId:canonical,canonicalShopperId:canonical,sourceTab:source.sourceTab,
       sourceRow:source.sourceRow,excelSourceRow:source.sourceRow,
       excelWorksheetFingerprint:sha(rawTab.worksheetId),
@@ -302,9 +317,9 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
  // are preserved and reported, never replayed into current HR or treated as
  // available visits. This is read-only review, not interperiod reconciliation.
  // Writes remain gated separately by exact remote field ACK and identity proof.
- const periods=buildPeriods(visits,tabs),history=validateCanonicalHistory(visits,periods);
+ const periods=buildPeriods(visits,tabs).map(period=>({...period,tenantId,projectId,id:projectId+'-'+period.key,periodId:projectId+'-'+period.key})),history=validateCanonicalHistory(visits,periods);
  if(history.decision!=='PASS_CANONICAL_HISTORY')fail('HISTORY');
- const shoppers=buildShoppers(visits),summary=summarizeCanonicalPeriods(visits);
+ const shoppers=buildShoppers(visits).map(shopper=>({...shopper,tenantId,projectId})),summary=summarizeCanonicalPeriods(visits).map(row=>({...row,tenantId,projectId,periodId:projectId+'-'+row.periodKey}));
  const revision=sha(sourceRevisions.sort((a,b)=>a.periodId.localeCompare(b.periodId)||a.country.localeCompare(b.country)));
  const count=key=>visits.filter(v=>v.canonicalFacets?.[key]===true).length;
  const byCountry={},byStatus={};
@@ -314,11 +329,11 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
   scheduled:count('scheduled'),submitted:count('submitted'),questionnaireCompleted:count('questionnaire'),
   liquidationConfirmed:count('liquidationConfirmed'),paymentConfirmed:count('paymentConfirmed'),byCountry,byStatus};
  const snapshot={generatedAt:new Date().toISOString(),buildLabel:'cxorbia-original-excel-i3-f2',
-  tenantId,projectId,tenantName:'TyA',projectName:str(plan.project.name||plan.project.projectName||projectId),
+  tenantId,projectId,tenantName:str(plan.project.tenantName||tenantId),projectName:str(plan.project.name||plan.project.projectName||projectId),
   source:{type:'excel_online_original',providerType:'excel_online',accessMode:'make_graph_delegated',
     sourceRevision:revision,sourceSafe:true,rawWorkbookExposed:false,privateContactDataExposed:false,
     columnMapContract:columnMap.contractId,canonicalStateAcrossAllDetectedPeriods:true},
-  tenantConfig:{tenantId,tenantName:'TyA',configurable:true},projectConfig:{...plan.project,projectId,hrSourceType:'excel_online_original'},
+  tenantConfig:{tenantId,tenantName:str(plan.project.tenantName||tenantId),configurable:true},projectConfig:{...plan.project,projectId,hrSourceType:'excel_online_original'},
   sourceRevision:revision,sourceSafe:true,imported:false,firestoreWrites:0,production:false,
   periods,visits,shoppers,counts,periodOperationalSummary:summary,
   tabsRead:tabs.map(x=>({country:x.country,periodKey:x.key,scenarioKey:x.scenarioKey})),
@@ -326,7 +341,7 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
     writesAllowed:false,sourceAuthority:'excel_online_original'}]:[],
   safeState:{writes:false,imports:false,deploy:false,production:false,payments:false,
     unmatchedDurableHistoricalReviewRequired:missing.length>0}};
- return {snapshot,identity,proof:{bindingFingerprint:plan.proof.bindingFingerprint,sourceRevision:revision,
+ return {snapshot,identity,privateReviewNotes,proof:{bindingFingerprint:plan.proof.bindingFingerprint,sourceRevision:revision,
    periodReads:responses.length,visits:visits.length,matchedDurable:matched.size,unmatchedActive:missing.length,
    matchedSourceVisits,newSourceVisits:visits.length-matchedSourceVisits,
    historicalAliasesPreserved:matched.size-matchedSourceVisits,

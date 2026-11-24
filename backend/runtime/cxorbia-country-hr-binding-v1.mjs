@@ -105,6 +105,11 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
   if(source.writePolicy==='external_read_only'&&setting.hrWritesEnabled!==false)fail('WRITES_NOT_DISABLED');
   if(source.writePolicy==='bidirectional_gated'&&setting.hrWritesEnabled!==true)fail('WRITE_GATE_NOT_ENABLED');
   if(!privateId(setting.driveId)||!privateId(setting.itemId))fail('WORKBOOK_REFERENCE_INVALID');
+  if(setting.readRangeAddress!==undefined){
+    const range=str(setting.readRangeAddress),match=range.match(/^A1:([A-Z]{1,2})([1-9][0-9]{0,2})$/);
+    const columns=match?[...match[1]].reduce((n,c)=>n*26+c.charCodeAt(0)-64,0):0;
+    if(!match||columns>45||Number(match[2])>200)fail('READ_RANGE_INVALID');
+  }
   const sheets=setting.periodSheets;
   if(!Array.isArray(sheets))fail('PERIOD_REGISTRY_MISSING');
   const matches=sheets.filter(x=>str(x?.periodId)===scope.periodId);
@@ -137,6 +142,6 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
       providerAck:false,remoteRevisionVerified:false,hrWrites:false,production:false},
     // Server-only. Never serialize this field into a Shopper/Admin HR response.
     privateProvider:{driveId:setting.driveId,itemId:setting.itemId,worksheets:selected,
-      providerBindingId:bindingId,mappingRef:country.mappingRef}
+      providerBindingId:bindingId,mappingRef:country.mappingRef,...(setting.readRangeAddress!==undefined?{readRangeAddress:str(setting.readRangeAddress)}:{})}
   };
 }

@@ -54,6 +54,15 @@
     const matches=rows.filter(p=>(hrRow&&str(p?.hrRowId)===hrRow)||ids.has(str(p?.id||p?.visitId)));
     return matches.length===1?matches[0]:null;
   }
+  const hrFields=['escenario','tipoCombo','formato','metodoPago','franja','quincena','disponibleDesde','agendada','realizada','cuestFecha','submittedAt','shopperId','boleto','comboAmt','honorario'];
+  function liveHrRows(scope){
+    const snapshot=root.CX_TYA_HR_SOURCE_SAFE;
+    // Use the atomically published provider values, before display fallbacks
+    // turn a missing amount into 0 or a project default.
+    if(snapshot?.sourceSafe===true&&snapshot.tenantId===scope.tenantId&&snapshot.projectId===scope.projectId&&Array.isArray(snapshot.visits))return snapshot.visits;
+    return Array.isArray(CX.data?.__liveHrVisits)?CX.data.__liveHrVisits:[];
+  }
+  function hrBases(row){return Object.fromEntries(hrFields.map(key=>[key,row?.[key]===undefined||row?.[key]===''?null:row[key]]));}
   function post(id){return (CX.data?._posts||[]).find(p=>str(p.id||p.applicationId||p.postulationId)===str(id))||null;}
   function reservation(id){return (CX.data?.__protectedReservations||[]).find(r=>str(r.id||r.reservationId)===str(id))||null;}
   function commandMeta(meta){return meta&&typeof meta==='object'?meta:{};}
@@ -83,13 +92,29 @@
   }
 
   function buildBase(commandType,entityType,entityId,payload,expectedVersion,meta){
-    const c=ctx();
+    let c=ctx();payload=Object.assign({},payload||{});
+    const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
+      'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.status.update','reservation.status.update']);
+    if(hrCommands.has(commandType)){
+      const key=str(payload.visitId||(entityType==='visit'?entityId:''));
+      const rows=liveHrRows(c);
+      const matches=rows.filter(v=>[v.id,v.visitId,v.hrRowId,...(v.durableAliasIds||[])].map(str).includes(key));
+      if(matches.length===1){
+        const v=matches[0],periodId=str(v.periodId||v.measurementPeriodId),rootProject=str(v.rootProjectId||(str(v.projectId)!==periodId?v.projectId:''));
+        if(periodId&&rootProject===c.projectId&&(!v.tenantId||v.tenantId===c.tenantId)){
+          c=Object.assign({},c,{periodId});
+          payload.baseFieldValues=payload.baseFieldValues||hrBases(v);
+          payload.sourceRevision=payload.sourceRevision||str(CX.data?.previewMeta?.sourceRevision);
+          payload.countryCode=str(v.country||v.pais);
+        }
+      }
+    }
     return {
       commandType,entityType,entityId:entityId||null,
       tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,
       actor:{actorId:c.actorId,role:c.role,projectIds:c.projectIds},
       expectedVersion,
-      idempotencyKey:idempotency(commandType,entityId,payload,expectedVersion),
+      idempotencyKey:idempotency(commandType,entityId,payload,expectedVersion,c),
       payload:Object.assign({periodId:c.periodId},payload||{}),
       source:'cx.data',
       reason:str(meta?.reason||''),
@@ -212,6 +237,23 @@
       if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_CREDENTIAL_RESET_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
       built.command.authorization={providerEnforcementRequired:true,permission:'shopper.credential.reset'};
       return execute(built.command,meta);
+    };
+    D.hrVisitFieldEditContext=function(id){
+      const v=visit(id),scope=ctx(),rows=liveHrRows(scope),key=str(v?.visitId||v?.id||id);
+      const matches=rows.filter(row=>[row.id,row.visitId,row.hrRowId,...(row.durableAliasIds||[])].map(str).includes(key));
+      if(!v||matches.length!==1)return {ok:false,code:'HR_FIELD_EDITOR_LIVE_SOURCE_REQUIRED'};
+      const source=matches[0],protectedVisit=protectedVisitFor(v);
+      return {ok:true,baseFieldValues:hrBases(source),sourceRevision:str(CX.data?.previewMeta?.sourceRevision),
+        expectedVersion:versionOf(protectedVisit||v),pendingFields:Object.assign({},protectedVisit?.hrPendingFields||{})};
+    };
+    D.updateHrVisitFields=function(id,patch,meta){
+      meta=commandMeta(meta);const v=visit(id),visitId=str(v?.visitId||v?.id||id);
+      const payload={visitId,hrRowId:v?.hrRowId||null,patch:Object.assign({},patch||{}),
+        ...(meta.baseFieldValues?{baseFieldValues:meta.baseFieldValues,sourceRevision:meta.sourceRevision}: {})};
+      const cmd=buildBase('visit.hr.fields.update','visit',visitId,payload,
+        meta.expectedVersion??versionOf(protectedVisitFor(v)||v),Object.assign({},meta,{permission:'visit.hr.fields.update'}));
+      if(meta.idempotencyKey)cmd.idempotencyKey=str(meta.idempotencyKey);
+      return execute(cmd,meta);
     };
     D.setVisitState=function(id,estado,dateField,dateVal,meta){
       meta=commandMeta(meta);const v=visit(id),visitId=stableVisitKey(v,id),hrRowId=str(v?.hrRowId)||null;const patch={estado};if(dateField&&dateVal)patch[dateField]=dateVal;

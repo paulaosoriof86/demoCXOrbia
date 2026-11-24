@@ -13,13 +13,15 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {decryptCredentialBundle,internalEmail} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 import '../../app/core/shopper-credential-rule.js';
-import {assessExactPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS} from './cxorbia-i3-a08-exact-password-proof.mjs';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
 const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
 const ROOT=String(process.env.R20_HOSTING_URL||'https://cxorbia-backend-dev.web.app');
 const OUT=String(process.env.R20_SAFE_OUT||((process.env.PHASEA_LIVE_OUT||'.tmp')+'/r20'));
 const targetShopperId=String(process.env.R20_AUTHORIZED_TEST_SHOPPER_ID||'').trim();
+const currentProviderMode=process.env.R20_CREDENTIAL_AUTHORITY==='CURRENT_PROVIDER_VERIFIED_RULE_V1';
+if(currentProviderMode&&!A08_PASSWORD_EXCEPTION_IDS.includes(targetShopperId))throw Error('SOURCE_FAILURE:A08_CURRENT_PROVIDER_TARGET_NOT_AUTHORIZED');
 const word=v=>String(v??'').trim();
 const hash=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const receipt={schemaVersion:'cxorbia.i3.r20.one-proven-credential-readonly.v2',
@@ -93,16 +95,31 @@ for(const m of sorted){
  const expected=rule(profile);
  const visible=word(m.visibleLogin||m.username||profile.visibleLogin||profile.username).toLowerCase();
  if(targetLogin&&visible!==targetLogin)continue;
- const proof=assessExactPasswordProof({shopperId:targetShopperId===id?id:'',expected,visibleLogin:visible,sealedHashes:sealed.get(visible)||[]});
+ let principal=null,proof;
+ if(currentProviderMode){
+  try{
+   const tenant=getFirestore().collection('tenants').doc(TENANT);
+   principal=await getAuth().getUser(m.uid);
+   const crossSnap=await tenant.collection('shopperIdentityCrosswalk').doc(id).get();
+   let adjudication=null,link=null;
+   if(profile.identityAuthority==='tenant_adjudication'&&/^[a-f0-9]{40}$/.test(word(profile.identityAuthorityRef))){
+    const doc=await tenant.collection('commandReceipts').doc(profile.identityAuthorityRef).get();adjudication=doc.exists?doc.data():null;
+    if(/^irl_[a-f0-9]{32}$/.test(word(adjudication?.identityLinkId))){const ls=await tenant.collection('shopperIdentityLinks').doc(adjudication.identityLinkId).get();link=ls.exists?ls.data():null;}
+   }
+   proof=assessCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal,expected,
+    cross:crossSnap.exists?crossSnap.data():null,receipt:adjudication,link,sealedHashes:sameKeeperSealedHashes(bundle.records,m.uid)});
+  }catch{proof={allowed:false,ruleAvailable:expected?.ok===true,reason:'CURRENT_PROVIDER_PROVENANCE_READ_FAILED'};}
+ }else proof=assessExactPasswordProof({shopperId:targetShopperId===id?id:'',expected,visibleLogin:visible,sealedHashes:sealed.get(visible)||[]});
  stats.credentialReasonCounts[proof.reason]=(stats.credentialReasonCounts[proof.reason]||0)+1;
  if(proof.ruleAvailable)stats.ruleMatch++;
  if(proof.ruleAvailable&&!proof.canonicalLoginMatches)stats.canonicalLoginMismatch++;
  if(!proof.allowed)continue;
- stats.sealedProofMatch++;
+ if(proof.credentialHashMatches)stats.sealedProofMatch++;
+ if(proof.durableProviderProof)stats.durableProviderProofMatch=(stats.durableProviderProofMatch||0)+1;
  const same=sorted.filter(x=>word(x.shopperId)===id);
  if(same.length!==1){stats.ambiguousPrincipal++;continue;}
  try{
-  const principal=await getAuth().getUser(word(m.uid||m.id||m.authUid));
+  principal=principal||await getAuth().getUser(word(m.uid||m.id||m.authUid));
   const c=principal.customClaims||{};
   const checks={AUTH_DISABLED:principal.disabled!==true,AUTH_ROLE:c.role==='shopper',AUTH_NAMESPACE:c.authNamespace==='shopper',
     AUTH_TENANT:c.tenantId===TENANT,AUTH_SHOPPER:c.shopperId===id,AUTH_PROJECT:Array.isArray(c.projectIds)&&c.projectIds.includes(SCOPE),
@@ -112,14 +129,14 @@ for(const m of sorted){
   if(failed.length)continue;
   stats.authClaimMatch++;
  }catch{stats.credentialReasonCounts.AUTH_LOOKUP_FAILED=(stats.credentialReasonCounts.AUTH_LOOKUP_FAILED||0)+1;continue;}
- selected={login:visible,password:expected.password,shopperId:id,credentialProvenance:proof.provenance,canonicalLoginMatches:proof.canonicalLoginMatches,exactAliasAllowed:proof.exactAliasAllowed};
+ selected={login:visible,password:expected.password,shopperId:id,uid:m.uid,authBefore:principal,credentialProvenance:proof.provenance,canonicalLoginMatches:proof.canonicalLoginMatches,exactAliasAllowed:proof.exactAliasAllowed,durableProviderProof:proof.durableProviderProof===true,credentialHashSource:proof.credentialHashSource||'EXACT_C6_VISIBLE_LOGIN_SEAL'};
  break;
 }
 receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(targetLogin||targetShopperId),
  boundedShopperIdQuery:Boolean(targetShopperId),requestedShopperId:targetShopperId||null,
  selectedShopperMatchesRequested:targetShopperId?selected?.shopperId===targetShopperId:null,
  canonicalLoginMatches:selected?.canonicalLoginMatches??null,exactExistingAliasProven:selected?.exactAliasAllowed===true,
- usernameCanonizationProven:false};
+ usernameCanonizationProven:false,durableProviderProof:selected?.durableProviderProof===true,credentialHashSource:selected?.credentialHashSource||'NOT_PROVEN',credentialAuthorityMode:currentProviderMode?'CURRENT_PROVIDER_VERIFIED_RULE_V1':'LEGACY_SEALED_V1'};
 if(!selected){
  emit('HOLD_R20_NO_SINGLE_EXISTING_PASSWORD_PROOF','AUTH_FAILURE');process.exit(0);
 }
@@ -134,6 +151,12 @@ const proc=spawnSync(process.execPath,[runner.pathname,'--execute-real'],{
  cwd:process.cwd(),encoding:'utf8',timeout:325000,maxBuffer:1024*1024
 });
 selected.login='';selected.password='';
+try{
+ const after=await getAuth().getUser(selected.uid),before=selected.authBefore;
+ receipt.identityPreservedAfter=after.uid===before.uid&&after.email===before.email&&after.disabled===before.disabled&&
+  after.tokensValidAfterTime===before.tokensValidAfterTime&&JSON.stringify(after.customClaims||{})===JSON.stringify(before.customClaims||{});
+}catch{receipt.identityPreservedAfter=false;}
+if(!receipt.identityPreservedAfter){emit('HOLD_R20_AUTH_IDENTITY_CHANGED_DURING_SESSION','AUTH_FAILURE');process.exit(0);}
 let result=null;
 try{result=JSON.parse(word(proc.stdout));}catch{}
 receipt.loginAttempts=Math.max(1,Math.min(2,Number(result?.loginAttempts)||1));

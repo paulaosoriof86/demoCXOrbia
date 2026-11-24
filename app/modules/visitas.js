@@ -260,7 +260,13 @@ CX.module('visitas', ({data,role,ui})=>{
     ['cxorbia-backend-dev.web.app','cxorbia-backend-dev.firebaseapp.com'].includes(String(window.location?.hostname||''))&&
     window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.canonicalBackendProjectId==='cxorbia-backend-dev'&&
     hrReconcileScope.tenantId==='tya'&&hrReconcileScope.projectId==='cinepolis';
-  const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external')||protectedCinepolisHrSource;
+  const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external')||protectedCinepolisHrSource||all.some(v=>v.hrRowId&&/^[a-f0-9]{64}$/.test(String(v.excelWorksheetFingerprint||'')));
+  const canEditHr=v=>{
+    const cap=v?.hrFieldEditing,period=String(v?.periodId||v?.measurementPeriodId||'');
+    return ['super','admin','ops','coordinador'].includes(role)&&cap?.schemaVersion==='cxorbia.hr-field-editor-capability.v1'&&cap.enabled===true&&
+      cap.tenantId===String(v.tenantId||CX.BACKEND?.tenantId||'')&&cap.projectId===String(v.rootProjectId||v.projectId||'')&&
+      cap.periodId===period&&cap.countryCode===String(v.country||v.pais||'')&&Array.isArray(cap.fields)&&cap.fields.length>0&&typeof data.updateHrVisitFields==='function';
+  };
   /* I3 A09/B11: deliberate DEV-only admin command. Refreshing HR is read-only;
      only the existing authenticated command provider may reconcile durable Auth/Firestore. */
   // Discoverability is not authorization: display the protected control to the
@@ -279,7 +285,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <td>${estadoCanonBadge(v)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
     <td style="font-size:12px;font-weight:600;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted" title="Sin honorario en la fuente">Pendiente de fuente</span>'}</td>
-    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${effectiveAvailable(v)?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}${externalHrAuthority?'':`<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button>`}</td>
+    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${effectiveAvailable(v)?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}${canEditHr(v)?`<button class="btn btn-ghost btn-sm" data-edit-hr="${v.id}" title="Editar visita y hoja de ruta">✏️</button>`:externalHrAuthority?'':`<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button>`}</td>
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
@@ -334,6 +340,71 @@ CX.module('visitas', ({data,role,ui})=>{
     const vKp={disp:['Visitas disponibles',isAvailableAdmin],asig:['Visitas asignadas',data.visitBucketFns.asignadas],real:['Visitas realizadas',data.visitBucketFns.realizadas],sinasig:['Visitas sin asignar',data.visitBucketFns.sinAsignar],fuera:['Fuera de rango',data.visitBucketFns.fueraRango]};
     document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
       ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${estadoCanonBadge(v)}</td><td style="font-size:12px;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted">Pendiente de fuente</span>'}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
+    // F3 editor uses only the per-visit capability from the verified live source.
+    // The frozen form base survives background reads and pending remote ACKs.
+    const openHrFieldEditor=(v)=>{
+      const edit=data.hrVisitFieldEditContext?.(v.id),cap=v.hrFieldEditing;
+      if(!edit?.ok||!canEditHr(v)){ui.toast('La edición de esta hoja de ruta todavía no está habilitada.','warn');return;}
+      const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const fields=cap.fields,baseline=edit.baseFieldValues,normal=value=>value===''||value===undefined?null:value;
+      const pending=Object.keys(edit.pendingFields||{}).filter(key=>fields.some(field=>field.key===key));
+      const control=field=>{
+        const value=baseline[field.key];
+        if(field.kind==='shopper'){
+          const list=(data.shoppersFor?.()||data.shoppers||[]).filter(s=>String(s.pais||s.country||'')===String(v.pais||v.country||''));
+          const options=list.map(s=>({id:String(s.id||s.shopperId),name:s.nombre||s.name||s.id}));
+          if(value&&!options.some(s=>s.id===String(value)))options.unshift({id:String(value),name:v.shopper||'Shopper asignado'});
+          return `<select class="sel" data-hr-field="${esc(field.key)}"><option value="">— Sin asignar —</option>${options.map(s=>`<option value="${esc(s.id)}" ${s.id===String(value)?'selected':''}>${esc(s.name)}</option>`).join('')}</select>`;
+        }
+        return `<input class="inp" data-hr-field="${esc(field.key)}" type="${field.kind==='date'?'date':field.kind==='money'?'number':'text'}" ${field.kind==='money'?'min="0" step="0.01"':'maxlength="500"'} value="${esc(value)}">`;
+      };
+      ui.modal('Editar visita y hoja de ruta',`
+        <p class="muted">${esc(v.sucursal)} · ${esc(v.pais||v.country)} · ${esc(v.periodLabel||v.periodId)}</p>
+        <div class="grid g2" style="gap:12px">${fields.map(field=>`<div><label class="lbl">${esc(field.label)}</label>${control(field)}</div>`).join('')}</div>
+        <p data-hr-field-status role="status" style="margin-top:12px">${pending.length?'Esta visita tiene cambios pendientes de confirmación. El valor vigente de HR se conserva visible.':'El cambio quedará confirmado después de verificarlo en la hoja de ruta.'}</p>
+        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" data-hr-field-save ${pending.length?'disabled':''}>Guardar y sincronizar</button></div>`,{onMount:ov=>{
+          const inputs=Array.from(ov.querySelectorAll('[data-hr-field]')),button=ov.querySelector('[data-hr-field-save]'),status=ov.querySelector('[data-hr-field-status]');
+          let frozenPatch=null,confirmed=false,busy=false;
+          const meta={ackAware:true,expectedVersion:edit.expectedVersion,baseFieldValues:baseline,sourceRevision:edit.sourceRevision};
+          if(pending.length)inputs.forEach(input=>{input.disabled=true;});
+          const refresh=async()=>{
+            const result=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_hr_field_ack');
+            if(result?.ok!==true){status.textContent='La HR confirmó el cambio. Falta actualizar esta vista; puedes volver a consultarla.';button.textContent='Actualizar vista';return;}
+            ov.remove();ui.toast('Hoja de ruta y visita actualizadas','ok');CX.router.nav('visitas');
+          };
+          button.addEventListener('click',async()=>{
+            if(busy||pending.length)return;busy=true;button.disabled=true;
+            try{
+              if(confirmed){await refresh();return;}
+              if(!frozenPatch){
+                const patch={};
+                for(const input of inputs){const field=fields.find(f=>f.key===input.dataset.hrField),raw=input.value;
+                  const value=raw===''?null:field.kind==='money'?Number(raw):raw;
+                  if(field.kind==='money'&&value!==null&&(!Number.isFinite(value)||value<0)){status.textContent='Revisa los importes antes de guardar.';return;}
+                  if(JSON.stringify(normal(value))!==JSON.stringify(normal(baseline[field.key])))patch[field.key]=value;
+                }
+                if(!Object.keys(patch).length){status.textContent='No hay cambios para guardar.';return;}
+                frozenPatch=patch;inputs.forEach(input=>{input.disabled=true;});
+              }
+              status.textContent='Registrando el cambio y verificando la hoja de ruta…';
+              const result=await data.updateHrVisitFields(v.id,frozenPatch,meta);
+              if(result?.ok===true&&result.status==='committed'&&result.hrProviderAck===true&&result.readbackVerified===true&&result.successUiAllowed===true){
+                confirmed=true;status.textContent='Cambio confirmado en la hoja de ruta. Actualizando la vista…';await refresh();return;
+              }
+              if(result?.idempotencyKey)meta.idempotencyKey=result.idempotencyKey;
+              if(result?.status==='conflict'||String(result?.code||'').includes('CONFLICT')){
+                status.textContent='La hoja de ruta cambió durante la edición. Revisa el conflicto antes de registrar otro cambio.';button.textContent='Conflicto pendiente de revisión';button.dataset.hrConflict='true';return;
+              }
+              status.textContent=result?.status==='pending_hr'||result?.localCommitted===true
+                ?'Cambio registrado; confirmación de la HR pendiente. La consulta conserva el mismo cambio.'
+                :'No se confirmó el resultado. Consulta el mismo cambio para comprobarlo; tus valores se conservan.';
+              button.textContent='Consultar confirmación';
+            }catch(error){status.textContent='No se confirmó el resultado. Tus valores se conservan; consulta el mismo cambio para comprobarlo.';button.textContent='Consultar confirmación';}
+            finally{busy=false;button.disabled=button.dataset.hrConflict==='true';}
+          });
+        }});
+    };
+    document.querySelectorAll('[data-edit-hr]').forEach(button=>replaceClickHandler(button,'edit-hr',()=>openHrFieldEditor(all.find(v=>v.id===button.dataset.editHr))));
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
       <div class="grid g2" style="gap:12px">
         <div style="grid-column:1/3"><label class="lbl">Sucursal (elige o escribe nueva)</label>

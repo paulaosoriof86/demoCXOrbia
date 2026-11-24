@@ -1,0 +1,180 @@
+{
+  "schemaVersion": "cxorbia.i3.source-focal-proof.v1",
+  "createdAt": "2026-11-24T10:05:45.507897+00:00",
+  "iteration": "I3",
+  "decision": "SOURCE_TESTED_PENDING_DEPLOY_AND_REAL_PROVIDER_PROOF",
+  "sourceParent": "6c50ebff2b7969a7b9bf81536ef91f15f95dae3d",
+  "scopeReceipts": [
+    "docs/checkpoints/CXORBIA_I3_F3_JOURNAL_SCOPE_WRITE_READ_POLICY_P0_20261124.json",
+    "docs/checkpoints/CXORBIA_I3_TYA_REVIEW_OBSERVATIONS_AND_NOTICES_P0_20261124.json"
+  ],
+  "findingIds": [
+    "VRM-365",
+    "VRM-366"
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "gitBlob": "74508b12db19d79ebe15c984754261cbd96fa7f2",
+      "sha256": "f0ecbdc00d473f2bd726786e8b2eb21a84df395e4cc0f9da5f37a154ef4bbfa5"
+    },
+    {
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "gitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+      "sha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0"
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "gitBlob": "e1bf9435261d188b50a4e4115c10e70ea56bd819",
+      "sha256": "c726123531d3d762bd8ad2e022d171b62de14e999ba99e7c64a682c1e667ec9d"
+    },
+    {
+      "path": "app/modules/dashboard.js",
+      "gitBlob": "7eb138b1e1912f9cc11a643d8de134336ab16a5d",
+      "sha256": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d"
+    },
+    {
+      "path": "app/modules/misvisitas.js",
+      "gitBlob": "003843ecc87c8e052002270697862da6d0b82949",
+      "sha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce"
+    },
+    {
+      "path": "app/modules/revision-admin.js",
+      "gitBlob": "08ff500706238b82add2ba45ce01c0b7da38f4ec",
+      "sha256": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd"
+    },
+    {
+      "path": "app/modules/visitas.js",
+      "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+      "sha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f"
+    },
+    {
+      "path": "backend/contracts/tya-hr-column-map-r20-v1.json",
+      "gitBlob": "5aa5382054a7d125ccd060914619e3920dd56bcd",
+      "sha256": "6ed3e34376fcfc86963077e01eabbdf10056b7bed56c29ffc3490bdc711fad67"
+    },
+    {
+      "path": "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "gitBlob": "072023db9bd5e1994ab0bb844807179c8fe9a8c1",
+      "sha256": "dc3f99ccebc740d142fa41abe049f2fc243d69b9809ea1223140404aca739a12"
+    },
+    {
+      "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "gitBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "sha256": "3765634ef9b1c12a1a7b21e4d3aac4d198728d8ddc601153ad9b27f3c69c2146"
+    },
+    {
+      "path": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "gitBlob": "5d839e01af2c75cf8402eadc4faab6298bc8f136",
+      "sha256": "0f1ed2161694c5e75a30cdb78d76458fbe98fbf5071949fcf400fdc5d5362b78"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "gitBlob": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c",
+      "sha256": "9477bf56c53d0106dcf1276a8283903ff849b3261a1c62760e1b66301e4a04cf"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "gitBlob": "b204cde5304d0b4b9cd4df9a54e305882c957742",
+      "sha256": "4f22ad32bf288ac46760c78608ada280a88afcbe21499c60467f070318b0717a"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "gitBlob": "d711ef281406976fc0adbd8610941d0b4e9096f2",
+      "sha256": "8d9f36a54582ccc6b6891eeac5328c154181b968da30d1e2a88cdd967fd2b7f7"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-f3-field-editor.test.mjs",
+      "gitBlob": "e6069a8b2e139e4eb1226d0f39fb64dab562af5b",
+      "sha256": "cf19cc980d3bc1dfcad8300f634a3d073fa975b399d8ac498c6ef6dd79d04be9"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+      "gitBlob": "0c609b64714443091f767e85e0f16091f7a4666f",
+      "sha256": "270713e77860fd9b7445f560d7f06b58d6019b429f8effeec1299cc7b283207f"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+      "gitBlob": "f818f1f4a0a09931df8b2c7e73572e3c140cd7ec",
+      "sha256": "30959c831be45d9b30127690c519310d8e764655beefe243b19ac5fa67c6926a"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-hr-review-observations.test.mjs",
+      "gitBlob": "35ad99c5a5e94f2ee46e25b158de67b31eed1745",
+      "sha256": "64fed9cfeea44905b8ee1161525d86d6c214f3bf51ee5727377da29b58e43b51"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_TYA_REVIEW_OBSERVATIONS_AND_NOTICES_P0_20261124.json",
+      "gitBlob": "4f830c95a300f4c1ddd21423bdc50b680f76055d",
+      "sha256": "d7acf3136829ee96a87de2f07c32e90dc0a90b9ca0106712697ee6481f1812c1"
+    },
+    {
+      "path": "firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs",
+      "gitBlob": "f1e16341522a18e58e7d040b31d805f191df87b7",
+      "sha256": "591f03f238679df088ebc04f15657a988d56165c9544663ad3c9ac44fedd99cd"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "gitBlob": "57c1ff6ecf368e2415693c31d825953738c26839",
+      "sha256": "b7f4ce04d16e3a5c8bab9fa6df260ba8dc239893290e841ab39b1a8c3702605e"
+    },
+    {
+      "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+      "gitBlob": "01df378cd627d792d60e5e260c8d833a56548055",
+      "sha256": "3506d7d27cad934f814f08b2437ca6e9aad9342c567e8dca86e42c7602ebd96b"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a08-exact-password-proof.mjs",
+      "gitBlob": "c6895b3a8bd09fe398ccddc07d7ccdc4f52e5184",
+      "sha256": "e8065d47809d8a34b379a0a70b865303089b964025f5ca6475c9b921add9b66f"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs",
+      "gitBlob": "12fd4af77e4305c5abd23b20ec75b41c56b3ba5c",
+      "sha256": "7be8da75271bc0b267bebd36ea929418cdb6824dc07c027074acfe94a631e36b"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "gitBlob": "f926c58335037fd7c043ec0576f11df06053e54d",
+      "sha256": "6abf35b03c710e92b395dd9b31311b958dfd176989401c8b7f0a778af5e30393"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+      "gitBlob": "775537eff02f93f2ff50466eb79dc73d0f1d68bd",
+      "sha256": "ede56ab947fafa6f84680405057865268cd7ce57e5db957b31b1e0ab7f0002f3"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-hr-review-ui.test.mjs",
+      "gitBlob": "0ffa3045cf410245c7b64d1cccdcd0ab820caa74",
+      "sha256": "354d53764683b4b26b8c79c5a6f13091eff9a0469676756736b686ef153ec6ce"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
+      "gitBlob": "96a2850880f7926c5305a359bd70165c5bce15f4",
+      "sha256": "446763616f2ef2aa5933d6e9d01c57187ffb17741a3b5546fb9190c3db8d3801"
+    }
+  ],
+  "testEvidence": {
+    "suite": "F3 field journal, binding, reader, editor, T&A mapping and notices, G05 receipts, A08 durable provenance, review UI",
+    "tests": 181,
+    "pass": 181,
+    "fail": 0,
+    "logSha256": "7d48d5607bd045cf6ed904c94da288d5c69ea4a08e4c214ad54521cdac7594b5"
+  },
+  "localSyntax": "20 changed JS/MJS/CJS files PASS",
+  "runtimeClaims": {
+    "deployed": false,
+    "providerAckProven": false,
+    "realWriterEnabled": false,
+    "emailConnected": false,
+    "domainPromotions": 0,
+    "production": false
+  },
+  "notes": [
+    "F3 command and editor stay capability-gated; real country integration settings remain read-only.",
+    "T&A raw notes stay outside the public source and are returned only to authorized staff or the exact assigned shopper.",
+    "T&A notice lifecycle distinguishes pending corrections, resolved notes and informational notes after submission.",
+    "Durable A08 password provenance source correction preserves four API negative clauses already proved in RUN2760; source tests do not prove real password login.",
+    "Private provider range is bounded and belongs to the country setting; no global country/project/workbook assumptions added."
+  ]
+}

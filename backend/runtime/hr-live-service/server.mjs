@@ -16,8 +16,9 @@ import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, c
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
-import { readExcelPeriodThroughMake, withMakeGraphToolboxReader } from '../cxorbia-make-graph-provider-v1.mjs';
-import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../cxorbia-excel-operational-snapshot-v1.mjs';
+import { readExcelPeriodThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
+import {HR_WRITABLE_VISIT_FIELDS} from '../cxorbia-operational-command-provider-v1.mjs';
+import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot,authorizedHrReviewObservation} from '../cxorbia-excel-operational-snapshot-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -26,6 +27,7 @@ const CACHE_MS=Math.max(5000,Math.min(15000,Number(process.env.CXORBIA_LIVE_HR_C
 const BOOTSTRAP_FILE=path.join(ROOT,'app/data/tya-hr-source-safe-periods.js');
 const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.source-safe.json');
 const FIREBASE_PROJECT=String(process.env.GOOGLE_CLOUD_PROJECT||process.env.GCLOUD_PROJECT||'').trim();
+const F3_HR_FIELDS_ENABLED=process.env.CXORBIA_F3_HR_FIELDS_ENABLED==='true';
 const DEV_OPERATIONAL_NAMES=process.env.CXORBIA_DEV_OPERATIONAL_NAMES==='true';
 const DEV_OPERATIONAL_TOKEN='YES_PAULA_20260731_NAMES_DEV';
 const LEGACY_ENDPOINT_PATHS=new Map([
@@ -119,12 +121,12 @@ function stableRevisionValue(value){
   return value;
 }
 
-function materialize(snapshot,origin,identity=new Map()){
+function materialize(snapshot,origin,identity=new Map(),privateReviewNotes=new Map()){
   const json=JSON.stringify(snapshot);
   const identityStable=[...identity.entries()].sort((a,b)=>String(a[0]).localeCompare(String(b[0]))).map(([id,value])=>[id,stableRevisionValue(value)]);
   const stableJson=JSON.stringify({snapshot:stableRevisionValue(snapshot),shopperIdentity:identityStable});
   const revision=crypto.createHash('sha256').update(stableJson).digest('hex');
-  return {snapshot,json,revision,loadedAt:Date.now(),origin,identity};
+  return {snapshot,json,revision,loadedAt:Date.now(),origin,identity,privateReviewNotes};
 }
 
 function operationalSnapshot(current){
@@ -173,6 +175,18 @@ async function withDurableProjectConfig(snapshot){
   return {...snapshot,projectConfig:merged,projectConfigAuthority:'firestore_project_config',projectConfigVersion:raw.version??null};
 }
 
+function loadExcelMappingLibrary(mappingRef,root=ROOT){
+  const library={
+    'tya-hr-column-map-r20-v1':{columns:'backend/contracts/tya-hr-column-map-r20-v1.json',identity:'backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json'}
+  };
+  const selected=library[String(mappingRef||'')];
+  if(!selected)throw Error('MAPPING_FAILURE:HR_BINDING_MAPPING_UNSUPPORTED');
+  const columnMap=JSON.parse(fs.readFileSync(path.join(root,selected.columns),'utf8'));
+  const cinemaRegistry=JSON.parse(fs.readFileSync(path.join(root,selected.identity),'utf8'));
+  if(columnMap.contractId!==mappingRef||!cinemaRegistry?.cinemas)throw Error('MAPPING_FAILURE:HR_BINDING_MAPPING_IDENTITY');
+  return {columnMap,cinemaRegistry};
+}
+
 // VRM-358: this existing reader is a scoped adapter. Resolve its configured
 // private binding BEFORE reading HR; never borrow a global workbook or another
 // project's cache. Other adapters must supply their own proved mapping.
@@ -183,14 +197,22 @@ async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,r
   const scope=requestedScope||{tenantId:mapping.tenantId,projectId:mapping.projectId};
   const valid=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(v);
   if(!valid(scope?.tenantId)||!valid(scope?.projectId))fail('INVALID_SCOPE');
-  if(scope.tenantId!==mapping.tenantId||scope.projectId!==mapping.projectId)fail('ADAPTER_SCOPE_UNSUPPORTED');
   const project=await db.doc('tenants/'+scope.tenantId+'/projects/'+scope.projectId).get();
   if(!project.exists)fail('PROJECT_MISSING');
   const raw=project.data()||{},selected=raw.operationalSource?'operationalSource':'routeSource',source=raw[selected]||{};
   if(raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');
   // I3/F2 P0: respect the project's durable Excel selection. Never silently
   // fall back to the obsolete Google mirror after this source is selected.
-  if(source.providerType==='excel_online')return resolveExcelOriginalProjectPlan({db,scope});
+  if(source.providerType==='excel_online'){
+    const refs=[...new Set((source.countryBindings||[]).map(row=>row.mappingRef))];
+    if(refs.length!==1)fail('MAPPING_AMBIGUOUS');
+    loadExcelMappingLibrary(refs[0],root);
+    const plan=await resolveExcelOriginalProjectPlan({db,scope});
+    return {...plan,mappingRef:refs[0]};
+  }
+  // Legacy Google adapter remains scoped to its own approved library. Excel
+  // scope is separately verified from project + country private bindings.
+  if(scope.tenantId!==mapping.tenantId||scope.projectId!==mapping.projectId)fail('ADAPTER_SCOPE_UNSUPPORTED');
   if(source.mode!=='external'||source.providerType!=='google_sheets'||source.readPolicy!=='external_live'||source.writePolicy!=='external_read_only')fail('SOURCE_POLICY');
   const bindingId=source.providerBindingId||source.integrationSettingId||source.providerRef;
   if(!valid(bindingId))fail('REFERENCE_REQUIRED');
@@ -234,6 +256,49 @@ async function withOriginalToolboxReader(consume) {
 }
 async function readOriginalThroughToolbox(binding,columnMap){
   return withOriginalToolboxReader(runScenario=>readExcelPeriodThroughMake({binding,columnMap,runScenario}));
+}
+
+async function withOriginalToolboxWriter(consume){
+  // A separate credential/exposure for the SAME writer scenario. Never expand
+  // the read-only toolbox or infer write permission from its successful GET.
+  if(!F3_HR_FIELDS_ENABLED)throw Error('PROVIDER_FAILURE:F3_WRITER_DISABLED');
+  const url=new URL(process.env.CXORBIA_F3_MAKE_TOOLBOX_URL||'about:blank');
+  const token=process.env.CXORBIA_F3_MAKE_TOOLBOX_TOKEN;
+  if(url.origin!=='https://eu2.make.com'||!/^\/mcp\/server\/[0-9a-f-]{36}$/.test(url.pathname)||url.search||url.hash||url.username||url.password)
+    throw Error('MAPPING_FAILURE:F3_WRITER_TOOLBOX_URL');
+  if(!token)throw Error('AUTH_FAILURE:F3_WRITER_TOOLBOX_CREDENTIAL');
+  const [{Client},{StreamableHTTPClientTransport}]=await Promise.all([
+    import('@modelcontextprotocol/sdk/client/index.js'),import('@modelcontextprotocol/sdk/client/streamableHttp.js')
+  ]);
+  const client=new Client({name:'cxorbia-hr-field-command',version:'1.0.0'});
+  const transport=new StreamableHTTPClientTransport(url,{requestInit:{redirect:'error',headers:{Authorization:'Bearer '+token}}});
+  return withMakeGraphToolboxWriter({client,transport},consume);
+}
+async function writeOriginalHrField(event,options){
+  const {db}=ensureAdmin();
+  const binding=await resolveCountryHrPeriodBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
+  const {columnMap,cinemaRegistry}=loadExcelMappingLibrary(binding.privateProvider.mappingRef);
+  let target;
+  try{target=await resolveExcelFieldWriteTarget({db,event,columnMap,cinemaRegistry,
+    readBinding:binding=>readOriginalThroughToolbox(binding,columnMap)});}
+  catch(error){
+    // This exact guard follows independent provider reads and exact row identity
+    // validation. A changed cell is a causal conflict, never a retryable PATCH.
+    if(error?.message!=='MAPPING_FAILURE:B14_FIELD_SOURCE_BASE_CHANGED')throw error;
+    const after=await resolveCountryHrPeriodBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
+    if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)throw Error('MAPPING_FAILURE:B14_FIELD_BINDING_CHANGED_DURING_READ');
+    return {tenantId:event.tenantId,projectId:event.projectId,periodId:event.periodId,countryCode:event.countryCode,
+      visitId:event.visitId,hrRowId:event.hrRowId,fieldKey:event.fieldKey,eventId:event.eventId,eventDigest:event.eventDigest,
+      status:'conflict',code:'HR_FIELD_REMOTE_BASE_CONFLICT',providerAck:false,writeAckVerified:false,readbackVerified:false,providerWriteRequests:0};
+  }
+  const result=await withOriginalToolboxWriter(runScenario=>executeExcelFieldEventThroughMake({event,target,runScenario,...options}));
+  if(result.providerAck===true&&result.readbackVerified===true){
+    // Drain an older read before expiring this exact project's cache. A read
+    // begun before the write must not become a fresh cache after its ACK.
+    const pending=inFlight;if(pending)await Promise.allSettled([pending]);
+    if(cache?.snapshot?.tenantId===event.tenantId&&cache?.snapshot?.projectId===event.projectId)cache.loadedAt=0;
+  }
+  return result;
 }
 
 async function verifiedProtectedPrincipal(req,scope){
@@ -305,8 +370,36 @@ async function academyTenantState(principal,scope){
     progressOwnerUid:principal.uid,progress:academyProgressSnapshot(learner.data(),scope.tenantId,principal.uid),progressCatalog:academyProgressCatalog(rows(courses)),progressAuthority:'firestore_user_academy_progress'};
 }
 
+async function attachHrFieldEditingCapability(snapshot,principal,sourceRevision){
+  if(!F3_HR_FIELDS_ENABLED||!process.env.CXORBIA_F3_MAKE_TOOLBOX_URL||!process.env.CXORBIA_F3_MAKE_TOOLBOX_TOKEN||
+    !['super','admin','ops','coordinador'].includes(principal.role))return;
+  const scope=snapshotScope(snapshot),source=snapshot.projectConfig?.operationalSource||snapshot.projectConfig?.routeSource;
+  if(source?.providerType!=='excel_online'||source.writePolicy!=='bidirectional_gated')return;
+  const capabilities=new Map();
+  await Promise.all((source.countryBindings||[]).map(async entry=>{
+    const snap=await principal.db.doc('tenants/'+scope.tenantId+'/integrationSettings/'+entry.providerBindingId).get(),setting=snap.exists?snap.data():{};
+    const cap=setting.fieldWriter||{};
+    if(setting.tenantId!==scope.tenantId||setting.projectId!==scope.projectId||setting.countryCode!==entry.countryCode||setting.enabled!==true||
+      setting.hrWritesEnabled!==true||setting.writePolicy!=='bidirectional_gated'||cap.schemaVersion!=='cxorbia.hr-field-writer-binding.v1'||
+      cap.enabled!==true||cap.protocolVersion!=='cxorbia.hr-field-transport.v1'||cap.remoteEventReceipt!==true||cap.observedBaseGuard!==true)return;
+    const {columnMap}=loadExcelMappingLibrary(entry.mappingRef);
+    const fields=(cap.allowedFields||[]).filter(key=>HR_WRITABLE_VISIT_FIELDS.includes(key)).map(key=>{
+      const rule=cap.fieldMap?.[key],mapped=columnMap.columns?.[rule?.columnKey];
+      return mapped&&['text','date','money','shopper'].includes(rule.valueKind)?{key,label:mapped.aliases[0],kind:rule.valueKind}:null;
+    }).filter(Boolean);
+    if(!fields.length)return;
+    for(const sheet of setting.periodSheets||[])capabilities.set(entry.countryCode+'|'+sheet.periodId,{schemaVersion:'cxorbia.hr-field-editor-capability.v1',
+      enabled:true,...scope,countryCode:entry.countryCode,periodId:sheet.periodId,fields,sourceRevision});
+  }));
+  for(const visit of snapshot.visits||[]){
+    const cap=capabilities.get(String(visit.country||visit.pais)+'|'+String(visit.periodId));
+    if(cap)visit.hrFieldEditing=cap;
+  }
+}
+
 async function protectedPlatformState(current,principal,scope,operational){
   const snapshot=operational?operationalSnapshot(current):JSON.parse(JSON.stringify(current.snapshot));
+  await attachHrFieldEditingCapability(snapshot,principal,current.revision);
   /* I3 P0: independent scoped Firestore authority reads run concurrently for one verified principal. */
   const tenantRef=principal.db.collection('tenants').doc(scope.tenantId);
   const projectRef=tenantRef.collection('projects').doc(scope.projectId);
@@ -345,6 +438,9 @@ async function protectedPlatformState(current,principal,scope,operational){
   for(const visit of snapshot.visits||[]){
     const live=String(visit.shopperId||'').trim(),canonical=cross.get(live);
     if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
+    const observation=authorizedHrReviewObservation({visit,scope,privateReviewNotes:current.privateReviewNotes,
+      principal:{...principal,canonicalShopperId:cross.get(principal.shopperId)||principal.shopperId}});
+    if(observation!==null)visit.hrReviewObservation=observation;
   }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
@@ -384,7 +480,7 @@ function academyPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.academy-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],hrWrites:false,externalWrites:false,paymentWrites:false};
 }
-function configureCommandRuntime(snapshot){
+function configureCommandRuntime(snapshot,current=cache){
   if(!snapshot)throw new Error('COMMAND_SOURCE_SCOPE_UNAVAILABLE');
   const {auth,db}=ensureAdmin();
   globalThis.CXORBIA_COMMAND_AUTH=auth;
@@ -395,15 +491,25 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_COMMERCIAL_COMMAND_PROVIDER_POLICY=commercialPolicy(snapshot);
   globalThis.CXORBIA_ACADEMY_COMMAND_PROVIDER_POLICY=academyPolicy(snapshot);
   globalThis.CXORBIA_COMMAND_HR_SNAPSHOT=snapshot;
-  globalThis.CXORBIA_COMMAND_HR_REVISION=String(cache?.revision||'');
+  globalThis.CXORBIA_COMMAND_HR_REVISION=String(current?.revision||'');
   // Server-side only: the identity file is produced with this exact fresh HR
   // snapshot. Protected provider comparisons must not use masked public names.
-  globalThis.CXORBIA_COMMAND_HR_PRIVATE_IDENTITY=cache?.identity instanceof Map?cache.identity:null;
+  globalThis.CXORBIA_COMMAND_HR_PRIVATE_IDENTITY=current?.identity instanceof Map?current.identity:null;
+  // Capture dependencies per request: concurrent project reads must not replace
+  // the snapshot/revision of a command already being authorized and committed.
+  return {auth,db,shopperPolicy:shopperPolicy(snapshot),projectPolicy:projectPolicy(snapshot),
+    operationalPolicy:operationalPolicy(snapshot),commercialPolicy:commercialPolicy(snapshot),academyPolicy:academyPolicy(snapshot),
+    hrSnapshot:snapshot,hrRevision:String(current?.revision||''),hrIdentityByShopperId:current?.identity||null,
+    hrFieldJournalEnabled:F3_HR_FIELDS_ENABLED&&snapshot.source?.providerType==='excel_online'&&
+      (snapshot.projectConfig?.operationalSource||snapshot.projectConfig?.routeSource)?.writePolicy==='bidirectional_gated',
+    writeHrField:F3_HR_FIELDS_ENABLED?writeOriginalHrField:undefined};
 }
 const explicitHrReconciliation=createHrSnapshotReconciler({
   verifyPrincipal:verifiedProtectedPrincipal,
   readSnapshot:scope=>buildSnapshot({forceFresh:true,scope}),
-  ensureAdmin,shopperPolicy,operationalPolicy
+  ensureAdmin,shopperPolicy,operationalPolicy,
+  hrFieldJournalEnabled:snapshot=>F3_HR_FIELDS_ENABLED&&snapshot.source?.providerType==='excel_online'&&
+      (snapshot.projectConfig?.operationalSource||snapshot.projectConfig?.routeSource)?.writePolicy==='bidirectional_gated'
 });
 
 function loadBootstrap(){
@@ -445,8 +551,7 @@ async function refreshSnapshot(binding){
   inFlight=(async()=>{
     if(binding.proof.providerType==='excel_online'){
       const stagesMs={},stageStart=Date.now();
-      const columnMap=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
-      const cinemaRegistry=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json'),'utf8'));
+      const {columnMap,cinemaRegistry}=loadExcelMappingLibrary(binding.mappingRef);
       const source=await withOriginalToolboxReader(runScenario=>readExcelOriginalProjectSnapshot({db:ensureAdmin().db,plan:binding,columnMap,cinemaRegistry,
         readBinding:countryPeriod=>readExcelPeriodThroughMake({binding:countryPeriod,columnMap,runScenario})}));
       stagesMs.readOriginalExcel=Date.now()-stageStart;
@@ -457,7 +562,7 @@ async function refreshSnapshot(binding){
       const actual=snapshotScope(current);
       if(actual.tenantId!==binding.scope.tenantId||actual.projectId!==binding.scope.projectId)
         throw Error('MAPPING_FAILURE:EXCEL_OPERATIONAL_SCOPE_DRIFT');
-      const next=materialize(current,'runtime_excel_online_original',source.identity);
+      const next=materialize(current,'runtime_excel_online_original',source.identity,source.privateReviewNotes);
       next.bindingProof={...binding.proof,readerCount:source.proof.periodReads,
         runtimeConsumptionVerified:true,sourceRevision:source.proof.sourceRevision,rawRowsExposed:false};
       cache=next;
@@ -656,9 +761,11 @@ const server=http.createServer(async(req,res)=>{
   if(isCxorbiaCommandRuntimePath(url.pathname)){
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
       configure:async command=>{
-        if(command?.commandType==='visit.sync.confirm')await buildSnapshot({forceFresh:true,scope:{tenantId:command.tenantId,projectId:command.projectId}});
-        if(['client.nps.submit','client.note.create','client.meeting.request'].includes(command?.commandType))await buildSnapshot();
-        configureCommandRuntime(cache?.snapshot);
+        const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
+          'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.status.update','reservation.status.update','visit.sync.confirm']);
+        const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId}:undefined;
+        const current=await buildSnapshot({forceFresh:hrCommands.has(command?.commandType),scope});
+        return configureCommandRuntime(current.snapshot,current);
       },
       hrSnapshotReconcile:async input=>{
         const result=await explicitHrReconciliation(input);

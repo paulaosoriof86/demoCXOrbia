@@ -552,3 +552,66 @@ test('VRM356 failed fresh read on a partial receipt preserves cumulative effects
   assert.deepEqual(result.systems,first.systems);assert.deepEqual(result.applicationWritesThisAttempt,{auth:0,firestore:0});
   assert.deepEqual([...f.db.store],before);assert.equal(f.db.log.length,writes);assert.equal(f.auth.log.length,authWrites);
 });
+
+test('F3 explicit reconciliation journals a source field event through the same G05 receipt facade',async()=>{
+  const f=await setup({hrFieldJournalEnabled:true});f.current.snapshot.shoppers=[];
+  const row={id:'hr_excel_qa',visitId:'hr_excel_qa',hrRowId:'QA HR!2',sourceTab:'QA HR',sourceRow:2,excelWorksheetFingerprint:'b'.repeat(64),tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',country:'GT',pais:'GT',cinemaId:'QA001',sucursal:'QA Site',escenario:'B',estado:'disponible',shopperId:null,canonicalFacets:{available:true,assigned:false}};
+  f.current.snapshot.visits=[row];const visitPath=f.projectPath+'/visits/'+row.id;
+  f.db.seed(visitPath,{...row,escenario:'A',hrManaged:{...row,escenario:'A'},version:1});
+  const result=await f.run('f3-explicit-source-field-0001');assert.equal(result.ok,true,result.code);
+  const events=[...f.db.store].filter(([p])=>p.includes('/hrFieldEvents/'));
+  assert.equal(events.length,1);assert.equal(events[0][1].origin,'hr');assert.equal(events[0][1].actorUid,null);assert.equal(events[0][1].sourceEditTime,null);
+  assert.equal(events[0][1].before,'A');assert.equal(events[0][1].after,'B');assert.equal(result.hrWrites,0);
+  assert.ok(f.effects().some(e=>e.operations.some(op=>op.entity.includes('/hrFieldEvents/'))));
+  const before=f.db.log.length;assert.equal((await f.run('f3-explicit-source-field-0001')).idempotentReplay,true);assert.equal(f.db.log.length,before);
+});
+test('F3 explicit reconciliation preserves a pending event and journals its echo without inventing remote ACK',async()=>{
+  const f=await setup({hrFieldJournalEnabled:true});f.current.snapshot.shoppers=[];
+  const {createOperationalCommandProvider}=await import(pathToFileURL(path.join(root,'backend/runtime/cxorbia-operational-command-provider-v1.mjs')));
+  const row={id:'hr_excel_qa',visitId:'hr_excel_qa',hrRowId:'QA HR!2',sourceTab:'QA HR',sourceRow:2,excelWorksheetFingerprint:'b'.repeat(64),tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',country:'GT',pais:'GT',cinemaId:'QA001',sucursal:'QA Site',escenario:'A',estado:'disponible',shopperId:null,canonicalFacets:{available:true,assigned:false},version:1};
+  f.current.snapshot.visits=[row];f.current.snapshot.source={providerType:'excel_online'};
+  f.db.seed(f.projectPath+'/visits/'+row.id,{...row,hrManaged:{...row}});
+  f.db.seed('tenants/tenant-a/users/admin-1',{tenantId:'tenant-a',role:'admin',authNamespace:'staff',active:true,projectIds:['project-a']});
+  const policy={schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
+  const provider=createOperationalCommandProvider({auth:f.auth,db:f.db,policy,hrSnapshot:f.current.snapshot,hrRevision:f.current.revision,hrFieldJournalEnabled:true});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.hr.fields.update',entityType:'visit',entityId:row.id,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:1,idempotencyKey:'f3-echo-platform-intent-0001',authorization:{providerEnforcementRequired:true,permission:'visit.hr.fields.update'},payload:{visitId:row.id,patch:{escenario:'B'},baseFieldValues:{escenario:'A'}}};
+  const pending=await provider.execute('fixture',command);assert.equal(pending.status,'pending_hr');
+  f.current.snapshot.visits=[{...row,escenario:'B'}];f.current.revision='2'.repeat(64);
+  const result=await f.run('f3-explicit-source-echo-0001');assert.equal(result.ok,true,result.code);
+  assert.equal([...f.db.store].filter(([p])=>p.includes('/hrFieldEvents/')).length,1);
+  const observations=[...f.db.store].filter(([p])=>p.includes('/hrFieldDeliveries/')&&p.includes('/observations/'));
+  assert.equal(observations.length,1);assert.equal(observations[0][1].providerAck,false);
+  assert.equal(f.db.read(f.projectPath+'/visits/'+row.id).hrPendingFields.escenario.status,'pending_hr');
+});
+
+test('T&A review notices are ACKed through the existing HR receipt and unchanged reads create no duplicate',async()=>{
+  const f=await setup();f.current.snapshot.shoppers=[];
+  const row={id:'hr_excel_review_qa',visitId:'hr_excel_review_qa',hrRowId:'QA HR!2',sourceTab:'QA HR',sourceRow:2,excelWorksheetFingerprint:'b'.repeat(64),tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',country:'GT',pais:'GT',shopperId:'owner-qa',estado:'cuestionario',canonicalFacets:{available:false,assigned:true,questionnaire:true,submitted:false},hrReview:{version:'cxorbia.hr-review.v1',mapped:true,requiresAttention:true,observationDigest:'c'.repeat(64),state:'pending_correction'}};
+  f.current.snapshot.visits=[row];
+  const first=await f.run('hr-review-notice-cycle-0001');
+  assert.equal(first.ok,true,JSON.stringify(first));assert.equal(first.providerAck,true);assert.equal(first.readbackVerified,true);
+  const notices=[...f.db.store].filter(([p])=>p.includes('/bulletins/'));assert.equal(notices.length,2);
+  assert.ok(f.effects().some(effect=>effect.operations.some(op=>op.entity.includes('/bulletins/hr-review-'))));
+  const before=f.db.log.length;assert.equal((await f.run('hr-review-notice-cycle-0001')).idempotentReplay,true);assert.equal(f.db.log.length,before);
+  f.current.revision='2'.repeat(64);const repeated=await f.run('hr-review-notice-new-revision-0001');assert.equal(repeated.ok,true,repeated.code);
+  assert.equal([...f.db.store].filter(([p])=>p.includes('/bulletins/')).length,2);
+  assert.deepEqual([...f.db.store].filter(([p])=>p.includes('/bulletins/')),notices);
+});
+
+// VRM365: private Excel country bindings deliberately have no global workbook mapping.
+test('G05 scoped Excel country bindings permit the same explicit reconciliation command',async()=>{
+ const f=await setup();f.current.snapshot.shoppers=[];
+ const source={mode:'external',providerType:'excel_online',readPolicy:'external_live',writePolicy:'bidirectional_gated',periodDiscovery:'provider_auto',countryBindings:[{countryCode:'GT',providerBindingId:'qa-gt',mappingRef:'map-a'},{countryCode:'HN',providerBindingId:'qa-hn',mappingRef:'map-a'}]};
+ f.db.seed(f.projectPath,{tenantId:'tenant-a',projectId:'project-a',countries:['GT','HN'],operationalSource:source});
+ const result=await f.run('g05-excel-country-source-0001');assert.equal(result.ok,true);assert.equal(result.readbackVerified,true);
+ assert.equal(result.authWrites,0);assert.equal(result.firestoreWrites,0);
+});
+for(const broken of ['missing-country','global-fallback','duplicate-country'])test('G05 invalid Excel '+broken+' stops before any lease or application write',async()=>{
+ const f=await setup();f.current.snapshot.shoppers=[];
+ const source={mode:'external',providerType:'excel_online',readPolicy:'external_live',writePolicy:'bidirectional_gated',periodDiscovery:'provider_auto',countryBindings:[{countryCode:'GT',providerBindingId:'qa-gt',mappingRef:'map-a'},{countryCode:'HN',providerBindingId:'qa-hn',mappingRef:'map-a'}]};
+ if(broken==='missing-country')source.countryBindings.pop();
+ if(broken==='global-fallback')source.providerBindingId='borrowed';
+ if(broken==='duplicate-country')source.countryBindings.push({...source.countryBindings[0]});
+ f.db.seed(f.projectPath,{tenantId:'tenant-a',projectId:'project-a',countries:['GT','HN'],operationalSource:source});
+ const result=await f.run('g05-excel-country-invalid-0001');assert.equal(result.code,'HR_RECONCILIATION_LIVE_SOURCE_CONFIG_REQUIRED');assert.equal(f.db.log.length,0);assert.equal(f.auth.log.length,0);
+});

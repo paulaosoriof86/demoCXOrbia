@@ -131,7 +131,9 @@
     let result;
     try{result=await transports.get(activeTransport).execute(clean(command));}
     catch(error){return blocked(command,'COMMAND_TRANSPORT_ERROR',{error:str(error?.message||error)});}
-    const committed=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true;
+    const hrFieldsPending=arr(result?.hrFieldEventIds).length>0;
+    const committed=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&
+      (!hrFieldsPending||(result.hrProviderAck===true&&result.readbackVerified===true));
     if(!committed)return Object.assign(blocked(command,'COMMAND_NOT_COMMITTED'),clean(result||{}),{ok:false,committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false});
     const out=Object.assign({},clean(result),{
       ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,localMutation:false,localStorageWrite:false,
