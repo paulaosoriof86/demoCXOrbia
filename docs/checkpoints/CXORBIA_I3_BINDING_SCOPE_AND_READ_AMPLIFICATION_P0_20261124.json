@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "cxorbia.i3.binding-scope-read-amplification-proven-p0.v1",
+  "iteration": "I3",
+  "state": "P0_PROVEN_BEFORE_CODE",
+  "createdAt": "2026-11-24T08:16:08.293393+00:00",
+  "existingFindings": [
+    "VRM-360",
+    "VRM-361"
+  ],
+  "classifications": [
+    "MAPPING_FAILURE",
+    "FUNCTIONAL_DEFECT"
+  ],
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V385.json",
+  "moduleTruthBlob": "6dfe3f50e6e51a16783741ac2713c3be02e186e0",
+  "moduleTruth": [
+    {
+      "owner": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "latestApprovedSource": "9d3bf2010c9873b2bfed4eeeda730e082972409c",
+      "latestApprovedBlob": "1e24432cfe03e773b5b77d138dc5a3e6e2a05b68",
+      "F9": "See sealed module-truth matrix row",
+      "sourceSuccessor": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "sourceSuccessorBlob": "8b5df405a6b8582a7c5c9abab3a7d16c74d72c9d",
+      "head": "cf7fccc3cfd4dc1acf9b444d191eaed7a146fdf1",
+      "liveSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "liveRuntime": "cxorbia-live-hr-dev-00385-qvp",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "owner": "backend/runtime/hr-live-service/server.mjs",
+      "latestApprovedSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "latestApprovedBlob": "bb49b46aa914fbd781c3a71361705ee21de1b53a",
+      "F9": "See sealed module-truth matrix row",
+      "sourceSuccessor": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "sourceSuccessorBlob": "bb49b46aa914fbd781c3a71361705ee21de1b53a",
+      "head": "cf7fccc3cfd4dc1acf9b444d191eaed7a146fdf1",
+      "liveSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "liveRuntime": "cxorbia-live-hr-dev-00385-qvp",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    }
+  ],
+  "provenFailure": {
+    "httpStatus": 503,
+    "error": "live_hr_read_failed",
+    "message": "MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ",
+    "lastRefreshError": null,
+    "cause": "HTTP legacy flag spread into operational Excel plan proof changes fingerprint for identical source",
+    "reproduction": {
+      "legacyTrue": "6712762a27f26ca3f1ad257e26af5916fd150d9d29eda7f834bcaeabf2845d77",
+      "legacyFalse": "fbbc0f6d8f57b7265ea292513744ccf1d7a4df8b8c18b40eb9399501953d89c2",
+      "internal": "7465fec4e749fa70e6820cc011769a76c87448463e92d99f57b9d0e951a2eb62",
+      "countryPeriodFingerprintsEqual": true
+    }
+  },
+  "provenReadAmplification": {
+    "periodScopes": 38,
+    "planDocumentReadsBefore": 79,
+    "planDocumentReadsWithLocalSnapshots": 3,
+    "sameCanonicalFingerprint": true,
+    "readsIncludingOuterProjectBefore": 80,
+    "readsIncludingOuterProjectAfter": 4,
+    "publicMetaJsonMetaMs": [
+      44637,
+      4684,
+      40357
+    ]
+  },
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedChanges": [
+    "Canonicalize only tenantId/projectId for operational binding identity",
+    "Memoize DocumentSnapshot promises only within one plan resolution",
+    "Drain one differing in-flight read, re-resolve current binding once, preserve strict second-drift guard"
+  ],
+  "requiredTests": [
+    "Route variants same fingerprint and same country bindings",
+    "38 scopes require3docreads perplan",
+    "New plan rereads changed setting/project stamp",
+    "Same binding shares in-flight read",
+    "Different old read drains then current fresh returned",
+    "Old read failure never serves stale cache",
+    "Second drift fails without loop"
+  ],
+  "invariants": {
+    "cacheMs": 5000,
+    "parallelProviderReads": 4,
+    "externalReadsPerScope": 2,
+    "noHRcacheExtension": true,
+    "independentPostReadBindingRevalidation": true,
+    "writes": 0,
+    "production": false,
+    "singleCandidate": true,
+    "singleWriter": "root"
+  },
+  "expectedParentSha": "422e5d848dcd85c1fd4ed5e6642f3de86283fbee",
+  "expectedParentTree": "d67ffe59d35d2c97d32045029e80d06ee7a1aac3",
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs"
+  ],
+  "existingScopePreservedFromInterruptedSession": true
+}

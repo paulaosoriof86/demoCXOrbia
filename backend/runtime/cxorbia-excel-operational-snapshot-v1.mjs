@@ -158,6 +158,15 @@ const headerFields=rows=>{
 };
 export async function resolveExcelOriginalProjectPlan({db,scope}={}){
  if(!db?.doc||!validScope(scope))fail('INVALID_SCOPE');
+ // HTTP route flags do not change the identity of an operational source.
+ scope={tenantId:scope.tenantId,projectId:scope.projectId};
+ // Reuse document snapshots only within this plan. The independent plan
+ // resolution after the provider read obtains new snapshots and detects drift.
+ const sourceDb=db,planReads=new Map();
+ db={doc(documentPath){return {get(){
+  if(!planReads.has(documentPath))planReads.set(documentPath,sourceDb.doc(documentPath).get());
+  return planReads.get(documentPath);
+ }}}};
  const project=await db.doc('tenants/'+scope.tenantId+'/projects/'+scope.projectId).get();
  const raw=project.exists?project.data():null;
  if(!raw||raw.tenantId!==scope.tenantId||(raw.projectId&&raw.projectId!==scope.projectId))fail('PROJECT_SCOPE');

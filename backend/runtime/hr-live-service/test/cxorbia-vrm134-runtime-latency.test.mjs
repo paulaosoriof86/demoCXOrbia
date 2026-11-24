@@ -18,6 +18,77 @@ const pairEnd=source.indexOf('\nasync function refreshSnapshot(',pairBegin);
 assert.ok(pairBegin>=0&&pairEnd>pairBegin,'VRM-134 exact source read pair helper required');
 const runIndependentHrSourceReads=new Function(source.slice(pairBegin,pairEnd)+'\nreturn runIndependentHrSourceReads;')();
 
+// Exercise the actual snapshot selector and its strict in-flight guard with
+// controlled provider promises. No timers, external services or business writes.
+const snapshotBegin=source.indexOf('async function buildSnapshot(');
+const snapshotEnd=source.indexOf('\nasync function resolveHrAndProtectedPrincipal(',snapshotBegin);
+const refreshBegin=source.indexOf('async function refreshSnapshot(binding){');
+const refreshGuardEnd=source.indexOf('\n  inFlightBinding=binding.proof.bindingFingerprint;',refreshBegin);
+assert.ok(snapshotBegin>=0&&snapshotEnd>snapshotBegin&&refreshGuardEnd>refreshBegin);
+function snapshotHarness(resolveBinding,{cached=null,start=null}={}){
+ return new Function('resolveProjectHrReadBinding','initialCache','start',`
+  let cache=initialCache,inFlight=null,inFlightBinding=null;
+  const CACHE_MS=5000,refreshes=[];
+  ${source.slice(refreshBegin,refreshGuardEnd)}
+    refreshes.push(binding.proof.bindingFingerprint);
+    return start?start(binding):{revision:'fresh-'+binding.proof.bindingFingerprint,bindingProof:binding.proof};
+  }
+  ${source.slice(snapshotBegin,snapshotEnd)}
+  return {buildSnapshot,refreshes,begin(fingerprint,promise){
+    inFlight=promise;inFlightBinding=fingerprint;
+    const clear=()=>{if(inFlight===promise){inFlight=null;inFlightBinding=null;}};
+    promise.then(clear,clear);
+  }};
+ `)(resolveBinding,cached,start);
+}
+const bindingFor=fingerprint=>({proof:{bindingFingerprint:fingerprint}});
+const deferred=()=>{let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};};
+const settleMicrotasks=async()=>{for(let i=0;i<16;i++)await Promise.resolve();};
+test('same binding shares the active source read without an extra refresh',async()=>{
+ let resolutions=0;const active=deferred();
+ const h=snapshotHarness(async()=>{resolutions++;return bindingFor('same');});
+ h.begin('same',active.promise);
+ const a=h.buildSnapshot({forceFresh:true}),b=h.buildSnapshot({});
+ await settleMicrotasks();assert.equal(resolutions,2);assert.deepEqual(h.refreshes,[]);
+ const current={revision:'same-authority'};active.resolve(current);
+ assert.equal(await a,current);assert.equal(await b,current);
+});
+test('different binding waits for its prior owner and returns only the newly resolved source',async()=>{
+ let resolutions=0,complete=false;const prior=deferred();
+ const h=snapshotHarness(async()=>{resolutions++;return bindingFor('new');});
+ h.begin('old',prior.promise);
+ const pending=h.buildSnapshot({forceFresh:true}).then(x=>{complete=true;return x;});
+ await settleMicrotasks();assert.equal(complete,false);assert.equal(resolutions,1);
+ assert.deepEqual(h.refreshes,[]);
+ prior.resolve({revision:'obsolete'});
+ const result=await pending;
+ assert.equal(result.revision,'fresh-new');assert.equal(resolutions,2);
+ assert.deepEqual(h.refreshes,['new']);
+});
+test('failed prior owner cannot serve its expired cache as the current source',async()=>{
+ let resolutions=0;const prior=deferred();
+ const h=snapshotHarness(async()=>{resolutions++;return bindingFor('new');},{
+  cached:{revision:'stale',loadedAt:Date.now()-10000,bindingProof:bindingFor('old').proof}});
+ h.begin('old',prior.promise);
+ const pending=h.buildSnapshot({});await settleMicrotasks();
+ prior.reject(new Error('PROVIDER_FAILURE:OLD_OWNER'));
+ assert.equal((await pending).revision,'fresh-new');assert.equal(resolutions,2);
+ assert.deepEqual(h.refreshes,['new']);
+});
+test('a second concurrent source change fails once without retrying or serving another binding',async()=>{
+ const prior=deferred(),third=deferred();let resolutions=0,h;
+ h=snapshotHarness(async()=>{
+  resolutions++;if(resolutions===2)h.begin('third',third.promise);
+  return bindingFor('new');
+ });
+ h.begin('old',prior.promise);
+ const pending=h.buildSnapshot({forceFresh:true});await settleMicrotasks();
+ prior.resolve({revision:'old'});
+ await assert.rejects(pending,/MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ/);
+ assert.equal(resolutions,2);assert.deepEqual(h.refreshes,[]);
+ third.resolve({revision:'third'});
+});
+
 test('VRM-134 coalesces independent protected HR and principal reads without returning before both',async()=>{
   const starts=[];let releaseHr,releaseAuth;
   const hrP=new Promise(r=>releaseHr=r),authP=new Promise(r=>releaseAuth=r);

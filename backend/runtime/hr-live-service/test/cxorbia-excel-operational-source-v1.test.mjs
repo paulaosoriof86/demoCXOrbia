@@ -53,6 +53,54 @@ test('configured original Excel project resolves two independent source-bound co
  assert.notEqual(plan.bindings[0].proof.bindingFingerprint,plan.bindings[1].proof.bindingFingerprint);
  assert.equal(plan.proof.hrWrites,false);
 });
+test('HTTP aliases and internal reads share the same operational plan identity',async()=>{
+ const db=fixture(),scope={tenantId:'tya',projectId:'cinepolis'};
+ const plans=await Promise.all([scope,{...scope,legacy:true},{...scope,legacy:false}]
+  .map(scope=>resolveExcelOriginalProjectPlan({db,scope})));
+ for(const plan of plans){
+  assert.deepEqual(plan.scope,scope);
+  assert.deepEqual(plan.proof,plans[0].proof);
+  assert.deepEqual(plan.bindings.map(x=>x.proof.bindingFingerprint),
+   plans[0].bindings.map(x=>x.proof.bindingFingerprint));
+ }
+});
+test('38 country-period bindings read three snapshots and a new plan detects changed source metadata',async()=>{
+ const scope={tenantId:'tya',projectId:'cinepolis'},docs=new Map(),reads=[];
+ const projectPath='tenants/tya/projects/cinepolis',gtPath='tenants/tya/integrationSettings/gt';
+ docs.set(projectPath,record(project,1));
+ for(const code of ['GT','HN']){
+  const setting=fakeSetting(code);
+  setting.periodSheets=Array.from({length:19},(_,i)=>{
+   const date=new Date(Date.UTC(2025,5+i,1));
+   return {periodId:'cinepolis-'+date.toISOString().slice(0,7),
+    worksheetId:'{00000000-0000-0000-0000-'+String(i+1).padStart(12,'0')+'}',
+    worksheetName:date.toISOString().slice(0,7)};
+  });
+  docs.set('tenants/tya/integrationSettings/'+code.toLowerCase(),record(setting,code==='GT'?2:3));
+ }
+ const db={doc(documentPath){
+  assert.equal(this,db,'Firestore doc keeps its receiver');
+  return {path:documentPath,async get(){
+   assert.equal(this.path,documentPath,'DocumentReference get keeps its receiver');
+   reads.push(documentPath);return docs.get(documentPath);
+  }};
+ }};
+ const first=await resolveExcelOriginalProjectPlan({db,scope});
+ assert.equal(first.bindings.length,38);assert.equal(first.proof.periodCount,19);
+ assert.equal(reads.length,3);assert.equal(new Set(reads).size,3);
+ const changed=docs.get(gtPath).data();changed.itemId='item-GT!changed';
+ docs.set(gtPath,record(changed,4));reads.length=0;
+ const second=await resolveExcelOriginalProjectPlan({db,scope});
+ assert.equal(reads.length,3);assert.notEqual(second.proof.bindingFingerprint,first.proof.bindingFingerprint);
+ for(let i=0;i<first.bindings.length;i++){
+  const old=first.bindings[i],next=second.bindings[i];
+  if(old.scope.countryCode==='GT')assert.notEqual(next.proof.bindingFingerprint,old.proof.bindingFingerprint);
+  else assert.equal(next.proof.bindingFingerprint,old.proof.bindingFingerprint);
+ }
+ docs.set(projectPath,record(project,5));reads.length=0;
+ const third=await resolveExcelOriginalProjectPlan({db,scope});
+ assert.equal(reads.length,3);assert.notEqual(third.proof.bindingFingerprint,second.proof.bindingFingerprint);
+});
 test('original Excel values become the sourceSafe operational snapshot without provider writes',async()=>{
  const db=fixture(),plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
  const x=await readExcelOriginalProjectSnapshot({db,plan,columnMap,cinemaRegistry,readBinding});

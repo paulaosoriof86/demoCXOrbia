@@ -536,7 +536,14 @@ async function refreshSnapshot(binding){
 }
 
 async function buildSnapshot({forceFresh=false,scope}={}){
-  const binding=await resolveProjectHrReadBinding(scope);
+  let binding=await resolveProjectHrReadBinding(scope);
+  if(inFlight&&inFlightBinding!==binding.proof.bindingFingerprint){
+    // A previous source owner must finish before this request can use the
+    // current binding. Its result is not returned as this request's authority.
+    const previousRead=inFlight;
+    await Promise.allSettled([previousRead]);
+    binding=await resolveProjectHrReadBinding(scope);
+  }
   if(forceFresh)return refreshSnapshot(binding);
   if(cache?.origin==='build_bootstrap')return refreshSnapshot(binding);
   if(cache?.bindingProof?.bindingFingerprint!==binding.proof.bindingFingerprint)return refreshSnapshot(binding);
