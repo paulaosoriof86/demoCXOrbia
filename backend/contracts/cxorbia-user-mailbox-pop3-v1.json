@@ -22,7 +22,11 @@
     "POST sync": "bounded live UIDL scan, durable cursor, provider presence and idempotent message import",
     "GET messages": "owner cached headers with last observed state and pagination",
     "GET messages/{id}": "provider UIDL lookup of current message number, bounded MIME body; archived copy visibly marked if absent upstream",
-    "POST disconnect": "delete local encrypted credential and fence old requests; no remote account/mail deletion"
+    "POST disconnect": "delete local encrypted credential and fence old requests; no remote account/mail deletion",
+    "POST send": "explicit owner action; immutable idempotent intent, server-owned sender, durable pre-DATA journal and positive SMTP DATA ACK",
+    "POST reply": "same send contract plus original message from same owner/account; server-owned Reply-To/From recipient, In-Reply-To and bounded References",
+    "GET outbox": "latest 50 owner submission records with durable human states; does not send or import Outlook Sent",
+    "GET outbox/{id}": "current owner submission detail/ACK; expired post-DATA operation becomes delivery_unknown"
   },
   "security": {
     "tls": "implicit TLS1.2+ with system certificate trust and SNI; exact host allowlist and public DNS only",
@@ -60,16 +64,22 @@
     "oauth": false,
     "sourceReceiveImplemented": true,
     "sourceSmtpConfigurationAndNoCredentialProbeImplemented": true,
-    "smtpSendImplemented": false,
+    "smtpSendImplemented": true,
     "attachmentDownloadImplemented": false,
-    "crossEntityLinkImplemented": false
+    "crossEntityLinkImplemented": false,
+    "sourceReplyImplemented": true,
+    "sourceOutgoingJournalImplemented": true
   },
   "activationRequirements": [
     "strict no-credential TLS POP995/SMTP465 probe PASS for actual host",
     "CXORBIA_USER_MAILBOX_ENABLED=true through canonical runtime config",
     "CXORBIA_MAILBOX_CREDENTIAL_KEY_B64 mounted from a dedicated Secret Manager version: exactly32bytes base64",
     "each user POP credential supplied only to authenticated HTTPS own-mailbox connect; account password is not Firebase password",
-    "authenticated receive ACK/session/reload/second-owner-negative evidence on exact materialized artifact"
+    "authenticated receive ACK/session/reload/second-owner-negative evidence on exact materialized artifact",
+    "CXORBIA_USER_MAILBOX_SEND_ENABLED=true through canonical runtime config only when SMTP activation is approved",
+    "set provider.sendEnabled=true only for the scoped provider after approved activation; source-safe policy remains false in this proposal",
+    "service runtime identity has secretAccessor only on the mailbox root-key secret/version; secret value must not enter build/source/browser/logs",
+    "authenticated SMTP send/reply ACK250 + durable outbox reload + second-owner negative + lost-ACK duplicate guard evidence on exact certified artifact; no real send performed by this proposal"
   ],
   "neverInfer": [
     "local Outlook Sent/archive folders from POP inbox",
@@ -77,7 +87,11 @@
     "connection requested as provider ACK",
     "draft as sent",
     "another project backend/credential as transferable authorization",
-    "in-app HR alert as external mail delivery"
+    "in-app HR alert as external mail delivery",
+    "SMTP DATA ACK250 as recipient delivery or read confirmation",
+    "missing HTTP or SMTP ACK as not sent",
+    "same Message-ID as provider-side deduplication guarantee",
+    "source implementation or offline fixture PASS as activated/certified provider sending"
   ],
   "phaseAClosure": false,
   "productionAuthorized": false,
@@ -87,6 +101,44 @@
   "references": [
     "https://www.rfc-editor.org/rfc/rfc8314.html",
     "https://www.rfc-editor.org/rfc/rfc1939.html",
-    "https://github.com/postalsys/postal-mime/tree/master"
-  ]
+    "https://github.com/postalsys/postal-mime/tree/master",
+    "https://www.rfc-editor.org/rfc/rfc5321.html",
+    "https://www.rfc-editor.org/rfc/rfc4954.html",
+    "https://www.rfc-editor.org/rfc/rfc5322.html"
+  ],
+  "outgoingPath": "tenants/{tenantId}/users/{uid}/mailboxes/primary/accounts/{accountKey}/outgoing/{sha256IdempotencyKey}",
+  "outgoingGuardPath": "tenants/{tenantId}/users/{uid}/mailboxes/primary/accounts/{accountKey}/outgoingGuards/{requestDigest}",
+  "smtp": {
+    "transport": "existing connectStrictTls; port465 implicit TLS1.2+ only; authenticated EHLO-advertised PLAIN or LOGIN; no external SMTP dependency",
+    "from": "connected account address and same encrypted POP credential; tenant and UID solely from verified principal",
+    "request": "send: idempotencyKey/to/subject/text; reply: idempotencyKey/parentId/text; other fields denied",
+    "limits": {
+      "recipients": 20,
+      "recipientEncoding": "ASCII addr-spec; no display names or SMTPUTF8",
+      "subjectCharacters": 200,
+      "textBytesUtf8": 65536,
+      "httpBodyBytes": 131072,
+      "replyReferences": 10,
+      "responseBytes": 65536,
+      "commandResponseTimeoutMs": 20000,
+      "dataAckTimeoutMs": 60000,
+      "totalTransportDeadlineMs": 90000,
+      "journalLeaseMs": 120000
+    },
+    "content": "text/plain UTF-8 base64 MIME; encoded subject; strict CRLF/header rejection; no attachments or HTML send",
+    "idempotency": "immutable request digest under owner/account, transactional create-once, deterministic Message-ID; same key never resubmits; unresolved identical content also blocked under a new key",
+    "states": [
+      "prepared",
+      "data_in_flight",
+      "smtp_accepted",
+      "not_sent",
+      "delivery_unknown"
+    ],
+    "stateBoundary": "persist data_in_flight before first body byte; loss after DATA without positive250 or explicit final rejection is delivery_unknown; accepted means provider accepted, not delivered/read",
+    "crashRecovery": "expired prepared becomes not_sent; expired data_in_flight becomes delivery_unknown; journal write failure after positive SMTP ACK never becomes not_sent",
+    "allRecipients": "no DATA if any RCPT is rejected; no partial recipient submission",
+    "automaticRetry": false,
+    "reconcileUnknown": "read durable outbox; investigate provider receipt/Message-ID before another intent; no automatic replay to SMTP",
+    "defaultActivation": "both feature flags plus provider sendEnabled=true are required for a new submission; proposal leaves send disabled"
+  }
 }

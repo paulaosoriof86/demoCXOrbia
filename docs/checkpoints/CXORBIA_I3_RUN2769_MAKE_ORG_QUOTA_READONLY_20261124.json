@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "cxorbia.i3.run2769.make-quota-readonly.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "PROVIDER_FAILURE",
+  "causalFinding": "MAKE_ORGANIZATION_QUOTA_EXHAUSTED",
+  "runtimeObservedCode": "PROVIDER_FAILURE:B14_TOOLBOX_EXECUTION",
+  "organization": {
+    "id": 4090072,
+    "name": "AyS - TyA",
+    "isPaused": true,
+    "serviceName": "Core",
+    "productName": "Core",
+    "operations": "14067",
+    "centicreditsConsumed": "1406700",
+    "operationsExt": "4000",
+    "centicreditsExtra": "400000",
+    "unusedOperations": "-67",
+    "unusedCenticredits": "-6700",
+    "autoPurchasingActivated": false,
+    "autoPurchaseInProgress": false,
+    "lastReset": "2026-11-19T12:33:54.259Z",
+    "nextReset": "2026-12-19T12:33:54.259Z"
+  },
+  "licensedOperations": 10000,
+  "computedCapacity": 14000,
+  "team": {
+    "id": 1975919,
+    "organizationId": 4090072,
+    "isPaused": false,
+    "operationsLimit": null,
+    "consumedOperations": 14067,
+    "consumedCenticredits": "1406700"
+  },
+  "reader": {
+    "id": 10200465,
+    "name": "CXOrbia B14 — proveedor Graph delegado de lectura por scope (DEV / on-demand)",
+    "teamId": 1975919,
+    "status": "paused",
+    "isLockedForEditing": false,
+    "isWaitingOnIncompleteExecutions": false,
+    "incompleteExecutions": 0,
+    "lastEdit": "2026-11-24T10:27:38.268Z",
+    "trigger": {
+      "moduleId": 1,
+      "module": "scenario-service:StartSubscenario",
+      "kind": "on-demand",
+      "scheduling": {
+        "type": "on-demand"
+      }
+    },
+    "connections": [
+      {
+        "id": 9089470,
+        "label": "One",
+        "app": "azure",
+        "usedByModules": [
+          2,
+          3
+        ],
+        "status": "ok"
+      }
+    ]
+  },
+  "d08Window": {
+    "from": "2026-11-24T11:53:00Z",
+    "to": "2026-11-24T11:57:00Z",
+    "executionCount": 0
+  },
+  "lastSuccess": {
+    "id": "760ed197e8c04975b85fa61997976cac",
+    "status": "success",
+    "startedAt": "2026-11-24T11:45:22.872Z",
+    "duration": 2562,
+    "operations": 2,
+    "credits": 2,
+    "dataTransfer": 122757,
+    "scope": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "countryCode": "HN",
+      "periodId": "cinepolis-2026-06",
+      "worksheetId": "{00000000-0001-0000-1A00-000000000000}"
+    },
+    "status1": 200,
+    "status2": 200,
+    "hash1": "f9ddb844f58899e09868417fe0c23dc2cb4d8dd4c4246d78c0708e24b706e3a2",
+    "hash2": "f9ddb844f58899e09868417fe0c23dc2cb4d8dd4c4246d78c0708e24b706e3a2",
+    "rowCount1": 140,
+    "rowCount2": 140
+  },
+  "limitsOfEvidence": [
+    "Exact automatic pause timestamp is not exposed; last admitted run ended after 11:45:22.872Z. No executions exist in the D08 11:53–11:57Z window.",
+    "Raw MCP error body was discarded by the deployed reader; organization quota and pause are independently observed."
+  ],
+  "noMutation": {
+    "scenarioActivations": 0,
+    "writerRuns": 0,
+    "hrWrites": 0,
+    "creditPurchases": 0,
+    "tokenReads": 0
+  },
+  "nextExactAction": "Restore organization capacity through existing authorized account decision, then one original HR read-only proof before D08/F3 retry. Scenario activation alone does not restore exhausted organization quota.",
+  "observedDate": "2026-11-24",
+  "recordedAt": "2026-11-24T12:10:44.884412+00:00",
+  "exactQuotaRetrievalTimestampRecorded": false
+}

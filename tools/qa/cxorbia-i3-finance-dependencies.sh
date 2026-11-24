@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 mkdir -p "$FINAL_FOCAL_OUT"
-if [[ "${CXORBIA_I3_FINANCE_MODE:-}" == READONLY_SEP_ADVANCES ]]; then
+if [[ "${CXORBIA_I3_FINANCE_MODE:-}" == READONLY_SEP_ADVANCES || "${CXORBIA_I3_FINANCE_MODE:-}" == APPLY_NOV_ADVANCE_METADATA ]]; then
   # Exact read-only ADC dependency; no browser download or root legacy package resolution.
   test ! -e node_modules
   FINANCE_DEPS="$(mktemp -d "$RUNNER_TEMP/cx-finance-readonly.XXXXXX")"

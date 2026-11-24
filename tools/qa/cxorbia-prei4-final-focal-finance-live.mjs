@@ -44,8 +44,11 @@ function runC01ConciliarIfRequired(){
 }
 const financeMode=String(process.env.CXORBIA_I3_FINANCE_MODE||'');
 if(financeMode){
-  if(financeMode!=='READONLY_SEP_ADVANCES')throw new Error('SOURCE_FAILURE:UNKNOWN_FINANCE_FOCAL_MODE');
-  await runFinanceResidualReadonly({project:PROJECT,host:HOST,out:OUT,source:SOURCE,period:PERIOD});
+  if(financeMode==='APPLY_NOV_ADVANCE_METADATA'){
+    const {runAdvanceMetadata}=await import('./cxorbia-i3-finance-advance-metadata.mjs');
+    await runAdvanceMetadata({project:PROJECT,host:HOST,out:OUT,source:SOURCE});
+  }else if(financeMode==='READONLY_SEP_ADVANCES')await runFinanceResidualReadonly({project:PROJECT,host:HOST,out:OUT,source:SOURCE,period:PERIOD});
+  else throw new Error('SOURCE_FAILURE:UNKNOWN_FINANCE_FOCAL_MODE');
   process.exit(0);
 }
 runC01ConciliarIfRequired();

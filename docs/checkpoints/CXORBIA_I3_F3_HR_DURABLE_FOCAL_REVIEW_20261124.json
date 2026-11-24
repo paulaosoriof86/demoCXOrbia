@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.f3-hr-durable-focal-review.v1",
+  "iteration": "I3",
+  "globalState": "HOLD",
+  "focalReview": "PASS",
+  "reviewedAt": "2026-11-24T12:14:51.603104+00:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "workingTreeHead": "123d62ea1664f0d7b70be254da34998faa519175",
+  "workingTreeHasUncommittedProductDelta": true,
+  "fileSha256": {
+    "backend/runtime/hr-live-service/server.mjs": "9c45c882fd571f62b1aad1d1c5dc0436e7e18b251d26f4fae713c64452200b46",
+    "backend/runtime/hr-live-service/hr-read-model.mjs": "fd2c2cfacf9b97da1e306071350c8f41aea559839ba9b573f56efd0b8bca1b5d",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs": "721d5adb40c5eaaf4f395b50d1d99cc239b774ef491e7a5b49b850f762a66556",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs": "ac382d5486cd12c203200c9f14f62a6bdbda5fa26ed89a06d4f186fb2eaf62ad",
+    "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs": "e9896a7c731af842338ba39f7d380b5813caba03bd729455cc10941a4f694822"
+  },
+  "checks": [
+    "Excel raw provider digest is retained at snapshot.source.sourceRevision.",
+    "Canonical top-level runtime sourceRevision equals current.revision and rematerialization is stable.",
+    "Durable recovery rehashes snapshot plus exact identity, rejects revision mismatch and rechecks binding.",
+    "Recovered views remain externalReadCurrent=false and retain original observation timestamps.",
+    "Authenticated readModel opt-in is required before publish; denied auth causes zero model writes.",
+    "Command and fresh request paths cannot substitute a durable presentation snapshot.",
+    "Durable chunks, manifest and pointer validate scope, checksums, size and observation ordering."
+  ],
+  "test": {
+    "command": "node --test tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs backend/runtime/hr-live-service/test/hr-read-model.test.mjs backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "pass": 37,
+    "fail": 0,
+    "exitCode": 0
+  },
+  "reproducibleBlockersWithinReviewedScope": [],
+  "limits": [
+    "Read-only focal review, not a general audit, deployment certification or live proof.",
+    "A new readerFingerprint needs a successful authenticated fresh presentation with readModel=1 before cold-process recovery is available for that fingerprint.",
+    "Organization Make quota remains independently exhausted; durable presentation does not close a fresh HR gate."
+  ],
+  "remoteWrites": 0,
+  "repositoryWrites": 0,
+  "readerRuns": 0,
+  "creditPurchases": 0
+}

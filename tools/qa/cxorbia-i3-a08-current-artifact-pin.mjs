@@ -13,6 +13,29 @@ const SHA=/^[a-f0-9]{40}$/,HEX=/^[a-f0-9]{64}$/;
 const materialKeys=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset'];
 const sourceOf=x=>str(x?.source?.sha||x?.sourceSha);
 const treeOf=x=>str(x?.source?.tree||x?.sourceTree);
+export function a08ServedInventory(assets){
+  need(assets&&typeof assets==='object'&&!Array.isArray(assets),'SERVED_HASHES_REQUIRED');
+  const entries=Object.entries(assets).sort(([a],[b])=>a<b?-1:a>b?1:0);
+  need(entries.length>0,'SERVED_INVENTORY_EMPTY');
+  for(const [file,value] of entries)need(/^[A-Za-z0-9_./-]+$/.test(file)&&!file.startsWith('/')&&!file.includes('..')&&file.split('/').every(part=>part&&part!=='.')&&typeof value==='string'&&HEX.test(value),'SERVED_HASH_INVALID');
+  return {servedSha256:Object.fromEntries(entries),verifiedServedAssetCount:entries.length,servedInventorySha256:hash(JSON.stringify(entries))};
+}
+export function assertA08ServedInventory(expected,observed){
+  const authority=a08ServedInventory(expected),actual=a08ServedInventory(observed);
+  const paths=Object.keys(authority.servedSha256),seen=Object.keys(actual.servedSha256);
+  need(paths.length===seen.length&&paths.every((file,i)=>file===seen[i]),'SERVED_ASSET_SET_MISMATCH');
+  need(paths.every(file=>authority.servedSha256[file]===actual.servedSha256[file]),'SERVED_ASSET_HASH_MISMATCH');
+  return actual;
+}
+export function assertA08AssetSeal(pin,seal){
+  const authority=a08ServedInventory(pin?.servedSha256);
+  need(pin.verifiedServedAssetCount===authority.verifiedServedAssetCount&&pin.servedInventorySha256===authority.servedInventorySha256,'PIN_INVENTORY_DESYNC');
+  need(seal?.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT','ASSET_SEAL_REQUIRED');
+  const actual=assertA08ServedInventory(authority.servedSha256,seal.servedSha256);
+  need(seal.verifiedServedAssetCount===actual.verifiedServedAssetCount&&seal.servedAssetsMatch===actual.verifiedServedAssetCount&&seal.servedInventorySha256===actual.servedInventorySha256,'ASSET_SEAL_INVENTORY_DESYNC');
+  need(seal.phase==='before'?seal.servedAssetsFetchedThisPhase===actual.verifiedServedAssetCount&&seal.assetReadbackMode==='CURRENT_HOSTING_FETCH':seal.phase==='after'&&seal.servedAssetsFetchedThisPhase===0&&seal.assetReadbackMode==='REUSED_BEFORE_ON_IDENTICAL_FINALIZED_HOSTING_VERSION','ASSET_SEAL_PHASE_UNPROVEN');
+  return actual;
+}
 export function normalizeA08Pin(current,descriptor,receipt){
   need(current.production==='DO_NOT_TOUCH'&&current.authorizationI4===false,'DEV_AUTHORITY_REQUIRED');
   const source=str(current.productSourceSha),tree=str(current.productTree||current.productTreeAuthority);
@@ -46,18 +69,17 @@ export function normalizeA08Pin(current,descriptor,receipt){
   need(/^sha256:[a-f0-9]{64}$/.test(c.runtimeDigest),'RUNTIME_DIGEST_REQUIRED');
   need(/^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/.test(c.hostingVersion),'HOSTING_NOT_DEV');
   need(/^projects\/cxorbia-backend-dev\/rulesets\/[a-z0-9-]+$/.test(c.firestoreRuleset),'FIRESTORE_RULESET_REQUIRED');
-  const assets=receipt.servedSha256;
-  need(assets&&typeof assets==='object'&&!Array.isArray(assets),'SERVED_HASHES_REQUIRED');
-  const entries=Object.entries(assets);
-  need(entries.length===41&&receipt.verifiedServedAssetCount===41&&c.verifiedServedAssetCount===41,'EXACT_41_ASSETS_REQUIRED');
-  for(const [file,value] of entries)need(/^[A-Za-z0-9_./-]+$/.test(file)&&!file.startsWith('/')&&!file.includes('..')&&HEX.test(value),'SERVED_HASH_INVALID');
+  const inventory=a08ServedInventory(receipt.servedSha256);
+  need(Number.isInteger(receipt.verifiedServedAssetCount)&&receipt.verifiedServedAssetCount===inventory.verifiedServedAssetCount&&
+    c.verifiedServedAssetCount===inventory.verifiedServedAssetCount&&d.verifiedServedAssetCount===inventory.verifiedServedAssetCount&&
+    (material.verifiedServedAssetCount===undefined||material.verifiedServedAssetCount===inventory.verifiedServedAssetCount),'EXACT_CURRENT_ASSET_INVENTORY_REQUIRED');
   const hr=str(receipt.hrRevisionAfter||receipt.hrRevisionAfterMetadata||receipt.canonicalIdReadback?.revision||material.hrRevision||c.hrRevision);
   need(HEX.test(hr),'OBSERVED_HR_REVISION_REQUIRED');
-  return {schemaVersion:'cxorbia.i3.a08.current-artifact-pin.v1',decision:'PASS_A08_CURRENT_ARTIFACT_PIN',
+  return {schemaVersion:'cxorbia.i3.a08.current-artifact-pin.v2',decision:'PASS_A08_CURRENT_ARTIFACT_PIN',
     sourceSha:source,sourceTree:tree,receiptPath,
     runtimeRevision:c.runtimeRevision,runtimeDigest:c.runtimeDigest,hostingVersion:c.hostingVersion,
     firestoreRuleset:c.firestoreRuleset,observedHrRevision:hr,
-    servedSha256:assets,verifiedServedAssetCount:41,production:false,i4Authorized:false,fullDomain:false};
+    ...inventory,production:false,i4Authorized:false,fullDomain:false};
 }
 
 export function loadA08Pin(repoRoot=process.cwd()){

@@ -54,6 +54,7 @@
       const otherWarnings=(Array.isArray(CX.dataSource.warnings)?CX.dataSource.warnings:[]).filter(warning=>!ownWarning.test(String(warning)));
       CX.dataSource.updating=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.lastLiveCheckAt=new Date().toISOString();CX.dataSource.pendingLiveRevision=deferred?meta.revision:null;CX.dataSource.warnings=deferred?otherWarnings.concat('Hay cambios en la hoja de ruta. Se aplicarán al cerrar la edición.'):otherWarnings;
     }
+    window.CX_TYA_APPLY_HR_FRESHNESS?.(meta);
     refreshBadge();
   }
   function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length>0&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length>0);}
@@ -61,6 +62,7 @@
     window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
     if(CX.data){const stable=fullVisual&&window.CX_TYA_FULL_VISUAL_READY===true;CX.data.sourceMode=stable?'tya_hr_live_plus_firestore_full_profile_stable_dev':fullVisual?'tya_hr_live_preparing_full_profile_stable_dev':'tya_hr_live_runtime_source_safe_dev';CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{generatedAt:meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,runtimeReadActive:true,runtimeSyncActive:false,sourceRevision:meta.revision||null,revisionStable:meta.revisionStable===true,fullProfileVisual:stable||CX.data.previewMeta?.fullProfileVisual===true,note:stable?'HR viva estable; perfil protegido compuesto desde revisión canónica.':'Lectura HR viva runtime sin recargar la página.'});}
     if(CX.dataSource){CX.dataSource.mode=(authenticatedHumanRuntime||technicalAuthE2E)?'connected':'source_safe_preview';CX.dataSource.status='ready';CX.dataSource.sourceRef=authenticatedHumanRuntime?'hr-live-all-periods+firestore-authenticated-exact-overlay':fullVisual?'hr-live+firestore-full-profile-stable+canonical-finance':('hr-live-runtime:'+runtimeScope().tenantId+':'+runtimeScope().projectId);CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.blockers=[];}
+    window.CX_TYA_APPLY_HR_FRESHNESS?.(meta);
     refreshBadge();
   }
   function markFailure(error){
@@ -75,6 +77,7 @@
         CX.dataSource.mode='source_safe_preview';CX.dataSource.status='ready';CX.dataSource.blockers=[];
       }else if(failures>=3)CX.dataSource.status='degraded';
     }
+    window.CX_TYA_APPLY_HR_FRESHNESS?.({externalReadCurrent:false,sourceReadAt:CX.data?.previewMeta?.sourceReadAt||null});
     refreshBadge();
   }
   async function getJson(format,extra={}){const source=endpoint();if(!source)throw new Error('PROJECT_SOURCE_REQUIRED');const q=new URLSearchParams({format,...extra,ts:String(Date.now())});const r=await fetch(source+(source.includes('?')?'&':'?')+q,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error('HTTP '+r.status+(j?.message?': '+j.message:''));return j;}
@@ -98,7 +101,7 @@
     if(String(authority.tenantId||'')!==scope.tenantId||String(authority.projectId||'')!==scope.projectId)return false;
     if(!user?.uid||String(authority.actorUid||'')!==String(user.uid))return false;
     if(!Number.isFinite(elapsed)||elapsed<0||elapsed>5000)return false;
-    currentRevision=revision;failures=0;pendingProtectedRefresh=false;finishProtectedCheck({revision});
+    currentRevision=revision;failures=0;pendingProtectedRefresh=false;finishProtectedCheck({revision,externalReadCurrent:authority.externalReadCurrent,sourceReadAt:authority.sourceReadAt,hrFreshness:authority.hrFreshness});
     return true;
   }
   async function check(reason){
@@ -113,7 +116,7 @@
     }
     if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};checking=true;markUpdating();
     try{
-      const meta=await getJson('meta');if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
+      const meta=await getJson('meta',{fresh:'1'});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
         const protectedRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim();
         if(protectedRevision)currentRevision=protectedRevision;

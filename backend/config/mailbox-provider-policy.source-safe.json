@@ -3,22 +3,29 @@
   "owner": "P0367",
   "tenants": {
     "tya": {
-      "providers": [{
-        "id": "tya-corporate-pop3",
-        "label": "Correo corporativo T&A",
-        "providerType": "pop3_smtp_generic",
-        "host": "vfct23005.avnam.net",
-        "port": 995,
-        "security": "implicit_tls",
-        "smtpHost": "vfct23005.avnam.net",
-        "smtpPort": 465,
-        "smtpSecurity": "implicit_tls",
-        "allowedEmailDomains": ["tyaconsultores.com"],
-        "tlsVerificationStatus": "PENDING_NO_CREDENTIAL_PROVIDER_PROBE",
-        "sendEnabled": false,
-        "deleteEnabled": false
-      }]
+      "providers": [
+        {
+          "id": "tya-corporate-pop3",
+          "label": "Correo corporativo T&A",
+          "providerType": "pop3_smtp_generic",
+          "host": "vfct23005.avnam.net",
+          "port": 995,
+          "security": "implicit_tls",
+          "smtpHost": "vfct23005.avnam.net",
+          "smtpPort": 465,
+          "smtpSecurity": "implicit_tls",
+          "allowedEmailDomains": [
+            "tyaconsultores.com"
+          ],
+          "tlsVerificationStatus": "PASS_NO_CREDENTIAL_PROVIDER_PROBE_RUN2766",
+          "sendEnabled": true,
+          "deleteEnabled": false,
+          "sourceSmtpSendImplemented": true,
+          "sendActivation": "CXORBIA_USER_MAILBOX_ENABLED && CXORBIA_USER_MAILBOX_SEND_ENABLED && provider.sendEnabled; default disabled pending controlled provider certification",
+          "tlsVerificationReceipt": "docs/checkpoints/CXORBIA_I3_RUN2766_HR_REVIEW_MAIL_FINANCE_PAIRED_DEV_PASS_20261124.json#mailTransportReadback"
+        }
+      ]
     }
   },
-  "proofBoundary": "User screenshots identify provider and ports; POP 995 label StartTLS is unresolved until verified strict TLS greeting. No credential or successful connection is inferred from this configuration."
+  "proofBoundary": "RUN2766 verified strict implicit TLS1.3 certificate, greeting and QUIT on POP995/SMTP465 at 2026-11-24T11:15:28.085Z. That receipt used zero credentials, message reads, sends or deletions; no authenticated account or SMTP-send certification is inferred."
 }

@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-370",
+  "findingIdAvailability": {
+    "descriptorNextFindingId": "VRM-370",
+    "existingFindingRowFound": false,
+    "rootMustRecheckAtLedgerMutation": true
+  },
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "surfaceFailureClass": "PERSISTENCE_FAILURE",
+  "preEdit": true,
+  "observedAt": "2026-11-24T12:02:16.902748+00:00",
+  "baseHead": "b4d8255438dc52f8221dc6e05722ef063186ee96",
+  "moduleDomain": "canonical-hr-state-adapters",
+  "affectedContracts": [
+    "same_external_hr_revision",
+    "hr.snapshot.reconcile",
+    "F3_platform_make_excel_ack_readback"
+  ],
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V391.json",
+  "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V718_2026-11-24.json",
+  "owners": [
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "function": "materialize",
+      "changeRequired": true,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "f9Blob": "451e993b6ce6951e74eb8f8caae7ec1e42139beb",
+      "historicalAuthority": "F9_AND_ACCEPTED_RECOVERY_SUCCESSOR",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "82d0965665e82fd31a94e8b4b09e0d91bf4fcb93",
+      "declaredSuccessorBlob": "82d0965665e82fd31a94e8b4b09e0d91bf4fcb93",
+      "servedSourceBlob": "82d0965665e82fd31a94e8b4b09e0d91bf4fcb93",
+      "headBlob": "82d0965665e82fd31a94e8b4b09e0d91bf4fcb93",
+      "workingSha256": "059f4e2d1b3d63e18ca13542c2a9220fa2558ebaa5de6dc85834c33bf84e307e"
+    },
+    {
+      "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "function": "canonicalHrNameEvidence",
+      "changeRequired": false,
+      "classification": "MATCH",
+      "f9Blob": "6ad7b27b8d11dc2512f579f694fc5d60095b41c9",
+      "historicalAuthority": "F9_AND_ACCEPTED_RECOVERY_SUCCESSOR",
+      "lastApprovedSource": "66312f88a70bd123b137c7a031a1f456969465f5",
+      "lastApprovedBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "declaredSuccessorBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "servedSourceBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "headBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "workingSha256": "fb5c39ae81aeb6e2f9367d84c75b937b18e7e7cdb986c4e72a3b4ee78f2f8e5e"
+    },
+    {
+      "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "function": "readExcelOriginalProjectSnapshot",
+      "changeRequired": false,
+      "classification": "MATCH",
+      "f9Blob": null,
+      "historicalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "declaredSuccessorBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "servedSourceBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "headBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "workingSha256": "3765634ef9b1c12a1a7b21e4d3aac4d198728d8ddc601153ad9b27f3c69c2146"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "function": "createHrSnapshotReconciler",
+      "changeRequired": false,
+      "classification": "MATCH",
+      "f9Blob": null,
+      "historicalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "declaredSuccessorBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "servedSourceBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "headBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "workingSha256": "48c4b5aeca61d6f300067eb2ba2c7f961cb134029cd4442146d7dcde18eb1fbc"
+    }
+  ],
+  "baselineAuthority": {
+    "f9Release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "declaredProductSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+    "declaredProductTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+    "servedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+    "servedRuntime": "cxorbia-live-hr-dev-00389-p4r",
+    "servedDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
+    "servedHosting": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
+    "servedReceipt": "docs/checkpoints/CXORBIA_I3_RUN2767_F3_SAME_ARTIFACT_ENV_PASS_20261124.json"
+  },
+  "liveReproduction": {
+    "runId": 45386193183,
+    "runNumber": 2768,
+    "jobId": 138418124341,
+    "qaOwner": "f3-qa-45386193183-1",
+    "tenantId": "tya",
+    "projectId": "f3-qa-20261124",
+    "periodId": "f3-qa-20261124-2026-11",
+    "sourceRevision": "fa89c4b7e02fab97cb5c932e832ede7712d02cf698da47bc50fbb3c1508106d0",
+    "receiptPath": "tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40",
+    "runnerFailure": "PERSISTENCE_FAILURE:F3_QA_RECONCILE_ACK",
+    "shopperStage": {
+      "ok": false,
+      "code": "SHOPPER_HR_NAME_REVISION_MISMATCH"
+    },
+    "visitStage": {
+      "ok": true,
+      "status": "committed",
+      "providerWrites": 2,
+      "createdVisits": 2,
+      "hrWrites": 0,
+      "externalWrites": 0
+    },
+    "events": 0,
+    "cases": 0,
+    "cleanup": {
+      "auth": true,
+      "firestore": false,
+      "currentLockNotYetObserved": true
+    },
+    "receiptSha256": "89bd49c65e0bab70ff9224797ca04413696ac326ecaa3679f76bf01bf63667c8",
+    "healthSha256": "ef496b87f098af7b86043f839a598b47de16478de1fc2debd9e23a3fa1bc0430"
+  },
+  "provenDefect": "Excel reader emits its provider-read hash in snapshot.sourceRevision and snapshot.source.sourceRevision. Runtime materialize computes a distinct snapshot-plus-private-identity hash as current.revision but leaves top-level sourceRevision unchanged. The reconciler correctly binds the command to current.revision; canonicalHrNameEvidence then correctly rejects the different snapshot.sourceRevision, including an empty shopper cohort. This is a revision-namespace mismatch at materialize, not bad synthetic names, a credential problem or a Make writer failure.",
+  "minimalCorrection": "Only server.mjs::materialize: for excel_online, validate/preserve raw provider hash at source.sourceRevision; normalize top-level sourceRevision to that raw hash only for canonical hash calculation; publish top-level sourceRevision equal to current.revision in the returned snapshot/JSON. This preserves the previous runtime hash and makes rematerialization of a stored canonical snapshot idempotent. Keep shopper same-revision guard unchanged.",
+  "regressionGate": {
+    "targetPath": "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs",
+    "portable": true,
+    "historicalFailureExplicitlyReconstructed": true,
+    "beforeResult": {
+      "pass": 2,
+      "fail": 1,
+      "expectedFailure": "top-level snapshot revision differs from runtime command revision"
+    },
+    "proposalAfterResult": {
+      "pass": 3,
+      "fail": 0,
+      "scope": "offline exact proposed materializer + real Excel mapper + real shopper provider; not deployed"
+    },
+    "invariants": [
+      "runtime digest equal to historical digest for the same raw Excel snapshot and private identity",
+      "canonical snapshot rematerialization preserves revision and JSON",
+      "raw provider hash preserved at source.sourceRevision",
+      "same-revision empty shopper reconciliation succeeds with zero Auth/Firestore writes",
+      "genuine revision mismatch remains rejected",
+      "timestamps excluded; HR/identity changes affect revision",
+      "other provider adapter payload unchanged"
+    ]
+  },
+  "cleanupPrerequisite": {
+    "classification": "PERSISTENCE_FAILURE",
+    "cause": "Runner deleted scoped QA subtree/receipt before checking tenant lock; partial lock fails committed-only guard. Baseline lock was not persisted.",
+    "action": "Existing F3 runner --f3-inspect-run2768 through the existing workflow; root reviews exact current lock plus 15 bounded expected paths/absence and current lock digest before any CAS cleanup. No guessed baseline, no retry before cleanup.",
+    "historicalBaselineAvailable": false,
+    "guardWeakeningAllowed": false
+  },
+  "separateProviderBlocker": {
+    "runNumber": 2769,
+    "classification": "PROVIDER_FAILURE",
+    "cause": "Make organization4090072 paused at14067 consumed versus14000 capacity, unusedOperations -67; independent from this source defect.",
+    "evidenceProposal": "RUN2769_MAKE_ORG_QUOTA_READONLY.json"
+  },
+  "allowedProductPaths": [
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs"
+  ],
+  "doNotModify": [
+    "shopper revision guard",
+    "Make scenario writer configuration",
+    "original operational Excel rows",
+    "production hosting"
+  ],
+  "repositoryWritesByAgent": 0,
+  "providerWritesByAgent": 0,
+  "ciRunsByAgent": 0,
+  "rootSoleWriter": true,
+  "modulePromotion": false,
+  "productionAuthorized": false,
+  "nextExactAction": "Root records VRM-370 precode evidence, integrates materialize hunk with the existing HR/mail cumulative source package, executes portable regression, certifies/deploys through existing lane. Independently inspect/clear only the proved RUN2768 orphan lock and restore Make capacity; then one fresh HR read before D08/F3 retry.",
+  "rootApplicationHead": "123d62ea1664f0d7b70be254da34998faa519175",
+  "rootRecordedAt": "2026-11-24T12:10:52.297227+00:00",
+  "allowedProductFiles": [
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs"
+  ],
+  "currentCleanupEvidence": {
+    "inspectionRun": 2770,
+    "inspectionReceipt": "docs/checkpoints/CXORBIA_I3_RUN2770_F3_ORPHAN_INSPECTION_RECEIPT_20261124.json",
+    "cleanupRun": 2771,
+    "cleanupState": "IN_PROGRESS_NOT_CLAIMED_COMPLETE"
+  }
+}

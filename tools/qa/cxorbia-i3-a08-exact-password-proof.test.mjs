@@ -2,11 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import {a08ServedInventory} from './cxorbia-i3-a08-current-artifact-pin.mjs';
 import {finalDecision} from '../../firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs';
 import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS,A08_USER_ADMIN_PATH} from './cxorbia-i3-a08-exact-password-proof.mjs';
 const password='QA-only-not-a-real-secret';
 const hash=crypto.createHash('sha256').update(password).digest('hex');
 const base={expected:{ok:true,login:'canonical.name',password},visibleLogin:'existing.alias',sealedHashes:[hash]};
+function artifactFixture(){
+  const inventory=a08ServedInventory(Object.fromEntries(Array.from({length:47},(_,i)=>['core/asset'+i+'.js','e'.repeat(64)])));
+  const pin={sourceSha:'source',sourceTree:'tree',runtimeRevision:'r',runtimeDigest:'d',hostingVersion:'h',firestoreRuleset:'f',receiptPath:'p',receiptGitBlob:'b',controlHead:'control',...inventory};
+  const base={...pin,decision:'PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT',storageRuleset:'s',servedAssetsMatch:47};
+  return {pin,before:{...base,phase:'before',servedAssetsFetchedThisPhase:47,assetReadbackMode:'CURRENT_HOSTING_FETCH'},after:{...base,phase:'after',servedAssetsFetchedThisPhase:0,assetReadbackMode:'REUSED_BEFORE_ON_IDENTICAL_FINALIZED_HOSTING_VERSION'}};
+}
+
 test('exact RUN2222 alias may use only its sealed proven password, without claiming canonization',()=>{
   for(const shopperId of A08_PASSWORD_EXCEPTION_IDS){
     const r=assessExactPasswordProof({...base,shopperId});
@@ -41,14 +49,13 @@ test('API probe follows the existing Hosting rewrite and server route',()=>{
 });
 
 test('password/API focal result remains HOLD for Storage, and cannot promote full scope',()=>{
-  const base={decision:'PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT',sourceSha:'source',sourceTree:'tree',runtimeRevision:'r',runtimeDigest:'d',hostingVersion:'h',firestoreRuleset:'f',storageRuleset:'s',receiptPath:'p',receiptGitBlob:'b'};
-  const before={...base,servedAssetsMatch:41},after={...base,phase:'after'};
+  const {pin,before,after}=artifactFixture();
   const result={sourceSha:'source',scope:{executionMode:'PASSWORD_API_ONLY'},passwordProofs:A08_PASSWORD_EXCEPTION_IDS.map(shopperId=>({shopperId,pass:true})),apiProofs:Array.from({length:4},()=>({pass:true})),storageProof:{pass:false,skipped:true},errors:[]};
-  const focal=finalDecision(result,before,after);
+  const focal=finalDecision(result,before,after,pin);
   assert.equal(focal.requestedScopePass,true);assert.equal(focal.pass,false);assert.equal(focal.storage,false);
-  result.scope.executionMode='PASSWORD_API_STORAGE';assert.equal(finalDecision(result,before,after).requestedScopePass,false);
-  result.scope.executionMode='PASSWORD_API_ONLY';result.passwordProofs[0].pass=false;assert.equal(finalDecision(result,before,after).requestedScopePass,false);
-  result.passwordProofs[0].pass=true;after.hostingVersion='changed';assert.equal(finalDecision(result,before,after).requestedScopePass,false);
+  result.scope.executionMode='PASSWORD_API_STORAGE';assert.equal(finalDecision(result,before,after,pin).requestedScopePass,false);
+  result.scope.executionMode='PASSWORD_API_ONLY';result.passwordProofs[0].pass=false;assert.equal(finalDecision(result,before,after,pin).requestedScopePass,false);
+  result.passwordProofs[0].pass=true;after.hostingVersion='changed';assert.equal(finalDecision(result,before,after,pin).requestedScopePass,false);
 });
 
 const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
@@ -103,8 +110,8 @@ test('legacy seal follows exact import UID, not a different record sharing the p
   assert.deepEqual(sameKeeperSealedHashes([row],'different-uid'),[]);
 });
 test('password-only focal proof does not repeat or manufacture current API/Storage evidence',()=>{
-  const base={decision:'PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT',sourceSha:'source',sourceTree:'tree',runtimeRevision:'r',runtimeDigest:'d',hostingVersion:'h',firestoreRuleset:'f',storageRuleset:'s',receiptPath:'p',receiptGitBlob:'b'};
+  const {pin,before,after}=artifactFixture();
   const result={sourceSha:'source',scope:{executionMode:'PASSWORD_ONLY'},passwordProofs:A08_PASSWORD_EXCEPTION_IDS.map(shopperId=>({shopperId,pass:true})),apiProofs:[],storageProof:null,errors:[]};
-  const r=finalDecision(result,{...base,servedAssetsMatch:41},{...base,phase:'after'});
+  const r=finalDecision(result,before,after,pin);
   assert.equal(r.requestedScopePass,true);assert.equal(r.pass,false);assert.equal(r.apis,false);assert.equal(r.storage,false);
 });

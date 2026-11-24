@@ -2,11 +2,14 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import {mailError,openPopSession,mailboxAccountKey,uidlMessageId,sealCredential,unsealCredential,MAX_MESSAGE_BYTES} from './mailbox-pop3.mjs';
 
+import {safeMessageId} from './mailbox-smtp.mjs';
+import {dispatchOutgoing,outgoingStatus,smtpEnabled} from './mailbox-outbound.mjs';
+
 const POLICY=JSON.parse(fs.readFileSync(new URL('../../config/mailbox-provider-policy.source-safe.json',import.meta.url),'utf8'));
-const PREFIX=/^\/api\/tenants\/([a-zA-Z0-9_-]{1,80})\/mailboxes\/self(?:\/(status|connect|disconnect|sync|messages)(?:\/([a-f0-9]{64}))?)?$/;
+const PREFIX=/^\/api\/tenants\/([a-zA-Z0-9_-]{1,80})\/mailboxes\/self(?:\/(status|connect|disconnect|sync|messages|send|reply|outbox)(?:\/([a-f0-9]{64}))?)?$/;
 const ALLOWED_ROLES=new Set(['super','admin','ops','coordinador','cliente','shopper']);
-const MAX_BODY=16*1024;
-const SAFE_CODES=new Set(['MAIL_AUTH_REQUIRED','MAIL_SESSION_INVALID','MAIL_MEMBERSHIP_DENIED','MAIL_DISABLED','MAIL_ENCRYPTION_KEY_REQUIRED','MAIL_PROVIDER_NOT_ALLOWED','MAIL_EMAIL_NOT_ALLOWED','MAIL_CREDENTIAL_FORMAT_INVALID','MAIL_BODY_TOO_LARGE','MAIL_BODY_INVALID','MAIL_AUTH_FAILED','MAIL_TLS_FAILED','MAIL_TLS_CERTIFICATE_INVALID','MAIL_TLS_TIMEOUT','MAIL_DNS_FAILED','MAIL_PUBLIC_HOST_REQUIRED','MAIL_PROVIDER_TIMEOUT','MAIL_PROVIDER_REJECTED','MAIL_UIDL_INVALID','MAIL_LIST_INVALID','MAIL_RESPONSE_TOO_LARGE','MAIL_SYNC_BUSY','MAIL_NOT_CONNECTED','MAIL_CONNECTION_CHANGED','MAIL_MESSAGE_NOT_FOUND','MAIL_MESSAGE_TOO_LARGE','MAIL_SYNC_COOLDOWN','MAIL_SEND_DISABLED','MAIL_MIME_INVALID','MAIL_CREDENTIAL_UNSEAL_FAILED','MAIL_CONFIG_CONFLICT','MAIL_REQUEST_SCOPE_INVALID']);
+const MAX_BODY=128*1024;
+const SAFE_CODES=new Set(['MAIL_AUTH_REQUIRED','MAIL_SESSION_INVALID','MAIL_MEMBERSHIP_DENIED','MAIL_DISABLED','MAIL_ENCRYPTION_KEY_REQUIRED','MAIL_PROVIDER_NOT_ALLOWED','MAIL_EMAIL_NOT_ALLOWED','MAIL_CREDENTIAL_FORMAT_INVALID','MAIL_BODY_TOO_LARGE','MAIL_BODY_INVALID','MAIL_AUTH_FAILED','MAIL_TLS_FAILED','MAIL_TLS_CERTIFICATE_INVALID','MAIL_TLS_TIMEOUT','MAIL_DNS_FAILED','MAIL_PUBLIC_HOST_REQUIRED','MAIL_PROVIDER_TIMEOUT','MAIL_PROVIDER_REJECTED','MAIL_UIDL_INVALID','MAIL_LIST_INVALID','MAIL_RESPONSE_TOO_LARGE','MAIL_SYNC_BUSY','MAIL_NOT_CONNECTED','MAIL_CONNECTION_CHANGED','MAIL_MESSAGE_NOT_FOUND','MAIL_MESSAGE_TOO_LARGE','MAIL_SYNC_COOLDOWN','MAIL_SEND_DISABLED','MAIL_MIME_INVALID','MAIL_CREDENTIAL_UNSEAL_FAILED','MAIL_CONFIG_CONFLICT','MAIL_REQUEST_SCOPE_INVALID','MAIL_RECIPIENT_INVALID','MAIL_IDEMPOTENCY_INVALID','MAIL_IDEMPOTENCY_CONFLICT','MAIL_OUTGOING_BODY_INVALID','MAIL_SUBJECT_INVALID','MAIL_REPLY_TRACE_INVALID','MAIL_SEND_RECORD_UNAVAILABLE','MAIL_DUPLICATE_UNRESOLVED']);
 const hash=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
 export function isMailboxRuntimePath(pathname){return pathname.includes('/mailboxes/')&&pathname.startsWith('/api/tenants/');}
 export function validateMailboxIdentity(decoded,member,tenantId){
@@ -18,7 +21,7 @@ export function validateMailboxIdentity(decoded,member,tenantId){
 export function validateMailboxInput(body,providers){
   if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).some(key=>!['providerId','emailAddress','password'].includes(key)))throw mailError('MAIL_REQUEST_SCOPE_INVALID',400);
   const provider=providers.find(row=>row.id===body.providerId);
-  if(!provider||provider.providerType!=='pop3_smtp_generic'||provider.port!==995||provider.security!=='implicit_tls'||provider.smtpPort!==465||provider.smtpSecurity!=='implicit_tls'||provider.sendEnabled!==false||provider.deleteEnabled!==false)throw mailError('MAIL_PROVIDER_NOT_ALLOWED',400);
+  if(!provider||provider.providerType!=='pop3_smtp_generic'||provider.port!==995||provider.security!=='implicit_tls'||provider.smtpPort!==465||provider.smtpSecurity!=='implicit_tls'||typeof provider.sendEnabled!=='boolean'||provider.deleteEnabled!==false)throw mailError('MAIL_PROVIDER_NOT_ALLOWED',400);
   const username=String(body.emailAddress||'').trim().toLowerCase();
   if(!/^[^\s@\r\n\0]+@[^\s@\r\n\0]+$/.test(username)||username.length>320||!provider.allowedEmailDomains.includes(username.split('@')[1]))throw mailError('MAIL_EMAIL_NOT_ALLOWED',400);
   if(typeof body.password!=='string'||!body.password.length||body.password.length>1024||/[\r\n\0]/.test(body.password))throw mailError('MAIL_CREDENTIAL_FORMAT_INVALID',400);
@@ -39,7 +42,7 @@ export async function parseMailboxMessage(raw,withBody=false){
     const {default:PostalMime}=await import('postal-mime');
     const mail=await PostalMime.parse(raw,{maxNestingDepth:32,maxHeadersSize:512*1024,maxPartCount:500,maxRfc822NestingDepth:0,maxForwardedAddresses:1000,forceRfc822Attachments:true});
     const date=Date.parse(mail.date||'');
-    const result={subject:clean(mail.subject,1000)||'(Sin asunto)',fromName:clean(mail.from?.name),fromAddress:clean(mail.from?.address),to:(mail.to||[]).slice(0,50).map(row=>({name:clean(row.name),address:clean(row.address)})),date:Number.isFinite(date)?new Date(date).toISOString():null,messageId:clean(mail.messageId,1000)};
+    const result={subject:clean(mail.subject,1000)||'(Sin asunto)',fromName:clean(mail.from?.name),fromAddress:clean(mail.from?.address),to:(mail.to||[]).slice(0,50).map(row=>({name:clean(row.name),address:clean(row.address)})),date:Number.isFinite(date)?new Date(date).toISOString():null,messageId:clean(mail.messageId,1000),replyTo:(mail.replyTo||[]).slice(0,20).map(row=>({name:clean(row.name),address:clean(row.address)})),references:(String(mail.references||'').match(/<[^>]*>/g)||[]).filter(safeMessageId).slice(-10)};
     if(withBody){result.text=clean(mail.text||htmlToPlain(mail.html),MAX_MESSAGE_BYTES);result.attachments=(mail.attachments||[]).slice(0,100).map(row=>({filename:clean(row.filename,200),mimeType:clean(row.mimeType,100),bytes:row.content?.byteLength||0,downloadAvailable:false}));result.bodyComplete=true;}
     return result;
   }catch(error){throw mailError('MAIL_MIME_INVALID');}
@@ -64,8 +67,8 @@ function key(){const value=String(process.env.CXORBIA_MAILBOX_CREDENTIAL_KEY_B64
 function refs(p){const mailbox=p.db.doc(`tenants/${p.tenantId}/users/${p.uid}/mailboxes/primary`);return {mailbox,secret:mailbox.collection('private').doc('credential')};}
 function messageRefs(p,accountKey){return refs(p).mailbox.collection('accounts').doc(accountKey).collection('messages');}
 function publicStatus(meta,providers,enabled){
-  const connected=meta?.connectionStatus==='connected';
-  return {mailboxId:'primary',emailAddress:meta?.emailAddress||null,providerId:meta?.providerId||null,providerType:meta?.providerType||null,connectionStatus:meta?.connectionStatus||'not_configured',enabled,canRead:enabled&&connected,canSend:false,canDeleteFromServer:false,leaveOnServer:true,lastSyncAt:meta?.lastSyncAt||null,lastError:meta?.lastError||null,providerMessageCount:meta?.providerMessageCount??null,hasOlder:meta?.hasOlder===true,providers:providers.map(row=>({id:row.id,label:row.label,host:row.host,port:row.port,security:row.security,smtpHost:row.smtpHost,smtpPort:row.smtpPort,smtpSecurity:row.smtpSecurity})),syncMode:'POP3_UIDL_POLL',outboundStatus:'disabled',localOutlookFoldersImported:false};
+  const connected=meta?.connectionStatus==='connected',canSend=enabled&&smtpEnabled(meta,providers);
+  return {mailboxId:'primary',emailAddress:meta?.emailAddress||null,providerId:meta?.providerId||null,providerType:meta?.providerType||null,connectionStatus:meta?.connectionStatus||'not_configured',enabled,canRead:enabled&&connected,canSend,canViewOutbox:Boolean(meta?.accountKey),canDeleteFromServer:false,leaveOnServer:true,lastSyncAt:meta?.lastSyncAt||null,lastError:meta?.lastError||null,providerMessageCount:meta?.providerMessageCount??null,hasOlder:meta?.hasOlder===true,providers:providers.map(row=>({id:row.id,label:row.label,host:row.host,port:row.port,security:row.security,smtpHost:row.smtpHost,smtpPort:row.smtpPort,smtpSecurity:row.smtpSecurity})),syncMode:'POP3_UIDL_POLL',outboundStatus:canSend?'available':'activation_pending',localOutlookFoldersImported:false};
 }
 export function assertSameLease(meta,lease){if(meta?.generation!==lease.generation||meta?.leaseId!==lease.id||meta?.accountKey!==lease.accountKey||meta?.connectionStatus!=='connected')throw mailError('MAIL_CONNECTION_CHANGED',409);}
 async function acquire(p,{cooldown=false}={}){
@@ -154,7 +157,7 @@ async function listMessages(p,url){
   const snap=await query.get();const current=(await refs(p).mailbox.get()).data();
   if(current?.generation!==meta.generation||current?.connectionStatus!=='connected')throw mailError('MAIL_CONNECTION_CHANGED',409);
   const rows=snap.docs.slice(0,50).map(doc=>doc.data());
-  const last=rows.at(-1);return {messages:rows,nextCursor:snap.docs.length>50&&last?last.sortTime+':'+last.id:null,canSend:false};
+  const last=rows.at(-1);return {messages:rows,nextCursor:snap.docs.length>50&&last?last.sortTime+':'+last.id:null};
 }
 async function readMessage(p,id){
   const lease=await acquire(p),ref=messageRefs(p,lease.accountKey).doc(id);
@@ -168,7 +171,7 @@ async function readMessage(p,id){
       return {...stored,...await parseMailboxMessage(await pop.retrieve(row.number),true),providerPresent:true};
     });
     const {mailbox}=refs(p);
-    await p.db.runTransaction(async tx=>{const meta=(await tx.get(mailbox)).data();assertSameLease(meta,lease);tx.update(ref,{read:true,providerPresent:result.providerPresent,presenceCheckedAt:new Date().toISOString(),...(Buffer.byteLength(result.text||'')<600000?{text:result.text||'',attachments:result.attachments||[],bodyComplete:true}:{}),readAt:new Date().toISOString()});tx.update(mailbox,{leaseId:null,leaseUntil:0});});
+    await p.db.runTransaction(async tx=>{const meta=(await tx.get(mailbox)).data();assertSameLease(meta,lease);tx.update(ref,{read:true,providerPresent:result.providerPresent,presenceCheckedAt:new Date().toISOString(),...(Buffer.byteLength(result.text||'')<600000?{text:result.text||'',attachments:result.attachments||[],replyTo:result.replyTo||[],references:result.references||[],bodyComplete:true}:{}),readAt:new Date().toISOString()});tx.update(mailbox,{leaseId:null,leaseUntil:0});});
     const {uidl,...visible}=result;return {...visible,read:true};
   }catch(error){await release(p,lease).catch(()=>{});throw error;}
 }
@@ -183,8 +186,10 @@ export async function maybeHandleMailboxRequest(req,res,url){
     if(req.method==='GET'&&action==='status'&&!id){let configured=false;try{key();configured=true;}catch{}
       send(res,200,{ok:true,...publicStatus((await refs(p).mailbox.get()).data(),providers,enabled&&configured),setupRequired:!enabled?'CXORBIA_USER_MAILBOX_ENABLED':!configured?'CXORBIA_MAILBOX_CREDENTIAL_KEY_B64':null});return true;}
     if(req.method==='POST'&&action==='disconnect'&&!id){const {mailbox,secret}=refs(p);await p.db.runTransaction(async tx=>{await tx.get(mailbox);tx.delete(secret);tx.set(mailbox,{connectionStatus:'revoked',canRead:false,canSend:false,generation:crypto.randomUUID(),leaseId:null,leaseUntil:0,updatedAt:new Date().toISOString()},{merge:true});});send(res,200,{ok:true,connectionStatus:'revoked',providerAccountDeleted:false,remoteMessagesDeleted:0});return true;}
+    if(req.method==='GET'&&action==='outbox'){send(res,200,{ok:true,...await outgoingStatus(p,id||null)});return true;}
     if(!enabled)throw mailError('MAIL_DISABLED',503);key();
     if(req.method==='GET'&&action==='messages'){send(res,200,{ok:true,...(id?{message:await readMessage(p,id)}:await listMessages(p,url))});return true;}
+    if(req.method==='POST'&&!id&&['send','reply'].includes(action)){const body=await readJson(req);send(res,200,{ok:true,...await dispatchOutgoing(p,body,action,providers,{credentialKey:key()})});return true;}
     if(req.method==='POST'&&!id&&['connect','sync'].includes(action)){const body=await readJson(req);try{send(res,200,{ok:true,...(action==='connect'?await connect(p,body,providers):await sync(p,body))});}finally{if(Object.hasOwn(body,'password'))body.password='';}return true;}
     send(res,405,{ok:false,error:'MAIL_METHOD_NOT_ALLOWED',canSend:false});return true;
   }catch(error){send(res,error.status||502,{ok:false,error:SAFE_CODES.has(error.code)?error.code:'MAIL_PROVIDER_FAILED',canSend:false});return true;}

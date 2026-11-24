@@ -20,7 +20,18 @@ const suites=[
   'tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs',
   'tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs',
   'tools/qa/cxorbia-i3-vrm369-finance-metadata.test.mjs',
-  'backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs'
+  'backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs',
+  'backend/runtime/hr-live-service/test/hr-read-model.test.mjs',
+  'backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs',
+  'backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs',
+  'tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs',
+  'backend/runtime/hr-live-service/test/mailbox-user-smtp.test.mjs',
+  'backend/runtime/hr-live-service/test/mailbox-user-mail-ui.test.mjs',
+  'tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs',
+  'tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs',
+  'tools/qa/cxorbia-i3-finance-advance-metadata.test.mjs',
+  'tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs',
+  'tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs'
 ];
 const test=spawnSync(process.execPath,['--test','--test-reporter=tap',...suites],{encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});
 const log=(test.stdout||'')+(test.stderr||'');fs.writeFileSync(path.join(out,'f3-review-mail-source.tap'),log);

@@ -20,6 +20,7 @@ import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.
 import { readExcelPeriodThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
 import {HR_WRITABLE_VISIT_FIELDS} from '../cxorbia-operational-command-provider-v1.mjs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot,authorizedHrReviewObservation} from '../cxorbia-excel-operational-snapshot-v1.mjs';
+import {createDurableHrReadModel,hrReadModelKey} from './hr-read-model.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -60,6 +61,53 @@ let lastRefreshStagesMs=null;
 let lastRefreshProviderReads=null;
 let lastShopperReconciliation=null;
 let lastVisitReconciliation=null;
+let durableHrStore=null,hrReaderOwnersFingerprint=null,lastReadModelPersistence=null,lastReadModelError=null;
+const HR_READ_MODEL_MAX_AGE_MS=24*60*60*1000;
+function durableHrReadContext(binding){
+  if(!hrReaderOwnersFingerprint){
+    const owners=['backend/runtime/hr-live-service/server.mjs','backend/runtime/hr-live-service/hr-read-model.mjs',
+      'backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs','backend/runtime/cxorbia-country-hr-binding-v1.mjs',
+      'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-canonical-visit-state-r20.mjs'];
+    hrReaderOwnersFingerprint=crypto.createHash('sha256').update(JSON.stringify(
+      owners.map(name=>[name,crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT,name))).digest('hex')]))).digest('hex');
+  }
+  // Only immutable source bytes are process-cached. Mapping belongs to this
+  // resolved binding: another project/adapter must never inherit the first one.
+  const mapping=loadExcelMappingLibrary(binding.mappingRef);
+  const readerFingerprint=crypto.createHash('sha256').update(JSON.stringify({schema:'cxorbia.hr-read-model.v1',
+    ownersFingerprint:hrReaderOwnersFingerprint,mappingRef:binding.mappingRef,mapping})).digest('hex');
+  durableHrStore||=createDurableHrReadModel({db:ensureAdmin().db,maxAgeMs:HR_READ_MODEL_MAX_AGE_MS});
+  return {store:durableHrStore,key:hrReadModelKey(binding,readerFingerprint)};
+}
+async function persistHrReadModel(scope,current){
+  // Called only after protected authentication and source observation both pass.
+  const binding=await resolveProjectHrReadBinding(scope);
+  if(binding.proof.bindingFingerprint!==current.bindingProof?.bindingFingerprint)
+    throw Error('MAPPING_FAILURE:HR_BINDING_CHANGED_BEFORE_READ_MODEL_PUBLISH');
+  try{const {store,key}=durableHrReadContext(binding);lastReadModelPersistence={...await store.publish(key,current),bindingFingerprint:binding.proof.bindingFingerprint};lastReadModelError=null;}
+  catch{lastReadModelPersistence={published:false,reason:'read_model_persistence_unavailable',bindingFingerprint:binding.proof.bindingFingerprint};lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_WRITE';}
+  return lastReadModelPersistence;
+}
+async function recoverHrReadModel(binding){
+  let current;
+  const age=cache?Date.now()-cache.loadedAt:Infinity;
+  if(cache?.bindingProof?.bindingFingerprint===binding.proof.bindingFingerprint&&
+      ['runtime_excel_online_original','durable_internal_snapshot'].includes(cache.origin)&&age>=0&&age<=HR_READ_MODEL_MAX_AGE_MS)
+    current={...cache,externalReadCurrent:false};
+  else{
+    const {store,key}=durableHrReadContext(binding),saved=await store.read(key);
+    if(!saved)return null;
+    // materialize is the sole revision owner; rehydration must reproduce it.
+    const reconstructed=materialize(saved.snapshot,saved.origin,saved.identity,saved.privateReviewNotes);
+    if(reconstructed.revision!==saved.revision)throw Error('PERSISTENCE_FAILURE:HR_READ_MODEL_REVISION');
+    current={...reconstructed,...saved};
+  }
+  const after=await resolveProjectHrReadBinding(binding.scope);
+  if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)
+    throw Error('MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ_MODEL_RECOVERY');
+  cache=current;
+  return current;
+}
 
 function parseHrSourceFailure(stderr,script){
   if(!['tools/hr-source/tya-live-provider-registry-identity-dev.mjs','tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'].includes(script))return null;
@@ -123,11 +171,26 @@ function stableRevisionValue(value){
 }
 
 function materialize(snapshot,origin,identity=new Map(),privateReviewNotes=new Map()){
-  const json=JSON.stringify(snapshot);
+  const excelOriginal=snapshot.source?.providerType==='excel_online';
+  if(excelOriginal&&!/^[a-f0-9]{64}$/.test(snapshot.source.sourceRevision||''))
+    throw Error('MAPPING_FAILURE:EXCEL_SOURCE_REVISION_REQUIRED');
+  // Reconstruct the reader's hash input even if this is a previously
+  // materialized durable snapshot. The runtime revision is never self-hashed.
+  const hashSnapshot=excelOriginal
+    ? {...snapshot,sourceRevision:snapshot.source.sourceRevision}
+    : snapshot;
   const identityStable=[...identity.entries()].sort((a,b)=>String(a[0]).localeCompare(String(b[0]))).map(([id,value])=>[id,stableRevisionValue(value)]);
-  const stableJson=JSON.stringify({snapshot:stableRevisionValue(snapshot),shopperIdentity:identityStable});
+  const stableJson=JSON.stringify({snapshot:stableRevisionValue(hashSnapshot),shopperIdentity:identityStable});
   const revision=crypto.createHash('sha256').update(stableJson).digest('hex');
-  return {snapshot,json,revision,loadedAt:Date.now(),origin,identity,privateReviewNotes};
+  // Excel exposes a provider-read digest at source.sourceRevision. The command
+  // authority is the materialized snapshot plus its private exact identity.
+  // Bind the public top-level revision to that same authority, without changing
+  // the hash input or mutating the reader snapshot / provider provenance.
+  const runtimeSnapshot=excelOriginal
+    ? {...snapshot,sourceRevision:revision}
+    : snapshot;
+  const json=JSON.stringify(runtimeSnapshot);
+  return {snapshot:runtimeSnapshot,json,revision,loadedAt:Date.now(),origin,identity,privateReviewNotes};
 }
 
 function operationalSnapshot(current){
@@ -400,7 +463,7 @@ async function attachHrFieldEditingCapability(snapshot,principal,sourceRevision)
 
 async function protectedPlatformState(current,principal,scope,operational){
   const snapshot=operational?operationalSnapshot(current):JSON.parse(JSON.stringify(current.snapshot));
-  await attachHrFieldEditingCapability(snapshot,principal,current.revision);
+  if(current.externalReadCurrent!==false)await attachHrFieldEditingCapability(snapshot,principal,current.revision);
   /* I3 P0: independent scoped Firestore authority reads run concurrently for one verified principal. */
   const tenantRef=principal.db.collection('tenants').doc(scope.tenantId);
   const projectRef=tenantRef.collection('projects').doc(scope.projectId);
@@ -441,7 +504,7 @@ async function protectedPlatformState(current,principal,scope,operational){
     if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
     const observation=authorizedHrReviewObservation({visit,scope,privateReviewNotes:current.privateReviewNotes,
       principal:{...principal,canonicalShopperId:cross.get(principal.shopperId)||principal.shopperId}});
-    if(observation!==null)visit.hrReviewObservation=observation;
+    if(observation!==null&&(current.externalReadCurrent!==false||principal.role!=='shopper'))visit.hrReviewObservation=observation;
   }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
@@ -566,6 +629,7 @@ async function refreshSnapshot(binding){
       const next=materialize(current,'runtime_excel_online_original',source.identity,source.privateReviewNotes);
       next.bindingProof={...binding.proof,readerCount:source.proof.periodReads,
         runtimeConsumptionVerified:true,sourceRevision:source.proof.sourceRevision,rawRowsExposed:false};
+      next.sourceReadStartedAt=started;next.externalReadCurrent=true;
       cache=next;
       lastRefreshStagesMs={...stagesMs};
       lastRefreshProviderReads={excelOnlineOriginal:{periodReads:source.proof.periodReads,
@@ -641,7 +705,7 @@ async function refreshSnapshot(binding){
   }
 }
 
-async function buildSnapshot({forceFresh=false,scope}={}){
+async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={}){
   let binding=await resolveProjectHrReadBinding(scope);
   if(inFlight&&inFlightBinding!==binding.proof.bindingFingerprint){
     // A previous source owner must finish before this request can use the
@@ -651,10 +715,20 @@ async function buildSnapshot({forceFresh=false,scope}={}){
     binding=await resolveProjectHrReadBinding(scope);
   }
   if(forceFresh)return refreshSnapshot(binding);
-  if(cache?.origin==='build_bootstrap')return refreshSnapshot(binding);
-  if(cache?.bindingProof?.bindingFingerprint!==binding.proof.bindingFingerprint)return refreshSnapshot(binding);
-  const age=cache?Date.now()-cache.loadedAt:Infinity;
+  const matches=cache?.origin!=='build_bootstrap'&&cache?.bindingProof?.bindingFingerprint===binding.proof.bindingFingerprint;
+  const age=matches&&cache.externalReadCurrent!==false?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
+  // Only an explicit presentation request may recover a last-confirmed view.
+  // Commands, certification and ordinary provider probes keep the strict path.
+  if(allowDurableRead&&binding.proof.providerType==='excel_online'){
+    try{
+      const recovered=await recoverHrReadModel(binding);
+      if(recovered)return recovered;
+    }catch(error){
+      if(!String(error?.message||'').startsWith('PERSISTENCE_FAILURE:HR_READ_MODEL_'))throw error;
+      lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_RECOVERY';
+    }
+  }
   /* Expired data is never served as current: wait for a fresh source-safe read. */
   return refreshSnapshot(binding);
 }
@@ -662,7 +736,9 @@ async function buildSnapshot({forceFresh=false,scope}={}){
 async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequested){
   const startedAt=Date.now();
   const hrStartedAt=Date.now();
-  const hrTask=buildSnapshot({forceFresh,scope}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
+  const readModelRequested=protectedRequested&&new URL(req.url||'/', 'http://internal.invalid').searchParams.get('readModel')==='1';
+  const allowDurableRead=readModelRequested&&!forceFresh;
+  const hrTask=buildSnapshot({forceFresh,scope,allowDurableRead}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
   if(!protectedRequested){
     const hr=await hrTask;
     return {current:hr.current,principal:null,timing:{hrWaitMs:hr.hrWaitMs}};
@@ -671,8 +747,13 @@ async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequ
   const principalStartedAt=Date.now();
   const principalTask=verifiedProtectedPrincipal(req,scope).then(principal=>({principal,principalVerifyMs:Date.now()-principalStartedAt}));
   const [hr,identity]=await Promise.all([hrTask,principalTask]);
+  // Neither concurrent task writes. Only the authenticated presentation caller
+  // may persist a verified external read; commands/anonymous/probes do not opt in.
+  const current=readModelRequested&&identity.principal?.uid&&hr.current.externalReadCurrent===true
+    &&hr.current.origin==='runtime_excel_online_original'
+    ? {...hr.current,readModelWriteAck:await persistHrReadModel(scope,hr.current)}:hr.current;
   return {
-    current:hr.current,principal:identity.principal,
+    current,principal:identity.principal,
     timing:{hrWaitMs:hr.hrWaitMs,principalVerifyMs:identity.principalVerifyMs,parallelWaitMs:Date.now()-startedAt}
   };
 }
@@ -690,6 +771,13 @@ function runtimeMeta(current){
     revisionStable:true,
     generatedAt:current.snapshot.generatedAt,
     sourceReadAt:new Date(current.loadedAt).toISOString(),
+    externalReadCurrent:current.externalReadCurrent!==false,
+    hrFreshness:{state:current.externalReadCurrent===false?'last_confirmed':'current_external_read',
+      externalReadCurrent:current.externalReadCurrent!==false,sourceReadAt:new Date(current.loadedAt).toISOString(),
+      readOnly:current.externalReadCurrent===false,requiresFreshExternalForCommands:true},
+    durableReadModel:current.durableReadModel||null,
+    lastReadModelPersistence:lastReadModelPersistence?.bindingFingerprint===current.bindingProof?.bindingFingerprint?lastReadModelPersistence:null,
+    readModelWriteAck:current.readModelWriteAck||null,readModelPersistenceError:lastReadModelError,
     runtimeRead:true,
     sourceSafe:true,
     projectReadBinding:current.bindingProof||null,
@@ -710,7 +798,9 @@ function runtimeMeta(current){
     refreshError:lastRefreshError,
     shopperReconciliation:lastShopperReconciliation,
     visitReconciliation:lastVisitReconciliation,
-    writes:false,
+    writes:current.readModelWriteAck?.published===true,
+    readModelWrites:current.readModelWriteAck?.published===true,
+    operationalWrites:false,
     hrWrites:false,
     imports:false,
     production:false

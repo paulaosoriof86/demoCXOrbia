@@ -131,6 +131,30 @@ window.CX = window.CX || {};
     }catch(e){}
   }
 
+  function applyHrFreshness(meta){
+    const currentRevision=CX.data?.previewMeta?.sourceRevision||null;
+    const sameRevision=!meta?.revision||!currentRevision||meta.revision===currentRevision;
+    const last=!sameRevision||meta?.externalReadCurrent===false||meta?.hrFreshness?.externalReadCurrent===false;
+    const observed=(sameRevision&&(meta?.sourceReadAt||meta?.hrFreshness?.sourceReadAt))||CX.data?.previewMeta?.sourceReadAt||null;
+    const freshness={state:last?'last_confirmed':'current_external_read',externalReadCurrent:!last,
+      sourceReadAt:observed,readOnly:last,requiresFreshExternalForCommands:true};
+    window.CX_TYA_HR_VIVA_SOURCE_SAFE=!last;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=last;
+    document.documentElement?.setAttribute('data-cx-source',last?'hr-last-confirmed':'hr-live');
+    if(CX.data)CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{hrFreshness:freshness,
+      sourceReadAt:observed,externalReadCurrent:!last,runtimeReadActive:!last,
+      note:last?'Última hoja de ruta sincronizada. La actualización desde Excel está pendiente. Las acciones verifican la fuente antes de guardarse.':'Hoja de ruta confirmada con su fuente; la revisión visible conserva la última lectura verificada.'});
+    if(window.CX_TYA_VISIBLE_DATA_CONTRACT)Object.assign(window.CX_TYA_VISIBLE_DATA_CONTRACT,{hrFreshness:freshness,sourceReadAt:observed,runtimeReadActive:!last,externalReadCurrent:!last});
+    if(window.CX_TYA_HR_LIVE_META)Object.assign(window.CX_TYA_HR_LIVE_META,{hrFreshness:freshness,sourceReadAt:observed,externalReadCurrent:!last});
+    if(CX.dataSource){
+      CX.dataSource.hrFreshness=freshness;CX.dataSource.updatedAt=observed;
+      CX.dataSource.runtimeReadActive=!last;
+      const others=safeArray(CX.dataSource.warnings).filter(x=>!String(x).startsWith('Última sincronización confirmada:'));
+      CX.dataSource.warnings=last?others.concat('Última sincronización confirmada: '+(observed||'no disponible')+'. Se muestra la lectura conservada; la actualización externa está pendiente.'):others;
+    }
+    return freshness;
+  }
+  window.CX_TYA_APPLY_HR_FRESHNESS=applyHrFreshness;
+
   function buildSnapshotCandidate(snapshot,meta={},options={}){
     const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&safeArray(snapshot.periods).length&&safeArray(snapshot.visits).length&&CX.data);
     if(!valid)throw new Error('Snapshot HR live inválido o vacío.');
@@ -176,8 +200,9 @@ window.CX = window.CX || {};
     const projects=safeArray(CX.data.projects),visits=safeArray(CX.data._visitas),shoppers=safeArray(CX.data.shoppers),currentPeriodId=CX.data.currentPeriodId;
     window.CX_TYA_VISIBLE_DATA_CONTRACT={tenantId:candidate.identity.tenantId,rootProjectId:candidate.identity.projectId,projectName:candidate.identity.projectName,periodCount:projects.length,uniquePeriodIds:new Set(projects.map(p=>p.id)).size,visitCount:visits.length,shopperCount:shoppers.length,currentPeriodId,currentPeriodVisits:visits.filter(v=>String(v.periodId)===String(currentPeriodId)).length,sourceRevision:CX.data.previewMeta?.sourceRevision||candidate.meta?.revision||null,sourceReadAt:candidate.meta?.sourceReadAt||null,genericProjectCount:projects.filter(p=>['retail','banca','food'].includes(p.id)).length,sourceSafe:true,operationalIdentityPreview:candidate.snapshot?.operationalIdentityPreview===true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true,atomicPublication:true};
     if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(candidate.snapshot,candidate.meta||{});
+    applyHrFreshness(candidate.meta||{});
     if(CX.clienteData&&typeof CX.clienteData.invalidate==='function')CX.clienteData.invalidate();refreshBadge();
-    document.documentElement.setAttribute('data-cx-tenant',candidate.identity.tenantId);document.documentElement.setAttribute('data-cx-project',candidate.identity.projectId);document.documentElement.setAttribute('data-cx-source','hr-live');
+    document.documentElement.setAttribute('data-cx-tenant',candidate.identity.tenantId);document.documentElement.setAttribute('data-cx-project',candidate.identity.projectId);document.documentElement.setAttribute('data-cx-source',CX.data.previewMeta?.externalReadCurrent===false?'hr-last-confirmed':'hr-live');
     if(options.suppressEvents!==true){if(CX.bus&&typeof CX.bus.emit==='function')CX.bus.emit('visit-flow',{sourceRevision:CX.data.previewMeta?.sourceRevision||null,reason:options.reason||'live_refresh'});try{window.dispatchEvent(new CustomEvent('cx:live-source-updated',{detail:{revision:CX.data.previewMeta?.sourceRevision||null,sourceReadAt:candidate.meta?.sourceReadAt||null,reason:options.reason||'live_refresh'}}));}catch(e){}}
     return {ok:true,revision:CX.data.previewMeta?.sourceRevision||null,periods:projects.length,visits:visits.length,currentPeriodId,operationalIdentityPreview:candidate.snapshot?.operationalIdentityPreview===true,atomicPublication:true};
   }

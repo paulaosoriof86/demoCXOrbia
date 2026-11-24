@@ -6,10 +6,13 @@ WORKDIR /workspace
 COPY backend/runtime/hr-live-service/package.json ./backend/runtime/hr-live-service/package.json
 RUN cd backend/runtime/hr-live-service && npm install --omit=dev --ignore-scripts
 COPY backend/runtime/hr-live-service/server.mjs ./backend/runtime/hr-live-service/server.mjs
+COPY backend/runtime/hr-live-service/hr-read-model.mjs ./backend/runtime/hr-live-service/hr-read-model.mjs
 COPY backend/runtime/hr-live-service/certification-runtime.mjs ./backend/runtime/hr-live-service/certification-runtime.mjs
 COPY backend/runtime/hr-live-service/dev-visual.mjs ./backend/runtime/hr-live-service/dev-visual.mjs
 COPY backend/runtime/hr-live-service/user-admin.mjs ./backend/runtime/hr-live-service/user-admin.mjs
 COPY backend/runtime/hr-live-service/mailbox-runtime.mjs ./backend/runtime/hr-live-service/mailbox-runtime.mjs
+COPY backend/runtime/hr-live-service/mailbox-smtp.mjs ./backend/runtime/hr-live-service/mailbox-smtp.mjs
+COPY backend/runtime/hr-live-service/mailbox-outbound.mjs ./backend/runtime/hr-live-service/mailbox-outbound.mjs
 COPY backend/runtime/hr-live-service/mailbox-pop3.mjs ./backend/runtime/hr-live-service/mailbox-pop3.mjs
 COPY backend/config/mailbox-provider-policy.source-safe.json ./backend/config/mailbox-provider-policy.source-safe.json
 COPY backend/runtime/hr-live-service/legal-runtime.mjs ./backend/runtime/hr-live-service/legal-runtime.mjs

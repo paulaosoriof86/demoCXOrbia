@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "cxorbia.make.credit-resumption-options.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "organizationId": 4090072,
+  "organizationName": "AyS - TyA",
+  "accountCapacityEvidence": "CXORBIA_I3_RUN2769_MAKE_ORG_QUOTA_READONLY_20261124.json",
+  "account": {
+    "id": 4090072,
+    "name": "AyS - TyA",
+    "isPaused": true,
+    "serviceName": "Core",
+    "productName": "Core",
+    "operations": "14067",
+    "centicreditsConsumed": "1406700",
+    "operationsExt": "4000",
+    "centicreditsExtra": "400000",
+    "unusedOperations": "-67",
+    "unusedCenticredits": "-6700",
+    "autoPurchasingActivated": false,
+    "autoPurchaseInProgress": false,
+    "lastReset": "2026-11-19T12:33:54.259Z",
+    "nextReset": "2026-12-19T12:33:54.259Z"
+  },
+  "licensedCredits": 10000,
+  "existingExtraCredits": 4000,
+  "consumedCredits": 14067,
+  "remainingCredits": -67,
+  "organizationPaused": true,
+  "autoPurchasingActivated": false,
+  "nextReset": "2026-12-19T12:33:54.259Z",
+  "accountQuote": {
+    "obtained": false,
+    "reason": "Make connector exposes organization capacity but no quotation/billing tool; browser extension lacks originating context; cloud Make session opens a login page. No authentication or purchase attempted.",
+    "actualPlanPrice": null,
+    "taxes": null,
+    "finalTotal": null
+  },
+  "officialSources": [
+    {
+      "url": "https://help.make.com/extra-credits",
+      "accessedDate": "2026-11-24",
+      "supports": [
+        "manual extras in1000-credit increments",
+        "25percent surcharge over subscription credit unit price",
+        "Core extras expire at monthly reset even with annual billing",
+        "official worked example9USD/10000credits gives1.125USD/1000extra"
+      ]
+    },
+    {
+      "url": "https://www.make.com/pricing",
+      "accessedDate": "2026-11-24",
+      "supports": [
+        "scenarios stop until credits added",
+        "1000/10000extra purchase options",
+        "credits per module action"
+      ],
+      "limitation": "Current text extraction does not expose an account-specific Core plan price; no final quote derived from this page."
+    }
+  ],
+  "pricingFormula": {
+    "symbolic": "extra_total_before_unknown_account_taxes = extra_credits * (actual_base_plan_price_for_10000_credits / 10000) *1.25",
+    "officialIllustration": {
+      "basePlanPriceUSD": 9,
+      "baseCredits": 10000,
+      "extraCredits": 1000,
+      "extraCostUSD": 1.125
+    },
+    "secondIllustrationOnly": {
+      "basePlanPriceUSD": 12,
+      "baseCredits": 10000,
+      "extraCredits": 1000,
+      "extraCostUSD": 1.5,
+      "notAccountQuote": true
+    }
+  },
+  "readerCost": {
+    "readerScenarioId": 10200465,
+    "perPeriodCountryJobCredits": 2,
+    "lastSuccessfulExecutionId": "760ed197e8c04975b85fa61997976cac",
+    "lastSuccessfulExecutionAt": "2026-11-24T11:45:22.872Z",
+    "lastSuccessfulExecutionCredits": 2,
+    "lastSuccessfulExecutionOperations": 2,
+    "lastSuccessfulExecutionScope": {
+      "projectId": "cinepolis",
+      "countryCode": "HN",
+      "periodId": "cinepolis-2026-06"
+    },
+    "fullOriginalRefresh": {
+      "distinctMonthlyPeriods": 19,
+      "countryCount": 2,
+      "periodCountryJobs": 38,
+      "independentGraphReadsPerJob": 2,
+      "observedCreditsPerJob": 2,
+      "calculatedTotalCredits": 76,
+      "readerCount": 38,
+      "providerPeriodReads": 38,
+      "runtimeMetaSource": "RUN2767 hr-meta.json",
+      "runtimeMetaSha256": "bdfa4cae448c3935c698bc6f31319629c7edcd84e8ee257e2f6a77c960fd406b"
+    },
+    "lastD08Run2769ReaderExecutionsInObservedWindow": 0,
+    "lastD08Run2769ObservedReaderCreditsInWindow": 0,
+    "run2769AttributionLimit": "No scenario execution in11:53–11:57Z; cannot infer unrelated organization traffic outside that window."
+  },
+  "capacityModels": [
+    {
+      "extraCredits": 1000,
+      "netCreditsAfterObservedOverage67": 933,
+      "completeOriginalRefreshesAt76Credits": 12,
+      "creditsRemainderAfterThoseRefreshes": 21,
+      "illustrativeCostIfBase10kPriceUSD9": 1.125,
+      "illustrativeCostIfBase10kPriceUSD12": 1.5
+    },
+    {
+      "extraCredits": 2000,
+      "netCreditsAfterObservedOverage67": 1933,
+      "completeOriginalRefreshesAt76Credits": 25,
+      "creditsRemainderAfterThoseRefreshes": 33,
+      "illustrativeCostIfBase10kPriceUSD9": 2.25,
+      "illustrativeCostIfBase10kPriceUSD12": 3.0
+    },
+    {
+      "extraCredits": 5000,
+      "netCreditsAfterObservedOverage67": 4933,
+      "completeOriginalRefreshesAt76Credits": 64,
+      "creditsRemainderAfterThoseRefreshes": 69,
+      "illustrativeCostIfBase10kPriceUSD9": 5.625,
+      "illustrativeCostIfBase10kPriceUSD12": 7.5
+    },
+    {
+      "extraCredits": 10000,
+      "netCreditsAfterObservedOverage67": 9933,
+      "completeOriginalRefreshesAt76Credits": 130,
+      "creditsRemainderAfterThoseRefreshes": 53,
+      "illustrativeCostIfBase10kPriceUSD9": 11.25,
+      "illustrativeCostIfBase10kPriceUSD12": 15.0
+    }
+  ],
+  "recommendation": {
+    "minimumPurchasable": 1000,
+    "minimumToRestoreOneOriginalProof": 1000,
+    "minimalBundleLimit": "After existing67-credit overage,1000extra leaves933, only12full original refreshes. Do not claim this closes PhaseA.",
+    "boundedClosureWorkingOption": 5000,
+    "workingOptionRationale": "4933netcredits, at most64original refreshes before other scenarios/writer/QA consume credits; choose only with a finite execution budget.",
+    "exactFinalPriceStillRequired": true
+  },
+  "consumptionControls": [
+    "Do not execute reader for diagnostic experimentation while paused.",
+    "Publish/prove the pending source corrections and clear exact QA lock before spending another live attempt.",
+    "Require one fresh original HR pass before one D08 retry.",
+    "Keep F3 fixtures on their2QA bindings; one F3 readLive call is2readerjobs/4credits, independently of writer operations.",
+    "Avoid repeated fresh full-history observations during waiting; current runtime cache isprocess-local5000ms and every forceFresh call can trigger38jobs again.",
+    "Do not turn on auto-purchasing or change plan without separate explicit authorization."
+  ],
+  "actionsTaken": {
+    "readerExecutions": 0,
+    "creditPurchases": 0,
+    "autoPurchaseChanges": 0,
+    "planChanges": 0,
+    "scenarioActivations": 0
+  },
+  "rootSoleWriter": true,
+  "observedDate": "2026-11-24",
+  "recordedAt": "2026-11-24T12:10:44.884863+00:00",
+  "exactQuotaRetrievalTimestampRecorded": false
+}

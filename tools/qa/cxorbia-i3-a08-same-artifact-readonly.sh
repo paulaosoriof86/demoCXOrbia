@@ -11,7 +11,19 @@ test "$SERVICE" = cxorbia-live-hr-dev
 test "$REGION" = us-central1
 test "$HOSTING_SITE" = cxorbia-backend-dev
 test "$HOSTING_URL" = https://cxorbia-backend-dev.web.app
-jq -e '.decision=="PASS_A08_CURRENT_ARTIFACT_PIN" and .production==false and .verifiedServedAssetCount==41' "$P" >/dev/null
+# Revalidate the entire pin against the committed canonical receipt, including all
+# current assets. A locally shortened map/count cannot bypass the source authority.
+EXPECTED_COUNT="$(A08_PIN_FILE="$P" node --input-type=module <<'NODE'
+import fs from 'node:fs';
+import {loadA08Pin,assertA08ServedInventory} from './tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs';
+const pin=JSON.parse(fs.readFileSync(process.env.A08_PIN_FILE,'utf8')),canonical=loadA08Pin();
+for(const key of ['decision','sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','receiptPath','receiptGitBlob','controlHead','verifiedServedAssetCount','servedInventorySha256','production','i4Authorized'])
+  if(pin[key]!==canonical[key])throw Error('RELEASE_COMPOSITION_FAILURE:A08_CANONICAL_PIN_DESYNC');
+assertA08ServedInventory(canonical.servedSha256,pin.servedSha256);
+console.log(canonical.verifiedServedAssetCount);
+NODE
+)"
+[[ "$EXPECTED_COUNT" =~ ^[1-9][0-9]*$ ]]
 S="$(jq -er .sourceSha "$P")"
 R="$(jq -er .runtimeRevision "$P")"
 D="$(jq -er .runtimeDigest "$P")"
@@ -62,10 +74,38 @@ if [[ "$PHASE" = before ]]; then
     printf '%s %s\n' "$A" "$E" >> "$O/served-assets.sha256"
     N=$((N+1))
   done < <(jq -r '.servedSha256|to_entries[]|[.key,.value]|@tsv' "$P")
-  test "$N" = 41
-else
-  jq -e '.decision=="PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT" and .servedAssetsMatch==41' "$O/same-artifact-preflight.json" >/dev/null
+  test "$N" = "$EXPECTED_COUNT"
 fi
 OUT_FILE="$O/same-artifact-preflight.json"
 if [[ "$PHASE" = after ]]; then OUT_FILE="$O/same-artifact-after.json"; fi
-jq -n --slurpfile pin "$P" --arg phase "$PHASE" --arg sr "$STORAGE_RULESET" --argjson n "$N" '$pin[0] | {decision:"PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT",phase:$phase,sourceSha:.sourceSha,sourceTree:.sourceTree,runtimeRevision:.runtimeRevision,runtimeDigest:.runtimeDigest,hostingVersion:.hostingVersion,firestoreRuleset:.firestoreRuleset,storageRuleset:$sr,servedAssetsMatch:$n,receiptPath:.receiptPath,receiptGitBlob:.receiptGitBlob,builds:0,deploys:0,hrWrites:0,production:false}' > "$OUT_FILE"
+A08_PIN_FILE="$P" A08_PHASE="$PHASE" A08_STORAGE_RULESET="$STORAGE_RULESET" A08_FETCHED_COUNT="$N" A08_OUT_FILE="$OUT_FILE" node --input-type=module <<'NODE'
+import fs from 'node:fs';
+import {assertA08ServedInventory,assertA08AssetSeal} from './tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs';
+const out='.tmp/cxorbia-i3-two-keepers-role-e2e-readonly';
+const pin=JSON.parse(fs.readFileSync(process.env.A08_PIN_FILE,'utf8')),phase=process.env.A08_PHASE;
+const keys=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','receiptPath','receiptGitBlob','controlHead'];
+let observed={};
+if(phase==='before'){
+  const lines=fs.readFileSync(out+'/served-assets.sha256','utf8').trim().split('\n');
+  for(const line of lines){const match=line.match(/^([A-Za-z0-9_./-]+) ([a-f0-9]{64})$/);
+    if(!match||Object.hasOwn(observed,match[1]))throw Error('RELEASE_COMPOSITION_FAILURE:A08_SERVED_ASSET_READBACK_INVALID');
+    observed[match[1]]=match[2];
+  }
+}else{
+  const before=JSON.parse(fs.readFileSync(out+'/same-artifact-preflight.json','utf8'));
+  assertA08AssetSeal(pin,before);
+  if(before.phase!=='before'||keys.some(key=>before[key]!==pin[key])||before.storageRuleset!==process.env.A08_STORAGE_RULESET)
+    throw Error('RELEASE_COMPOSITION_FAILURE:A08_BEFORE_SEAL_DESYNC');
+  // The shell has just rechecked the identical FINALIZED Hosting version, runtime
+  // revision/digest/traffic and rule releases. Reuse its complete prior byte proof.
+  observed=before.servedSha256;
+}
+const inventory=assertA08ServedInventory(pin.servedSha256,observed);
+const seal={decision:'PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT',phase,...Object.fromEntries(keys.map(key=>[key,pin[key]])),
+  storageRuleset:process.env.A08_STORAGE_RULESET,...inventory,servedAssetsMatch:inventory.verifiedServedAssetCount,
+  servedAssetsFetchedThisPhase:Number(process.env.A08_FETCHED_COUNT),
+  assetReadbackMode:phase==='before'?'CURRENT_HOSTING_FETCH':'REUSED_BEFORE_ON_IDENTICAL_FINALIZED_HOSTING_VERSION',
+  builds:0,deploys:0,hrWrites:0,production:false};
+assertA08AssetSeal(pin,seal);
+fs.writeFileSync(process.env.A08_OUT_FILE,JSON.stringify(seal,null,2)+'\n');
+NODE

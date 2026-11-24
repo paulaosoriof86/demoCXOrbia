@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import {spawnSync,execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {A08_USER_ADMIN_PATH} from '../../tools/qa/cxorbia-i3-a08-exact-password-proof.mjs';
+import {assertA08AssetSeal} from '../../tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs';
 
 export const EXCEPTION_IDS=Object.freeze(['shopper_gt_a092a0647f','shopper_hn_3b3c2f5cc1','shp-3669abbb015a']);
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
@@ -47,17 +48,18 @@ export function evidenceTuple(item,id){
     !Number.isInteger(Number(item.size))||Number(item.size)<=0||Number(item.size)>=15*1024*1024)return null;
   return {periodId,visitId,shopperId,storagePath,evidenceId:id,checksum:item.checksum,mimeType:item.mimeType,size:Number(item.size)};
 }
-export function finalDecision(result,before,after){
-  const same=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','storageRuleset','receiptPath','receiptGitBlob'];
-  const seal=before?.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&before.servedAssetsMatch===41&&
-    after?.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&after.phase==='after'&&
-    same.every(k=>str(before[k])&&before[k]===after[k])&&before.sourceSha===result.sourceSha;
+export function finalDecision(result,before,after,pin){
+  const same=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','storageRuleset','receiptPath','receiptGitBlob','controlHead'];
+  let inventoryExact=false;
+  try{assertA08AssetSeal(pin,before);assertA08AssetSeal(pin,after);inventoryExact=true;}catch{}
+  const seal=inventoryExact&&before.phase==='before'&&after.phase==='after'&&
+    same.every(k=>str(before[k])&&before[k]===after[k]&&(k==='storageRuleset'||before[k]===pin[k]))&&before.sourceSha===result.sourceSha;
   const passwords=result.passwordProofs?.length===3&&EXCEPTION_IDS.every(id=>result.passwordProofs.some(x=>x.shopperId===id&&x.pass===true));
   const apis=result.apiProofs?.length===4&&result.apiProofs.every(x=>x.pass===true);
   const storage=result.storageProof?.pass===true&&result.storageProof?.objectStable===true;
   const errorFree=result.errors?.length===0;
   const requestedScopePass=Boolean(seal&&passwords&&errorFree&&(result.scope?.executionMode==='PASSWORD_ONLY'||(apis&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage))));
-  return {seal,passwords,apis,storage,requestedScopePass,pass:Boolean(seal&&passwords&&apis&&storage&&errorFree)};
+  return {seal,expectedAssetCount:pin?.verifiedServedAssetCount??null,servedAssetCount:seal?before.servedAssetsMatch:0,passwords,apis,storage,requestedScopePass,pass:Boolean(seal&&passwords&&apis&&storage&&errorFree)};
 }
 
 async function boundedBytes(response,max){
@@ -99,7 +101,8 @@ async function run(){
     try{
       result=read(OUT+'/result.json');
       const before=read(OUT+'/same-artifact-preflight.json'),after=read(OUT+'/same-artifact-after.json');
-      result.finalChecks=finalDecision(result,before,after);
+      const pin=read(process.env.CXORBIA_A08_PIN_PATH||OUT+'/current-artifact-pin.json');
+      result.finalChecks=finalDecision(result,before,after,pin);
       result.sameArtifactAfter=result.finalChecks.seal;
       result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':result.finalChecks.requestedScopePass?'HOLD_I3_A08_STORAGE_PENDING':'HOLD_I3_A08_RESIDUAL_READONLY';
       result.scopeDecision=result.finalChecks.requestedScopePass?(result.scope.executionMode==='PASSWORD_ONLY'?'PASS_I3_A08_PASSWORD3_SCOPED_READONLY':result.scope.executionMode==='PASSWORD_API_ONLY'?'PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY':'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY'):'HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN';
@@ -118,7 +121,8 @@ async function run(){
     scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,executionMode:process.argv.includes('--password-only')?'PASSWORD_ONLY':process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
       apiOperation:'GET /api/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
       rolesRequiredForIntegralA08:['super','admin','ops','coordinador','shopper','cliente'],
-      rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false},
+      rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false,requiresProtectedHrAuthority:true,
+      passwordProofBoundary:'EXACT_PASSWORD_PLUS_HR_IDENTITY_RESTORE_LOGOUT_RELOGIN'},
     passwordProofs:[],apiProofs:[],storageProof:null,preservedEvidence:[],errors:[],
     remainingIntegralA08:['Uncovered UI/claims/membership/API/Firestore/Storage cells for all six roles; retain exact accepted cells.'],
     safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,storageWrites:0,hrWrites:0,
@@ -132,7 +136,11 @@ async function run(){
     const pin=read(process.env.CXORBIA_A08_PIN_PATH||OUT+'/current-artifact-pin.json');
     const pre=read(OUT+'/same-artifact-preflight.json');
     need(pin.decision==='PASS_A08_CURRENT_ARTIFACT_PIN'&&pre.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&
-      pre.sourceSha===pin.sourceSha&&pre.servedAssetsMatch===41,'RELEASE_COMPOSITION_FAILURE:A08_EXACT_PREFLIGHT_REQUIRED');
+      pre.sourceSha===pin.sourceSha&&pre.phase==='before','RELEASE_COMPOSITION_FAILURE:A08_EXACT_PREFLIGHT_REQUIRED');
+    assertA08AssetSeal(pin,pre);
+    for(const key of ['sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','receiptPath','receiptGitBlob','controlHead'])
+      need(pre[key]===pin[key],'RELEASE_COMPOSITION_FAILURE:A08_PREFLIGHT_TUPLE_DESYNC');
+    result.artifactInventory={verifiedServedAssetCount:pin.verifiedServedAssetCount,servedInventorySha256:pin.servedInventorySha256};
     for(const key of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])result[key]=pin[key];
     result.receiptAuthority={path:pin.receiptPath,gitBlob:pin.receiptGitBlob};
     const sa=read(str(process.env.GOOGLE_APPLICATION_CREDENTIALS));

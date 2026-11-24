@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "cxorbia.i3.a08.qa-inventory-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "runId": 45389252187,
+  "runNumber": 2770,
+  "jobId": 138428710114,
+  "error": "A08_EXACT_41_ASSETS_REQUIRED",
+  "provenCause": "QA hardcoded41 rejected the approved current full47-asset inventory before Auth/network proof",
+  "productCodeChange": false,
+  "correction": "derive complete paths and SHA256 from canonical current materialization and verify exact same source inventory; reject missing/extra/substituted path or hash",
+  "sourceTests": {
+    "pass": 28,
+    "fail": 0,
+    "logSha256": "483017f3f0c0e7eecc0336293a76cf50d4cc25321687e10f49119a5ecae20c04"
+  },
+  "remoteLoginAttempts": 0,
+  "preserveApiFourPassRun2760": true,
+  "nextAction": "Run only three existing ordinary-password residuals after Make capacity and paired DEV proof are restored",
+  "hrFreshAuthorityRequired": true,
+  "production": false,
+  "fullDomain": false
+}

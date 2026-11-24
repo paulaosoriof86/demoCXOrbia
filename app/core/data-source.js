@@ -141,7 +141,8 @@ window.CX = window.CX || {};
       return {
         sourceSnapshotAt: this.updatedAt || null,
         sourceReadMode: this.mode,
-        runtimeSyncActive: this.mode==='connected' && this.status==='ready',
+        runtimeSyncActive: this.mode==='connected' && this.status==='ready' && this.hrFreshness?.externalReadCurrent!==false,
+        hrFreshness: this.hrFreshness || null,
         sourceRef: this.sourceRef || null,
         warnings: this.warnings.slice(),
         blockers: this.blockers.slice(),
@@ -151,6 +152,11 @@ window.CX = window.CX || {};
     /* ÚNICA función que cualquier superficie de UI (rail, topbar, diagnóstico) debe llamar para
        pintar el indicador de origen de datos — nunca deriven su propia lógica de banderas. */
     badge(){
+      if(this.hrFreshness?.externalReadCurrent===false&&CX.data?.previewMeta?.internalProjectAuthority!==true){
+        const at=this.hrFreshness.sourceReadAt,parsed=at?new Date(at):null;
+        const label=parsed&&Number.isFinite(parsed.getTime())?parsed.toLocaleString('es-GT'):'sin fecha confirmada';
+        return {t:'HR · última sincronización '+label,c:'#d97706',mode:this.mode,status:'last_confirmed'};
+      }
       return { t: this.label()+' · '+this.statusLabel(), c: this.color(), mode: this.mode, status: this.status };
     },
 
