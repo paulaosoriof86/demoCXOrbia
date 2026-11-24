@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.run2752.control-qa-repair.v1",
+  "createdAt": "2026-11-24T07:23:43.118990+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+  "sourceTree": "27a84d1d50dc1dd0ee701ac607543451ff7b6370",
+  "failedRun": {
+    "id": 45346303492,
+    "number": 2752,
+    "canonicalJobId": 138281587560,
+    "pairedDevJobId": 138281767183,
+    "pairedDevStatus": "skipped",
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0
+  },
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "owner": "tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs",
+  "correction": "Align static spec with both explicitly authorized original Excel successor statuses and source-check extraction; assert unchanged source drift and proven predecessor guards. No product change.",
+  "validation": {
+    "fullCanonicalStep": "PASS_EXIT_0",
+    "exactOwnerSuites": {
+      "testFiles": 18,
+      "passed": 685,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pairedSourceChecks": "PASS_EXIT_0",
+    "logs": [
+      {
+        "name": "canonical_fullstep.log",
+        "sha256": "c954581c23da3ffa85e688cdf9a6fc827d06eb8f385c36fcd27753de3271c00b"
+      },
+      {
+        "name": "gthn_owner_suites.tap",
+        "sha256": "f5d87a212881fddadd9e010311ffec7934740202535d553fd9fc1ddeb1b71919"
+      },
+      {
+        "name": "gthn_paired_source.log",
+        "sha256": "c26050d60a1c4da6e0ae47c5ba81c441f14779d0879192d86226c3165d73edb6"
+      }
+    ]
+  },
+  "nextExactAction": "One existing paired DEV job for the same source; consume exact receipt and measure Chrome load; continue F3 and D08.",
+  "production": false,
+  "rulesDeploys": 0,
+  "productChanged": false,
+  "domainPromotion": false
+}

@@ -330,12 +330,15 @@ test('canonical evidence consumer is not limited to the two hardcoded original d
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
-test('F2 Excel Online bypasses only the legacy VRM356 Google Sheets preflight in the existing DEV lane',()=>{
+test('proved Excel successors bypass only the legacy Google preflight in the existing DEV lane',()=>{
   const wf=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
   const job=wf.split('  vrm154-156-dev-materialization:')[1]?.split('\n  vrm185-admin-live-adjudication:')[0]||'';
-  assert.ok(job.includes('[[ "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs'));
+  const sourceChecks=fs.readFileSync('tools/qa/cxorbia-i3-paired-source-checks.sh','utf8');
+  assert.ok(job.includes('[[ "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs'));
   assert.ok(job.includes('test "$(jq -r'));
-  assert.ok(job.includes('git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend'));
+  assert.ok(job.includes('bash tools/qa/cxorbia-i3-paired-source-checks.sh'));
+  assert.ok(sourceChecks.includes('git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend'));
+  assert.ok(job.includes('node tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs'));
   assert.ok(job.includes('gcloud builds submit "$SOURCE_DIR"'));
   assert.ok(job.includes('gcloud run services update "$SERVICE"'));
   assert.ok(job.includes('FIREBASE_HOSTING_TARGET'));
