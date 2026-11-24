@@ -111,6 +111,12 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   else if(mod.currentResidualClauses?.pending){mod.actionRequired=mod.currentResidualClauses.pending+(mod.currentResidualClauses.preserved?' PRESERVE: '+mod.currentResidualClauses.preserved:'');}
   if(mod.domain==='client-portal-reportkit'){for(const o of [d,p,l,m])if(o.currentModuleEvidenceOverrides?.[mod.domain]?.remaining)o.currentModuleEvidenceOverrides[mod.domain].remaining={pending:'Independent same-HR KPI parity, uncovered filters/drilldown/visual and role clauses.',preserved:'F09 three Client actions, Admin reception and role-negative PASS_RUN2543; F12 no fabricated benchmark and other accepted clauses remain preserved.'};}
  }
+ for(const owner of m.sourceFiles||[]){
+  if(owner.currentServingAuthority)owner.currentServingAuthority=clone(serving);
+  if(Object.hasOwn(owner,'lastServedSource'))owner.lastServedSource=r.sourceSha;
+  if(owner.currentBlob){owner.lastServedBlob=owner.currentBlob;owner.changedVsLastServed=false;}
+  if(owner.classification==='SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION')owner.classification='DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E';
+ }
  m.classificationCounts=Object.fromEntries(Object.entries(m.modules.reduce((a,x)=>(a[x.classification]=(a[x.classification]||0)+1,a),{})).sort(([a],[b])=>a.localeCompare(b)));
  const cp={...(p.currentCanonicalCheckpoint||{}),path:receiptPath,gitBlob:blob,checkpointGitBlob:blob,status:HOLD,productSourceSha:r.sourceSha,productSourceTree:r.sourceTree,devServedCurrentSourceSha:r.sourceSha,devMaterialization:clone(r),devMaterializationRunId:r.runId,devRuntimeRevision:r.runtimeRevision,devHostingVersion:r.hostingVersion,authority:'AUTOMATIC_EXACT_RUN_RESULT_CONSUMPTION',asOf:now,latestBatchRunId:r.runId,immediateAction:NEXT,moduleMatches:count,moduleTotal:21,production:false};
  p.currentCanonicalCheckpoint=cp;d.currentCanonicalCheckpoint=clone(cp);

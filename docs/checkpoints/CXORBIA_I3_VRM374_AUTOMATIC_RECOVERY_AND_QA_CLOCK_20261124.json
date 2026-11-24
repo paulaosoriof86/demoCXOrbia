@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.i3.continuity-root-correction.readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "VRM-374",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "expectedParentSha": "68bf079def6df553dec9c58c1b03fb3262aecd00",
+  "expectedParentTree": "0296a84defbca16f1561fad56ad7cf1414bd9c08",
+  "productSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "automaticWriterProof": {
+    "runId": 45437147953,
+    "jobId": 138598685041,
+    "conclusion": "success",
+    "consumptionCommit": "68bf079def6df553dec9c58c1b03fb3262aecd00",
+    "parent": "9148b9f5e7cf41793dcc4de770ff19395e766406",
+    "productActions": 0,
+    "workflowRecursionObserved": false,
+    "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45437147953_ATTEMPT1_EXECUTION_JOURNAL.json"
+  },
+  "canonicalSourceQa": {
+    "pass": 720,
+    "fail": 0
+  },
+  "focalSourceQa": {
+    "tests": 617,
+    "fail": 1,
+    "cause": "A08 fixture mixed frozen clockNow with later wall-clock authority.at. A 1ms future timestamp correctly triggered an extra HR probe.",
+    "owner": "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "correction": "Use clockNow for both sourceReadAt and authority.at; production freshness guard is unchanged."
+  },
+  "diagnosticCorrection": "Use exitCode to flush TAP and always retain control diagnostics in the existing workflow.",
+  "allowedControlFiles": [
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-f3-review-mail-source-proof.mjs",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.mjs",
+    "tools/qa/cxorbia-i3-current-control-projection.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "localTests": {
+    "pass": 252,
+    "fail": 0
+  },
+  "scope": "CONTROL_QA_ONLY_NO_PRODUCT_CHANGE",
+  "nextExactAction": "One canonical control-only run; verify finalizer journals success. Continue authorized HR period window with confirmed history.",
+  "production": false,
+  "hrReads": 0,
+  "providerWrites": 0,
+  "newDomainMatches": 0,
+  "i4Authorized": false
+}

@@ -176,6 +176,7 @@ jobs:
      run: node tools/qa/cxorbia-i3-source-qa-evidence.mjs
    - run: node tools/qa/cxorbia-i3-f3-review-mail-source-proof.mjs
    - name: Preserve same-run owner test evidence
+     if: always()
      uses: actions/upload-artifact@v4
      with:
       name: cxorbia-i3-source-qa-${{ github.run_id }}-${{ steps.source_qa.outputs.source_qa_run_attempt }}
@@ -211,6 +212,11 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1
       npx playwright install chromium
       node tools/qa/cxorbia-i3-g03-protected-crm-readonly.mjs
+   - name: Preserve control failure diagnostics
+     if: always()
+     uses: actions/upload-artifact@v4
+     with: {name: 'cxorbia-i3-control-evidence-${{ github.run_id }}-${{ github.run_attempt }}', path: .tmp/canonical-candidate-authority/, if-no-files-found: warn, retention-days: 30}
+
   vrm143-151-source-reproof:
    needs: canonical-candidate-authority
    if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED'}}

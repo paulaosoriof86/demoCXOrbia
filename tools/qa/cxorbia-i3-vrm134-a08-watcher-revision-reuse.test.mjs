@@ -37,7 +37,7 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
     CX_PROTECTED_AUTH_HR_AUTHORITY: {
       applied: true, atomicPublication: true, tenantId: 'tya', projectId: 'cinepolis',
       role:'admin',authNamespace:'',externalReadCurrent:true,sourceReadAt:new Date(clockNow-authorityAgeMs).toISOString(),
-      actorUid, sourceRevision: revision, at: new Date(Date.now() - authorityAgeMs).toISOString()
+      actorUid, sourceRevision: revision, at: new Date(clockNow - authorityAgeMs).toISOString()
     },
     CX_PROTECTED_AUTH_HR_BOOT_RECONCILE: {
       ready: true, completed: true, sourceRevision: revision

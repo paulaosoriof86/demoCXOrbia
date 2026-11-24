@@ -40,9 +40,9 @@ const log=(test.stdout||'')+(test.stderr||'');fs.writeFileSync(path.join(out,'f3
 const receipt={schemaVersion:1,scope:'FOCAL_SOURCE_ONLY',pass:test.status===0,tests:Number(log.match(/^# tests (\d+)$/m)?.[1]||0),failed:Number(log.match(/^# fail (\d+)$/m)?.[1]||0),suites,logSha256:crypto.createHash('sha256').update(log).digest('hex'),providerAckProven:false,mailboxConnected:false,domainClosure:false,production:false};
 fs.writeFileSync(path.join(out,'f3-review-mail-source.json'),JSON.stringify(receipt,null,2)+'\n');
 console.log(JSON.stringify(receipt));
-if(!receipt.pass||!receipt.tests){console.error(log);process.exit(1);}
+if(!receipt.pass||!receipt.tests){console.error(log);process.exitCode=1;}
 const event=process.env.GITHUB_EVENT_PATH?JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8')):{};
-if(String(event.head_commit?.message||'').includes('[i3-mail-tls-readonly]')){
+if(receipt.pass&&String(event.head_commit?.message||'').includes('[i3-mail-tls-readonly]')){
   const filename=path.join(out,'p0367-mail-tls-readonly.json');
   const probe=spawnSync(process.execPath,['tools/qa/cxorbia-i3-p0367-mail-tls-readonly.mjs'],{env:{...process.env,CXORBIA_MAIL_TLS_PROBE_OUT:filename},encoding:'utf8',timeout:90000,maxBuffer:1024*1024});
   if(!fs.existsSync(filename))fs.writeFileSync(filename,JSON.stringify({pass:false,scope:'STRICT_TLS_GREETING_ONLY_NO_CREDENTIALS',classification:'ENVIRONMENT_FAILURE',error:'PROBE_DID_NOT_COMPLETE',credentialCommands:0,messageReads:0,sends:0,deletes:0,mailboxConnected:false})+'\n');

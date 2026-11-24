@@ -144,7 +144,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
   }finally{download.cleanup();}
  }else if(paired){outcome='HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED';}
  journal.outcome=outcome;journal.materializationReceiptPath=materialization;
- journal.pendingTypedResults=jobs.filter(j=>![SELF,'canonical-candidate-authority',PRODUCER].includes(j.name)&&j.conclusion!=='skipped').map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));
+ journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER].includes(j.name)&&j.conclusion!=='skipped'&&(j.name!=='canonical-candidate-authority'||j.conclusion!=='success')).map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));
  const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[`${x.runId}/${x.runAttempt}/${x.jobId}`,x]));
  for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
