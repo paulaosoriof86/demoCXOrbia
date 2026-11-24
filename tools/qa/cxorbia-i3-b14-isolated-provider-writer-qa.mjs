@@ -208,6 +208,28 @@ export function f3OwnedCleanupPath(path,owner,commands=[]){
   if(path==='tenants/tya/users/'+owner+'-admin')return true;
   return commands.some(c=>path===c||path.startsWith(c+'/'));
 }
+// Persist reconciliation evidence before evaluating ACK or deleting its journal.
+// These records contain only this synthetic QA scope. Redact any unexpected
+// credential-bearing field so an upstream error cannot spill a secret.
+export function f3SafeEvidence(value){
+  if(Array.isArray(value))return value.map(f3SafeEvidence);
+  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([key,next])=>
+    [key,/^(?:password|passwordHash|salt|token|idToken|refreshToken|accessToken|access_token|refresh_token|authorization|apiKey|privateKey|private_key|clientSecret|client_secret|credentials|credential)$/i.test(key)?'[REDACTED]':f3SafeEvidence(next)]));
+  if(typeof value==='string')return value.replace(/\bBearer\s+[^\s]+/gi,'Bearer [REDACTED]');
+  return value;
+}
+export function f3AssertCleanupLock({current,baseline,owner,reconcilePaths,receipts}){
+  if(f3Same(current,baseline))return 'BASELINE_UNCHANGED';
+  f3Need(current&&current.projectId===F3_QA.projectId&&current.status==='committed'&&reconcilePaths.includes(current.receiptPath),'PERSISTENCE_FAILURE:F3_QA_LOCK_OWNER');
+  const row=receipts.find(x=>x.path===current.receiptPath)?.data;
+  const allowedKeys=['initial','restored'].map(serial=>owner+'-reconcile-'+serial);
+  f3Need(row&&row.tenantId==='tya'&&row.projectId===F3_QA.projectId&&row.actorUid===owner+'-admin'&&allowedKeys.includes(row.idempotencyKey)&&
+    current.receiptPath==='tenants/tya/commandReceipts/hr-'+f3Digest([F3_QA.projectId,row.idempotencyKey])&&row.attemptId===current.attemptId&&
+    /^[a-f0-9]{64}$/.test(row.sourceRevision||'')&&row.digest===f3Digest({actorUid:row.actorUid,scope:{tenantId:'tya',projectId:F3_QA.projectId},sourceRevision:row.sourceRevision,commandType:'hr.snapshot.reconcile'})&&
+    row.status==='committed'&&row.result?.ok===true&&row.result?.providerAck===true&&row.result?.authWrites===0&&
+    row.result?.unresolvedEffects===0&&row.result?.unverifiedEffects===0,'PERSISTENCE_FAILURE:F3_QA_LOCK_RECEIPT_OWNER');
+  return 'OWNED_COMMITTED_RECONCILIATION';
+}
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
@@ -275,7 +297,20 @@ async function runF3EndpointProbe(){
   const reconcile=async(serial)=>{
     const live=await readLive(),key=owner+'-reconcile-'+serial,command={version:'cxorbia-command-adapter-v1',commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:live.revision,
       expectedVersion:live.revision,tenantId:'tya',projectId:F3_QA.projectId,periodId:null,requirePeriod:false,payload:{},idempotencyKey:key};
-    const p=commandPaths(command)[0];reconcilePaths.add(p);await remember(command);const result=await send(command);
+    const p=commandPaths(command)[0];reconcilePaths.add(p);await remember(command);
+    const observation={serial,idempotencyKey:key,sourceRevision:live.revision,receiptPath:p,startedAt:new Date().toISOString()};
+    (receipt.reconciliations??=[]).push(observation);save();
+    let result,transportError;
+    try{result=await send(command);observation.http={status:result.status,body:f3SafeEvidence(result.body)};}
+    catch(error){transportError=error;observation.transportError=f3Code(error);}
+    observation.finishedAt=new Date().toISOString();save();
+    try{
+      const ref=db.doc(p),[record,stages,intents,effects,scopeLock]=await Promise.all([ref.get(),ref.collection('stages').get(),ref.collection('intents').get(),ref.collection('effects').get(),db.doc(lockPath).get()]);
+      const rows=snapshot=>snapshot.docs.map(doc=>({path:doc.ref.path,data:f3SafeEvidence(doc.data())}));
+      observation.durable={receipt:record.exists?f3SafeEvidence(record.data()):null,stages:rows(stages),intents:rows(intents),effects:rows(effects),scopeLock:scopeLock.exists?f3SafeEvidence(scopeLock.data()):null,readAt:new Date().toISOString()};
+      save();
+    }catch(error){observation.durableReadbackError=f3Code(error);save();throw error;}
+    if(transportError)throw transportError;
     f3Need(result.status===200&&result.body.ok===true&&result.body.readbackVerified===true&&result.body.authWrites===0,'PERSISTENCE_FAILURE:F3_QA_RECONCILE_ACK');
     recordCase('explicit_reconcile_'+serial,{sourceRevision:live.revision,receiptPath:p,authWrites:result.body.authWrites});
   };
@@ -304,6 +339,7 @@ async function runF3EndpointProbe(){
     for(const rec of [...profiles,member])f3Need(!(await db.doc(rec.path).get()).exists,'PERSISTENCE_FAILURE:F3_QA_BASELINE_NOT_ABSENT');
     for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10);f3Need(!(await db.doc('tenants/tya/shopperIdentityCrosswalk/'+id).get()).exists,'PERSISTENCE_FAILURE:F3_QA_ALIAS_NOT_ABSENT');}
     const lock=await db.doc(lockPath).get();baselineLock=lock.exists?lock.data():null;
+    receipt.scopeLockBaseline={path:lockPath,existed:lock.exists,data:f3SafeEvidence(baselineLock),digest:f3Digest(baselineLock),readAt:new Date().toISOString(),updateTime:lock.updateTime?.toDate?.().toISOString()||null};save();
     f3Need(!baselineLock||baselineLock.status==='committed','PERSISTENCE_FAILURE:F3_QA_RECONCILE_SCOPE_NOT_QUIESCENT');baselineReady=true;
     for(const rec of [...profiles,member]){written.set(rec.path,f3Digest(rec.data));await db.doc(rec.path).create(rec.data);f3Need(f3Same((await db.doc(rec.path).get()).data(),rec.data),'PERSISTENCE_FAILURE:F3_QA_SETUP_READBACK');}
     authCreated=true;await auth.createUser({uid:adminUid,displayName:'CXOrbia isolated QA operator',disabled:false});await auth.setCustomUserClaims(adminUid,claims);
@@ -359,11 +395,18 @@ async function runF3EndpointProbe(){
           item.event=event;item.delivery=delivery.exists?delivery.data():null;item.attempts=attempts.docs.map(x=>({id:x.id,...x.data()}));
         }
         save();
+        // Establish lock/receipt ownership before deleting any QA document. A
+        // partial or foreign lock keeps all Firestore evidence for recovery.
+        const lockBeforeSnap=await db.doc(lockPath).get(),lockBefore=lockBeforeSnap.exists?lockBeforeSnap.data():null;
+        const lockReceipts=await Promise.all([...reconcilePaths].map(async p=>{const snap=await db.doc(p).get();return {path:p,data:snap.exists?snap.data():null};}));
+        receipt.cleanupLockPreflight={path:lockPath,current:f3SafeEvidence(lockBefore),digest:f3Digest(lockBefore),receipts:f3SafeEvidence(lockReceipts),readAt:new Date().toISOString()};save();
+        receipt.cleanupLockPreflight.decision=f3AssertCleanupLock({current:lockBefore,baseline:baselineLock,owner,reconcilePaths:[...reconcilePaths],receipts:lockReceipts});save();
         await enumerate(db.doc(projectPath));for(const p of commands)await enumerate(db.doc(p));
+        receipt.cleanupDocumentPlan=snapshots.map(row=>({path:row.path,digest:f3Digest(row.data)}));save();
         for(const row of snapshots.sort((a,b)=>b.path.split('/').length-a.path.split('/').length))await remove(row);
         for(const [p]of written){if(p===projectPath)continue;const snap=await db.doc(p).get();if(snap.exists){f3Need(snap.data().qaOwner===owner&&f3Digest(snap.data())===written.get(p),'PERSISTENCE_FAILURE:F3_QA_DOCUMENT_OWNER_OR_DRIFT');await remove({path:p,data:snap.data()});}}
         for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10),p='tenants/tya/shopperIdentityCrosswalk/'+id,snap=await db.doc(p).get();if(snap.exists){const row=snap.data();f3Need(row.projectId===F3_QA.projectId&&row.tenantId==='tya'&&receipt.events.some(e=>e.eventId===row.originEventId),'PERSISTENCE_FAILURE:F3_QA_ALIAS_OWNER');commands.push(p);await remove({path:p,data:row});}}
-        await db.runTransaction(async tx=>{const ref=db.doc(lockPath),snap=await tx.get(ref),current=snap.exists?snap.data():null;if(f3Same(current,baselineLock))return;f3Need(current&&current.projectId===F3_QA.projectId&&reconcilePaths.has(current.receiptPath)&&current.status==='committed','PERSISTENCE_FAILURE:F3_QA_LOCK_OWNER');if(baselineLock)tx.set(ref,baselineLock);else tx.delete(ref);});
+        await db.runTransaction(async tx=>{const ref=db.doc(lockPath),snap=await tx.get(ref),current=snap.exists?snap.data():null;f3Need(f3Same(current,lockBefore),'PERSISTENCE_FAILURE:F3_QA_LOCK_CLEANUP_DRIFT');if(f3Same(current,baselineLock))return;if(baselineLock)tx.set(ref,baselineLock);else tx.delete(ref);});
         f3Need(f3Same((await db.doc(lockPath).get()).data()??null,baselineLock),'PERSISTENCE_FAILURE:F3_QA_LOCK_RESTORE');
         f3Need(!(await db.doc(projectPath).get()).exists&&(await db.doc(projectPath).listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_SUBTREE_CLEANUP');receipt.cleanup.firestore=true;
       }catch(error){cleanupErrors.push(f3Code(error));}
@@ -376,8 +419,80 @@ async function runF3EndpointProbe(){
   }
 }
 
+
+// Read-only recovery mode for the exact failed RUN2768. No fixture setup,
+// reconcile, provider execution or deletion is reachable from this entry point.
+const f3RecoveryNeed=(ok,code)=>f3Need(ok,'PERSISTENCE_FAILURE:'+code);
+export const F3_RUN2768_TARGET=Object.freeze({runId:'45386193183',runAttempt:'1',owner:'f3-qa-45386193183-1',firebaseProject:'cxorbia-backend-dev',tenantId:'tya',projectId:'f3-qa-20261124',
+ sourceRevision:'fa89c4b7e02fab97cb5c932e832ede7712d02cf698da47bc50fbb3c1508106d0',
+ receiptPath:'tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40',
+ sourceReceiptSha256:'89bd49c65e0bab70ff9224797ca04413696ac326ecaa3679f76bf01bf63667c8',healthEvidenceSha256:'ef496b87f098af7b86043f839a598b47de16478de1fc2debd9e23a3fa1bc0430'});
+const F3_RUN2768_PROJECT_PATH='tenants/tya/projects/'+F3_RUN2768_TARGET.projectId,F3_RUN2768_LOCK_PATH='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya'),F3_RUN2768_ADMIN_UID=F3_RUN2768_TARGET.owner+'-admin';
+export const F3_RUN2768_TARGET_PATHS=Object.freeze([
+ F3_RUN2768_PROJECT_PATH,F3_RUN2768_TARGET.receiptPath,'tenants/tya/users/'+F3_RUN2768_ADMIN_UID,
+ F3_RUN2768_PROJECT_PATH+'/visits/hr_excel_45c62e0543d229c8ca625f3cf857',F3_RUN2768_PROJECT_PATH+'/visits/hr_excel_ec25c41b6656f0000daef0af1398',
+ ...['GT','HN'].map(c=>'tenants/tya/integrationSettings/'+F3_RUN2768_TARGET.owner+'-'+c),
+ ...['GT','HN'].flatMap(c=>['a','b'].map(letter=>'tenants/tya/shoppers/qa_f3_20261124_'+c.toLowerCase()+'_'+letter)),
+ ...['GT','HN'].flatMap(c=>['A','B'].map(letter=>'tenants/tya/shopperIdentityCrosswalk/shopper_'+c.toLowerCase()+'_'+sha(('CXOrbia QA '+c+' F3 '+letter).toLowerCase()).slice(0,10)))
+]);
+f3RecoveryNeed(F3_RUN2768_TARGET.receiptPath==='tenants/tya/commandReceipts/hr-'+f3Digest([F3_RUN2768_TARGET.projectId,F3_RUN2768_TARGET.owner+'-reconcile-initial']),'F3_RECOVERY_STATIC_RECEIPT_ID');
+
+export async function f3ReadRun2768State({db,auth}){
+ const [scopeLock,docs,projectCollections,receiptCollections]=await Promise.all([
+  db.doc(F3_RUN2768_LOCK_PATH).get(),Promise.all(F3_RUN2768_TARGET_PATHS.map(async p=>{const snap=await db.doc(p).get();return {path:p,exists:snap.exists,digest:f3Digest(snap.exists?snap.data():null),qaOwner:snap.exists?(snap.data().qaOwner||null):null};})),
+  db.doc(F3_RUN2768_PROJECT_PATH).listCollections(),db.doc(F3_RUN2768_TARGET.receiptPath).listCollections()
+ ]);
+ let authState;
+ try{const u=await auth.getUser(F3_RUN2768_ADMIN_UID);authState={uid:u.uid,exists:true,qaOwner:u.customClaims?.qaOwner||null};}
+ catch(error){if(error.code!=='auth/user-not-found')throw Error('AUTH_FAILURE:F3_RECOVERY_AUTH_READ');authState={uid:F3_RUN2768_ADMIN_UID,exists:false};}
+ const raw=scopeLock.exists?scopeLock.data():null,data=f3SafeEvidence(raw);
+ return {schemaVersion:'cxorbia.f3.run2768.orphan-readback.v1',target:F3_RUN2768_TARGET,readAt:new Date().toISOString(),
+  lock:{path:F3_RUN2768_LOCK_PATH,exists:scopeLock.exists,data,digest:f3Digest(raw),updateTime:scopeLock.updateTime?.toDate?.().toISOString()||null},
+  documents:docs,projectCollections:projectCollections.map(c=>c.id).sort(),receiptCollections:receiptCollections.map(c=>c.id).sort(),auth:authState,
+  writes:0,providerWrites:0,productionWrites:0,priorCommittedBaselineAvailable:false};
+}
+
+export function f3AssessRun2768Orphan(state,now=Date.now()){
+ f3RecoveryNeed(state.schemaVersion==='cxorbia.f3.run2768.orphan-readback.v1'&&f3Digest(state.target)===f3Digest(F3_RUN2768_TARGET),'F3_RECOVERY_TARGET');
+ f3RecoveryNeed(state.lock?.path===F3_RUN2768_LOCK_PATH&&state.lock?.digest===f3Digest(state.lock?.data??null),'F3_RECOVERY_LOCK_READBACK');
+ f3RecoveryNeed(Array.isArray(state.documents)&&state.documents.length===F3_RUN2768_TARGET_PATHS.length&&f3Digest(state.documents.map(x=>x.path).sort())===f3Digest([...F3_RUN2768_TARGET_PATHS].sort())&&state.documents.every(x=>x.exists===false),'F3_RECOVERY_QA_DOCS_NOT_ABSENT');
+ f3RecoveryNeed(state.projectCollections?.length===0&&state.receiptCollections?.length===0,'F3_RECOVERY_QA_SUBCOLLECTIONS_NOT_ABSENT');
+ f3RecoveryNeed(state.auth?.uid===F3_RUN2768_ADMIN_UID&&state.auth.exists===false,'F3_RECOVERY_QA_AUTH_NOT_ABSENT');
+ if(state.lock.exists===false&&state.lock.data===null)return {decision:'PASS_F3_RUN2768_ALREADY_ABSENT',action:'none',writes:0};
+ const lock=state.lock.data;
+ f3RecoveryNeed(state.lock.exists===true&&lock&&Object.keys(lock).sort().join(',')==='attemptId,expiresAt,projectId,receiptPath,status','F3_RECOVERY_LOCK_SHAPE');
+ f3RecoveryNeed(lock.projectId===F3_RUN2768_TARGET.projectId&&lock.receiptPath===F3_RUN2768_TARGET.receiptPath&&lock.status==='partial','F3_RECOVERY_LOCK_OWNER');
+ f3RecoveryNeed(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(lock.attemptId),'F3_RECOVERY_ATTEMPT_ID');
+ // This run's logged probe lasted 11:40:56–11:41:40Z. The runtime creates a
+ // 120s lease, and the entire failed probe completed before one renewal window.
+ f3RecoveryNeed(Number.isFinite(lock.expiresAt)&&lock.expiresAt>=Date.parse('2026-11-24T11:40:56Z')+120000&&lock.expiresAt<=Date.parse('2026-11-24T11:41:40Z')+120000&&lock.expiresAt<now,'F3_RECOVERY_LEASE_NOT_PROVEN_EXPIRED');
+ return {decision:'REVIEWABLE_F3_RUN2768_EXPIRED_OWNED_ORPHAN',action:'delete_exact_expired_qa_coordination_lock_only',
+  lockPath:F3_RUN2768_LOCK_PATH,lockDigest:state.lock.digest,attemptId:lock.attemptId,receiptPath:lock.receiptPath,
+  sourceStateDigest:f3Digest(state),restoresHistoricalBaseline:false,priorCommittedBaselineAvailable:false,
+  requiresRootWriter:true,operationalDocumentWrites:0,remoteMakeWrites:0,authWrites:0,productionWrites:0};
+}
+
+async function runF3Run2768Inspection(){
+ const env=process.env;
+ if(env.GITHUB_REPOSITORY!=='paulaosoriof86/demoCXOrbia'||env.GITHUB_REF!=='refs/heads/recovery/cxorbia-phase-a-20260831'||env.GOOGLE_CLOUD_PROJECT!==F3_RUN2768_TARGET.firebaseProject||env.CXORBIA_F3_QA_ENDPOINT_GATE!=='PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124')throw Error('AUTH_FAILURE:F3_RECOVERY_ENV_SCOPE');
+ const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
+ const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}),client=await cloud.getClient();
+ const principal=String(typeof client.getServiceAccountEmail==='function'?await client.getServiceAccountEmail():client.email||'');
+ if(principal!=='firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com')throw Error('AUTH_FAILURE:F3_RECOVERY_PRINCIPAL');
+ const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
+ const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_RUN2768_TARGET.firebaseProject},'f3-run2768-readonly-recovery');
+ try{
+  const state=await f3ReadRun2768State({db:getFirestore(app),auth:getAuth(app)});
+  let plan;try{plan=f3AssessRun2768Orphan(state);}catch(error){plan={decision:'HOLD_F3_RECOVERY_OWNERSHIP_NOT_PROVEN',code:/^[A-Z_]+:[A-Z0-9_]+$/.test(error.message)?error.message:'PERSISTENCE_FAILURE:F3_RECOVERY_UNCLASSIFIED'};}
+  const artifact={state,plan,stateDigest:f3Digest(state)},out=path.resolve(env.CXORBIA_F3_RECOVERY_RECEIPT||'.tmp/i3-b14-provider-qa/f3-run2768-orphan-readback.json');
+  fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(artifact,null,2)+'\n');
+  console.log(JSON.stringify({decision:plan.decision,readOnly:true,writes:0,lockDigest:state.lock.digest,stateDigest:artifact.stateDigest}));
+ }finally{await appSdk.deleteApp(app);}
+}
+
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   if(process.argv.includes('--self-test'))selfTest();
+  else if(process.argv.includes('--f3-inspect-run2768'))runF3Run2768Inspection().catch(err=>{console.error('F3_QA_RECOVERY_HOLD',/^[A-Z_]+:[A-Z0-9_]+$/.test(err.message)?err.message:'PERSISTENCE_FAILURE:F3_RECOVERY_UNCLASSIFIED');process.exitCode=1;});
   else if(process.argv.includes('--f3-endpoint'))runF3EndpointProbe().catch(err=>{console.error('F3_QA_ENDPOINT_HOLD',f3Code(err));process.exitCode=1;});
   else runProviderProbe().catch(err=>{console.error('B14_QA_PROVIDER_PROBE_HOLD',String(err?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,160));process.exitCode=1;});
 }

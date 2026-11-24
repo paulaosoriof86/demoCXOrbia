@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.f3-run2768-reconcile-qa-failure.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "7300c948eb58fe83253f13343a482e56edf57b74",
+  "expectedParentTree": "132e6163f5420943a4d415f1dd248c6ab378d812",
+  "runId": 45386193183,
+  "artifactId": 14915674409,
+  "artifactSha256": "7bc7db7ebe698bd290166debf640a990dd9eb593507814edd862a59c8dfed254",
+  "classification": "PERSISTENCE_FAILURE",
+  "productCause": "SHOPPER_HR_NAME_REVISION_MISMATCH",
+  "productOwner": "backend/runtime/hr-live-service/server.mjs::materialize",
+  "productFixIncluded": false,
+  "qaCause": "Reconciliation HTTP failure was not recorded before ACK assertion; cleanup deleted QA receipt before proving scope-lock ownership. RUN2768 cleanup lock is unverified.",
+  "qaOwner": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+  "readOnlyInspection": {
+    "mode": "--f3-inspect-run2768",
+    "documentPaths": 15,
+    "qaCollectionInventories": 2,
+    "authUsers": 1,
+    "scopeLock": 1,
+    "writes": 0,
+    "cleanupAuthorizedByThisReceipt": false
+  },
+  "nextExactAction": "Read exact RUN2768 orphan evidence before any cleanup; independently execute three existing A08 password exceptions on unchanged paired DEV. Integrate focal source revision fix with durable HR and mailbox package.",
+  "productSourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+  "currentModuleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V391.json",
+  "production": false,
+  "i4Authorized": false,
+  "modulePromotion": false,
+  "newWorkflows": 0,
+  "newCandidate": false,
+  "allowlist": [
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-f3-cleanup-ownership.test.mjs",
+    "tools/qa/cxorbia-i3-f3-run2768-inspection.test.mjs",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "docs/checkpoints/CXORBIA_I3_RUN2768_F3_RECONCILE_INSPECTION_SCOPE_20261124.json"
+  ],
+  "validation": {
+    "f3ScopeCleanupInspectionTestsPass": 51,
+    "fail": 0,
+    "workflowYamlParse": true,
+    "workflowBytes": 509416
+  },
+  "parallelD08Run2769": {
+    "runId": 45388075638,
+    "artifactId": 14917441809,
+    "artifactSha256": "61346ceeeec0def1e96665799e70048f265b1dc0c20e2614a9aea14fdee2de13",
+    "state": "HOLD",
+    "classification": "PROVIDER_FAILURE",
+    "observedError": "HR_LIVE_HTTP_503",
+    "uiGate": "mount_waiting_hr_authority",
+    "commands": 0,
+    "cleanup": {
+      "ok": true,
+      "deletedDocuments": 6,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0
+    },
+    "next": "Do not retry D08 until exact HR provider cause is resolved and readback passes"
+  }
+}

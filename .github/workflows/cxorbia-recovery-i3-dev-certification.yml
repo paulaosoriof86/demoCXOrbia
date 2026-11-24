@@ -6523,7 +6523,7 @@ jobs:
 
   i3-b14-qa-provider-proof:
    needs: canonical-candidate-authority
-   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]'))&&needs.canonical-candidate-authority.result=='success'}}
+   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]')||contains(github.event.head_commit.message,'[i3-f3-qa-inspect-run2768]'))&&needs.canonical-candidate-authority.result=='success'}}
    runs-on: ubuntu-24.04
    permissions: {contents: read, id-token: write}
    env:
@@ -6550,7 +6550,10 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/i3-b14-provider-qa
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      if jq -e '.head_commit.message | contains("[i3-f3-qa-endpoint]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+      if jq -e '.head_commit.message | contains("[i3-f3-qa-inspect-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+        node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-inspect-run2768
+        jq -e '.state.schemaVersion=="cxorbia.f3.run2768.orphan-readback.v1" and .state.target.runId=="45386193183" and .state.writes==0 and .state.providerWrites==0 and .state.productionWrites==0 and (.state.documents|length)==15' .tmp/i3-b14-provider-qa/f3-run2768-orphan-readback.json >/dev/null
+      elif jq -e '.head_commit.message | contains("[i3-f3-qa-endpoint]")' "$GITHUB_EVENT_PATH" >/dev/null; then
         jq -e --arg source "$CXORBIA_F3_CANONICAL_SOURCE" --arg tree "$CXORBIA_F3_CANONICAL_TREE" '.schemaVersion=="cxorbia.f3.endpoint-qa-config.v1" and .sourceSha==$source and .sourceTree==$tree' "$CXORBIA_F3_QA_CONFIG" >/dev/null
         export CXORBIA_F3_QA_SOURCE_SHA="$(jq -r '.sourceSha' "$CXORBIA_F3_QA_CONFIG")"
         export CXORBIA_F3_QA_SOURCE_TREE="$(jq -r '.sourceTree' "$CXORBIA_F3_QA_CONFIG")"
