@@ -490,8 +490,78 @@ async function runF3Run2768Inspection(){
  }finally{await appSdk.deleteApp(app);}
 }
 
+// Root reviewed RUN2770's read-only artifact before authorizing this one-record
+// cleanup. The previous committed baseline was not recorded and is not rebuilt.
+export const F3_RUN2768_CLEANUP_PIN=Object.freeze({
+ inspectionRunNumber:2770,artifactId:14917228272,
+ artifactSha256:'d00d646fb313d69729875d5364fff113ca13455aab99d0cadc353c56b704e11e',
+ receiptPath:'docs/checkpoints/CXORBIA_I3_RUN2770_F3_ORPHAN_INSPECTION_RECEIPT_20261124.json',
+ receiptSha256:'0c8f58b7d637a14ff2500ad3af0fb48a49493d15890eb31db2acf3df97a7c675',
+ stateDigest:'96ec8dcdb09acf5b26dcc6f9a44a6af37eda63aa37c5d7892de00c5cebd51031',
+ lockDigest:'00c688a80c8de65c07f9eafd0b64787c4b824eeba05dfc0ae4ddbbd67504beab',
+ attemptId:'3ac9b317-46b4-47d1-abb3-60fe3bace5aa',expiresAt:1795520611209,
+ updateTime:'2026-11-24T11:41:31.812Z',
+ gate:'ROOT_REVIEWED_RUN2770_EXACT_OWNED_ORPHAN_20261124'
+});
+export function f3ValidateRun2770InspectionBytes(bytes){
+ f3RecoveryNeed(createHash('sha256').update(bytes).digest('hex')===F3_RUN2768_CLEANUP_PIN.receiptSha256,'F3_CLEANUP_INSPECTION_FILE_SHA');
+ let artifact;try{artifact=JSON.parse(String(bytes));}catch{throw Error('PERSISTENCE_FAILURE:F3_CLEANUP_INSPECTION_JSON');}
+ f3RecoveryNeed(artifact.stateDigest===F3_RUN2768_CLEANUP_PIN.stateDigest&&f3Digest(artifact.state)===F3_RUN2768_CLEANUP_PIN.stateDigest,'F3_CLEANUP_INSPECTION_STATE_SHA');
+ const plan=f3AssessRun2768Orphan(artifact.state),lock=artifact.state.lock;
+ f3RecoveryNeed(plan.decision==='REVIEWABLE_F3_RUN2768_EXPIRED_OWNED_ORPHAN'&&lock.digest===F3_RUN2768_CLEANUP_PIN.lockDigest&&
+  lock.updateTime===F3_RUN2768_CLEANUP_PIN.updateTime&&lock.data.attemptId===F3_RUN2768_CLEANUP_PIN.attemptId&&lock.data.expiresAt===F3_RUN2768_CLEANUP_PIN.expiresAt,'F3_CLEANUP_INSPECTION_EXACT_OWNER');
+ return artifact;
+}
+export async function f3ClearRun2768OwnedOrphan({db,auth,inspectionBytes,checkpoint=()=>{}}){
+ f3RecoveryNeed(db.projectId===F3_RUN2768_TARGET.firebaseProject,'F3_CLEANUP_DATABASE_PROJECT');
+ const artifact=f3ValidateRun2770InspectionBytes(inspectionBytes),before=await f3ReadRun2768State({db,auth}),plan=f3AssessRun2768Orphan(before);
+ await checkpoint('before',{before,pins:F3_RUN2768_CLEANUP_PIN,sourceStateDigest:artifact.stateDigest,writes:0});
+ if(plan.decision==='PASS_F3_RUN2768_ALREADY_ABSENT')return {decision:'PASS_F3_RUN2768_OWNED_ORPHAN_ALREADY_ABSENT',idempotentReplay:true,before,after:before,
+  writes:0,scopeLockAbsent:true,qaFixtureAbsent:true,qaAuthAbsent:true,restoresHistoricalBaseline:false,remoteMakeWrites:0,authWrites:0,operationalDocumentWrites:0,productionWrites:0};
+ f3RecoveryNeed(plan.decision==='REVIEWABLE_F3_RUN2768_EXPIRED_OWNED_ORPHAN'&&before.lock.digest===F3_RUN2768_CLEANUP_PIN.lockDigest&&before.lock.updateTime===F3_RUN2768_CLEANUP_PIN.updateTime,'F3_CLEANUP_CURRENT_OWNER_DRIFT');
+ // Retain the native Firestore version for the transaction CAS, including its
+ // nanoseconds; the public receipt's ISO timestamp is only an additional pin.
+ const versionSnap=await db.doc(F3_RUN2768_LOCK_PATH).get();
+ f3RecoveryNeed(versionSnap.exists&&f3Digest(versionSnap.data())===F3_RUN2768_CLEANUP_PIN.lockDigest&&versionSnap.updateTime?.toDate?.().toISOString()===F3_RUN2768_CLEANUP_PIN.updateTime,'F3_CLEANUP_VERSION_DRIFT');
+ await db.runTransaction(async tx=>{
+  const ref=db.doc(F3_RUN2768_LOCK_PATH),[lock,...docs]=await Promise.all([tx.get(ref),...F3_RUN2768_TARGET_PATHS.map(p=>tx.get(db.doc(p)))]);
+  const sameVersion=lock.updateTime&&versionSnap.updateTime&&typeof lock.updateTime.isEqual==='function'&&lock.updateTime.isEqual(versionSnap.updateTime);
+  f3RecoveryNeed(lock.exists&&sameVersion&&f3Digest(lock.data())===F3_RUN2768_CLEANUP_PIN.lockDigest&&docs.every(snap=>snap.exists===false),'F3_CLEANUP_TRANSACTION_DRIFT');
+  tx.delete(ref);
+ });
+ await checkpoint('deleted',{writes:1,deletedPath:F3_RUN2768_LOCK_PATH,removedLock:before.lock,sourceStateDigest:artifact.stateDigest});
+ const after=await f3ReadRun2768State({db,auth});
+ f3RecoveryNeed(f3AssessRun2768Orphan(after).decision==='PASS_F3_RUN2768_ALREADY_ABSENT','F3_CLEANUP_POST_DELETE_READBACK');
+ return {decision:'PASS_F3_RUN2768_EXACT_OWNED_ORPHAN_REMOVED',idempotentReplay:false,before,after,removedLock:before.lock,
+  writes:1,scopeLockAbsent:true,qaFixtureAbsent:true,qaAuthAbsent:true,restoresHistoricalBaseline:false,remoteMakeWrites:0,authWrites:0,operationalDocumentWrites:0,productionWrites:0};
+}
+async function runF3Run2768Cleanup(){
+ const env=process.env;
+ if(!/^\d{8,}$/.test(String(env.GITHUB_RUN_ID||''))||!/^\d+$/.test(String(env.GITHUB_RUN_ATTEMPT||'1')))throw Error('AUTH_FAILURE:F3_CLEANUP_RUN_ID');
+ if(env.GITHUB_REPOSITORY!=='paulaosoriof86/demoCXOrbia'||env.GITHUB_REF!=='refs/heads/recovery/cxorbia-phase-a-20260831'||env.GOOGLE_CLOUD_PROJECT!==F3_RUN2768_TARGET.firebaseProject||env.CXORBIA_F3_QA_ENDPOINT_GATE!=='PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124'||env.CXORBIA_F3_RUN2768_CLEANUP_GATE!==F3_RUN2768_CLEANUP_PIN.gate)throw Error('AUTH_FAILURE:F3_CLEANUP_ENV_SCOPE');
+ const inspectionBytes=fs.readFileSync(F3_RUN2768_CLEANUP_PIN.receiptPath);
+ f3ValidateRun2770InspectionBytes(inspectionBytes);
+ const out=path.resolve(env.CXORBIA_F3_CLEANUP_RECEIPT||'.tmp/i3-b14-provider-qa/f3-run2768-cleanup.json');
+ const receipt={schemaVersion:'cxorbia.f3.run2768.owned-orphan-cleanup.v1',state:'HOLD',decision:'PENDING',runId:String(env.GITHUB_RUN_ID||''),runAttempt:String(env.GITHUB_RUN_ATTEMPT||'1'),target:F3_RUN2768_TARGET,pins:F3_RUN2768_CLEANUP_PIN,
+  writes:0,remoteMakeWrites:0,authWrites:0,operationalDocumentWrites:0,productionWrites:0,restoresHistoricalBaseline:false};
+ const save=()=>{fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(f3SafeEvidence(receipt),null,2)+'\n');};save();
+ const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
+ const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}),client=await cloud.getClient();
+ const principal=String(typeof client.getServiceAccountEmail==='function'?await client.getServiceAccountEmail():client.email||'');
+ if(principal!=='firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com')throw Error('AUTH_FAILURE:F3_CLEANUP_PRINCIPAL');
+ const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
+ const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_RUN2768_TARGET.firebaseProject},'f3-run2768-owned-orphan-cleanup');
+ try{
+  const result=await f3ClearRun2768OwnedOrphan({db:getFirestore(app),auth:getAuth(app),inspectionBytes,checkpoint:async(stage,data)=>{receipt.lastStage=stage;Object.assign(receipt,data);save();}});
+  Object.assign(receipt,result,{finishedAt:new Date().toISOString()});save();
+  console.log(JSON.stringify({decision:receipt.decision,writes:receipt.writes,scopeLockAbsent:receipt.scopeLockAbsent,qaFixtureAbsent:receipt.qaFixtureAbsent,remoteMakeWrites:0,authWrites:0,productionWrites:0}));
+ }catch(error){receipt.decision='HOLD_F3_RUN2768_CLEANUP_UNVERIFIED';receipt.failure=/^[A-Z_]+:[A-Z0-9_]+$/.test(error.message)?error.message:'PERSISTENCE_FAILURE:F3_CLEANUP_UNCLASSIFIED';save();throw error;}
+ finally{await appSdk.deleteApp(app);}
+}
+
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   if(process.argv.includes('--self-test'))selfTest();
+  else if(process.argv.includes('--f3-cleanup-run2768'))runF3Run2768Cleanup().catch(err=>{console.error('F3_QA_CLEANUP_HOLD',/^[A-Z_]+:[A-Z0-9_]+$/.test(err.message)?err.message:'PERSISTENCE_FAILURE:F3_CLEANUP_UNCLASSIFIED');process.exitCode=1;});
   else if(process.argv.includes('--f3-inspect-run2768'))runF3Run2768Inspection().catch(err=>{console.error('F3_QA_RECOVERY_HOLD',/^[A-Z_]+:[A-Z0-9_]+$/.test(err.message)?err.message:'PERSISTENCE_FAILURE:F3_RECOVERY_UNCLASSIFIED');process.exitCode=1;});
   else if(process.argv.includes('--f3-endpoint'))runF3EndpointProbe().catch(err=>{console.error('F3_QA_ENDPOINT_HOLD',f3Code(err));process.exitCode=1;});
   else runProviderProbe().catch(err=>{console.error('B14_QA_PROVIDER_PROBE_HOLD',String(err?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,160));process.exitCode=1;});

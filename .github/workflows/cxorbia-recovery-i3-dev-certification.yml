@@ -6523,7 +6523,7 @@ jobs:
 
   i3-b14-qa-provider-proof:
    needs: canonical-candidate-authority
-   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]')||contains(github.event.head_commit.message,'[i3-f3-qa-inspect-run2768]'))&&needs.canonical-candidate-authority.result=='success'}}
+   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]')||contains(github.event.head_commit.message,'[i3-f3-qa-inspect-run2768]')||contains(github.event.head_commit.message,'[i3-f3-qa-cleanup-run2768]'))&&needs.canonical-candidate-authority.result=='success'}}
    runs-on: ubuntu-24.04
    permissions: {contents: read, id-token: write}
    env:
@@ -6544,13 +6544,17 @@ jobs:
    - run: |
       node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --self-test
       node --test tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs
+      node --test tools/qa/cxorbia-i3-f3-run2768-cleanup.test.mjs
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p .tmp/i3-b14-provider-qa
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      if jq -e '.head_commit.message | contains("[i3-f3-qa-inspect-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+      if jq -e '.head_commit.message | contains("[i3-f3-qa-cleanup-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+        export CXORBIA_F3_RUN2768_CLEANUP_GATE=ROOT_REVIEWED_RUN2770_EXACT_OWNED_ORPHAN_20261124
+        node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-cleanup-run2768
+      elif jq -e '.head_commit.message | contains("[i3-f3-qa-inspect-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
         node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-inspect-run2768
         jq -e '.state.schemaVersion=="cxorbia.f3.run2768.orphan-readback.v1" and .state.target.runId=="45386193183" and .state.writes==0 and .state.providerWrites==0 and .state.productionWrites==0 and (.state.documents|length)==15' .tmp/i3-b14-provider-qa/f3-run2768-orphan-readback.json >/dev/null
       elif jq -e '.head_commit.message | contains("[i3-f3-qa-endpoint]")' "$GITHUB_EVENT_PATH" >/dev/null; then

@@ -1,0 +1,150 @@
+{
+  "state": {
+    "schemaVersion": "cxorbia.f3.run2768.orphan-readback.v1",
+    "target": {
+      "runId": "45386193183",
+      "runAttempt": "1",
+      "owner": "f3-qa-45386193183-1",
+      "firebaseProject": "cxorbia-backend-dev",
+      "tenantId": "tya",
+      "projectId": "f3-qa-20261124",
+      "sourceRevision": "fa89c4b7e02fab97cb5c932e832ede7712d02cf698da47bc50fbb3c1508106d0",
+      "receiptPath": "tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40",
+      "sourceReceiptSha256": "89bd49c65e0bab70ff9224797ca04413696ac326ecaa3679f76bf01bf63667c8",
+      "healthEvidenceSha256": "ef496b87f098af7b86043f839a598b47de16478de1fc2debd9e23a3fa1bc0430"
+    },
+    "readAt": "2026-11-24T12:00:58.134Z",
+    "lock": {
+      "path": "tenants/tya/commandReceipts/hr-scope-38ba66b3872622d6dcfa5d81598618cb11b30b347f6c49a26f7e3691843c186d",
+      "exists": true,
+      "data": {
+        "receiptPath": "tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40",
+        "attemptId": "3ac9b317-46b4-47d1-abb3-60fe3bace5aa",
+        "expiresAt": 1795520611209,
+        "projectId": "f3-qa-20261124",
+        "status": "partial"
+      },
+      "digest": "00c688a80c8de65c07f9eafd0b64787c4b824eeba05dfc0ae4ddbbd67504beab",
+      "updateTime": "2026-11-24T11:41:31.812Z"
+    },
+    "documents": [
+      {
+        "path": "tenants/tya/projects/f3-qa-20261124",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/users/f3-qa-45386193183-1-admin",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_45c62e0543d229c8ca625f3cf857",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_ec25c41b6656f0000daef0af1398",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/integrationSettings/f3-qa-45386193183-1-GT",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/integrationSettings/f3-qa-45386193183-1-HN",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shoppers/qa_f3_20261124_gt_a",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shoppers/qa_f3_20261124_gt_b",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shoppers/qa_f3_20261124_hn_a",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shoppers/qa_f3_20261124_hn_b",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_e4f29d49eb",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shopperIdentityCrosswalk/shopper_gt_7a8efb9b6e",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shopperIdentityCrosswalk/shopper_hn_4dab8ab9da",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      },
+      {
+        "path": "tenants/tya/shopperIdentityCrosswalk/shopper_hn_2c9c745287",
+        "exists": false,
+        "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "qaOwner": null
+      }
+    ],
+    "projectCollections": [],
+    "receiptCollections": [],
+    "auth": {
+      "uid": "f3-qa-45386193183-1-admin",
+      "exists": false
+    },
+    "writes": 0,
+    "providerWrites": 0,
+    "productionWrites": 0,
+    "priorCommittedBaselineAvailable": false
+  },
+  "plan": {
+    "decision": "REVIEWABLE_F3_RUN2768_EXPIRED_OWNED_ORPHAN",
+    "action": "delete_exact_expired_qa_coordination_lock_only",
+    "lockPath": "tenants/tya/commandReceipts/hr-scope-38ba66b3872622d6dcfa5d81598618cb11b30b347f6c49a26f7e3691843c186d",
+    "lockDigest": "00c688a80c8de65c07f9eafd0b64787c4b824eeba05dfc0ae4ddbbd67504beab",
+    "attemptId": "3ac9b317-46b4-47d1-abb3-60fe3bace5aa",
+    "receiptPath": "tenants/tya/commandReceipts/hr-53fe7531b74aedc6106a3cb2bf661999a1e50fb25d0fe14faddab974a4f3fe40",
+    "sourceStateDigest": "96ec8dcdb09acf5b26dcc6f9a44a6af37eda63aa37c5d7892de00c5cebd51031",
+    "restoresHistoricalBaseline": false,
+    "priorCommittedBaselineAvailable": false,
+    "requiresRootWriter": true,
+    "operationalDocumentWrites": 0,
+    "remoteMakeWrites": 0,
+    "authWrites": 0,
+    "productionWrites": 0
+  },
+  "stateDigest": "96ec8dcdb09acf5b26dcc6f9a44a6af37eda63aa37c5d7892de00c5cebd51031"
+}
