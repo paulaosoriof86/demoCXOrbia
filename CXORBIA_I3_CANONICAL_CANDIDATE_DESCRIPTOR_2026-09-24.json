@@ -35726,16 +35726,35 @@
   },
   "currentAutomationReceipt": {
     "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
-    "path": "docs/checkpoints/CXORBIA_I3_RUN45439093828_ATTEMPT1_EXECUTION_JOURNAL.json",
-    "gitBlob": "4cfdb78d54ff164e05f8d5e34f0921c191b77c88",
-    "runId": 45439093828,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45486955118_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "gitBlob": "2bf8cdddd4042711b8f7103e854e4d3b7a9ab05f",
+    "runId": 45486955118,
     "runAttempt": 1,
     "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
-    "pendingTypedResults": [],
+    "pendingTypedResults": [
+      {
+        "jobId": 138774772461,
+        "name": "canonical-candidate-authority",
+        "conclusion": "failure",
+        "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+      }
+    ],
     "materializationReceiptPath": null,
     "production": false
   },
-  "currentResultIncorporationQueue": [],
+  "currentResultIncorporationQueue": [
+    {
+      "jobId": 138774772461,
+      "name": "canonical-candidate-authority",
+      "conclusion": "failure",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
+      "runId": 45486955118,
+      "runAttempt": 1,
+      "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45486955118_ATTEMPT1_EXECUTION_JOURNAL.json",
+      "journalBlob": "2bf8cdddd4042711b8f7103e854e4d3b7a9ab05f",
+      "controlHead": "7be3701d3da86f0f125b9239b28d7db977668224"
+    }
+  ],
   "pendingDevSuccessor": {
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
