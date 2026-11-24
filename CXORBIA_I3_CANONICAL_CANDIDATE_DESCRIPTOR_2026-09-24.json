@@ -225,7 +225,7 @@
   "productTreeAuthority": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
   "predecessorProductSourceSha": "3206918d84ed45d33851bff266de42ad59e546cb",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V716_2026-11-24.json",
-  "findingsLedgerExpectedGitBlob": "a8a8fbb93e0894f1a8505c8926d069b700acff25",
+  "findingsLedgerExpectedGitBlob": "42300b6b11d3c6402f4ec16e2182e435aed36a55",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -3363,7 +3363,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ecddde3036f5315ec471d5455d6ef475690e8384",
+  "moduleTruthExpectedGitBlob": "4f926e727389dc784af63db834f6bb5d050a509a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -18893,11 +18893,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V389.json",
-      "gitBlob": "ecddde3036f5315ec471d5455d6ef475690e8384"
+      "gitBlob": "4f926e727389dc784af63db834f6bb5d050a509a"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V716_2026-11-24.json",
-      "gitBlob": "a8a8fbb93e0894f1a8505c8926d069b700acff25"
+      "gitBlob": "42300b6b11d3c6402f4ec16e2182e435aed36a55"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -35378,5 +35378,16 @@
     "production": false,
     "terminalCertified": false,
     "fullDomain": false
+  },
+  "run2763ControlRepair20261124": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "failedRunId": 45378260805,
+    "failedJobId": 138390208961,
+    "failure": "POSTDEPLOY_SEAL_MISMATCH:matrixRun",
+    "cause": "latestDevMaterialization aliases in matrix/ledger retained RUN2758 despite immutable RUN2761 currentMaterialization",
+    "fix": "Bind both latestDevMaterialization aliases to the exact verified RUN2761 receipt; preserve previous values as historical",
+    "productChanged": false,
+    "newDomainMatches": 0,
+    "production": false
   }
 }
