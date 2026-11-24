@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-fields-refresh-source-proof.v1",
+  "createdAt": "2026-11-24T09:34:48.751346+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_HR_FIELD_MIRROR_AND_EDITOR_REFRESH_SOURCE_PENDING_DEV",
+  "sourceSha": "3206918d84ed45d33851bff266de42ad59e546cb",
+  "sourceTree": "8842eca5f51bc8b7fba40fb9794d6f328ae17a0a",
+  "predecessorProductSourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_FIELDS_REFRESH_COMBINED_SCOPE_20261124.json",
+  "scopeReceiptBlob": "9f6facdd6100ad5dedca65df723364e8b13b0f47",
+  "sourceTestsPass": 96,
+  "sourceTestsFail": 0,
+  "sourceVerification": {
+    "testsPass": 96,
+    "testsFail": 0,
+    "files": [
+      "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+      "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+    ],
+    "syntaxChecks": true,
+    "diffCheck": true,
+    "historicalAndCurrentHrFieldsRefresh": true,
+    "sameRevisionReplayWrites": 0,
+    "explicitNullClears": true,
+    "preservedFinanceFields": true,
+    "pendingCausalIntentPreserved": true,
+    "activeEditorIsNotRemounted": true,
+    "deferredRefreshReadsLatestSourceAfterEditorCloses": true,
+    "routineRefreshShellMounts": 0,
+    "initialAuthorityShellMounts": 1,
+    "cacheMsUnchanged": 5000
+  },
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+  ],
+  "ownerGitBlobs": {
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "1d4260c091d751c2fedb4b86c866bf007a7d87d2",
+    "app/adapters/tya-live-source-refresh-watch-v2.js": "07255fab654487c1bb9a15d2575a9929f34409bd",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js": "c97ffc18a2040a377e3ab5906071904d7bc5a166"
+  },
+  "findings": [
+    {
+      "id": "VRM-363",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_VISIT_FIELD_MIRROR_PENDING_P0_20261124.json",
+        "gitBlob": "31879da145551f9d8380747f980c430977e2611a"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-364",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_LIVE_REFRESH_EDITOR_P0_20261124.json",
+        "gitBlob": "8eeb9c7141a26eaf3993411f889e5eb40f1954b8"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    }
+  ],
+  "devPublished": false,
+  "production": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "domainPromotion": false,
+  "f3RemoteAckClaimed": false,
+  "review": {
+    "scope": "Source QA only. Preserve exact paired RUN2758 DEV until successor readback. F3, T&A review integration and remaining domain clauses stay open."
+  }
+}

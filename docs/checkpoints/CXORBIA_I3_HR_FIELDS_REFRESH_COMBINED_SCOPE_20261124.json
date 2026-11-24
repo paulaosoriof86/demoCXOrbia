@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-combined-existing-scopes.v1",
+  "iteration": "I3",
+  "state": "EXACT_PRECODE_P0_SCOPES",
+  "precodeReceipts": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_VISIT_FIELD_MIRROR_PENDING_P0_20261124.json",
+      "gitBlob": "31879da145551f9d8380747f980c430977e2611a"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_LIVE_REFRESH_EDITOR_P0_20261124.json",
+      "gitBlob": "8eeb9c7141a26eaf3993411f889e5eb40f1954b8"
+    }
+  ],
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-c6-unified-human-runtime-v1.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-363",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_VISIT_FIELD_MIRROR_PENDING_P0_20261124.json",
+        "gitBlob": "31879da145551f9d8380747f980c430977e2611a"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-364",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_LIVE_REFRESH_EDITOR_P0_20261124.json",
+        "gitBlob": "8eeb9c7141a26eaf3993411f889e5eb40f1954b8"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    }
+  ],
+  "sourceVerification": {
+    "testsPass": 96,
+    "testsFail": 0,
+    "files": [
+      "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+      "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
+    ],
+    "syntaxChecks": true,
+    "diffCheck": true,
+    "historicalAndCurrentHrFieldsRefresh": true,
+    "sameRevisionReplayWrites": 0,
+    "explicitNullClears": true,
+    "preservedFinanceFields": true,
+    "pendingCausalIntentPreserved": true,
+    "activeEditorIsNotRemounted": true,
+    "deferredRefreshReadsLatestSourceAfterEditorCloses": true,
+    "routineRefreshShellMounts": 0,
+    "initialAuthorityShellMounts": 1,
+    "cacheMsUnchanged": 5000
+  }
+}
