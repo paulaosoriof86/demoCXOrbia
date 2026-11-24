@@ -20,7 +20,7 @@ fi
 # P0367: prepare the existing DEV mailbox runtime. Policy may permit SMTP, but the
 # send flag below stays false until a separately consented provider proof. This
 # does not supply mailbox credentials, read messages or submit SMTP traffic.
-mailbox_binding="$(node --input-type=module <<'NODE'
+mailbox_binding="$(CXORBIA_DEPLOY_IMAGE="$image" node --input-type=module <<'NODE'
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
@@ -50,10 +50,22 @@ try{
   const descriptor=process.env.CANDIDATE_DESCRIPTOR?JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR,'utf8')):{};
   const hold=descriptor.currentMailboxEnvironmentHold;
   if(hold?.state==='HOLD_MAIL_UNCONFIGURED'){
-    ensure(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV'&&descriptor.pairedBuildResumeRequest?.state==='RESUME_EXACT_SUCCESSFUL_BUILD','HOLD_EXECUTION_MODE_INVALID');
+    const resume=descriptor.pairedBuildResumeRequest,pending=descriptor.pendingDevSuccessor;
+    const newBuild=!resume&&pending?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING'&&pending.production===false&&pending.devPublished===false;
+    ensure(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV'&&(resume?.state==='RESUME_EXACT_SUCCESSFUL_BUILD'||newBuild),'HOLD_EXECUTION_MODE_INVALID');
     ensure(hold.classification==='ENVIRONMENT_FAILURE'&&hold.production===false&&descriptor.i4Authorized!==true,'HOLD_SCOPE_INVALID');
     ensure(hold.sourceSha===process.env.FOCAL_SOURCE&&hold.sourceSha===descriptor.productSourceSha&&hold.sourceTree===descriptor.productTreeAuthority,'HOLD_SOURCE_DRIFT');
-    ensure(hold.runtimeRevision===current.status?.latestReadyRevisionName&&hold.failedRunId===descriptor.pairedBuildResumeRequest?.originalBuildRunId,'HOLD_PREDECESSOR_DRIFT');
+    ensure(hold.runtimeRevision===current.status?.latestReadyRevisionName,'HOLD_PREDECESSOR_DRIFT');
+    if(newBuild){
+      ensure(pending.sourceSha===hold.sourceSha&&pending.sourceTree===hold.sourceTree&&pending.sourceTree===process.env.FOCAL_TREE,'HOLD_PENDING_SOURCE_DRIFT');
+      const served=descriptor.currentMaterialization,seal=descriptor.postDeployRunSeal;
+      ensure(served?.sourceSha!==hold.sourceSha&&served?.runtimeRevision===hold.runtimeRevision&&seal?.runtimeRevision===hold.runtimeRevision&&
+        seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&JSON.stringify(pending.servingPairedMaterialization)===JSON.stringify(served)&&
+        JSON.stringify(pending.servingRuntimeSeal)===JSON.stringify(seal),'HOLD_PREDECESSOR_DRIFT');
+      let build;try{build=JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/build.json','utf8'));}catch{fail('HOLD_BUILD_RECEIPT_REQUIRED');}
+      ensure(build.builds===1&&build.production===false&&build.sourceSha===hold.sourceSha&&build.sourceTree===hold.sourceTree&&
+        build.imageTag===process.env.CXORBIA_DEPLOY_IMAGE,'HOLD_BUILD_IDENTITY');
+    }else ensure(hold.failedRunId===resume.originalBuildRunId,'HOLD_PREDECESSOR_DRIFT');
     ensure(!found.length&&['CXORBIA_USER_MAILBOX_ENABLED','CXORBIA_USER_MAILBOX_SEND_ENABLED'].every(name=>entries.filter(e=>e.name===name).every(e=>e.value==='false')),'HOLD_REQUIRES_UNCONFIGURED_RUNTIME');
     const lookup=cli(['secrets','describe','cxorbia-dev-user-mailbox-credential-key']);
     const recognized=String(lookup.stderr||'').match(/^ERROR: \(gcloud\.secrets\.describe\) (NOT_FOUND|PERMISSION_DENIED|UNAVAILABLE|FAILED_PRECONDITION|UNAUTHENTICATED|RESOURCE_EXHAUSTED)(?:[ :]|$)/m)?.[1];

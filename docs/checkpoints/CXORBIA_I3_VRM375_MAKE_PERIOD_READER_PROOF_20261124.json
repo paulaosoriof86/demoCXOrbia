@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm375.make-window-reader-proof.v1",
+  "findingId": "VRM-375",
+  "iteration": "I3",
+  "state": "HOLD_PENDING_RUNTIME_WINDOW",
+  "scenarioId": 10200465,
+  "beforeLastEdit": "2026-11-24T10:27:38.268Z",
+  "afterLastEdit": "2026-11-24T17:08:04.650Z",
+  "flow": [
+    1,
+    5,
+    2,
+    3,
+    4
+  ],
+  "registeredTupleGroupsPreserved": 40,
+  "metadataScopeGroups": 4,
+  "readFilterGroups": 44,
+  "dynamicDateGroupsFirst": true,
+  "metadataUrlUsesValidatedRawWorksheetGuid": true,
+  "inventoryCompleteFields": [
+    "inventoryComplete1",
+    "inventoryComplete2"
+  ],
+  "inventoryComplete": true,
+  "inventorySheets": 36,
+  "nextDecember2026Observed": false,
+  "runs": [
+    {
+      "label": "positive",
+      "execution": {
+        "id": "148056750c734046a5c62640a6ea26d9",
+        "status": "success",
+        "startedAt": "2026-11-24T17:08:07.720Z",
+        "duration": 4829,
+        "operations": 3,
+        "credits": 3
+      },
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:07.875Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:09.364Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:11.149Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:12.456Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:12.543Z"
+        }
+      ]
+    },
+    {
+      "label": "inventory",
+      "execution": {
+        "id": "24735ff6db7d4a44a5aedfe5bd271279",
+        "status": "success",
+        "startedAt": "2026-11-24T17:08:24.842Z",
+        "duration": 5370,
+        "operations": 3,
+        "credits": 3
+      },
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:25.004Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:26.852Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:28.475Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:30.117Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:30.206Z"
+        }
+      ]
+    },
+    {
+      "label": "wrongMonth",
+      "execution": {
+        "id": "cf997db30e364ed28efbb369ff43da0d",
+        "status": "success",
+        "startedAt": "2026-11-24T17:08:33.295Z",
+        "duration": 1721,
+        "operations": 1,
+        "credits": 1
+      },
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:33.455Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-24T17:08:34.997Z"
+        }
+      ]
+    }
+  ],
+  "firstProbeFailure": {
+    "executionId": "e8def5d8a1d04cd888c358e319429467",
+    "classification": "PROVIDER_FAILURE",
+    "cause": "Connector rejected percent-encoded worksheet GUID; corrected to the existing validated raw GUID convention",
+    "fixedBy": "148056750c734046a5c62640a6ea26d9"
+  },
+  "hrWrites": 0,
+  "providerWriteRequests": 0,
+  "production": false
+}

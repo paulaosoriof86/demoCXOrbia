@@ -34,7 +34,7 @@ export function validateZipListing(entries){
  must(new Set(entries).size===entries.length,'SOURCE_FAILURE:DUPLICATE_ZIP_ENTRY');
 }
 
-async function downloadArtifact(api,artifact,token){
+export async function downloadArtifact(api,artifact,token){
  const url=`https://api.github.com/repos/${REPO}/actions/artifacts/${artifact.id}/zip`;
  const redirect=await fetch(url,{redirect:'manual',headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json'}});
  must([302,200].includes(redirect.status),'PROVIDER_FAILURE:ARTIFACT_DOWNLOAD');
@@ -124,7 +124,9 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
   const artifact=selectPairedArtifact({run,job:paired,artifacts}),download=await downloadArtifact(api,artifact,token);
   try{
    const result=readJson(path.join(download.folder,'result.json'));
-   const bundle=makeMaterializationReceipt({run,job:paired,artifact,result,hrResult:readJson(path.join(download.folder,'hr-after/result.json')),mailbox:fs.existsSync(path.join(download.folder,'mailbox-environment-readback.json'))?readJson(path.join(download.folder,'mailbox-environment-readback.json')):null,sourceAssets:sourceAssetHashes(result,run.head_sha),verifiedArchiveDigest:download.digest});
+   const runDescriptor=JSON.parse(git('show',`${run.head_sha}:${DESCRIPTOR}`));
+   const hrWindowFile=path.join(download.folder,'hr-window-readback.json');
+   const bundle=makeMaterializationReceipt({run,job:paired,artifact,result,hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,requireHrWindow:runDescriptor.pendingDevSuccessor?.hrPeriodWindowRequired===true,hrResult:readJson(path.join(download.folder,'hr-after/result.json')),mailbox:fs.existsSync(path.join(download.folder,'mailbox-environment-readback.json'))?readJson(path.join(download.folder,'mailbox-environment-readback.json')):null,sourceAssets:sourceAssetHashes(result,run.head_sha),verifiedArchiveDigest:download.digest});
    must(git('rev-parse',`${result.sourceSha}^{tree}`)===result.sourceTree,'SOURCE_FAILURE:PRODUCT_TREE_MISMATCH');
    if(result.sourceSha!==controls.descriptor.productSourceSha||result.sourceTree!==controls.descriptor.productSourceTree){
     files.set(bundle.receiptPath,jsonBytes(bundle.receipt));outcome='RECORDED_HISTORICAL_SOURCE_RESULT_NO_CURRENT_PROMOTION';
@@ -177,7 +179,9 @@ export async function pendingRuns({api,currentRunId,currentRunAttempt=1,descript
   if(knownPaths.has(journal)){must(typeof readJournal==='function','MAPPING_FAILURE:JOURNAL_READER_REQUIRED');validateConsumedJournal(await readJournal(journal),run,attempt);continue;}
   if(run.id===Number(descriptor.postDeployRunSeal?.runId)&&attempt<=Number(descriptor.currentMaterialization?.runAttempt||1))continue;
   const jobs=await pages(api,`${root}/actions/runs/${run.id}/attempts/${attempt}/jobs`,'jobs');
-  if(jobs.some(j=>![SELF,'canonical-candidate-authority'].includes(j.name)&&j.conclusion&&j.conclusion!=='skipped'))pending.push({runId:run.id,runAttempt:attempt});
+  // A control-only execution also needs a durable journal when its finalizer
+  // was interrupted. Recording its result never promotes product evidence.
+  if(jobs.some(j=>j.name!==SELF&&j.conclusion&&j.conclusion!=='skipped'))pending.push({runId:run.id,runAttempt:attempt});
  }
  return pending;
 }

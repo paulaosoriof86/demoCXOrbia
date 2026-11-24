@@ -46,7 +46,12 @@ for(const [name,mutate]of [
  ['nested hosting source',o=>{o.ledger.currentTruth.currentHostingSourceSha='old';}],
  ['nested candidate materialization',o=>{o.ledger.canonicalFunctionalCandidate.currentMaterialization={runId:1};}],
  ['nested matrix materialization',o=>{o.matrix.productSource.currentMaterialization={runId:1};}],
+ ['snapshot date',o=>{o.pointer.asOf='2026-11-18T00:00:00Z';}],
+ ['project completed reader repeated as pending',o=>{o.matrix.modules.find(m=>m.domain==='projects-periods-hr-source-wizard-multiproject').actionRequired='Repeat original Excel binding';}],
+ ['client predecessor C3 presented as current',o=>{o.matrix.modules.find(m=>m.domain==='client-portal-reportkit').actionRequired='RUN2564 current-source C3 is complete';}],
  ['module serving source',o=>{o.matrix.modules[0].lastServedSource='old';}],
+ ['owner serving source',o=>{o.matrix.sourceFiles.find(x=>x.currentServingAuthority).lastServedSource='old';}],
+ ['owner serving receipt',o=>{o.matrix.sourceFiles.find(x=>x.currentServingAuthority).currentServingAuthority.runId=1;}],
  ])test(`previously unguarded active alias rejects ${name}`,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
 test('historical archives stay historical and do not become active source assertions',()=>{
  const {out}=project();out.matrix.historicalFixture={currentMaterialization:{sourceSha:'old'},nextExactAction:'old'};assert.equal(validateProjectionRegistry(out).pass,true);
@@ -109,6 +114,20 @@ test('startup recovers every missing attempt and ignores mutable checkpoint date
  const api=async route=>route.includes('/attempts/')?{jobs:[f.job]}:{workflow_runs:[f.run]};
  const pending=await pendingRuns({api,currentRunId:f.run.id+1,currentRunAttempt:1,descriptor:{updatedAt:'2030-01-01',postDeployRunSeal:{runId:f.run.id-1}},knownPaths:new Map()});
  assert.deepEqual(pending,[{runId:f.run.id,runAttempt:1},{runId:f.run.id,runAttempt:2}]);
+});
+for(const conclusion of ['success','failure','cancelled','timed_out','skipped'])test('interrupted control-only finalizer recovers '+conclusion,async()=>{
+ const f=fixture();f.run.status='completed';
+ const api=async route=>route.includes('/attempts/')?{jobs:[{name:'canonical-candidate-authority',status:'completed',conclusion}]}:{workflow_runs:[f.run]};
+ const pending=await pendingRuns({api,currentRunId:f.run.id+1,descriptor:{postDeployRunSeal:{runId:f.run.id-1}},knownPaths:new Map()});
+ assert.deepEqual(pending,conclusion==='skipped'?[]:[{runId:f.run.id,runAttempt:1}]);
+});
+test('control recovery preserves consumed attempt and skips running latest attempt',async()=>{
+ const f=fixture();f.run.run_attempt=3;
+ const old={...f.run,run_attempt:1};const journal=runJournal({...f,run:old,jobs:[],artifacts:[],now:'2026-11-24T16:05:00Z'});journal.outcome='RECORDED_EXECUTION_NO_PRODUCT_PROMOTION';
+ const path=`docs/checkpoints/CXORBIA_I3_RUN${f.run.id}_ATTEMPT1_EXECUTION_JOURNAL.json`;
+ const api=async route=>route.includes('/attempts/')?{jobs:[{name:'canonical-candidate-authority',conclusion:'cancelled'}]}:{workflow_runs:[f.run]};
+ const pending=await pendingRuns({api,currentRunId:f.run.id,currentRunAttempt:3,descriptor:{postDeployRunSeal:{runId:f.run.id-1}},knownPaths:new Map([[path,'blob']]),readJournal:async()=>journal});
+ assert.deepEqual(pending,[{runId:f.run.id,runAttempt:2}]);
 });
 test('publication stage advances while D08/C09/C10 obligations remain explicit',()=>{
  const {out}=project();assert.ok(!out.matrix.modules.some(m=>m.classification==='SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION'));

@@ -38,6 +38,7 @@ case "$ACTIVE_STATUS" in
 esac
 jq -n -S --arg d "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" --argjson reuse "$PAIR_ENV_ONLY" --argjson b "$(jq -er .builds "$FOCAL_OUT/build.json")" '{decision:$d,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:$b,runtimeDeploys:1,hostingDeploys:(if $reuse then 0 else 1 end),storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
 if test -f "$FOCAL_OUT/build-resume.json"; then jq --slurpfile resume "$FOCAL_OUT/build-resume.json" '.+{buildProvenance:$resume[0]}' "$FOCAL_OUT/result.json" > "$FOCAL_OUT/next.json"; mv "$FOCAL_OUT/next.json" "$FOCAL_OUT/result.json"; fi
+if test -f "$FOCAL_OUT/hr-history-seed.json"; then node tools/qa/cxorbia-i3-hr-period-window-dev-readback.mjs; fi
 ;;
 verify)
 set -Eeuo pipefail

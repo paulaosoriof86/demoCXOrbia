@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "iteration": "I3",
+  "state": "SOURCE_PROVEN_PENDING_CANONICAL_CI_DEV",
+  "findingId": "VRM-375",
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "sourceTestsPass": 725,
+  "sourceTestsFail": 0,
+  "controlTestsPass": 78,
+  "controlTestsFail": 0,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/tya-cumulative-read-model-v2.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+    "tools/qa/cxorbia-i3-gthn-canonical-consumers.test.mjs",
+    "tools/qa/cxorbia-i3-hr-period-window-dev-readback.test.mjs",
+    "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-375",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT"
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM375_HR_PERIOD_WINDOW_SCOPE_20261124.json",
+  "scopeReceiptBlob": "b3ce0dd7add59f36617427cea79649264eec4c29",
+  "focalLogSha256": "c4cadb7bfb31056408cf3a198404e098a5c221e96da36c1ef7ba1fb01b7c11f6",
+  "controlLogSha256": "be10b7a42f4e0f5b541493de695c75b7f60214d701d0540fc6152905c9ec6593",
+  "makeReaderProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM375_MAKE_PERIOD_READER_PROOF_20261124.json",
+    "gitBlob": "b8d161b91db39e95f83be0aecd0685865d6b12c4"
+  },
+  "hrPeriodWindowRequired": true,
+  "expectedNextVerification": "Existing paired DEV pipeline: seed accepted confirmed history without operational import; read adjacent window and one explicit older period; automatic exact result consumption.",
+  "buildsPerformed": 0,
+  "devPublished": false,
+  "production": false,
+  "newDomainMatches": 0,
+  "createdAt": "2026-11-24T17:42:53.098Z"
+}

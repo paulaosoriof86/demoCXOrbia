@@ -4597,6 +4597,10 @@ jobs:
       echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
       [[ "$PAIR_ENV_ONLY" == true || "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs
       if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]] && ! jq -e '.pass==true and .knownFailedPredecessor==true' "$FOCAL_OUT/vrm356-raw-range-preflight.json" >/dev/null 2>&1; then QA_OUT="$FOCAL_OUT/hr-before" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs; fi
+   - name: Preserve accepted HR history and configure the monthly window
+     if: env.ACTIVE_STATUS=='HOLD_I3_GTHN_PENDING_DEV'
+     env: {GH_TOKEN: '${{ github.token }}'}
+     run: node tools/qa/cxorbia-i3-hr-period-history-seed.mjs
    - if: env.ACTIVE_STATUS=='HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED'
      run: |
       set -Eeuo pipefail

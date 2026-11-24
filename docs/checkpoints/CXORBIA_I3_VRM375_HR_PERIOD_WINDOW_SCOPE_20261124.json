@@ -1,0 +1,409 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scope.v1",
+  "iteration": "I3",
+  "findingId": "VRM-375",
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "state": "HOLD",
+  "expectedParentSha": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+  "expectedParentTree": "c3b2d0c4bee3ac008e5786b3ee30f6c0368708ea",
+  "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "approvedRequirement": "Paula 2026-11-24: routine previous/current/next available month; older month only explicit. Future supplies reservations, current operations, previous late submissions/corrections. Preserve history.",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/router.js",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/tya-cumulative-read-model-v2.js"
+  ],
+  "moduleTruth": [
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "lastApprovedSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "lastApprovedBlob": "815d0c51ae9715e1e8ac23f04d6c064a87c3749d",
+      "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "815d0c51ae9715e1e8ac23f04d6c064a87c3749d",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "lastApprovedSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "lastApprovedBlob": "67cf4f7365a5024285b3b6df7a88945bca512d7d",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "67cf4f7365a5024285b3b6df7a88945bca512d7d",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "lastApprovedSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "lastApprovedBlob": "ee5cbcf97ee4b7354e66d2d647dcb01e98bcb107",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "ee5cbcf97ee4b7354e66d2d647dcb01e98bcb107",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "lastApprovedSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "lastApprovedBlob": "a3fc408138457148e3de45616c804eb5429a8082",
+      "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "F9Blob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
+      "approvedLineage": "C6_LIVE_HR_PASS",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "9e2b20ba5d0200e979d71197f6ed686ff70f440f",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "lastApprovedSource": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "lastApprovedBlob": "5db5a4f3d4cb97eec4674d0c25cb50dabed00525",
+      "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "F9Blob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
+      "approvedLineage": "C6_E2E_PASS",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "5db5a4f3d4cb97eec4674d0c25cb50dabed00525",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "path": "app/core/router.js",
+      "lastApprovedSource": "ea0def43f653b014a271d7404df5604f2a9e2805",
+      "lastApprovedBlob": "72ea4e844d829e170f61e8fc0ba589e1d73c57bd",
+      "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "F9Blob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "approvedLineage": "M1_APPROVED_EXACT",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "ef063c39846e923b33300ec41018bbe8ceb90814",
+      "HEAD": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "All-period reader plus visible-history/fresh-authority coupling; requested previous/current/next policy missing."
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "path": "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "072023db9bd5e1994ab0bb844807179c8fe9a8c1",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "072023db9bd5e1994ab0bb844807179c8fe9a8c1",
+      "HEAD": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "Provider-auto discovery cannot bind newly created monthly worksheet without manual registry edits; metadata inventory contract lacks completeness proof."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "5d839e01af2c75cf8402eadc4faab6298bc8f136",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "5d839e01af2c75cf8402eadc4faab6298bc8f136",
+      "HEAD": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "Provider-auto discovery cannot bind newly created monthly worksheet without manual registry edits; metadata inventory contract lacks completeness proof."
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "lastApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "lastApprovedBlob": "0380bfe5f06694436ba74adcf8ac9fcf51df44eb",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "0380bfe5f06694436ba74adcf8ac9fcf51df44eb",
+      "HEAD": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "VM reproduction shows historical assign/application/finance commands transmitted with current-window revision despite missing exact fresh target; reject before provider transport."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "path": "app/adapters/tya-cumulative-read-model-v2.js",
+      "lastApprovedSource": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+      "lastApprovedBlob": "f5e752572f112cfbe7192d824ba0b4a1c87c319a",
+      "F9Source": null,
+      "F9Blob": null,
+      "approvedLineage": "POST_F9_RECOVERY_SUCCESSOR",
+      "sourceSuccessor": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentBlob": "f5e752572f112cfbe7192d824ba0b4a1c87c319a",
+      "HEAD": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+      "liveRuntime": "cxorbia-live-hr-dev-00390-bpc",
+      "liveHosting": "sites/cxorbia-backend-dev/versions/0245a82f44260d53",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "reason": "PRE-I4 ADMIN-002 archives postulations using any composed HR visit; confirmed historical evidence must not trigger live-HR state adjudication."
+    }
+  ],
+  "historicalSeed": {
+    "artifactId": 14934489092,
+    "runId": 45425168217,
+    "artifactDigest": "sha256:e20cacd0b7f3fb4b959fffc472201579208143effea5a372a4fdf5a64bbac909",
+    "snapshotSha256": "437426fb7e95fd2a7d9dfaa7d6740a7aa24e34a20a8ef54f61dfc63167589032",
+    "observedAt": "2026-11-24T15:28:33.482Z",
+    "visits": 836,
+    "periods": 19,
+    "purpose": "Confirmed read-model history only; no operational import or HR writes",
+    "countryPeriods": [
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-05"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-06"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-07"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-08"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-09"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-10"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-11"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2025-12"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-01"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-02"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-03"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-04"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-05"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-06"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-07"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-08"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-09"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-10"
+      },
+      {
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-11"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-05"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-06"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-07"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-08"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-09"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-10"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-11"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2025-12"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-01"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-02"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-03"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-04"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-05"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-06"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-07"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-08"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-09"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-10"
+      },
+      {
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-11"
+      }
+    ]
+  },
+  "invariants": [
+    "Fresh window revision stays separate from historical presentation data.",
+    "Replace whole read country-period; never resurrect deleted rows by union.",
+    "Explicit historical read propagates same selection through preflight and command.",
+    "No production, original HR, visits, shoppers or Auth writes by seed.",
+    "Keep six MATCH and B4/B5/B6/B7; certify only exact new evidence."
+  ],
+  "production": false,
+  "i4Authorized": false,
+  "scopeExtensionBeforeOwnerEdits": {
+    "controlHead": "33ecf70b1e145e0f47b5bfebe6664c348706c441",
+    "reason": "Explicit next-available-month requirement; live metadata gated by exact configured workbook, no historical-row sweep",
+    "newOwners": [
+      "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+    ]
+  },
+  "initialScopeCapture": {
+    "expectedParentSha": "e2cdb8a543704d2aa083592bf49a7f18461a856d",
+    "expectedParentTree": "fbbd7ba10494643e4a87d2b6e42836c1f30a7774"
+  },
+  "publicationParentVerified": true,
+  "sourceTestsPass": 725,
+  "sourceTestsFail": 0,
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs",
+    "tools/qa/cxorbia-i3-gthn-canonical-consumers.test.mjs",
+    "tools/qa/cxorbia-i3-hr-period-window-dev-readback.test.mjs",
+    "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs"
+  ]
+}

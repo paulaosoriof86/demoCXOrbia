@@ -8,6 +8,10 @@ fs.mkdirSync(out,{recursive:true});
 const install=spawnSync('npm',['install','--no-save','--ignore-scripts','--package-lock=false','--no-audit','--no-fund','postal-mime@4.2.1'],{encoding:'utf8',timeout:120000});
 if(install.status!==0)throw Error('SOURCE_QA_MIME_DEPENDENCY_INSTALL_FAILED');
 const suites=[
+ 'tools/qa/cxorbia-i3-hr-period-window-dev-readback.test.mjs',
+  'backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs',
+  'tools/qa/cxorbia-i3-b8-historical-command-boundary.test.mjs',
+  'tools/qa/cxorbia-i3-gthn-canonical-consumers.test.mjs',
   'backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs',
   'backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs',
   'backend/runtime/hr-live-service/test/cxorbia-f3-field-editor.test.mjs',
