@@ -334,7 +334,7 @@ test('proved Excel successors bypass only the legacy Google preflight in the exi
   const wf=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
   const job=wf.split('  vrm154-156-dev-materialization:')[1]?.split('\n  vrm185-admin-live-adjudication:')[0]||'';
   const sourceChecks=fs.readFileSync('tools/qa/cxorbia-i3-paired-source-checks.sh','utf8');
-  assert.ok(job.includes('[[ "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs'));
+  assert.ok(job.includes('[[ "$PAIR_ENV_ONLY" == true || "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV ]] || SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm356-live-range-preflight.mjs'));
   assert.ok(job.includes('test "$(jq -r'));
   assert.ok(job.includes('bash tools/qa/cxorbia-i3-paired-source-checks.sh'));
   assert.ok(sourceChecks.includes('git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend'));

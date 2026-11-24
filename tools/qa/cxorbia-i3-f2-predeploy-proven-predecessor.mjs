@@ -6,6 +6,44 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {validatePendingDevSuccessor} from './cxorbia-i3-shock-continuity-guard.mjs';
 
+export const F3_ENV_STATUS='HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED';
+export function validateF3EnvironmentRequest(descriptor,revision){
+  const r=descriptor.runtimeEnvironmentRepairRequest,m=descriptor.currentMaterialization,s=descriptor.postDeployRunSeal;
+  assert.equal(descriptor.status,F3_ENV_STATUS,'F3 environment status');
+  assert.ok(r&&m&&s,'F3 environment authority missing');
+  assert.equal(r.schemaVersion,'cxorbia.i3.f3-runtime-environment-repair.v1');
+  assert.equal(r.classification,'ENVIRONMENT_FAILURE');
+  assert.equal(r.scope,'F3_SYNTHETIC_PROJECT_ONLY');
+  assert.equal(r.state,'REQUIRED');
+  assert.equal(r.projectId,'f3-qa-20261124');
+  assert.equal(r.production,false);assert.notEqual(descriptor.i4Authorized,true);
+  assert.equal(r.builds,0);assert.equal(r.hostingDeploys,0);assert.equal(r.operationalHrWrites,0);
+  assert.equal(m.sourceSha,descriptor.productSourceSha);assert.equal(m.sourceTree,descriptor.productTreeAuthority);
+  assert.equal(s.mode,'CURRENT_SOURCE_SERVING');
+  for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion']){
+    assert.equal(r[k],m[k],'F3 request '+k);assert.equal(s[k],m[k],'F3 seal '+k);
+  }
+  assert.equal(r.originalBuildRunId,m.runId);assert.equal(m.production,false);
+  assert.equal(r.toolboxUrl,'https://eu2.make.com/mcp/server/4b7fc076-74a6-410b-8a7b-937e972e8bbe');
+  assert.equal(r.secretName,'cxorbia-dev-f3-make-toolbox');assert.equal(r.secretVersion,'1');
+  assert.equal(revision?.metadata?.name,m.runtimeRevision,'F3 prior revision');
+  assert.equal(String(revision?.status?.imageDigest||'').split('@').at(-1),m.runtimeDigest,'F3 prior digest');
+  assert.equal(revision?.spec?.containers?.[0]?.env?.find(e=>e.name==='CXORBIA_RECOVERY_SOURCE_SHA')?.value,m.sourceSha,'F3 prior source');
+  return {decision:'PASS_F3_SAME_ARTIFACT_ENV_PREFLIGHT',builds:0,hostingDeploys:0,production:false};
+}
+export function validateF3EnvironmentReadback(descriptor,revision){
+  const r=descriptor.runtimeEnvironmentRepairRequest,m=descriptor.currentMaterialization;
+  assert.equal(descriptor.status,F3_ENV_STATUS);assert.ok(r&&m);
+  assert.equal(String(revision?.status?.imageDigest||'').split('@').at(-1),m.runtimeDigest,'F3 after digest');
+  const env=revision?.spec?.containers?.[0]?.env||[],entry=n=>env.find(e=>e.name===n);
+  for(const [k,v] of Object.entries({CXORBIA_RECOVERY_SOURCE_SHA:m.sourceSha,CXORBIA_F3_HR_FIELDS_ENABLED:'true',CXORBIA_F3_MAKE_TOOLBOX_URL:r.toolboxUrl,CXORBIA_I3_B14_DIRECT_READER_DEV:'true',CXORBIA_B14_MAKE_TOOLBOX_URL:'https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6'}))assert.equal(entry(k)?.value,v,'F3 environment '+k);
+  for(const [k,n] of [['CXORBIA_F3_MAKE_TOOLBOX_TOKEN',r.secretName],['CXORBIA_B14_MAKE_TOOLBOX_TOKEN','cxorbia-dev-b14-make-toolbox']]){
+    assert.equal(entry(k)?.value,undefined,'plaintext credential forbidden');
+    assert.deepEqual(entry(k)?.valueFrom?.secretKeyRef,{key:'1',name:n},'secret reference drift');
+  }
+  return {decision:'PASS_F3_SAME_ARTIFACT_ENV_READBACK',runtimeRevision:revision.metadata.name,runtimeDigest:m.runtimeDigest,originalBuildRunId:m.runId,sourceSha:m.sourceSha,sourceTree:m.sourceTree,builds:0,hostingDeploys:0,operationalHrWrites:0,production:false,secretValuesRead:false};
+}
+
 export function validatePredeployPredecessor({runtime,hosting,descriptor,status,source,tree,pendingDev,receipt,receiptBlob,prior,revision}){
   if(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV')assert.equal(status,descriptor.status,'pending status drift');
   assert.equal(descriptor.productSourceSha,source,'candidate source drift');
@@ -14,7 +52,9 @@ export function validatePredeployPredecessor({runtime,hosting,descriptor,status,
   let expectedHosting=descriptor.currentHostingOnlyDevMaterialization?.hostingVersion||descriptor.currentMaterialization?.hostingVersion;
   let priorProofRun=null;
   const app=runtime.spec?.template?.spec?.containers?.[0];
-  if(status==='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21'){
+  if(status===F3_ENV_STATUS){
+    validateF3EnvironmentRequest(descriptor,revision);priorProofRun=descriptor.currentMaterialization.runId;
+  }else if(status==='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21'){
     assert.equal(prior?.proofRunId,45197074228,'not last proved predecessor');
     assert.equal(prior.proofJobConclusion,'success');
     assert.equal(prior.proofResultJsonSha256,'1c529bcdcc9852b5a5813d29ede9326d55059a943f368ff53535c09b2a386507');
@@ -60,10 +100,25 @@ export function validatePredeployPredecessor({runtime,hosting,descriptor,status,
   return {decision:'PASS_EXACT_PROVEN_DEV_PREDECESSOR',priorProofRun,predecessorRuntime:expectedRuntime,predecessorHosting:expectedHosting,newSourceSha:source,production:false,writes:0};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  if(process.argv[2]==='--reuse'){
+    const descriptor=JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR,'utf8'));
+    assert.equal(descriptor.currentMaterialization.sourceSha,process.env.FOCAL_SOURCE);assert.equal(descriptor.currentMaterialization.sourceTree,process.env.FOCAL_TREE);
+    if(process.env.ACTIVE_STATUS===F3_ENV_STATUS)validateF3EnvironmentRequest(descriptor,JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/revision-before.json','utf8')));
+    else {assert.equal(descriptor.status,'HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING');assert.equal(descriptor.runtimeSourceLabelCorrectionPending,true);}
+    process.exit(0);
+  }
+  if(process.argv[2]==='--env-readback'){
+    if(process.env.ACTIVE_STATUS===F3_ENV_STATUS){
+      const proof=validateF3EnvironmentReadback(JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR,'utf8')),JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/runtime-revision.json','utf8')));
+      fs.writeFileSync(process.env.FOCAL_OUT+'/f3-environment-readback.json',JSON.stringify(proof,null,2)+'\n');console.log(JSON.stringify(proof));
+    }
+    process.exit(0);
+  }
   const [runtimePath,hostingPath,descriptorPath,status,source,tree,revisionPath]=process.argv.slice(2),read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
   assert.ok(runtimePath&&hostingPath&&descriptorPath&&status&&source&&tree,'missing exact guard arguments');
   const descriptor=read(descriptorPath),args={runtime:read(runtimePath),hosting:read(hostingPath),descriptor,status,source,tree};
   if(status==='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21')args.prior=read('.github/control/CXORBIA_I3_F2_VERIFIED_SERVING_PREDECESSOR_20261123.json');
+  if(status===F3_ENV_STATUS)args.revision=read(revisionPath);
   if(status==='HOLD_I3_GTHN_PENDING_DEV'){
     const gitBlob=p=>execFileSync('git',['rev-parse','HEAD:'+p],{encoding:'utf8'}).trim();
     args.pendingDev=validatePendingDevSuccessor({descriptor,pointer:read('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),matrix:read(descriptor.moduleTruthPath),gitBlob});

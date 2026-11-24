@@ -19,7 +19,7 @@ function runD08Preflight(){
   const e=process.env,read=p=>JSON.parse(fs.readFileSync(p,'utf8')),check=(ok,code)=>{if(!ok)throw Error(code);};
   check(e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_BRANCH');
   check(execFileSync('git',['rev-parse',e.FOCAL_SOURCE+'^{tree}'],{encoding:'utf8'}).trim()===e.FOCAL_TREE,'RELEASE_COMPOSITION_FAILURE:D08_SOURCE_TREE');
-  execFileSync('git',['diff','--quiet',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'],{stdio:'pipe'});
+  execFileSync('git',['diff','--quiet',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules',':(exclude)backend/runtime/hr-live-service/test/**'],{stdio:'pipe'});
   execFileSync(process.execPath,['--check','tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs'],{stdio:'pipe'});
   fs.mkdirSync(e.QA_OUT,{recursive:true});
   const c=read('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),d=read(e.CANDIDATE_DESCRIPTOR),pointer=c.currentD08UiQaRequest||{};
@@ -32,6 +32,7 @@ function runD08Preflight(){
   const variables={D08_QA_REQUEST:pointer.path,CXORBIA_I3_QA_SCOPE:'D08_ACADEMY_UI',CXORBIA_I3_QA_ISOLATED_WRITE_GATE:'PAULA_AUTHORIZED_D08_DEV_ONLY',DEV_REVISION:q.runtimeRevision,RUNTIME_DIGEST:q.runtimeDigest,HOSTING_VERSION_NAME:q.hostingVersion};
   for(const [k,v] of Object.entries(variables)){check(typeof v==='string'&&!/[\r\n]/.test(v),'SOURCE_FAILURE:D08_ENV_VALUE');fs.appendFileSync(e.GITHUB_ENV,k+'='+v+'\n');}
   console.log(JSON.stringify({decision:'PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT',sourceSha:q.sourceSha,providerWrites:0}));
+  return {request:q,current:c,descriptor:d};
 }
 
 function verifyD08UiResult(r){
@@ -224,6 +225,132 @@ async function runAcademyUiQaSelfTest(){
   console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
 }
 
+const D08_RUN2760_RECOVERY=Object.freeze({runId:'45364936404',runAttempt:'1',artifactId:14910495563,
+  artifactName:'cxorbia-i3-run2382-academy-b7-synthetic-45364936404',
+  artifactSha256:'4e6477931012962a8eaa14b661b3b51bee39f5eb0679f5ff255ab7e0af2f3909',journalEntry:'result.json',
+  journalSha256:'84c5d252f4b8d633c1b8b5cc4e26e703fa5a94515b06e0ff4ef09167c17523eb',
+  sourceSha:'f13b355b52e71736b1f93f2faeb9b6f483292d63',sourceTree:'97b943e502a8ee30270ace1e2b1e32d1e3699727',
+  expectedDocuments:18,expectedAuthUsers:4,policy:'EXACT_PINNED_RUN2760_FIXTURE_CLEANUP_ONLY'});
+
+function buildD08RecoveryPlan(bytes,request,base){
+  const {check,hash,same,describeCommand,verifyBundle}=academyUiQaPrimitives(),pin=request.recoveryRun2760;
+  check(pin&&Object.entries(D08_RUN2760_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
+  check(hash(bytes)===pin.journalSha256,'SOURCE_FAILURE:D08_RECOVERY_JOURNAL_HASH');
+  const j=JSON.parse(bytes.toString('utf8'));
+  check(j.schemaVersion==='cxorbia.i3.d08-ui-provider-new-session.v1'&&j.runId===pin.runId&&j.runAttempt===pin.runAttempt&&
+    j.sourceSha===pin.sourceSha&&j.sourceTree===pin.sourceTree&&j.tenantId===request.tenantId&&j.projectId===request.projectId&&
+    j.production===false&&j.hrIndependent===true&&j.fixtureIdsPreflightAbsent===true,'AUTH_FAILURE:D08_RECOVERY_JOURNAL_SCOPE');
+  const selections=[['admin','admin','a_fin_op'],['shopper','shopper','s_ruta'],['cliente','cliente','cl_ruta'],['other','shopper',null]],tag='qa_d08_'+j.runId+'_'+j.runAttempt;
+  check(j.identities?.length===4&&j.creationJournal?.length===4,'SOURCE_FAILURE:D08_RECOVERY_COUNTS');
+  const identities=selections.map(([label,role,courseId])=>{
+    const matches=j.identities.filter(x=>x.label===label),uid=tag+'_'+label;check(matches.length===1,'SOURCE_FAILURE:D08_RECOVERY_IDENTITY');const x=matches[0];
+    check(x.uid===uid&&x.role===role&&x.courseId===courseId&&x.observer===(label==='other')&&x.namespace===(role==='shopper'?'shopper':'staff')&&
+      x.memberPath==='tenants/'+j.tenantId+'/users/'+uid&&x.profilePath===(role==='shopper'?'tenants/'+j.tenantId+'/shoppers/'+uid:null)&&
+      x.state==='CREATED_VERIFIED'&&x.memberCreateDispatched===true&&(!x.profilePath||x.profileCreateDispatched===true)&&x.authIdentity?.uid===uid,
+      'AUTH_FAILURE:D08_RECOVERY_IDENTITY_OWNERSHIP');
+    for(const row of [x.expectedClaims,x.expectedMembership,...(x.profilePath?[x.expectedProfile]:[])])check(row?.qaSynthetic===true&&row.qaRunId===j.runId&&row.qaRunAttempt===j.runAttempt&&row.qaPurpose==='D08'&&row.tenantId===j.tenantId,'AUTH_FAILURE:D08_RECOVERY_TAGS');
+    return structuredClone(x);
+  });
+  const courses=selections.filter(x=>x[2]).map(([,audience,id])=>base.courses.find(c=>c.audience===audience&&c.courseId===id));
+  check(courses.every(Boolean),'SOURCE_FAILURE:D08_RECOVERY_COURSES');
+  const spec={tenantId:j.tenantId,projectId:j.projectId,runId:j.runId,attempt:j.runAttempt,identities,courses,courseId:tag+'_course'};
+  const admin=identities.find(x=>x.label==='admin');
+  const records=j.creationJournal.map((r,i)=>{
+    check(r.uid===admin.uid&&r.role==='admin'&&r.kind==='progress'&&r.mode==='write'&&r.command?.expectedVersion===i&&r.command.commandType==='academy.progress.lesson.complete'&&r.providerAck===true&&r.durableReadback===true,'AUTH_FAILURE:D08_RECOVERY_COMMAND_SCOPE');
+    const rebuilt=describeCommand(r.command,admin,{type:r.command.commandType,mode:'write',actorId:'authenticated-user',courseId:r.command.payload.courseId,lessonId:r.command.payload.lessonId},spec);
+    check(Object.entries(rebuilt).every(([k,v])=>same(v,r[k]))&&hash(r.bundle)===r.bundleSha256&&verifyBundle(r,r.bundle,spec),'PERSISTENCE_FAILURE:D08_RECOVERY_COMMAND_HASH');
+    return structuredClone(r);
+  });
+  const bundlePaths=records.flatMap(r=>[r.receiptPath,r.auditPath,r.trailPath]),paths=[...bundlePaths,...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean))];
+  check(paths.length===18&&new Set(paths).size===18&&new Set(identities.map(x=>x.uid)).size===4,'SOURCE_FAILURE:D08_RECOVERY_PATHS');
+  return {pin,spec,identities,records,paths,bundlePaths,coursePath:'tenants/'+j.tenantId+'/academyCourses/'+spec.courseId};
+}
+
+function verifyD08RecoverySnapshot(plan,state){
+  const {check,hash,same,verifyBundle,verifyMembership,verifyCourse}=academyUiQaPrimitives(),known=new Set(plan.bundlePaths);
+  check(state.actorReferences.every(path=>known.has(path))&&state.courseReferences.length===0,'PERSISTENCE_FAILURE:D08_RECOVERY_UNEXPECTED_REFERENCE');
+  check(!state.course,'PERSISTENCE_FAILURE:D08_RECOVERY_UNEXPECTED_COURSE');
+  for(const identity of plan.identities){const user=state.authUsers.get(identity.uid);if(user)check(same(user.identity,identity.authIdentity)&&same(user.claims,identity.expectedClaims),'AUTH_FAILURE:D08_RECOVERY_AUTH_CHANGED');}
+  const count=plan.paths.filter(p=>state.documents.get(p)!=null).length;
+  check(count===0||count===18,'PERSISTENCE_FAILURE:D08_RECOVERY_PARTIAL_DOCUMENTS');
+  if(count===0){check(state.actorReferences.length===0,'PERSISTENCE_FAILURE:D08_RECOVERY_RESIDUAL_REFERENCE');return {mode:'DOCS_ALREADY_ABSENT',paths:[]};}
+  check(plan.identities.every(x=>state.authUsers.has(x.uid)),'AUTH_FAILURE:D08_RECOVERY_AUTH_MISSING_WITH_DOCUMENTS');
+  for(const r of plan.records){const bundle=Object.fromEntries(['receipt','audit','trail'].map(k=>[k,state.documents.get(r[k+'Path'])]));check(verifyBundle(r,bundle,plan.spec)&&hash(bundle)===r.bundleSha256,'PERSISTENCE_FAILURE:D08_RECOVERY_BUNDLE_CHANGED');}
+  for(const identity of plan.identities){verifyMembership(state.documents.get(identity.memberPath),identity,plan.records,plan.spec);if(identity.profilePath)check(same(state.documents.get(identity.profilePath),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_RECOVERY_PROFILE_CHANGED');}
+  verifyCourse(null,plan.records,plan.spec);
+  return {mode:'DELETE_EXACT_18',paths:[...plan.paths]};
+}
+
+function d08RecoverySelfTest(plan,bytes,request,base){
+  const {check}=academyUiQaPrimitives();let pass=0;
+  const documents=new Map();for(const r of plan.records)for(const k of ['receipt','audit','trail'])documents.set(r[k+'Path'],structuredClone(r.bundle[k]));
+  for(const identity of plan.identities){
+    const row=structuredClone(identity.expectedMembership),records=plan.records.filter(r=>r.uid===identity.uid);
+    if(records.length){const r=records[0],p=r.command.payload;row.academyProgress={schemaVersion:1,ownerUid:identity.uid,tenantId:plan.spec.tenantId,courses:{[r.progressKey]:{origin:p.origin,audience:p.audience,courseId:p.courseId,revision:p.revision,version:records.length,lessons:Object.fromEntries(records.map(x=>[x.command.payload.lessonId,100])),completed:true,updatedAt:'2026-11-24T09:30:00Z'}}};}
+    documents.set(identity.memberPath,row);if(identity.profilePath)documents.set(identity.profilePath,structuredClone(identity.expectedProfile));
+  }
+  const state={documents,actorReferences:[...plan.bundlePaths],courseReferences:[],course:null,authUsers:new Map(plan.identities.map(x=>[x.uid,{identity:structuredClone(x.authIdentity),claims:structuredClone(x.expectedClaims)}]))};
+  const positive=(name,fn)=>{check(fn(),'SOURCE_FAILURE:D08_RECOVERY_SELFTEST_'+name);pass++;},negative=(name,fn)=>{let rejected=false;try{fn();}catch{rejected=true;}positive(name,()=>rejected);};
+  positive('exact18',()=>verifyD08RecoverySnapshot(plan,state).paths.length===18);
+  negative('altered_bytes',()=>buildD08RecoveryPlan(Buffer.concat([bytes,Buffer.from(' ')]),request,base));
+  let bad=structuredClone(state);bad.actorReferences.push('tenants/other/commandReceipts/foreign');negative('foreign_reference',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.documents.delete(plan.paths[0]);negative('partial_documents',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.documents.get(plan.records[0].receiptPath).actorUid='foreign';negative('changed_bundle',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.documents.get(plan.identities[0].memberPath).name='changed';negative('changed_membership',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.authUsers.get(plan.identities[0].uid).identity.creationTime='changed';negative('changed_auth',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.course={qaSynthetic:true};negative('unexpected_course',()=>verifyD08RecoverySnapshot(plan,bad));
+  bad=structuredClone(state);bad.documents=new Map();bad.actorReferences=[];bad.authUsers.delete(plan.identities[0].uid);bad.authUsers.delete(plan.identities[1].uid);positive('resume_auth_only',()=>verifyD08RecoverySnapshot(plan,bad).paths.length===0&&bad.authUsers.size===2);
+  return {pass,fail:0,writes:0};
+}
+
+async function runD08RecoverCleanup({selfTestOnly=false}={}){
+  const e=process.env,h=academyUiQaPrimitives(),{check,hash,same}=h;
+  const request=selfTestOnly?JSON.parse(fs.readFileSync(e.D08_QA_REQUEST,'utf8')):runD08Preflight().request,pin=request.recoveryRun2760;
+  check(pin&&Object.entries(D08_RUN2760_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
+  const base=JSON.parse(execFileSync('git',['show',pin.sourceSha+':backend/contracts/cxorbia-academy-base-progress-contract-v1.json'],{encoding:'utf8'}));
+  let bytes,out;
+  if(selfTestOnly)bytes=fs.readFileSync(e.D08_RECOVERY_SELF_TEST_JOURNAL);
+  else{
+    check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&e.PROJECT==='cxorbia-backend-dev'&&e.HOSTING_URL==='https://cxorbia-backend-dev.web.app'&&e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&/^\d{8,}$/.test(e.GITHUB_RUN_ID||''),'AUTH_FAILURE:D08_RECOVERY_DEV_ONLY');
+    out=e.QA_OUT+'/run2760-recovery';fs.mkdirSync(out,{recursive:true});
+    const gh=endpoint=>execFileSync('gh',['api','--method','GET',endpoint],{timeout:45000,maxBuffer:20*1024*1024});
+    const artifact=JSON.parse(gh('repos/paulaosoriof86/demoCXOrbia/actions/artifacts/'+pin.artifactId)),run=JSON.parse(gh('repos/paulaosoriof86/demoCXOrbia/actions/runs/'+pin.runId));
+    check(artifact.id===pin.artifactId&&artifact.name===pin.artifactName&&artifact.expired===false&&String(artifact.workflow_run?.id)===pin.runId&&run.status==='completed'&&String(run.run_attempt)===pin.runAttempt&&run.head_branch==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_RECOVERY_ARTIFACT_AUTHORITY');
+    const zip=gh('repos/paulaosoriof86/demoCXOrbia/actions/artifacts/'+pin.artifactId+'/zip');check(hash(zip)===pin.artifactSha256,'SOURCE_FAILURE:D08_RECOVERY_ZIP_HASH');fs.writeFileSync(out+'/original.zip',zip);
+    bytes=execFileSync('python3',['-c','import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); assert z.namelist().count("result.json")==1; sys.stdout.buffer.write(z.read("result.json"))',out+'/original.zip'],{maxBuffer:1024*1024});
+    check(hash(bytes)===pin.journalSha256,'SOURCE_FAILURE:D08_RECOVERY_JOURNAL_HASH');fs.writeFileSync(out+'/original-result.json',bytes);
+    fs.writeFileSync(out+'/artifact-metadata.json',JSON.stringify({artifactId:artifact.id,name:artifact.name,runId:run.id,status:run.status,runAttempt:run.run_attempt,expired:false},null,2)+'\n');
+  }
+  const plan=buildD08RecoveryPlan(bytes,request,base),tests=d08RecoverySelfTest(plan,bytes,request,base);
+  if(selfTestOnly){console.log(JSON.stringify({decision:'PASS_D08_RUN2760_RECOVERY_OWNERSHIP_SELF_TEST',...tests,documents:plan.paths.length,auth:plan.identities.length}));return;}
+  const result={schemaVersion:'cxorbia.i3.d08-recovery-cleanup.v1',decision:'HOLD',executionRunId:e.GITHUB_RUN_ID,executionRunAttempt:e.GITHUB_RUN_ATTEMPT,fixtureRunId:pin.runId,fixtureRunAttempt:pin.runAttempt,originalJournalSha256:pin.journalSha256,sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,production:false,phaseAComplete:false,fullDomain:false,tests,cleanup:{ok:false},awaitJournal:[]};
+  const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n'),awaited=d08DeadlineHarness(result,save);save();
+  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:e.PROJECT});
+  const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(request.tenantId),uids=plan.identities.map(x=>x.uid);
+  const authIdentity=u=>({uid:u.uid,displayName:u.displayName||'',disabled:u.disabled,email:u.email||null,emailVerified:u.emailVerified,phoneNumber:u.phoneNumber||null,photoURL:u.photoURL||null,creationTime:u.metadata.creationTime,providerData:u.providerData||[],mfa:u.multiFactor?.enrolledFactors||[]});
+  async function userFor(identity){try{const user=await awaited('recovery.auth.read:'+identity.uid,()=>auth.getUser(identity.uid));check(same(authIdentity(user),identity.authIdentity)&&same(user.customClaims||{},identity.expectedClaims),'AUTH_FAILURE:D08_RECOVERY_AUTH_CHANGED');return {identity:authIdentity(user),claims:user.customClaims||{}};}catch(error){if(error.code==='auth/user-not-found')return null;throw error;}}
+  async function references(read){const actorReferences=[];for(const name of ['commandReceipts','academyAudit','entityAuditTrail']){const q=await read(tenant.collection(name).where('actorUid','in',uids));actorReferences.push(...q.docs.map(x=>x.ref.path));}const courses=await read(tenant.collection('academyCourses').where('createdByUserId','in',uids));return {actorReferences,courseReferences:courses.docs.map(x=>x.ref.path)};}
+  try{
+    const authUsers=new Map();for(const identity of plan.identities){const u=await userFor(identity);if(u)authUsers.set(identity.uid,u);}
+    const deleted=await awaited('recovery.firestore.transaction',()=>db.runTransaction(async tx=>{
+      const refs=await references(q=>tx.get(q)),documents=new Map();
+      for(const path of plan.paths){const doc=await tx.get(db.doc(path));documents.set(path,doc.exists?doc.data():null);}
+      const course=await tx.get(db.doc(plan.coursePath));const checked=verifyD08RecoverySnapshot(plan,{...refs,documents,authUsers,course:course.exists?course.data():null});
+      for(const path of checked.paths)tx.delete(db.doc(path));return checked.paths;
+    },{maxAttempts:1}),60000);
+    result.firestoreTransactionConfirmed=true;result.deletedPaths=deleted;save();let deletedAuth=0;
+    // Never delete Auth following a timed-out or uncertain Firestore commit.
+    for(const identity of plan.identities)if(await userFor(identity)){await awaited('recovery.auth.delete:'+identity.uid,()=>auth.deleteUser(identity.uid));deletedAuth++;}
+    const remaining=[];for(const path of [...plan.paths,plan.coursePath])if((await awaited('recovery.document.absence',()=>db.doc(path).get())).exists)remaining.push(path);
+    const refs=await awaited('recovery.references.absence',()=>references(q=>q.get()));check(!remaining.length&&!refs.actorReferences.length&&!refs.courseReferences.length,'PERSISTENCE_FAILURE:D08_RECOVERY_RESIDUE');
+    for(const identity of plan.identities)check(await userFor(identity)===null,'AUTH_FAILURE:D08_RECOVERY_AUTH_RESIDUE');
+    result.cleanup={ok:true,exactKnownPathsOnly:true,deletedDocuments:deleted.length,deletedAuth,remainingOwnedDocuments:0,remainingOwnedAuth:0,ownershipTransaction:true};
+    result.decision='PASS_I3_D08_RUN2760_EXACT_RECOVERY_CLEANUP';
+  }catch(error){result.error=String(error.message||error).slice(0,700);result.classification=result.error.split(':')[0];process.exitCode=2;}
+  finally{save();console.log(JSON.stringify({decision:result.decision,fixtureRunId:pin.runId,cleanup:result.cleanup,error:result.error||null,production:false}));}
+  if(result.awaitJournal.some(x=>x.state==='TIMED_OUT')){await awaited('recovery.firestore.terminate',()=>db.terminate(),10000).catch(()=>{});save();process.exit(2);}
+}
+
 async function runAcademyUiQa(){
   const e=process.env,h=academyUiQaPrimitives(),{str:s,stable,hash,check,same,without,describeCommand,verifyBundle,verifyMembership,verifyCourse}=h;
   const sourceSha=s(e.FOCAL_SOURCE),sourceTree=s(e.FOCAL_TREE),runId=s(e.GITHUB_RUN_ID),attempt=s(e.GITHUB_RUN_ATTEMPT||'1'),out=s(e.QA_OUT);
@@ -236,7 +363,7 @@ async function runAcademyUiQa(){
   for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])check(qa[k]===seal[k],'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_SEAL_'+k);
   check(qa.pairedReceiptPath===seal.receiptPath&&/^docs\/checkpoints\/[^/]+\.json$/.test(qa.pairedReceiptPath)&&execFileSync('git',['hash-object',qa.pairedReceiptPath],{encoding:'utf8'}).trim()===qa.pairedReceiptGitBlob,'RELEASE_COMPOSITION_FAILURE:D08_PAIRED_RECEIPT');
   check(execFileSync('git',['rev-parse',sourceSha+'^{tree}'],{encoding:'utf8'}).trim()===sourceTree,'RELEASE_COMPOSITION_FAILURE:D08_SOURCE_TREE');
-  execFileSync('git',['diff','--exit-code',sourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'],{stdio:'pipe'});
+  execFileSync('git',['diff','--exit-code',sourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules',':(exclude)backend/runtime/hr-live-service/test/**'],{stdio:'pipe'});
   const country=s(qa.country).toUpperCase(),tag='qa_d08_'+runId+'_'+attempt,customId=tag+'_course';
   check(/^[A-Z]{2}$/.test(country)&&same(qa.draftScope?.tenantId,[tenantId])&&same(qa.draftScope?.rol,['admin'])&&same(qa.draftScope?.projectId,[])&&Object.keys(qa.draftScope).every(k=>['tenantId','projectId','pais','rol','nivel','modulo','paquete'].includes(k)),'SOURCE_FAILURE:D08_FIXTURE_SCOPE');
   const draftScope={tenantId:[tenantId],projectId:qa.draftScope.projectId,pais:[],rol:['admin'],nivel:[],modulo:[],paquete:[]};
@@ -970,7 +1097,7 @@ async function runExcelCanonicalReadOnly(){
   result.durationMs=Date.now()-started;fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }
 
-const qaControlOnlyScopes=new Set(['D08_PREFLIGHT','D08_VERIFY','D08_ACADEMY_UI_SELF_TEST']);
+const qaControlOnlyScopes=new Set(['D08_PREFLIGHT','D08_VERIFY','D08_ACADEMY_UI_SELF_TEST','D08_RECOVERY_SELF_TEST']);
 if(!qaControlOnlyScopes.has(process.env.CXORBIA_I3_QA_SCOPE))await loadQaFirebaseDependencies();
 if(process.env.CXORBIA_I3_QA_SCOPE==='D08_PREFLIGHT'){
   runD08Preflight();
@@ -978,6 +1105,10 @@ if(process.env.CXORBIA_I3_QA_SCOPE==='D08_PREFLIGHT'){
   runD08ResultVerify();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI_SELF_TEST'){
   await runAcademyUiQaSelfTest();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_RECOVERY_SELF_TEST'){
+  await runD08RecoverCleanup({selfTestOnly:true});
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_RECOVER_CLEANUP'){
+  await runD08RecoverCleanup();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI'){
   await runAcademyUiQa();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='EXCEL_CANONICAL_ID_READONLY'){

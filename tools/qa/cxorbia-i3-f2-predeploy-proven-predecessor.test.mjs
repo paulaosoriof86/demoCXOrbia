@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validatePredeployPredecessor} from './cxorbia-i3-f2-predeploy-proven-predecessor.mjs';
+import {validatePredeployPredecessor,validateF3EnvironmentRequest,validateF3EnvironmentReadback,F3_ENV_STATUS} from './cxorbia-i3-f2-predeploy-proven-predecessor.mjs';
 const clone=structuredClone;
 function fixture(){
  const source='b'.repeat(40),tree='c'.repeat(40),receiptBlob='d'.repeat(40),status='HOLD_I3_GTHN_PENDING_DEV';
@@ -35,3 +35,50 @@ for(const [label,mutate,error]of[
  ['published claim',f=>f.descriptor.pendingDevSuccessor.devPublished=true,/Expected values/],
  ['production claim',f=>f.descriptor.pendingDevSuccessor.production=true,/Expected values/]
 ])test('predeploy blocks '+label,()=>{const f=fixture();mutate(f);assert.throws(()=>validatePredeployPredecessor(f),error);});
+
+function envFixture(){
+ const f=fixture(),m=f.descriptor.currentMaterialization;
+ f.status=f.descriptor.status=F3_ENV_STATUS;f.source=m.sourceSha;f.tree=m.sourceTree;
+ f.descriptor.productSourceSha=f.source;f.descriptor.productTreeAuthority=f.tree;
+ f.descriptor.postDeployRunSeal.mode='CURRENT_SOURCE_SERVING';delete f.descriptor.pendingDevSuccessor;
+ f.descriptor.runtimeEnvironmentRepairRequest={schemaVersion:'cxorbia.i3.f3-runtime-environment-repair.v1',classification:'ENVIRONMENT_FAILURE',scope:'F3_SYNTHETIC_PROJECT_ONLY',state:'REQUIRED',projectId:'f3-qa-20261124',production:false,builds:0,hostingDeploys:0,operationalHrWrites:0,...m,originalBuildRunId:m.runId,toolboxUrl:'https://eu2.make.com/mcp/server/4b7fc076-74a6-410b-8a7b-937e972e8bbe',secretName:'cxorbia-dev-f3-make-toolbox',secretVersion:'1'};
+ f.revision.spec={containers:[{env:clone(f.runtime.spec.template.spec.containers[0].env)}]};
+ return f;
+}
+test('F3 environment repair requires the consumed build and exactly the same artifact',()=>{
+ const f=envFixture();assert.equal(validatePredeployPredecessor(f).priorProofRun,f.descriptor.currentMaterialization.runId);
+ assert.equal(validateF3EnvironmentRequest(f.descriptor,f.revision).builds,0);
+});
+for(const [name,change]of[
+ ['wrong source',f=>f.descriptor.runtimeEnvironmentRepairRequest.sourceSha='other'],
+ ['wrong prior revision',f=>f.revision.metadata.name='other'],
+ ['wrong digest',f=>f.revision.status.imageDigest='sha256:other'],
+ ['wrong Hosting',f=>f.descriptor.runtimeEnvironmentRepairRequest.hostingVersion='other'],
+ ['source label drift',f=>f.revision.spec.containers[0].env[0].value='other'],
+ ['rebuild requested',f=>f.descriptor.runtimeEnvironmentRepairRequest.builds=1],
+ ['hosting deployment requested',f=>f.descriptor.runtimeEnvironmentRepairRequest.hostingDeploys=1],
+ ['operational writes',f=>f.descriptor.runtimeEnvironmentRepairRequest.operationalHrWrites=1],
+ ['production',f=>f.descriptor.runtimeEnvironmentRepairRequest.production=true],
+ ['other project',f=>f.descriptor.runtimeEnvironmentRepairRequest.projectId='cinepolis'],
+ ['other secret',f=>f.descriptor.runtimeEnvironmentRepairRequest.secretName='other'],
+ ['unpinned secret',f=>f.descriptor.runtimeEnvironmentRepairRequest.secretVersion='latest'],
+ ['other toolbox',f=>f.descriptor.runtimeEnvironmentRepairRequest.toolboxUrl='other']
+])test('F3 reuse blocks '+name,()=>{const f=envFixture();change(f);assert.throws(()=>validateF3EnvironmentRequest(f.descriptor,f.revision));});
+function afterEnv(){
+ const f=envFixture(),r=f.descriptor.runtimeEnvironmentRepairRequest;
+ f.revision.metadata.name='runtime-385';f.revision.spec.containers[0].env.push(
+  {name:'CXORBIA_F3_HR_FIELDS_ENABLED',value:'true'},{name:'CXORBIA_F3_MAKE_TOOLBOX_URL',value:r.toolboxUrl},
+  {name:'CXORBIA_I3_B14_DIRECT_READER_DEV',value:'true'},{name:'CXORBIA_B14_MAKE_TOOLBOX_URL',value:'https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6'},
+  {name:'CXORBIA_F3_MAKE_TOOLBOX_TOKEN',valueFrom:{secretKeyRef:{name:r.secretName,key:'1'}}},
+  {name:'CXORBIA_B14_MAKE_TOOLBOX_TOKEN',valueFrom:{secretKeyRef:{name:'cxorbia-dev-b14-make-toolbox',key:'1'}}});return f;
+}
+test('F3 readback proves secret references without reading credentials',()=>{
+ const f=afterEnv(),r=validateF3EnvironmentReadback(f.descriptor,f.revision);assert.equal(r.runtimeRevision,'runtime-385');assert.equal(r.secretValuesRead,false);
+});
+for(const [name,change]of[
+ ['missing writer',f=>f.revision.spec.containers[0].env=f.revision.spec.containers[0].env.filter(e=>e.name!=='CXORBIA_F3_HR_FIELDS_ENABLED')],
+ ['changed image',f=>f.revision.status.imageDigest='sha256:other'],
+ ['reader removed',f=>f.revision.spec.containers[0].env=f.revision.spec.containers[0].env.filter(e=>e.name!=='CXORBIA_B14_MAKE_TOOLBOX_TOKEN')],
+ ['plaintext token',f=>{const e=f.revision.spec.containers[0].env.find(e=>e.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN');e.value='not-a-secret';delete e.valueFrom;}],
+ ['latest secret',f=>f.revision.spec.containers[0].env.find(e=>e.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN').valueFrom.secretKeyRef.key='latest']
+])test('F3 postdeploy blocks '+name,()=>{const f=afterEnv();change(f);assert.throws(()=>validateF3EnvironmentReadback(f.descriptor,f.revision));});

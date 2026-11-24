@@ -4,7 +4,12 @@ image=${1:?Missing deployment image}
 [[ "$PROJECT" == cxorbia-backend-dev && "$SERVICE" == cxorbia-live-hr-dev ]]
 settings="$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE"
 extra=()
-if [[ "$ACTIVE_STATUS" == HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21 ]]; then
+if [[ "$ACTIVE_STATUS" == HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED ]]; then
+  if [[ "$ACTIVE_STATUS" == HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED ]]; then
+    [[ "$PAIR_ENV_ONLY" == true ]]
+    node tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs --reuse
+    [[ "$image" == "gcr.io/$PROJECT/$SERVICE@$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" ]]
+  fi
   settings+=",CXORBIA_I3_B14_DIRECT_READER_DEV=true,CXORBIA_B14_MAKE_TOOLBOX_URL=https://eu2.make.com/mcp/server/98b29fbe-fbfe-42f2-aeae-e27998eb60c6"
   # The existing writer scenario fences the exact F3 synthetic project/tabs.
   # Operational bindings keep external_read_only and hrWritesEnabled=false.
