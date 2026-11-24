@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "cxorbia.i3.resume-closure.v1",
+  "observedAtUTC": "2026-11-24T04:44:44.589133+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "31b3a4e6b2693081f2a53168149eed0a411ee5b8",
+  "controlOnly": true,
+  "sourceUnchanged": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+  "productTreeUnchanged": "0cccf405900acfdb8f60961c822c560ba2798db3",
+  "runtimeUnchanged": "cxorbia-live-hr-dev-00384-dmj",
+  "hostingUnchanged": "sites/cxorbia-backend-dev/versions/bf538792596bce30",
+  "strictDomainMatches": 6,
+  "pendingDomains": 15,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH",
+  "previousTurn": {
+    "publishedContinuityCommit": "7c42a3b02a15f6c6bf9ed3bbda5ca8ea20197424",
+    "canonicalRun": 45276460945,
+    "historicalAcceptancePreservationRun": 45276460868,
+    "productPackageOf30FilesPublished": false,
+    "newDomainMatches": 0,
+    "f3RemoteIntegrationPublished": false
+  },
+  "thisTurn": {
+    "certifierFixCommit": "31b3a4e6b2693081f2a53168149eed0a411ee5b8",
+    "certifierFixReadback": "EXACT_PARENT_TREE_FOUR_FILE_DIFF_AND_BRANCH_HEAD",
+    "localTests": {
+      "tests": 59,
+      "pass": 59,
+      "fail": 0
+    },
+    "canonicalRun": 45327636194,
+    "canonicalRunConclusion": "success",
+    "domainScopeReceipt": "docs/checkpoints/CXORBIA_I3_INTERRUPTION_RECOVERY_CERTIFIER_DOMAIN_SCOPE_20261123.json",
+    "makeLiveReadReceipt": "docs/checkpoints/CXORBIA_I3_MAKE_ORIGINALS_GT_HN_READONLY_20261123T2232GT.json",
+    "makeExecutions": {
+      "GT": "4838d8f3804e4e64b72ac59f0fe7f05b",
+      "HN": "7356cb3e42eb4a689dd77a8f41828c0b"
+    },
+    "makeResult": "BOTH_SUCCESS_HTTP200_200_EXACT_SCOPE_EQUAL_TWO_READBACKS",
+    "devDeploys": 0,
+    "productFilesChanged": 0
+  },
+  "browserObservation": {
+    "browser": "Chrome connected extension",
+    "origin": "https://cxorbia-backend-dev.web.app",
+    "normalPageNavigation": true,
+    "finalVisibleState": [
+      "Sincronizando operación",
+      "Validando fuente operacional"
+    ],
+    "d08UiExecuted": false,
+    "sessionInjected": false,
+    "hiddenStateMutation": false,
+    "observedWarnings": "backend-bulletins query permission warning; insufficient alone to attribute root cause"
+  },
+  "provenIdentityFailure": {
+    "classification": "MAPPING_FAILURE",
+    "syntheticOnly": true,
+    "providerWrites": 0,
+    "fixture": "canonical_GT and canonical_HN share NOVIEMBRE 26!2; only HN protected facet paymentConfirmed=true",
+    "backendResult": "OPS_HR_DUPLICATE_VISIT_STABLE_KEY",
+    "composerDuplicateVisitKeys": 1,
+    "composerObserved": "GT and HN both enrich from canonical_HN; GT falsely receives HN paymentConfirmed in this in-memory fixture",
+    "liveFinancialContaminationAsserted": false,
+    "owners": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    ],
+    "repairConstraint": "Preserve canonical IDs already chosen by F2 and legacy durable IDs; scoped unique coordinate fallback only; do not merge countries or historical periods; finance command resolver must be separately validated before financial writes."
+  },
+  "devPromotionResidual": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "vrm154-156-dev-materialization",
+    "guard": "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs",
+    "f2GuardPinsPriorRun": 45197074228,
+    "f2GuardPinsPriorRuntime": "cxorbia-live-hr-dev-00383-dl6",
+    "f2GuardPinsNextSource": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+    "currentlyServedRuntime": "cxorbia-live-hr-dev-00384-dmj",
+    "doNotReuseOldF2StatusForNewSource": true,
+    "legacyGooglePreflight": "vrm356FreshReadPreflight still refers to historical source 836a498; must not route a new Excel successor through that obsolete preflight",
+    "requiredDelta": "Within existing workflow/job, bind the bounded GT/HN successor to the current RUN2748 predecessor receipt, exact source/tree/runtime/Hosting/digest, owner allowlist and source proof. Preserve rules/production checks, forbid unrelated F09 fixture writes. No new workflow/candidate."
+  },
+  "d08": {
+    "independentOfF3": true,
+    "frozenDependencies": [
+      "D02",
+      "A08"
+    ],
+    "preserved": [
+      "B4",
+      "D06",
+      "RUN2391 provider progress ACK/new-session/replay/negative/cleanup"
+    ],
+    "remaining": [
+      "Normal UI course/lesson/evaluation/resource/progress",
+      "Authorized Admin edit with ACK/readback",
+      "New-session role clauses Admin/Shopper/Cliente",
+      "Complete current domain receipt over six canonical owners including backend-ai",
+      "Exact unchanged owner/dependency carry-forward for preserved proofs"
+    ],
+    "uiBootstrapMustBeValid": true
+  },
+  "makeResidual": {
+    "readerScenario": 10200465,
+    "readerMode": "active_on_demand",
+    "f3Toolbox": 10199316,
+    "f3ProtocolSaved": true,
+    "f3WriteObserved": false,
+    "f3RemoteAckProven": false,
+    "b14Closed": false,
+    "expectedRemoteEventIdUsedByToolbox": false,
+    "readScope": "GT/HN May2025-Nov2026, 38 country-period combinations",
+    "decemberAndRolaCovered": false
+  },
+  "domains": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN",
+      "actionRequiredFromV383": "Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shopper_hn_3b3c2f5cc1,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. PRESERVE: VRM217 bounded closure; Julissa approved topology; GT/HN keeper ordinary sessions and scope. No census,sweep or refusion.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "VRM134 comparable cold/warm initial load in relevant roles and only uncovered navigation/cache scenarios; integral acceptance. PRESERVE: R20 ordinary credential login/logout/relogin and accepted session guards; restored-session samples are not global cold-login/p95 proof.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "benefits",
+      "classification": "MATCH",
+      "actionRequiredFromV383": "Preserve complete RUN2588 Benefits READ_ONLY contract and B5 human approval. Reprove only on exact owner/dependency/configuration/contract drift. September payout/Q7300 and other C09/C10 financial-command residuals remain in finance-core B8.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "certifications",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E",
+      "actionRequiredFromV383": "D08 real UI course/lesson/resource/progress and independent Shopper/Cliente sessions; only uncovered authorized Admin edit and role negatives. PRESERVE: B4 bank operations and accepted D06 locked; D08 RUN2391 providerACK/new-session/replay/other-learner/negative and cleanup PASS. No global recertification or repeated bank attempts.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "F09 durable NPS/notes/meetings with providerACK/newsession/role proof; uncovered independent HR KPI/filters/drilldown/visual clauses. PRESERVE: F12 no-fabrication,VRM331 heading and VRM235 clientAuth control closure; these do not prove durable collaboration.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "Only uncovered operation×role×project cases at API,Firestore and Storage plus applicable durable self-administration; actual denials required. PRESERVE: Existing scoped positive/negative permissions and role preview preserved; no broad permissions rewrite.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "dashboard-operation",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "actionRequiredFromV383": "Uncovered role operations, Mi Dia handoffs, archive/delete and residual domain obligations.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "documents-resources",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "D07 isolated PDF create/metadata/version/retirement, foreign-doc denial,durable readACK and visit/revision binding. Corrected authenticated resource focal still requires current live proof. PRESERVE: Original authenticated7pagePDF Admin/Shopper open/download and RUN2387 preserved; TXT lifecycle does not certify PDF lifecycle.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "actionRequiredFromV383": "Read existing twoQ7300 IDs/application; exact uncovered C06/C07/C09/C10 eligible/blockedUI,reload/replay/currency/support; single exact September reconciliation with external dated authority and historical metadata deltaVRM336. PRESERVE: C04/C05 provider13/13 and July/August approved cuts,B5 retained. No thirdadvance,banktransfer or manufactured payment.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "historical",
+      "classification": "MATCH",
+      "actionRequiredFromV383": null,
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "actionRequiredFromV383": "uncovered E02/E03/E11/context/period/visual cells. PRESERVE: VRM259 badge and B7 human acceptance preserved; no generic B7 reopening.; RUN2537 internal refresh country full cycle PASS, separate scoped VRM345 closure.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "identity-membership-roll-forward",
+      "classification": "MATCH",
+      "actionRequiredFromV383": "NONE__B1_CANONICAL_SESSION_OWNER_LIVE_REPROOF_PASS",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "I3-Q3: preserve source836/RUN2587 exact DEV and RUN2588 Benefits MATCH6. Resolve the missing executable B14 prerequisite before dispatch: locate or prepare the concrete isolated real-provider fixture and exact writer binding within the approved scope, with workbook/tab/range, role, preconditions, cleanup and authorization evidence. The operational HR remains external_read_only and hrWritesEnabled=false; the existing B14 capability mode is not a remote-write test. Implement and source-prove only the missing focal B14 contract in the existing owners/workflow, then prove same external HR revision, valid-event ordering, remote ACK, independent readback, lost-response replay, conflict/echo and no duplicates on the authorized fixture. Do not repeat the completed VRM358 deployment or call generic C3 as a substitute for B14. Preserve all accepted native identity/login/replay clauses and execute only uncovered clauses; prepare C09/C10 and D08 read-only in parallel. Credit complete domain receipts immediately, publish proven product deltas serially to existing DEV, then Gate20 -> Gate21. I4 requires I3 GO and explicit authorization for the exact immutable artifact.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "phase-a-supporting-core",
+      "classification": "MATCH",
+      "actionRequiredFromV383": null,
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "actionRequiredFromV383": "Original Excel Online country bindings and independent Make/Graph source readback; exact ACK/replay/conflict/echo plus isolated A/B Admin+Shopper Chrome. No repeat DEV deploy.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "Authorized project-period-visit providerURL/version and correct shopperopen/submitted independent providerreadback; no fabricated questionnaire orURL. PRESERVE: Exact served routing/config source and failclosed missinglink preserved.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "reports-admin-shopper",
+      "classification": "MATCH",
+      "actionRequiredFromV383": null,
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+      "actionRequiredFromV383": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; three exactAuth exceptions; B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review. PRESERVE: VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "actionRequiredFromV383": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK. PRESERVE: B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    },
+    {
+      "domain": "tenant-admin-config-branding",
+      "classification": "MATCH",
+      "actionRequiredFromV383": "NONE_WITHIN_APPROVED_TENANT_DOMAIN_CONTRACT; preserve RUN2537 complete readonly and country UI/provider/reload/replay/cleanup proof unless reproducible drift.",
+      "note": "Later F2 receipt prevails over historical residual text requiring another F2 deployment."
+    }
+  ],
+  "planCustody": {
+    "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+    "verifiedFiles": 73,
+    "hashMismatches": 0,
+    "tasks": 82,
+    "planSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c"
+  },
+  "nextExactAction": "Implement only the proven canonical GT/HN identity consumer delta plus its existing-lane successor control; validate against canonical MODULE_TRUTH and exact current F2 predecessor; run focused no-cross-country/no-ID-migration regressions, then one paired DEV publication with readback. Complete D08 UI independently of F3 on that same served artifact; integrate authenticated F3 remote writes on authorized isolated GT/HN fixtures. Keep remaining independent domain clauses progressing and preserve accepted evidence. Gate20/Gate21 and explicit I4 authorization remain mandatory.",
+  "authorizationRequiredNow": false,
+  "authorizationBoundary": "Existing DEV/Make/isolated fixture authority remains. Explicit user authorization only for I4 or otherwise unresolvable credentials/IAM; no request to repeat prior decisions."
+}
