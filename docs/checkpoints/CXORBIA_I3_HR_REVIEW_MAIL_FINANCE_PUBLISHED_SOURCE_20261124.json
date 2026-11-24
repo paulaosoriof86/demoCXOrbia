@@ -1,0 +1,195 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-review-mail-finance-source-proof.v1",
+  "createdAt": "2026-11-24T10:33:26.688010+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "predecessorProductSourceSha": "3206918d84ed45d33851bff266de42ad59e546cb",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_REVIEW_MAIL_FINANCE_COMBINED_SCOPE_20261124.json",
+  "scopeReceiptBlob": "d54e8d1c885fde741dde17eeba032b3f60bb0043",
+  "sourceTestsPass": 360,
+  "sourceTestsFail": 0,
+  "sourceVerificationReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_REVIEW_MAIL_FINANCE_SOURCE_PROOF_20261124.json",
+    "gitBlob": "304587e0c2cbbbd3d14a5ee858fe732c1329937e"
+  },
+  "allowedProductFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/core/backend-finance-benefits.js",
+    "app/core/hr.js",
+    "app/modules/correo.js",
+    "app/modules/dashboard.js",
+    "app/modules/finanzas.js",
+    "app/modules/integraciones.js",
+    "app/modules/misvisitas.js",
+    "app/modules/revision-admin.js",
+    "app/modules/visitas.js",
+    "backend/config/mailbox-provider-policy.source-safe.json",
+    "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+    "backend/contracts/tya-hr-column-map-r20-v1.json",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/mailbox-pop3.mjs",
+    "backend/runtime/hr-live-service/mailbox-runtime.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/hr-live-service/server.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "tools/hr-source/tya-canonical-visit-state-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-editor.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-hr-review-observations.test.mjs",
+    "backend/runtime/hr-live-service/test/mailbox-user-pop3.test.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs",
+    "tools/qa/cxorbia-i3-hr-review-ui.test.mjs",
+    "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+    "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs",
+    "tools/qa/cxorbia-i3-vrm369-finance-metadata.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+  ],
+  "ownerGitBlobs": {
+    "app/adapters/cxorbia-command-adapter-v1.js": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js": "0380bfe5f06694436ba74adcf8ac9fcf51df44eb",
+    "app/core/backend-finance-benefits.js": "dd716fb59ac43a80c501ca632dead1b795b7e0a5",
+    "app/core/hr.js": "6b927266ddb9adca1c92a1130b31dfc7d2788def",
+    "app/modules/correo.js": "1228a7def7c26a07305fb63239a4e2edba755345",
+    "app/modules/dashboard.js": "7eb138b1e1912f9cc11a643d8de134336ab16a5d",
+    "app/modules/finanzas.js": "9bd11970cf0acb4e0c19df331bf9eade76e2ba90",
+    "app/modules/integraciones.js": "3ae0a0423fc84681388425665d36e6fe64b383b3",
+    "app/modules/misvisitas.js": "003843ecc87c8e052002270697862da6d0b82949",
+    "app/modules/revision-admin.js": "08ff500706238b82add2ba45ce01c0b7da38f4ec",
+    "app/modules/visitas.js": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+    "backend/config/mailbox-provider-policy.source-safe.json": "86d69e317b95d3242f6edc068ee3a9dfb0ce9f14",
+    "backend/contracts/cxorbia-user-mailbox-pop3-v1.json": "e79e6e730953c27927d0bee1299dab26feb1ba84",
+    "backend/contracts/tya-hr-column-map-r20-v1.json": "5aa5382054a7d125ccd060914619e3920dd56bcd",
+    "backend/runtime/cxorbia-country-hr-binding-v1.mjs": "072023db9bd5e1994ab0bb844807179c8fe9a8c1",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs": "2875cbb8aeea1c882874874c8a4155c11ad187c3",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "5d839e01af2c75cf8402eadc4faab6298bc8f136",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c",
+    "backend/runtime/hr-live-service/Dockerfile": "704fae707c4e122a6a80338a437657b9091c8dbb",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "c0868192d611007635b36f806d2150c36222e953",
+    "backend/runtime/hr-live-service/mailbox-pop3.mjs": "0babe123e0682a5c28bd4c8c58a89fc14faffb8f",
+    "backend/runtime/hr-live-service/mailbox-runtime.mjs": "54e8dcf9aaebff6ddca5c938a1f233863fd9d10c",
+    "backend/runtime/hr-live-service/package.json": "dc1c977ce84dad0b49703993dac5135a6e3e02da",
+    "backend/runtime/hr-live-service/server.mjs": "82d0965665e82fd31a94e8b4b09e0d91bf4fcb93",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": "57c1ff6ecf368e2415693c31d825953738c26839",
+    "tools/hr-source/tya-canonical-visit-state-r20.mjs": "01df378cd627d792d60e5e260c8d833a56548055"
+  },
+  "findings": [
+    {
+      "id": "VRM-365",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+        "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+        "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/modules/visitas.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_F3_JOURNAL_SCOPE_WRITE_READ_POLICY_P0_20261124.json",
+        "gitBlob": "4e455d6f3c78c247e8af62fb655082ce4c7972e3"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-366",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "ownerFiles": [
+        "backend/contracts/tya-hr-column-map-r20-v1.json",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+        "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/modules/dashboard.js",
+        "app/modules/misvisitas.js",
+        "app/modules/revision-admin.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_TYA_REVIEW_OBSERVATIONS_AND_NOTICES_P0_20261124.json",
+        "gitBlob": "4f830c95a300f4c1ddd21423bdc50b680f76055d"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-367",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "app/modules/correo.js",
+        "app/modules/integraciones.js",
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/hr-live-service/Dockerfile",
+        "backend/runtime/hr-live-service/package.json",
+        "backend/config/mailbox-provider-policy.source-safe.json",
+        "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+        "backend/runtime/hr-live-service/mailbox-pop3.mjs",
+        "backend/runtime/hr-live-service/mailbox-runtime.mjs"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_P0367_USER_MAILBOX_POP3_PRE_EDIT_TRUTH_20261124.json",
+        "gitBlob": "f124d696b60753a80581bdae3a84b8a2172b28d9"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-368",
+      "priority": "P0_PROVEN",
+      "classification": "VISUAL_DEFECT",
+      "ownerFiles": [
+        "app/core/hr.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_EXCEL_COUNTRY_SOURCE_UI_P0_20261124.json",
+        "gitBlob": "b7453ba39bdb25ff9af4bd1103b62a8b7286830b"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-369",
+      "priority": "P0_PROVEN",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/modules/finanzas.js",
+        "app/core/backend-finance-benefits.js"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM369_FINANCE_METADATA_PRE_EDIT_TRUTH_20261124.json",
+        "gitBlob": "60c8abb52018f28117f44bb66fa1bdc2bb6b59b8"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    }
+  ],
+  "devPublished": false,
+  "production": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "domainPromotion": false,
+  "f3RemoteAckClaimed": false,
+  "mailboxConnected": false,
+  "realFinanceWrites": 0,
+  "d08RetestPending": true
+}
