@@ -13,7 +13,7 @@ Checkpoint de continuidad del plan vigente y del trabajo paralelo. Complementa e
 | Cobertura / aceptación | **21 dominios, 6 MATCH** conservados en su alcance documentado. Las aceptaciones **B4/B5/B6/B7** permanecen; no reabrirlas sin drift reproducible. Preparación de fuente y runner PASS no equivalen a cierre integral |
 | Parent observado del paquete | `123d62ea1664f0d7b70be254da34998faa519175`; referencia de integración, no puntero futuro |
 | Nuevo source / tree | `9b952d348e7cdf06a7fa0ec1444d6856d270cbe7` / `4eb3d72c8d86c97212292020096bbf9dbd00e1fe` |
-| Nuevo HEAD/control / matriz / ledger | `commit que contiene este checkpoint; resolver HEAD vivo en GitHub` / `RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V393.json` / `CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V720_2026-11-24.json` |
+| Nuevo HEAD/control / matriz / ledger | `commit que contiene este checkpoint; resolver HEAD vivo en GitHub` / `RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V394.json` / `CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V721_2026-11-24.json` |
 | Source realmente servido | `cbe7bb9d79805782d256fa432a406c1843beee85` |
 | Tree servido | `f07d810e2f2787df49f4df3e970a0aa2a5723175` |
 | Runtime DEV | `cxorbia-live-hr-dev-00389-p4r` |
@@ -24,6 +24,13 @@ Checkpoint de continuidad del plan vigente y del trabajo paralelo. Complementa e
 Source y control quedan ligados por los hashes del descriptor. Resolver HEAD vivo, descriptor, matriz y ledger dinámicamente antes de la siguiente escritura. Este paquete publicado acredita fuente y controles; no acredita un despliegue ni reemplaza la evidencia LIVE anterior.
 
 ## Evidencia nueva y trabajo integrado
+
+### Reanudación exacta después de RUN2774
+
+RUN2774 construyó la imagen del source `9b952d34` (Cloud Build `56b76a83-3e5d-4957-99aa-2521a9c51845`, SUCCESS) y se detuvo antes de actualizar runtime/Hosting con `ENVIRONMENT_FAILURE:P0367_SECRET_LOOKUP_FAILED`. El artifact `14936461094` fue descargado y su SHA-256 comprobado. El predecesor sigue siendo el único DEV servido acreditado.
+
+VRM-373 corrige únicamente el control existente: reanudar el mismo paired job a partir del build exitoso, por digest verificado, sin rebuild; mantener correo `HOLD_MAIL_UNCONFIGURED`, `MAILBOX=false`, `SEND=false` y sin mutaciones Secret Manager/IAM, después de comprobar que no existe clave montada. El motivo exacto del lookup se capturará de forma sanitizada. No se declara correo aprobado. **68 pruebas focales PASS**, cero FAIL; source producto intacto, seis MATCH y B4/B5/B6/B7 conservados. La continuación requiere readback runtime/digest/Hosting/HR del nuevo run antes de sellar.
+
 
 El paquete previo `9b6ee216` acreditó **584 pruebas locales en 24 suites, cero FAIL**, incluidos los 12 casos de preparación del secreto de correo sin red. La CI canónica del commit de control aporta el readback remoto correspondiente. Son pruebas de fuente/control; no acreditan autenticación SMTP, durabilidad real después de reinicio, escritura bidireccional remota ni aceptación integral de dominios.
 

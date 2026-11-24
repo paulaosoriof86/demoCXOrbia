@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.environment-control-proof.v1",
+  "findingId": "VRM-373",
+  "classification": "ENVIRONMENT_FAILURE",
+  "state": "CONTROL_FIX_PROVEN_PENDING_LIVE_READBACK",
+  "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+  "productFilesChanged": 0,
+  "sourceTestsBaselinePass": 615,
+  "controlTestsPass": 68,
+  "controlTestsFail": 0,
+  "logSha256": "9bf59d4bceb7da61c2da03dc2fa1493e167be1d8b4d8d6936add5b8783fb2f79",
+  "preEditTruth": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2774_VRM373_ENV_FAILURE_PRE_EDIT_TRUTH_20261124.json",
+    "gitBlob": "1aafdbaf7c9548cdb908026fb1974b36c733ef44"
+  },
+  "changedOwners": [
+    {
+      "path": "tools/release/cxorbia-i3-update-dev-runtime.sh",
+      "oldGitBlob": "6e74d6e5cb87f3cedeb492bcf730ee5dbf446f49",
+      "newGitBlob": "72b92ad62b6f27dc92158ea21668a049e1d70d3a"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs",
+      "oldGitBlob": "160ae1e9fe43a4031348c22338941f67a212ca0e",
+      "newGitBlob": "4bcb4d982d77734a7e4a287f720d26def4bb4de6"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs",
+      "oldGitBlob": "5af464243f5819a603b8eabe52997c235890c5a4",
+      "newGitBlob": "b89c5279d9216694ad2d8eab8cb5f946f77d1e00"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs",
+      "oldGitBlob": "3e98f380b76faf48ffb744b8446e403d59d2ae33",
+      "newGitBlob": "93ed4cb91ee4cc5ffac8c171565471c49f295fa0"
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "oldGitBlob": "ece69e25430e15a6ba6dc79d41f0efe822d6e525",
+      "newGitBlob": "c6bb91289bb232984dc800600f2de0224d7a8f00"
+    }
+  ],
+  "sameJob": true,
+  "newWorkflows": 0,
+  "newJobs": 0,
+  "newBuildRequested": false,
+  "production": false,
+  "mailDomainClosed": false,
+  "b4b5b6b7Preserved": true,
+  "matchModules": 6
+}

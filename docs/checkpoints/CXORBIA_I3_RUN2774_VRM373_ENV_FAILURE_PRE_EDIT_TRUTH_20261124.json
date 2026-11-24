@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "cxorbia.i3.exact-environment-preedit-truth.v1",
+  "findingId": "VRM-373",
+  "priority": "P0_PROVEN",
+  "classification": "ENVIRONMENT_FAILURE",
+  "observedAt": "2026-11-24T15:17:33.027945+00:00",
+  "controlHead": "61d86bb482915a48cdfe957f72c6b41735261c8a",
+  "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V393.json",
+    "gitBlob": "fea150bdb950cede5e9d7cff140108ab7950bef3",
+    "match": 6,
+    "total": 21
+  },
+  "failure": {
+    "runId": 45420999212,
+    "runNumber": 2774,
+    "jobId": 138540878108,
+    "conclusion": "failure",
+    "error": "ENVIRONMENT_FAILURE:P0367_SECRET_LOOKUP_FAILED",
+    "originalProviderError": "NOT_CAPTURED_IAM_VS_NOT_FOUND_FORMAT_UNPROVEN",
+    "artifactId": 14936461094,
+    "artifactDigest": "sha256:517a9731ea2136ac3db65660642a397dc9f1c47aae69503f27988ee4a5f92d8b",
+    "artifactBytesVerified": true,
+    "buildId": "56b76a83-3e5d-4957-99aa-2521a9c51845",
+    "buildStatus": "SUCCESS",
+    "imageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-9b952d348e7c-45420999212",
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "hrReads": 0,
+    "production": false
+  },
+  "servedPredecessor": {
+    "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+    "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+    "runtimeDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
+    "mailboxEnvironmentEntries": 0,
+    "mailboxKeyMounted": false
+  },
+  "allowedControlOwners": [
+    {
+      "path": "tools/release/cxorbia-i3-update-dev-runtime.sh",
+      "gitBlob": "6e74d6e5cb87f3cedeb492bcf730ee5dbf446f49"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs",
+      "gitBlob": "160ae1e9fe43a4031348c22338941f67a212ca0e"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs",
+      "gitBlob": "5af464243f5819a603b8eabe52997c235890c5a4"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs",
+      "gitBlob": "3e98f380b76faf48ffb744b8446e403d59d2ae33"
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "gitBlob": "ece69e25430e15a6ba6dc79d41f0efe822d6e525"
+    }
+  ],
+  "allowedProductFiles": [],
+  "correctionContract": {
+    "sameSource": true,
+    "sameBuild": true,
+    "samePairedJob": true,
+    "newWorkflows": 0,
+    "newJobs": 0,
+    "resumeRequiresCloudBuildSuccessSourceAndImageReadback": true,
+    "resumeImagePinnedByDigest": true,
+    "mailboxHoldExplicit": true,
+    "mailboxHoldRequiresCurrentNoMountAndDisabled": true,
+    "mailboxFlag": false,
+    "smtpSendFlag": false,
+    "secretWritesInHold": 0,
+    "iamWritesInHold": 0,
+    "mailDomainClosed": false,
+    "preserveB4B5B6B7": true,
+    "preserve6Match": true
+  },
+  "nextAction": "Resume the existing paired DEV lane from the provider-verified successful build; keep unconfigured mailbox explicitly HOLD and disabled; require runtime/Hosting/HR readbacks before source-serving seal.",
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false
+}

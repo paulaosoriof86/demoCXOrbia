@@ -224,8 +224,8 @@
   "productSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
   "productTreeAuthority": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
   "predecessorProductSourceSha": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V720_2026-11-24.json",
-  "findingsLedgerExpectedGitBlob": "c44f4292d53e06606d15e91f6294d7309b74ec46",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V721_2026-11-24.json",
+  "findingsLedgerExpectedGitBlob": "3f3ffc36236a45e5c5e620877658fd281d009403",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V393.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V394.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM372_HR_F3_SMTP_CUMULATIVE_SOURCE_PROVEN_PENDING_EXACT_DEV_AND_REMOTE_FUNCTIONAL_PROOF",
+  "activeBlocker": "VRM373_PAIRED_ENVIRONMENT_RETRY_WITH_EXACT_BUILD_AND_E08_HOLD",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -350,7 +350,7 @@
     "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
     "potentialAuthWrites": 0
   },
-  "nextFindingId": "VRM-373",
+  "nextFindingId": "VRM-374",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: materialize only source 9b952d348e7cdf06a7fa0ec1444d6856d270cbe7 through the existing paired DEV job once; verify exact runtime/digest/Hosting and the first fresh original HR read inside its existing readback. Seal that receipt, seed and verify the authenticated durable view, then budget F3 isolated ACK/replay/conflict/echo/restoration/cleanup before D08 and remaining A08. Execute the already-authorized second-advance metadata command on a new CAS. Preserve six integral MATCH and B4/B5/B6/B7; no repeat of approved clauses. Mailbox remains SEND=false; credentials and consent are required for actual mail. C3 promotes complete domains incrementally, then Gate20/Gate21; I4 requires explicit authorization for the certified artifact. Production DO_NOT_TOUCH.",
+  "exactNextAction": "I3: resume only the successful RUN2774 Cloud Build 56b76a83-3e5d-4957-99aa-2521a9c51845 by provider-verified digest in the existing paired DEV job, with zero rebuilds. Keep E08 mailbox explicitly HOLD and disabled after exact absent-key readback; capture sanitized lookup metadata without secret/IAM writes. Verify the unchanged candidate source, runtime/digest, Hosting48 assets and fresh original HR, then consume its seal. Reserve Make quota for F3 ACK/replay/conflict/echo/restoration/cleanup; verify authenticated durable HR, then authorized second-advance metadata and A08/D08 residuals as quota permits. Preserve six MATCH and B4/B5/B6/B7. Complete C3/Gate20/Gate21 before requesting I4. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3365,7 +3365,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "fea150bdb950cede5e9d7cff140108ab7950bef3",
+  "moduleTruthExpectedGitBlob": "f27dae871ea2299b3254190844ed64edb28e38c1",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17463,7 +17463,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3: materialize only source 9b952d348e7cdf06a7fa0ec1444d6856d270cbe7 through the existing paired DEV job once; verify exact runtime/digest/Hosting and the first fresh original HR read inside its existing readback. Seal that receipt, seed and verify the authenticated durable view, then budget F3 isolated ACK/replay/conflict/echo/restoration/cleanup before D08 and remaining A08. Execute the already-authorized second-advance metadata command on a new CAS. Preserve six integral MATCH and B4/B5/B6/B7; no repeat of approved clauses. Mailbox remains SEND=false; credentials and consent are required for actual mail. C3 promotes complete domains incrementally, then Gate20/Gate21; I4 requires explicit authorization for the certified artifact. Production DO_NOT_TOUCH.",
+  "nextExactAction": "I3: resume only the successful RUN2774 Cloud Build 56b76a83-3e5d-4957-99aa-2521a9c51845 by provider-verified digest in the existing paired DEV job, with zero rebuilds. Keep E08 mailbox explicitly HOLD and disabled after exact absent-key readback; capture sanitized lookup metadata without secret/IAM writes. Verify the unchanged candidate source, runtime/digest, Hosting48 assets and fresh original HR, then consume its seal. Reserve Make quota for F3 ACK/replay/conflict/echo/restoration/cleanup; verify authenticated durable HR, then authorized second-advance metadata and A08/D08 residuals as quota permits. Preserve six MATCH and B4/B5/B6/B7. Complete C3/Gate20/Gate21 before requesting I4. Production DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -17880,7 +17880,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-24T15:00:49.920267Z",
+  "updatedAt": "2026-11-24T15:23:08.249573Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18903,12 +18903,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V393.json",
-      "gitBlob": "fea150bdb950cede5e9d7cff140108ab7950bef3"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V394.json",
+      "gitBlob": "f27dae871ea2299b3254190844ed64edb28e38c1"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V720_2026-11-24.json",
-      "gitBlob": "c44f4292d53e06606d15e91f6294d7309b74ec46"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V721_2026-11-24.json",
+      "gitBlob": "3f3ffc36236a45e5c5e620877658fd281d009403"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -35845,5 +35845,57 @@
     "sourceTestsPass": 615,
     "sourceTestsFail": 0,
     "production": false
+  },
+  "pairedBuildResumeRequest": {
+    "schemaVersion": "cxorbia.i3.paired-built-artifact-resume.v1",
+    "state": "RESUME_EXACT_SUCCESSFUL_BUILD",
+    "classification": "ENVIRONMENT_FAILURE",
+    "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+    "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+    "originalBuildRunId": 45420999212,
+    "originalBuildRunNumber": 2774,
+    "buildId": "56b76a83-3e5d-4957-99aa-2521a9c51845",
+    "imageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-9b952d348e7c-45420999212",
+    "sourceStorageObject": "source/1795532723.888687-325b26a6d25b4b8bba7f07e549829e77.tgz",
+    "originalArtifactId": 14936461094,
+    "originalArtifactDigest": "sha256:517a9731ea2136ac3db65660642a397dc9f1c47aae69503f27988ee4a5f92d8b",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2774_VRM373_ENV_FAILURE_PRE_EDIT_TRUTH_20261124.json",
+    "receiptBlob": "1aafdbaf7c9548cdb908026fb1974b36c733ef44",
+    "builds": 0,
+    "runtimeDeploysExpected": 1,
+    "hostingDeploysExpected": 1,
+    "production": false
+  },
+  "currentMailboxEnvironmentHold": {
+    "schemaVersion": "cxorbia.i3.mailbox-environment-hold.v1",
+    "state": "HOLD_MAIL_UNCONFIGURED",
+    "classification": "ENVIRONMENT_FAILURE",
+    "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+    "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+    "failedRunId": 45420999212,
+    "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+    "reason": "P0367_SECRET_LOOKUP_FAILED; underlying provider error not yet captured. HR has no dependency on the absent mailbox key. Keep E08 explicitly pending.",
+    "mailboxEnabled": false,
+    "sendEnabled": false,
+    "keyMountedRequired": false,
+    "secretWrites": 0,
+    "iamWrites": 0,
+    "smtpSends": 0,
+    "mailDomainClosed": false,
+    "production": false
+  },
+  "currentDevEnvironmentFailure": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2774_VRM373_ENV_FAILURE_PRE_EDIT_TRUTH_20261124.json",
+    "gitBlob": "1aafdbaf7c9548cdb908026fb1974b36c733ef44",
+    "runId": 45420999212,
+    "runNumber": 2774,
+    "classification": "ENVIRONMENT_FAILURE",
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "state": "BUILT_NOT_DEPLOYED_RESUME_REQUIRED"
+  },
+  "vrm373EnvironmentControlProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM373_PAIRED_BUILD_RESUME_CONTROL_PROOF_20261124.json",
+    "gitBlob": "31a124bb9dab06796b3dec10e85f0e2e6a072245"
   }
 }

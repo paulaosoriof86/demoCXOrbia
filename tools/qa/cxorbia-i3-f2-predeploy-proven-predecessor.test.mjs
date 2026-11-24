@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validatePredeployPredecessor,validateF3EnvironmentRequest,validateF3EnvironmentReadback,F3_ENV_STATUS} from './cxorbia-i3-f2-predeploy-proven-predecessor.mjs';
+import {validatePredeployPredecessor,validateF3EnvironmentRequest,validateF3EnvironmentReadback,validateBuiltArtifactResume,validateMailboxDisabledReadback,validateResumedBuildRuntime,F3_ENV_STATUS} from './cxorbia-i3-f2-predeploy-proven-predecessor.mjs';
 const clone=structuredClone;
 function fixture(){
  const source='b'.repeat(40),tree='c'.repeat(40),receiptBlob='d'.repeat(40),status='HOLD_I3_GTHN_PENDING_DEV';
@@ -82,3 +82,44 @@ for(const [name,change]of[
  ['plaintext token',f=>{const e=f.revision.spec.containers[0].env.find(e=>e.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN');e.value='not-a-secret';delete e.valueFrom;}],
  ['latest secret',f=>f.revision.spec.containers[0].env.find(e=>e.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN').valueFrom.secretKeyRef.key='latest']
 ])test('F3 postdeploy blocks '+name,()=>{const f=afterEnv();change(f);assert.throws(()=>validateF3EnvironmentReadback(f.descriptor,f.revision));});
+function buildFixture(){
+ const f=fixture(),r={schemaVersion:'cxorbia.i3.paired-built-artifact-resume.v1',state:'RESUME_EXACT_SUCCESSFUL_BUILD',production:false,builds:0,sourceSha:f.source,sourceTree:f.tree,receiptBlob:f.receiptBlob,originalBuildRunId:2774,buildId:'exact-build',originalArtifactId:123,originalArtifactDigest:'sha256:'+'f'.repeat(64),sourceStorageObject:'source/exact.tgz'};
+ r.imageTag='gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-'+r.sourceSha.slice(0,12)+'-'+r.originalBuildRunId;
+ f.descriptor.pairedBuildResumeRequest=r;
+ return {descriptor:f.descriptor,blob:f.receiptBlob,receipt:{sourceSha:f.source,sourceTree:f.tree,failure:{runId:r.originalBuildRunId,buildId:r.buildId,artifactId:r.originalArtifactId,artifactDigest:r.originalArtifactDigest,imageTag:r.imageTag,buildStatus:'SUCCESS',runtimeDeploys:0,hostingDeploys:0,production:false}},build:{id:r.buildId,projectId:'cxorbia-backend-dev',status:'SUCCESS',substitutions:{_IMAGE:r.imageTag},source:{storageSource:{bucket:'cxorbia-backend-dev_cloudbuild',object:r.sourceStorageObject}},results:{images:[{name:r.imageTag,digest:'sha256:'+'8'.repeat(64)}]}}};
+}
+test('paired resume pins the provider-verified existing image by digest and records zero builds',()=>{
+ const f=buildFixture(),r=validateBuiltArtifactResume(f.descriptor,f.build,f.receipt,f.blob);
+ assert.equal(r.builds,0);assert.equal(r.originalBuildRunId,2774);assert.equal(r.imageUri,'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:'+'8'.repeat(64));
+});
+for(const [name,change] of [
+ ['other source',f=>f.descriptor.pairedBuildResumeRequest.sourceSha='e'.repeat(40)],
+ ['wrong receipt',f=>f.blob='1'.repeat(40)],
+ ['unsuccessful build',f=>f.build.status='WORKING'],
+ ['other project',f=>f.build.projectId='production'],
+ ['other source archive',f=>f.build.source.storageSource.object='source/other.tgz'],
+ ['other image',f=>f.build.results.images[0].name='other'],
+ ['mutable digest',f=>f.build.results.images[0].digest='latest'],
+ ['different build input',f=>f.build.substitutions._IMAGE='other'],
+ ['already deployed predecessor',f=>f.receipt.failure.runtimeDeploys=1],
+ ['production requested',f=>f.descriptor.pairedBuildResumeRequest.production=true]
+])test('paired resume rejects '+name,()=>{const f=buildFixture();change(f);assert.throws(()=>validateBuiltArtifactResume(f.descriptor,f.build,f.receipt,f.blob));});
+function disabledMailboxFixture(){
+ const d={productSourceSha:'a'.repeat(40),productTreeAuthority:'b'.repeat(40),currentMailboxEnvironmentHold:{state:'HOLD_MAIL_UNCONFIGURED',sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),production:false}};
+ const revision={metadata:{name:'dev-exact'},spec:{containers:[{env:[{name:'CXORBIA_RECOVERY_SOURCE_SHA',value:d.productSourceSha},{name:'CXORBIA_USER_MAILBOX_ENABLED',value:'false'},{name:'CXORBIA_USER_MAILBOX_SEND_ENABLED',value:'false'}]}]}};return {d,revision};
+}
+test('disabled mailbox readback retains E08 HOLD on the new exact source',()=>{
+ const f=disabledMailboxFixture(),r=validateMailboxDisabledReadback(f.d,f.revision);assert.equal(r.mailDomainClosed,false);assert.equal(r.keyMounted,false);
+});
+test('disabled mailbox readback rejects enablement or any credential mount',()=>{
+ for(const mode of ['enabled','key','source']){const f=disabledMailboxFixture(),e=f.revision.spec.containers[0].env;
+ if(mode==='enabled')e[1].value='true';if(mode==='key')e.push({name:'CXORBIA_MAILBOX_CREDENTIAL_KEY_B64',valueFrom:{secretKeyRef:{name:'key',key:'1'}}});if(mode==='source')e[0].value='other';
+ assert.throws(()=>validateMailboxDisabledReadback(f.d,f.revision));}
+});
+test('resumed runtime must match the exact already-built digest after deployment',()=>{
+ const f=buildFixture(),proof=validateBuiltArtifactResume(f.descriptor,f.build,f.receipt,f.blob);
+ const revision={metadata:{name:'dev-new'},status:{imageDigest:'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@'+proof.runtimeDigest},spec:{containers:[{env:[{name:'CXORBIA_RECOVERY_SOURCE_SHA',value:proof.sourceSha}]}]}};
+ assert.equal(validateResumedBuildRuntime(f.descriptor,proof,revision).builds,0);
+ revision.status.imageDigest='gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:'+'9'.repeat(64);
+ assert.throws(()=>validateResumedBuildRuntime(f.descriptor,proof,revision),/digest mismatch/);
+});

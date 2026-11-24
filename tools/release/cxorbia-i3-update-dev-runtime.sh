@@ -22,6 +22,7 @@ fi
 # does not supply mailbox credentials, read messages or submit SMTP traffic.
 mailbox_binding="$(node --input-type=module <<'NODE'
 import crypto from 'node:crypto';
+import fs from 'node:fs';
 import {spawnSync} from 'node:child_process';
 const {PROJECT:project,SERVICE:service,REGION:region}=process.env;
 const fail=code=>{throw Error('ENVIRONMENT_FAILURE:P0367_'+code);};
@@ -46,6 +47,21 @@ try{
   ensure(found.length<=1,'DUPLICATE_KEY_BINDING');
   const mounted=found[0]?.valueFrom?.secretKeyRef;
   ensure(!found.length||mounted,'PLAINTEXT_KEY_MIGRATION_REQUIRED');
+  const descriptor=process.env.CANDIDATE_DESCRIPTOR?JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR,'utf8')):{};
+  const hold=descriptor.currentMailboxEnvironmentHold;
+  if(hold?.state==='HOLD_MAIL_UNCONFIGURED'){
+    ensure(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV'&&descriptor.pairedBuildResumeRequest?.state==='RESUME_EXACT_SUCCESSFUL_BUILD','HOLD_EXECUTION_MODE_INVALID');
+    ensure(hold.classification==='ENVIRONMENT_FAILURE'&&hold.production===false&&descriptor.i4Authorized!==true,'HOLD_SCOPE_INVALID');
+    ensure(hold.sourceSha===process.env.FOCAL_SOURCE&&hold.sourceSha===descriptor.productSourceSha&&hold.sourceTree===descriptor.productTreeAuthority,'HOLD_SOURCE_DRIFT');
+    ensure(hold.runtimeRevision===current.status?.latestReadyRevisionName&&hold.failedRunId===descriptor.pairedBuildResumeRequest?.originalBuildRunId,'HOLD_PREDECESSOR_DRIFT');
+    ensure(!found.length&&['CXORBIA_USER_MAILBOX_ENABLED','CXORBIA_USER_MAILBOX_SEND_ENABLED'].every(name=>entries.filter(e=>e.name===name).every(e=>e.value==='false')),'HOLD_REQUIRES_UNCONFIGURED_RUNTIME');
+    const lookup=cli(['secrets','describe','cxorbia-dev-user-mailbox-credential-key']);
+    const recognized=String(lookup.stderr||'').match(/^ERROR: \(gcloud\.secrets\.describe\) (NOT_FOUND|PERMISSION_DENIED|UNAVAILABLE|FAILED_PRECONDITION|UNAUTHENTICATED|RESOURCE_EXHAUSTED)(?:[ :]|$)/m)?.[1];
+    const proof={decision:'HOLD_E08_MAILBOX_UNCONFIGURED',sourceSha:hold.sourceSha,sourceTree:hold.sourceTree,predecessorRuntime:hold.runtimeRevision,failedRunId:hold.failedRunId,secretMetadataOutcome:lookup.status===0?'METADATA_ACCESSIBLE':recognized||'UNCLASSIFIED_PROVIDER_ERROR',keyMounted:false,mailboxEnabled:false,sendEnabled:false,secretWrites:0,iamWrites:0,credentialReads:0,smtpSends:0,production:false};
+    if(process.env.FOCAL_OUT)fs.writeFileSync(process.env.FOCAL_OUT+'/mailbox-environment-readback.json',JSON.stringify(proof,null,2)+'\n');
+    console.error('CXORBIA_MAILBOX_ENVIRONMENT_HOLD='+JSON.stringify(proof));
+    console.log('HOLD_MAIL_UNCONFIGURED');process.exit(0);
+  }
   let secret=mounted?.name||'cxorbia-dev-user-mailbox-credential-key';
   const annotation=current.spec?.template?.metadata?.annotations?.['run.googleapis.com/secrets']||current.metadata?.annotations?.['run.googleapis.com/secrets']||'';
   for(const item of annotation.split(',')){const at=item.indexOf(':');if(at>0&&item.slice(0,at).trim()===secret){secret=item.slice(at+1).trim();break;}}
@@ -89,9 +105,13 @@ try{
 }
 NODE
 )"
-[[ "$mailbox_binding" =~ ^[A-Za-z0-9_-]+:[1-9][0-9]*$ ]]
-settings+=",CXORBIA_USER_MAILBOX_ENABLED=true,CXORBIA_USER_MAILBOX_SEND_ENABLED=false"
-secret_bindings+=("CXORBIA_MAILBOX_CREDENTIAL_KEY_B64=$mailbox_binding")
-extra+=(--update-secrets "$(IFS=,; printf '%s' "${secret_bindings[*]}")")
+if [[ "$mailbox_binding" == HOLD_MAIL_UNCONFIGURED ]]; then
+  settings+=",CXORBIA_USER_MAILBOX_ENABLED=false,CXORBIA_USER_MAILBOX_SEND_ENABLED=false"
+else
+  [[ "$mailbox_binding" =~ ^[A-Za-z0-9_-]+:[1-9][0-9]*$ ]]
+  settings+=",CXORBIA_USER_MAILBOX_ENABLED=true,CXORBIA_USER_MAILBOX_SEND_ENABLED=false"
+  secret_bindings+=("CXORBIA_MAILBOX_CREDENTIAL_KEY_B64=$mailbox_binding")
+fi
+if ((${#secret_bindings[@]})); then extra+=(--update-secrets "$(IFS=,; printf '%s' "${secret_bindings[*]}")"); fi
 gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$image" \
   --min-instances=1 --max-instances=1 --update-env-vars "$settings" "${extra[@]}" --quiet
