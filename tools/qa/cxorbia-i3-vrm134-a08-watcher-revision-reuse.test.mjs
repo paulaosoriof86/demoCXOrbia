@@ -94,7 +94,7 @@ test('A08 newer HR revision delegates a protected reconcile without a direct sna
   await h.authorityReady();
   h.setProviderRevision('revision-b');
   await h.poll();
-  assert.deepEqual(h.reconciliations, [['live_watcher_revision_change', true]]);
+  assert.deepEqual(JSON.parse(JSON.stringify(h.reconciliations)), [['live_watcher_revision_change', true,{expectedRevision:'revision-b'}]]);
   assert.equal(h.CX.data.previewMeta.sourceRevision, 'revision-a');
 });
 
@@ -147,8 +147,8 @@ test('A08 non-protected preview preserves its original watcher fetch', async () 
 
 test('A08 keeps independent HR revision validation before atomic publication', () => {
   const reconcile = authoritySource.slice(authoritySource.indexOf('async function reconcile('), authoritySource.indexOf('function schedule('));
-  assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision)') >= 0);
-  assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision)') < reconcile.indexOf('publishComposition(candidate)'));
+  assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision,{periodId:options.periodId})') >= 0);
+  assert.ok(reconcile.indexOf('await verifyHrRevision(scope,hr.sourceRevision,{periodId:options.periodId})') < reconcile.indexOf('publishComposition(candidate)'));
   assert.match(authoritySource, /HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION/);
 });
 
@@ -176,7 +176,7 @@ test('VRM364 editing defers protected recomposition and closing rereads the newe
   h.setProviderRevision('revision-c');h.document.activeElement=h.document.body;
   const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();
   assert.equal(result.revision,'revision-c');assert.equal(h.requests.length,2);
-  assert.deepEqual(h.reconciliations,[['live_watcher_revision_change',true]]);
+  assert.deepEqual(JSON.parse(JSON.stringify(h.reconciliations)),[['live_watcher_revision_change',true,{expectedRevision:'revision-c'}]]);
   assert.equal(h.CX.data.previewMeta.sourceRevision,'revision-a');
 });
 test('VRM364 visible modal also defers and a reverted source causes no stale recomposition',async()=>{

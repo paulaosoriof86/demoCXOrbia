@@ -3,11 +3,11 @@ const inplace=fs.readFileSync('app/adapters/tya-live-source-inplace-apply.js','u
 test('A05 builds HR candidate without publishing CX.data',()=>{const s=inplace.indexOf('function buildSnapshotCandidate('),e=inplace.indexOf('function publishSnapshotCandidate(',s);assert.ok(s>=0&&e>s);assert.doesNotMatch(inplace.slice(s,e),/CX\.data\.(projects|shoppers|_visitas|_posts|currentProjectId|currentPeriodId)\s*=/);assert.match(inplace,/CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE=buildSnapshotCandidate/);assert.match(inplace,/Object\.assign\(CX\.data,next\)/);});
 test('A05 reconcile validates session and revision before publish',()=>{const s=bridge.indexOf('async function reconcile('),e=bridge.indexOf('function schedule(',s),body=bridge.slice(s,e);assert.match(body,/sessionGenerationStamp\(c,scope\)/);assert.match(body,/CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE/);assert.doesNotMatch(body,/CX_TYA_APPLY_LIVE_SNAPSHOT\(/);assert.ok(body.indexOf('await verifyHrRevision')<body.indexOf('publishComposition(candidate)'));assert.match(body,/assertSessionGeneration\(sessionStamp\)/);assert.match(bridge,/HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION/);});
 test('A05 publication precedes authority-ready events',()=>{const s=bridge.indexOf('function publishComposition('),e=bridge.indexOf('async function reconcile(',s),body=bridge.slice(s,e);assert.ok(body.indexOf('CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE')<body.indexOf('window.CX_PROTECTED_AUTH_HR_AUTHORITY=')&&body.indexOf('window.CX_PROTECTED_AUTH_HR_AUTHORITY=')<body.indexOf("cx:protected-auth-hr-authority-ready"));assert.match(body,/suppressEvents:true/);assert.match(body,/HR_LIVE_REVISION_PUBLICATION_MISMATCH/);});
-test('A05 backend refresh awaits atomic composition readback',()=>{assert.match(bridge,/let composed=await reconcile\('backend_refresh_dynamic'\)/);assert.match(bridge,/BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED/);assert.match(bridge,/BACKEND_REFRESH_READBACK_REVISION_MISMATCH/);assert.doesNotMatch(bridge,/schedule\('backend_refresh_dynamic',true\);return s;/);});
-test('A05 human gate and watcher require same-revision atomic authority',()=>{assert.match(c6,/authority\?\.atomicPublication===true/);assert.match(c6,/authorityRevision===sourceRevision/);assert.match(watcher,/authority\.atomicPublication===true/);assert.match(watcher,/authorityRevision===dataRevision/);assert.match(watcher,/CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE\?\.\('live_watcher_revision_change',true\)/);});
+test('A05 backend refresh awaits atomic composition readback',()=>{assert.match(bridge,/let composed=await reconcile\('backend_refresh_dynamic',periodOptions\)/);assert.match(bridge,/BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED/);assert.match(bridge,/BACKEND_REFRESH_READBACK_REVISION_MISMATCH/);assert.doesNotMatch(bridge,/schedule\('backend_refresh_dynamic',true\);return s;/);});
+test('A05 human gate and watcher require same-revision atomic authority',()=>{assert.match(c6,/authority\?\.atomicPublication===true/);assert.match(c6,/authorityRevision===sourceRevision/);assert.match(watcher,/authority\.atomicPublication===true/);assert.match(watcher,/authorityRevision===dataRevision/);assert.match(watcher,/CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE\?\.\('live_watcher_revision_change',true,\{expectedRevision:meta.revision\}\)/);});
 import vm from 'node:vm';
 function bootSchedulerHarness({isAuthorized=true,dependenciesReady=true}={}){
-  const start=bridge.indexOf('function schedule(reason,reset)'),end=bridge.indexOf('\nfunction bind()',start);
+  const start=bridge.indexOf('function schedule(reason,reset,options={})'),end=bridge.indexOf('\nfunction bind()',start);
   assert.ok(start>=0&&end>start);
   const pending=new Map();let serial=0,ready=false,calls=0;
   const sandbox={
@@ -19,7 +19,7 @@ function bootSchedulerHarness({isAuthorized=true,dependenciesReady=true}={}){
     clearTimeout(id){pending.delete(id);},
     async reconcile(){calls++;sandbox.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,at:new Date().toISOString()};return{ok:true};}
   };
-  vm.runInNewContext("let bootTimer=null,bootAttempt=0,bootForce=false,bootReason='',reconciling=false;const BOOT_MAX_ATTEMPTS=180;\n"+bridge.slice(start,end)+"\nthis.invoke=schedule;this.setReconciling=value=>{reconciling=value;};",sandbox);
+  vm.runInNewContext("let bootTimer=null,bootAttempt=0,bootForce=false,bootReason='',reconciling=false,bootOptions={};const BOOT_MAX_ATTEMPTS=180;\n"+bridge.slice(start,end)+"\nthis.invoke=schedule;this.setReconciling=value=>{reconciling=value;};",sandbox);
   return{
     invoke:sandbox.invoke,setReconciling:sandbox.setReconciling,
     setReady(value){ready=value;},calls:()=>calls,ids:()=>[...pending.keys()],delays:()=>[...pending.values()].map(t=>t.delay),

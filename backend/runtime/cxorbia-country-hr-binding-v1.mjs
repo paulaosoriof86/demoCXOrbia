@@ -66,7 +66,7 @@ export function discoverExcelMonthlyWorksheets({worksheets=[],periodCatalog=[],e
     providerWrites:0,firestoreWrites:0,hrWrites:0};
 }
 
-export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,countryCode,periodId,purpose='operational'}={}){
+export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,countryCode,periodId,purpose='operational',discovery}={}){
   if(!db?.doc||!id(tenantId)||!id(projectId)||!/^[A-Z]{2}$/.test(str(countryCode))||!id(periodId))fail('SCOPE_INVALID');
   const scope={tenantId:str(tenantId),projectId:str(projectId),countryCode:str(countryCode),periodId:str(periodId)};
   const project=await db.doc(`tenants/${scope.tenantId}/projects/${scope.projectId}`).get();
@@ -112,7 +112,17 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
   }
   const sheets=setting.periodSheets;
   if(!Array.isArray(sheets))fail('PERIOD_REGISTRY_MISSING');
-  const matches=sheets.filter(x=>str(x?.periodId)===scope.periodId);
+  let matches=sheets.filter(x=>str(x?.periodId)===scope.periodId),discovered=false;
+  if(!matches.length&&discovery){
+    if(discovery.tenantId!==scope.tenantId||discovery.projectId!==scope.projectId||discovery.countryCode!==scope.countryCode||
+      discovery.providerBindingId!==bindingId||discovery.workbookFingerprint!==sha(`${setting.driveId}\0${setting.itemId}`)||
+      discovery.settingStamp!==stamp(binding)||discovery.complete!==true||!/^([a-f0-9]{64})$/.test(discovery.inventoryHash||'')||
+      !Array.isArray(discovery.entries))fail('DISCOVERY_SCOPE');
+    matches=discovery.entries.filter(x=>str(x?.periodId)===scope.periodId);
+    for(const sheet of matches){const parsed=parseWorksheetTitle(sheet.worksheetName);
+      if(sheet.visibility!=='Visible'||!parsed||parsed.scenarioKey||parsed.periodKey!==scope.periodId.slice(scope.projectId.length+1))fail('DISCOVERY_MONTH_AMBIGUOUS');}
+    discovered=matches.length>0;
+  }
   if(!matches.length)fail('PERIOD_UNREGISTERED');
   const scenarioKeys=new Set(),worksheetIds=new Set();
   for(const sheet of matches){
@@ -131,7 +141,7 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
     .sort((a,b)=>str(a.scenarioKey).localeCompare(str(b.scenarioKey))||a.worksheetId.localeCompare(b.worksheetId));
   const projectStamp=stamp(project),settingStamp=stamp(binding);
   const fingerprint=sha(JSON.stringify({scope,projectStamp,settingStamp,...(mirrorStamp?{mirrorStamp,purpose}:{}),bindingId,driveId:setting.driveId,itemId:setting.itemId,
-    worksheets:selected,mappingRef:country.mappingRef,writePolicy:source.writePolicy}));
+    worksheets:selected,mappingRef:country.mappingRef,writePolicy:source.writePolicy,...(discovered?{inventoryHash:discovery.inventoryHash}: {})}));
   return {
     scope,
     proof:{schemaVersion:'cxorbia.country-hr-period-binding.v1',...scope,
@@ -139,6 +149,7 @@ export async function resolveCountryHrPeriodBinding({db,tenantId,projectId,count
       bindingSha256:sha(bindingId),workbookSha256:sha(`${setting.driveId}\0${setting.itemId}`),
       worksheetSetSha256:sha(JSON.stringify(selected)),worksheetCount:selected.length,mappingSha256:sha(country.mappingRef),
       projectVersion:raw.version??null,projectStamp,settingStamp,bindingFingerprint:fingerprint,
+      bindingOrigin:discovered?'verified_provider_inventory':'firestore_period_registry',...(discovered?{inventoryHash:discovery.inventoryHash}:{}),
       providerAck:false,remoteRevisionVerified:false,hrWrites:false,production:false},
     // Server-only. Never serialize this field into a Shopper/Admin HR response.
     privateProvider:{driveId:setting.driveId,itemId:setting.itemId,worksheets:selected,

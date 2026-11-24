@@ -23,7 +23,7 @@ const snapshot={tenantId:'qa-tenant',projectId:'qa-project',sourceSafe:true,impo
 function selectHarness({cached=null,refresh=async()=>{throw Error('EXTERNAL_PROVIDER_DOWN');},recover=async()=>null}={}){
   const calls=[];
   const build=new Function('cached','resolveProjectHrReadBinding','refreshSnapshot','recoverHrReadModel','persistHrReadModel',
-    `let cache=cached,inFlight=null,inFlightBinding=null,lastReadModelError=null;const CACHE_MS=5000;${selector};return buildSnapshot;`)
+    `let cache=cached,inFlight=null,inFlightBinding=null,lastReadModelError=null;const CACHE_MS=5000;const scopedHrCache=new Map();${selector};return buildSnapshot;`)
     (cached,async()=>binding,async b=>{calls.push('fresh');return refresh(b);},async b=>{calls.push('recover');return recover(b);},async()=>{calls.push('persist');return {published:true};});
   return {build,calls};
 }
@@ -137,7 +137,7 @@ test('visible global badge identifies last synchronization and does not claim cu
 });
 test('existing browser bridge opts into read model, watcher refreshes strictly, and commands do not opt in',()=>{
   assert.match(bridge,/format:'json'.*readModel:'1'/);assert.match(bridge,/format:'meta'.*readModel:'1'/);
-  assert.match(watcher,/getJson\('meta',\{fresh:'1'\}\)/);
+  assert.match(watcher,/getJson\('meta',\{fresh:'1',\.\.\.\(!automatic\?\{inventory:'1'\}:\{\}\)\}\)/);
   const configure=fn(server,'      configure:async command=>{','      hrSnapshotReconcile:async input=>{');
   assert.doesNotMatch(configure,/allowDurableRead/);assert.match(configure,/buildSnapshot\(\{forceFresh:hrCommands.has/);
   assert.match(server,/readSnapshot:scope=>buildSnapshot\(\{forceFresh:true,scope\}\)/);
@@ -162,7 +162,7 @@ test('durable reader keys reuse source hashes but recompute the selected mapping
       ref=>{selected.push(ref);if(!mappings[ref])throw Error('MAPPING_UNSUPPORTED');return mappings[ref];},
       ()=>({}), (b,readerFingerprint)=>({...b.scope,readerFingerprint}), ()=>({db:{}}));
   const a=context({...binding,mappingRef:'alpha'}),b=context({...binding,mappingRef:'beta'}),again=context({...binding,mappingRef:'alpha'});
-  assert.equal(reads,6,'immutable reader owners are hashed once per process');
+  assert.equal(reads,7,'immutable reader owners are hashed once per process');
   assert.deepEqual(selected,['alpha','beta','alpha']);assert.equal(a.key.readerFingerprint,again.key.readerFingerprint);
   assert.notEqual(a.key.readerFingerprint,b.key.readerFingerprint,'first project mapping cannot contaminate the second');
   mappings.alpha.columnMap.v=3;assert.notEqual(context({...binding,mappingRef:'alpha'}).key.readerFingerprint,a.key.readerFingerprint);
@@ -243,6 +243,38 @@ function protectedBrowser(){
   return {...b,listeners,mounts,authContext:ctx,flush(){while(timers.length)timers.shift()();}};
 }
 
+test('visible historical rows survive a fresh window without entering command authority or resurrecting a deleted row',()=>{
+ const b=protectedBrowser(),scope=binding.scope,old={...snapshot.visits[0],...scope,id:'old',visitId:'old',periodId:'qa-project-2026-05',periodKey:'2026-05',country:'GT'};
+ const current={...old,id:'current',visitId:'current',periodId:'qa-project-2026-11',periodKey:'2026-11'};
+ const s={...snapshot,visits:[current],periods:[{key:'2026-11'}],periodCatalog:[{key:'2026-05'},{key:'2026-11'},{key:'2026-12'}],
+  readScope:{mode:'rolling_window',currentPeriodId:'qa-project-2026-11',freshPeriodIds:['qa-project-2026-11'],countryPeriods:[{countryCode:'GT',periodId:'qa-project-2026-11'}]},
+  confirmedHistory:{schemaVersion:'cxorbia.hr-confirmed-history.v1',...scope,externalReadCurrent:false,visits:[old,{...current,id:'deleted',visitId:'deleted'}],shoppers:[],periods:[{key:'2026-05'},{key:'2026-11'}],observations:[{countryCode:'GT',periodId:'qa-project-2026-05',sourceReadAt:'2026-05-30T12:00:00Z'}]}};
+ const candidate=b.window.CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE(s,{revision:'a'.repeat(64),externalReadCurrent:true,sourceReadAt:'2026-11-24T12:00:00Z'});
+ assert.deepEqual(Array.from(candidate.data._visitas,v=>v.id),['old','current']);assert.equal(candidate.data.currentPeriodId,'qa-project-2026-11');
+ assert.equal(candidate.snapshot.visits.length,1);assert.equal(candidate.snapshot.confirmedHistory,undefined);
+ assert.equal(candidate.data._visitas[0].externalReadCurrent,false);assert.equal(candidate.data._visitas[0].sourceReadAt,'2026-05-30T12:00:00Z');
+ b.window.CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE(candidate,{suppressEvents:true});assert.equal(b.window.CX_TYA_HR_SOURCE_SAFE.visits.length,1);
+ const selected=b.window.CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE(s,{revision:'a'.repeat(64)},{periodId:'qa-project-2026-05'});assert.equal(selected.data.currentPeriodId,'qa-project-2026-05');
+});
+test('history from a different scope is rejected before atomic publication',()=>{
+ const b=protectedBrowser(),s={...snapshot,confirmedHistory:{schemaVersion:'cxorbia.hr-confirmed-history.v1',tenantId:'foreign',projectId:'qa-project',externalReadCurrent:false}};
+ assert.throws(()=>b.window.CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE(s,{}),/HR_HISTORY_SCOPE_INVALID/);
+});
+test('an explicit historical view pauses automatic polling and its manual refresh keeps the same period',async()=>{
+ const b=protectedBrowser(),calls=[];b.publish('a'.repeat(64),new Date().toISOString(),true);
+ b.window.CX_PROTECTED_AUTH_HR_AUTHORITY.readScope={mode:'explicit_period',requestedPeriodId:'qa-project-2026-05'};
+ b.window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY=async(reason,options)=>{calls.push({reason,options});return {ok:true};};
+ b.ctx.fetch=()=>{throw Error('UNEXPECTED_PROVIDER_READ');};vm.runInContext(watcher,b.ctx);
+ assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('poll')).reason,'historical_period_on_demand_only');assert.equal(calls.length,0);
+ await b.window.CX_TYA_CHECK_LIVE_SOURCE('manual');assert.equal(calls.length,1);assert.equal(calls[0].options.periodId,'qa-project-2026-05');
+});
+test('watcher handoff reuses its verified provider revision instead of forcing a second read',async()=>{
+ const consume=fn(bridge,'async function consumeHrPrefetch(','\nfunction sessionProfile('),calls=[];
+ const h=new Function('fetchHr',`let hrPrefetch={key:'old'};${consume};return consumeHrPrefetch;`)(async(scope,options)=>{calls.push(options);return {runtime:{revision:'new'}};});
+ await h(binding.scope,{expectedRevision:'new'});assert.equal(calls.length,1);assert.equal(calls[0].forceFresh,false);
+ await assert.rejects(h(binding.scope,{expectedRevision:'different'}),/REVISION_CHANGED_DURING_COMPOSITION/);
+});
+
 test('actual C6 shell releases an atomic last-confirmed view and does not remount on repeated ready events',()=>{
   const b=protectedBrowser();
   const human=fn(c6,'  function humanAuthorityReady(){','\n  function requestHumanAuthority(');
@@ -277,7 +309,7 @@ test('actual watcher preserves stale freshness, confirms same revision and conve
   assert.equal(b.CX.data.previewMeta.externalReadCurrent,true);assert.equal(schedules.length,0);
   responses.push(meta(next,'2026-11-24T10:00:00.000Z'));
   assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('qa_explicit_refresh')).delegated,true);
-  assert.deepEqual(schedules,[['live_watcher_revision_change',true]]);
+  assert.deepEqual(JSON.parse(JSON.stringify(schedules)),[['live_watcher_revision_change',true,{expectedRevision:next}]]);
   b.publish(next,'2026-11-24T10:00:00.000Z',true);
   // The explicit next probe supplies the new independent observation; an
   // additional ready event here would also be due for this historical timestamp.
@@ -293,10 +325,24 @@ test('watcher-triggered bridge refresh discards prior prefetch and requests stri
   const h=new Function('fetchHr','initial',`let hrPrefetch=initial;${consume};return {consumeHrPrefetch,prefetch:()=>hrPrefetch};`)
     (async(scope,options)=>{calls.push({scope,options});return {revision:'next'};},old);
   const value=await h.consumeHrPrefetch(binding.scope,{forceFresh:true});
-  assert.equal(value.revision,'next');assert.equal(h.prefetch(),null);assert.deepEqual(calls,[{scope:binding.scope,options:{forceFresh:true}}]);
+  assert.equal(value.revision,'next');assert.equal(h.prefetch(),null);assert.deepEqual(calls,[{scope:binding.scope,options:{forceFresh:true,periodId:undefined}}]);
   const query=fn(bridge,'function queryUrl(','\nasync function fetchHr(');
   const url=new Function('endpointFor','URLSearchParams',query+'\nreturn queryUrl;')(()=>'/hr',URLSearchParams)(binding.scope,{forceFresh:true});
   const params=new URL(url,'https://example.invalid').searchParams;
   assert.equal(params.get('protectedState'),'1');assert.equal(params.get('fresh'),'1');assert.equal(params.get('readModel'),'1');
-  assert.match(bridge,/consumeHrPrefetch\(scope,\{forceFresh:reason==='live_watcher_revision_change'\}\)/);
+  assert.match(bridge,/expectedRevision:options.expectedRevision/);
+});
+
+test('a recovered snapshot without a history bank still marks every visible visit as stale',()=>{
+ const b=protectedBrowser(),copy=structuredClone(snapshot),at='2026-11-23T12:00:00.000Z';
+ const candidate=b.window.CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE(copy,{revision:'a'.repeat(64),externalReadCurrent:false,sourceReadAt:at});
+ assert.ok(candidate.data._visitas.length>0);
+ assert.ok(candidate.data._visitas.every(v=>v.externalReadCurrent===false&&v.sourceReadAt===at));
+ assert.equal(candidate.snapshot.visits[0].externalReadCurrent,undefined);
+});
+test('manual refresh discovers new tabs while automatic polling retains its inventory cache',()=>{
+ const b=protectedBrowser(),calls=[];b.publish('a'.repeat(64),new Date().toISOString(),true);
+ b.ctx.fetch=async url=>{calls.push(url);return {ok:true,json:async()=>({sourceSafe:true,runtimeRead:true,revision:'a'.repeat(64),externalReadCurrent:true,sourceReadAt:new Date().toISOString()})};};
+ vm.runInContext(watcher,b.ctx);
+ return b.window.CX_TYA_CHECK_LIVE_SOURCE('manual').then(()=>{assert.equal(new URL(calls.at(-1),'https://example.invalid').searchParams.get('inventory'),'1');});
 });

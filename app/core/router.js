@@ -401,10 +401,19 @@ CX.router = {
       CX.ui.toast('Proyecto: '+(d.period()?projectBaseLabelOf(d.period()):sel.value),'ok'); this.buildRail(CX.session.role);
     });
     const psel=document.getElementById('periodSel');
-    if(psel)psel.addEventListener('change',()=>{
+    if(psel)psel.addEventListener('change',async()=>{
+      const selected=psel.value,previous=d.currentPeriodId;
+      const source=d.previewMeta?.hrAuthority===true;
+      if(source&&typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY==='function'){
+        psel.disabled=true;
+        try{const read=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('explicit_period_selection',{periodId:selected});
+          if(read?.ok!==true)throw new Error(read?.error||read?.reason||'HR_PERIOD_FRESH_READ_REQUIRED');
+        }catch(error){psel.value=previous;CX.ui.toast('No se pudo actualizar este período desde la hoja de ruta. Se conserva la vista anterior.','error');return;}
+        finally{psel.disabled=false;}
+      }
       /* P0-4: setCurrentPeriod(periodId) \u2014 fallback a setProject(periodId) si no existe. */
-      const ok = (typeof d.setCurrentPeriod==='function') ? d.setCurrentPeriod(psel.value) : false;
-      const restored = !ok && typeof d.setProject==='function' ? d.setProject(psel.value) : ok;
+      const ok = (typeof d.setCurrentPeriod==='function') ? d.setCurrentPeriod(selected) : false;
+      const restored = !ok && typeof d.setProject==='function' ? d.setProject(selected) : ok;
       if(restored===true)this.rememberScopedUiHint({view:CX.session?.view||''});
       /* Ajuste B (V161): periodLabelOf() es la única fuente de etiqueta de periodo, también en
          este toast — nunca lee periodo/ronda/name directamente aquí. */

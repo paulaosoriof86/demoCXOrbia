@@ -432,7 +432,7 @@ test('ADMIN-004 backend refresh invalidates HR authority then awaits atomic reco
   const pending=wrapper.indexOf("sourceRef='firestore-refresh-pending-hr-recompose'");
   const invalidate=wrapper.indexOf("applied:false");
   const original=wrapper.indexOf('await original()');
-  const compose=wrapper.indexOf("await reconcile('backend_refresh_dynamic')");
+  const compose=wrapper.indexOf("await reconcile('backend_refresh_dynamic',periodOptions)");
   const required=wrapper.indexOf('BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED');
   const readback=wrapper.indexOf('BACKEND_REFRESH_READBACK_REVISION_MISMATCH');
   assert.ok(pending>=0&&invalidate>=0&&original>=0&&compose>=0&&required>=0&&readback>=0);

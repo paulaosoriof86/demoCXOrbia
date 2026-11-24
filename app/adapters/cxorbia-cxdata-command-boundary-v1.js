@@ -82,6 +82,23 @@
   function legacyFailClosed(result){surfaceBlocked(result);throw new CXCommandBlockedError(result);}
   function execute(input,meta){
     meta=commandMeta(meta);
+    const snapshot=root.CX_TYA_HR_SOURCE_SAFE,readScope=snapshot?.readScope;
+    const sensitive=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update','visit.reschedule','visit.cancel',
+      'visit.questionnaire.submit','visit.sync.confirm','application.status.update','reservation.status.update','finance.reconcile.visit','finance.historical.reconcile']);
+    if(readScope&&sensitive.has(input.commandType)){
+      const scope={tenantId:input.tenantId,projectId:input.projectId},rows=liveHrRows(scope),p=input.payload||{};
+      const keys=(input.commandType==='finance.historical.reconcile'?(p.visitIds||[]):[p.visitId||(input.entityType==='visit'?input.entityId:'')]).map(str).filter(Boolean);
+      const covered=new Set((readScope.countryPeriods||[]).map(x=>x.countryCode+'|'+x.periodId));
+      const fresh=root.CX_TYA_HR_LIVE_META?.externalReadCurrent===true&&keys.length>0&&keys.every(key=>{
+        const found=rows.filter(v=>[v.id,v.visitId,v.hrRowId,...(v.durableAliasIds||[])].map(str).includes(key));
+        return found.length===1&&covered.has(str(found[0].country||found[0].pais)+'|'+str(found[0].periodId));
+      });
+      if(!fresh){const r={ok:false,status:'blocked',code:'HR_PERIOD_FRESH_READ_REQUIRED',successUiAllowed:false,localMutation:false,localStorageWrite:false,
+        reason:'Actualiza el período de esta visita desde su hoja de ruta antes de guardar.'};
+        try{CX.ui?.toast?.(r.reason,'warn',5000);}catch(_){}
+        return meta.ackAware?Promise.resolve(r):legacyFailClosed(r);
+      }
+    }
     if(!CX.commandAdapter?.execute){
       const r={ok:false,status:'blocked',code:'COMMAND_ADAPTER_UNAVAILABLE',successUiAllowed:false,localMutation:false,localStorageWrite:false,reason:'Command adapter no disponible.'};
       return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);
@@ -94,7 +111,7 @@
   function buildBase(commandType,entityType,entityId,payload,expectedVersion,meta){
     let c=ctx();payload=Object.assign({},payload||{});
     const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
-      'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.status.update','reservation.status.update']);
+      'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.status.update','reservation.status.update','finance.reconcile.visit']);
     if(hrCommands.has(commandType)){
       const key=str(payload.visitId||(entityType==='visit'?entityId:''));
       const rows=liveHrRows(c);

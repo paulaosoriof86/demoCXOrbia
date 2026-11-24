@@ -154,3 +154,10 @@ test('exact GT reflection remains distinct when HN shares the physical coordinat
   const c=command({commandType:'visit.sync.confirm',authorization:{providerEnforcementRequired:true,permission:'visit.sync.confirm'},payload:{visitId:'canonical_GT',hrRowId,hrShopperId:'qa-shopper'}});
   const r=await f.provider.execute('verified',c);assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.hrReflection.hrVisitId,'canonical_GT');assert.equal(r.hrProviderAck,false);
 });
+
+for(const state of ['pendiente','aprobada'])test('confirmed historical HR does not adjudicate '+state+' postulation until explicit fresh observation',()=>{
+ const row=visit('GT',{shopperId:'other',estado:'asignada',canonicalFacets:{assigned:true,available:false},confirmedHistory:true,externalReadCurrent:false});
+ const post={id:'historical-post',tenantId,projectId,periodId,visitId:row.id,hrRowId,shopperId:'applicant',estado:state};
+ assert.notEqual(compose([row],[],[post]).posts.find(p=>p.id===post.id)._archived,true);
+ assert.equal(compose([{...row,confirmedHistory:false,externalReadCurrent:true}],[],[post]).posts.find(p=>p.id===post.id)._archived,true);
+});

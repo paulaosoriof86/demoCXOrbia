@@ -56,7 +56,7 @@ test('VRM372 invalid or future freshness timestamps never suppress the initial r
 });
 test('VRM372 closing a deferred editor rereads the latest revision inside the automatic interval',async()=>{
   const h=setup();h.document.activeElement={tagName:'INPUT'};h.setRevision('rev-b');await h.check('poll');h.setRevision('rev-c');h.document.activeElement=h.document.body;
-  const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();assert.equal(result.revision,'rev-c');assert.equal(h.requests.length,2);assert.deepEqual(h.reconciles,[['live_watcher_revision_change',true]]);
+  const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();assert.equal(result.revision,'rev-c');assert.equal(h.requests.length,2);assert.deepEqual(JSON.parse(JSON.stringify(h.reconciles)),[['live_watcher_revision_change',true,{expectedRevision:'rev-c'}]]);
 });
 test('VRM372 concurrent triggers share the existing in-flight check',async()=>{
   const h=setup();let release;h.setHold(new Promise(resolve=>{release=resolve;}));const pending=h.check('poll');await h.focus();await h.check('manual_refresh');assert.equal(h.requests.length,1);release();await pending;

@@ -49,8 +49,8 @@ function checkBody(body,key,revision){
       body.bindingFingerprint!==key.bindingFingerprint||body.readerFingerprint!==key.readerFingerprint||
       body.revision!==revision||!sameScope(body.snapshot,key)||
       body.snapshot?.sourceSafe!==true||body.snapshot?.imported===true||body.snapshot?.production===true||
-      !Array.isArray(body.snapshot?.visits)||!body.snapshot.visits.length||
-      !Array.isArray(body.snapshot?.periods)||!body.snapshot.periods.length||
+      !Array.isArray(body.snapshot?.visits)||
+      !Array.isArray(body.snapshot?.periods)||(!body.snapshot.periods.length&&!body.snapshot.readScope?.countryPeriods?.length)||
       body.bindingProof?.bindingFingerprint!==key.bindingFingerprint)fail('BODY_SCOPE');
   entries(body.identityEntries,'IDENTITY');entries(body.privateReviewEntries,'PRIVATE_REVIEW');
   return body;
@@ -177,4 +177,86 @@ export function createDurableHrReadModel({db,now=Date.now,maxAgeMs=24*60*60*1000
         readerFingerprint:key.readerFingerprint,bindingFingerprint:key.bindingFingerprint,recoveredAt:now()}};
   }
   return {publish,read};
+}
+
+// Confirmed presentation history is deliberately separate from the fresh
+// command snapshot. It has no freshness TTL and never grants write authority.
+export const HR_HISTORY_SCHEMA='cxorbia.hr-confirmed-history.v1';
+function historyScope(scope){
+ if(!ID.test(scope?.tenantId||'')||!ID.test(scope?.projectId||''))fail('HISTORY_SCOPE');
+ return {tenantId:scope.tenantId,projectId:scope.projectId};
+}
+const countryOf=v=>String(v.country||v.countryCode||v.pais||'').toUpperCase();
+const periodOf=v=>String(v.periodId||v.measurementPeriodId||'');
+const visitId=v=>String(v.visitId||v.id||'');
+function bankRoot(db,scope){return db.doc(`tenants/${scope.tenantId}/projects/${scope.projectId}/hrReadModels/confirmed_history_v1`);}
+
+export function createConfirmedHrHistory({db,now=Date.now}={}){
+ if(!db?.doc||!db?.batch||!db?.runTransaction)fail('HISTORY_DATABASE');
+ async function observe(snapshot,{sourceReadAt,sourceReadStartedAt=sourceReadAt,revision,evidence,seed=false}={}){
+  const scope=historyScope(snapshot);
+  if(snapshot.sourceSafe!==true||snapshot.production===true||snapshot.imported===true||!Array.isArray(snapshot.visits)||
+    !HASH.test(revision||'')||!integer(sourceReadAt)||!integer(sourceReadStartedAt)||sourceReadStartedAt>sourceReadAt||sourceReadAt>now()+60000||!evidence?.receiptPath)fail('HISTORY_OBSERVATION');
+  if(seed&&(!HASH.test(evidence.snapshotSha256||'')||!/^sha256:[a-f0-9]{64}$/.test(evidence.artifactDigest||'')||!Number.isSafeInteger(evidence.artifactId)))fail('HISTORY_SEED_PROVENANCE');
+  const ids=snapshot.visits.map(visitId);if(ids.some(x=>!x)||new Set(ids).size!==ids.length)fail('HISTORY_DUPLICATE_VISIT');
+  const scopes=snapshot.readScope?.countryPeriods;
+  if(!Array.isArray(scopes)||!scopes.length)fail('HISTORY_READ_COVERAGE_REQUIRED');
+  const covered=new Set(scopes.map(s=>s.countryCode+'|'+s.periodId));
+  if(covered.size!==scopes.length||scopes.some(s=>!/^[A-Z]{2}$/.test(s.countryCode)||!String(s.periodId).startsWith(scope.projectId+'-')||!/^20\d{2}-(0[1-9]|1[0-2])$/.test(String(s.periodId).slice(scope.projectId.length+1)))||snapshot.visits.some(v=>v.tenantId!==scope.tenantId||v.projectId!==scope.projectId||!covered.has(countryOf(v)+'|'+periodOf(v))))fail('HISTORY_READ_COVERAGE_MISMATCH');
+  const isNewer=p=>p&&(Number(p.sourceReadStartedAt??p.sourceReadAt)>sourceReadStartedAt||Number(p.sourceReadStartedAt??p.sourceReadAt)===sourceReadStartedAt&&p.sourceReadAt>sourceReadAt);
+  const root=bankRoot(db,scope),receipts=[];
+  for(const selected of scopes){
+   const {countryCode,periodId}=selected;
+   if(!/^[A-Z]{2}$/.test(countryCode)||!periodId.startsWith(scope.projectId+'-')||!/^20\d{2}-(0[1-9]|1[0-2])$/.test(periodId.slice(scope.projectId.length+1)))fail('HISTORY_PERIOD_SCOPE');
+   const visits=snapshot.visits.filter(v=>countryOf(v)===countryCode&&periodOf(v)===periodId);
+   if(visits.some(v=>v.tenantId&&v.tenantId!==scope.tenantId||v.projectId&&v.projectId!==scope.projectId))fail('HISTORY_VISIT_SCOPE');
+   const shoppers=new Set(visits.map(v=>String(v.canonicalShopperId||v.shopperId||'')));
+   const period=(snapshot.periods||snapshot.periodCatalog||[]).find(p=>String(p.periodId||p.id)===periodId)||{id:periodId,periodId,key:periodId.slice(-7),periodKey:periodId.slice(-7)};
+   const body={schemaVersion:HR_HISTORY_SCHEMA,...scope,countryCode,periodId,period,visits,shoppers:(snapshot.shoppers||[]).filter(s=>shoppers.has(String(s.shopperId||s.id||'')))};
+   const raw=Buffer.from(JSON.stringify(body));if(raw.length>MAX_RAW_BYTES)fail('HISTORY_PAYLOAD_TOO_LARGE');
+   const packed=gzipSync(raw,{level:6});if(packed.length>MAX_PACKED_BYTES)fail('HISTORY_PAYLOAD_TOO_LARGE');
+   const digest=sha(raw),ref=root.collection('periods').doc(sha(countryCode+'|'+periodId));
+   const prior=await ref.get(),old=prior.exists?prior.data():null;
+   if(seed&&old){receipts.push({countryCode,periodId,published:false,reason:'seed_preserves_existing_observation'});continue;}
+   if(old?.sourceReadStartedAt===sourceReadStartedAt&&old.rawSha256!==digest)fail('HISTORY_CONCURRENT_OBSERVATION');
+   if(isNewer(old)){receipts.push({countryCode,periodId,published:false,reason:'newer_observation_preserved'});continue;}
+   if(old?.rawSha256===digest&&old.sourceReadAt===sourceReadAt){receipts.push({countryCode,periodId,published:false,reason:'already_preserved'});continue;}
+   const reused=old?.rawSha256===digest,generation=reused?old.generation:sha(digest),version=ref.collection('versions').doc(generation),chunks=[];
+   for(let offset=0;offset<packed.length;offset+=HR_READ_MODEL_CHUNK_BYTES)chunks.push(packed.subarray(offset,offset+HR_READ_MODEL_CHUNK_BYTES));
+   for(let first=0;!reused&&first<chunks.length;first+=8){const batch=db.batch();for(let i=first;i<Math.min(first+8,chunks.length);i++)batch.set(version.collection('chunks').doc(String(i).padStart(4,'0')),{index:i,sha256:sha(chunks[i]),bytes:chunks[i]});await batch.commit();}
+   const pointer={schemaVersion:HR_HISTORY_SCHEMA,...scope,countryCode,periodId,generation,sourceReadAt,sourceReadStartedAt,observedSnapshotRevision:revision,
+    revisionSemantics:'WHOLE_OBSERVED_SNAPSHOT_NOT_AN_INVENTED_PERIOD_PROVIDER_REVISION',externalReadCurrent:false,
+    rawSha256:digest,compressedSha256:sha(packed),rawBytes:raw.length,compressedBytes:packed.length,chunkCount:chunks.length,
+    chunkSha256:chunks.map(sha),visitCount:visits.length,evidence,updatedAt:now()};
+   const accepted=await db.runTransaction(async tx=>{const current=await tx.get(ref),p=current.exists?current.data():null;
+    if(seed&&p||isNewer(p))return false;
+    if(p?.sourceReadStartedAt===sourceReadStartedAt&&p.rawSha256!==digest)fail('HISTORY_CONCURRENT_OBSERVATION');
+    if(p?.sourceReadAt===sourceReadAt&&p.rawSha256!==digest)fail('HISTORY_CONCURRENT_OBSERVATION');
+    tx.set(ref,pointer);return true;});
+   receipts.push({countryCode,periodId,published:accepted,visits:visits.length,rawSha256:digest});
+  }
+  return {schemaVersion:HR_HISTORY_SCHEMA,...scope,periods:receipts,published:receipts.some(r=>r.published),hrWrites:0,operationalWrites:0,externalReadCurrent:false,production:false};
+ }
+ async function read(scope){
+  scope=historyScope(scope);const root=bankRoot(db,scope),rows=await root.collection('periods').get();
+  const visits=[],shoppers=new Map(),periods=new Map(),observations=[];
+  for(let first=0;first<rows.docs.length;first+=8){
+   const decoded=await Promise.all(rows.docs.slice(first,first+8).map(async document=>{
+    const p=document.data();
+    if(p.schemaVersion!==HR_HISTORY_SCHEMA||!sameScope(p,scope)||!HASH.test(p.rawSha256||'')||!HASH.test(p.generation||'')||
+     !HASH.test(p.compressedSha256||'')||!Array.isArray(p.chunkSha256)||p.chunkSha256.length!==p.chunkCount||p.chunkSha256.some(x=>!HASH.test(x))||
+     !integer(p.sourceReadAt)||!integer(p.chunkCount)||p.chunkCount<1||p.chunkCount>MAX_CHUNKS||!integer(p.rawBytes)||p.rawBytes>MAX_RAW_BYTES||!integer(p.compressedBytes)||p.compressedBytes>MAX_PACKED_BYTES)fail('HISTORY_POINTER');
+    const chunks=await Promise.all(Array.from({length:p.chunkCount},(_,i)=>document.ref.collection('versions').doc(p.generation).collection('chunks').doc(String(i).padStart(4,'0')).get()));
+    const packed=Buffer.concat(chunks.map((s,i)=>{const c=s.data();if(!s.exists||c.index!==i||!Buffer.isBuffer(c.bytes)&&!(c.bytes instanceof Uint8Array)||sha(c.bytes)!==p.chunkSha256[i])fail('HISTORY_CHUNK');return Buffer.from(c.bytes);}));
+    if(packed.length!==p.compressedBytes||sha(packed)!==p.compressedSha256)fail('HISTORY_COMPRESSED_DIGEST');
+    const raw=gunzipSync(packed,{maxOutputLength:MAX_RAW_BYTES});if(raw.length!==p.rawBytes||sha(raw)!==p.rawSha256)fail('HISTORY_BODY_DIGEST');
+    const b=JSON.parse(raw.toString('utf8'));if(b.schemaVersion!==HR_HISTORY_SCHEMA||!sameScope(b,scope)||b.countryCode!==p.countryCode||b.periodId!==p.periodId||!Array.isArray(b.visits)||b.visits.length!==p.visitCount||b.visits.some(v=>countryOf(v)!==p.countryCode||periodOf(v)!==p.periodId||v.tenantId!==scope.tenantId||v.projectId!==scope.projectId))fail('HISTORY_BODY_SCOPE');
+    return {p,b};
+   }));
+   for(const {p,b}of decoded){visits.push(...b.visits);for(const shopper of b.shoppers||[])shoppers.set(String(shopper.shopperId||shopper.id),shopper);periods.set(p.periodId,b.period);observations.push({countryCode:p.countryCode,periodId:p.periodId,sourceReadAt:new Date(p.sourceReadAt).toISOString(),observedSnapshotRevision:p.observedSnapshotRevision,externalReadCurrent:false});}
+  }
+  if(new Set(visits.map(visitId)).size!==visits.length)fail('HISTORY_DUPLICATE_VISIT');
+  return {schemaVersion:HR_HISTORY_SCHEMA,...scope,available:rows.docs.length>0,externalReadCurrent:false,visits,shoppers:[...shoppers.values()],periods:[...periods.values()],observations,source:'CONFIRMED_READ_MODEL_HISTORY_NOT_COMMAND_AUTHORITY',production:false};
+ }
+ return {observe,read};
 }

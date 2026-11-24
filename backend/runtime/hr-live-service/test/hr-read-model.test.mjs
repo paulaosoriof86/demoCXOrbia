@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {createDurableHrReadModel,hrReadModelKey,HR_READ_MODEL_CHUNK_BYTES} from '../hr-read-model.mjs';
+import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey,HR_READ_MODEL_CHUNK_BYTES} from '../hr-read-model.mjs';
 
 const clone=x=>x===undefined?undefined:structuredClone(x);
 const hash=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
@@ -18,7 +18,7 @@ const observation=(tag,{read=2000,start=1000,extra=''}={})=>({
 class Snap{constructor(ref,value){this.ref=ref;this.value=clone(value);this.exists=value!==undefined;}data(){return clone(this.value);}}
 class Ref{
   constructor(db,path){this.db=db;this.path=path;}
-  collection(name){return {doc:id=>new Ref(this.db,this.path+'/'+name+'/'+id)};}
+  collection(name){const path=this.path+'/'+name,db=this.db;return {doc:id=>new Ref(db,path+'/'+id),get:async()=>({docs:[...db.docs].filter(([p])=>p.startsWith(path+'/')&&p.split('/').length===path.split('/').length+1).map(([p,v])=>new Snap(new Ref(db,p),v))})};}
   async get(){this.db.reads++;return new Snap(this,this.db.docs.get(this.path));}
 }
 class DB{
@@ -34,7 +34,7 @@ class DB{
     }
     this.docs=next;
   }
-  batch(){const ops=[];return {create:(ref,data)=>ops.push(['create',ref,data]),commit:async()=>{this.batches++;await this.beforeBatch?.(this.batches);this.apply(ops);}};}
+  batch(){const ops=[];return {create:(ref,data)=>ops.push(['create',ref,data]),set:(ref,data)=>ops.push(['set',ref,data]),commit:async()=>{this.batches++;await this.beforeBatch?.(this.batches);this.apply(ops);}};}
   async runTransaction(fn){
     let release;const prior=this.tail;this.tail=new Promise(r=>release=r);await prior;
     try{this.transactions++;const ops=[],tx={get:async ref=>ref.get()};
@@ -45,6 +45,68 @@ class DB{
 }
 const pointer=db=>[...db.docs.entries()].find(([p,v])=>p.split('/').length===6&&v.generation);
 const deferred=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {promise,resolve};};
+
+const hscope={tenantId:'qa-tenant',projectId:'qa-project'};
+const hrow=(month,id=month)=>({...hscope,id,visitId:id,periodId:'qa-project-'+month,periodKey:month,country:'GT',shopperId:'qa-shopper'});
+const hsnapshot=(visits,months)=>({...hscope,sourceSafe:true,imported:false,production:false,visits,shoppers:[{id:'qa-shopper'}],
+  periods:months.map(key=>({id:'qa-project-'+key,periodId:'qa-project-'+key,key})),
+  readScope:{countryPeriods:months.map(month=>({countryCode:'GT',periodId:'qa-project-'+month}))}});
+const hopts=(tag,start=1000,end=2000)=>({sourceReadAt:end,sourceReadStartedAt:start,revision:hash(tag),evidence:{receiptPath:'synthetic-local-test'}});
+
+test('history survives restart and window replacement, but never grants external authority',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000});
+ await store.observe(hsnapshot([hrow('2026-05'),hrow('2026-11')],['2026-05','2026-11']),hopts('seed'));
+ await store.observe(hsnapshot([hrow('2026-10'),{...hrow('2026-11'),estado:'realizada'}],['2026-10','2026-11']),hopts('window',3000,4000));
+ const read=await createConfirmedHrHistory({db,now:()=>1e12}).read(hscope);
+ assert.equal(read.visits.length,3);assert.equal(read.visits.find(v=>v.periodKey==='2026-11').estado,'realizada');
+ assert.equal(read.externalReadCurrent,false);assert.equal(read.observations.find(x=>x.periodId.endsWith('2026-05')).sourceReadAt,new Date(2000).toISOString());
+});
+test('an explicitly empty period erases its last historical visit without touching other periods',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000});
+ await store.observe(hsnapshot([hrow('2026-05'),hrow('2026-11')],['2026-05','2026-11']),hopts('first'));
+ await store.observe(hsnapshot([],['2026-11']),hopts('empty',3000,4000));
+ const read=await createConfirmedHrHistory({db,now:()=>1e12}).read(hscope);
+ assert.deepEqual(read.visits.map(v=>v.periodKey),['2026-05']);
+});
+test('invalid or incomplete history coverage is rejected before any write',async()=>{
+ for(const alter of [s=>delete s.readScope,s=>s.readScope.countryPeriods.push(s.readScope.countryPeriods[0]),s=>s.readScope.countryPeriods[0].periodId='qa-project-2026-10',s=>s.visits[0].tenantId='foreign']){
+  const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000}),value=hsnapshot([hrow('2026-11')],['2026-11']);alter(value);
+  await assert.rejects(store.observe(value,hopts('bad')),/HISTORY_READ_COVERAGE/);assert.equal(db.docs.size,0);assert.equal(db.batches,0);
+ }
+});
+test('history replay writes nothing; identical content reuses immutable chunks for a newer observation',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000}),s=hsnapshot([hrow('2026-11')],['2026-11']);
+ await store.observe(s,hopts('first'));const writes=db.writeSizes.length,batches=db.batches;
+ await store.observe(s,hopts('first'));assert.equal(db.writeSizes.length,writes);
+ await store.observe(s,hopts('second',3000,4000));assert.equal(db.batches,batches);assert.equal(db.writeSizes.length,writes+1);
+});
+test('late old history reader cannot overwrite a newer-started read, including publication CAS',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000}),s=tag=>hsnapshot([{...hrow('2026-11'),state:tag}],['2026-11']);
+ await store.observe(s('new'),hopts('new',2000,3000));
+ assert.equal((await store.observe(s('old'),hopts('old',1000,4000))).published,false);
+ assert.equal((await store.read(hscope)).visits[0].state,'new');
+ await assert.rejects(store.observe(s('conflict'),hopts('conflict',2000,5000)),/HISTORY_CONCURRENT_OBSERVATION/);
+ const barrier=deferred(),entered=deferred();let gate=true;db.beforeBatch=async()=>{if(gate){gate=false;entered.resolve();await barrier.promise;}};
+ const older=store.observe(s('older-race'),hopts('older-race',5000,8000));await entered.promise;
+ await store.observe(s('newer-race'),hopts('newer-race',6000,7000));barrier.resolve();await older;
+ assert.equal((await store.read(hscope)).visits[0].state,'newer-race');
+});
+test('historical seed cannot replace an existing observation and rejects missing provenance',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000}),s=hsnapshot([hrow('2026-11')],['2026-11']);
+ await store.observe(s,hopts('first'));
+ const opts={...hopts('seed',3000,4000),seed:true};await assert.rejects(store.observe(s,opts),/HISTORY_SEED_PROVENANCE/);
+ opts.evidence={receiptPath:'exact-accepted-artifact',snapshotSha256:hash('bytes'),artifactDigest:'sha256:'+hash('zip'),artifactId:123};
+ assert.equal((await store.observe(s,opts)).published,false);
+ assert.equal((await store.read(hscope)).observations[0].sourceReadAt,new Date(2000).toISOString());
+});
+test('failed historical chunk batch keeps the previous readable period intact',async()=>{
+ const db=new DB(),store=createConfirmedHrHistory({db,now:()=>10000});
+ await store.observe(hsnapshot([hrow('2026-11')],['2026-11']),hopts('old'));
+ const failAt=db.batches+2;db.beforeBatch=count=>{if(count===failAt)throw Error('STORAGE_FAILURE');};
+ const s=hsnapshot([{...hrow('2026-11'),payload:crypto.randomBytes(3000000).toString('base64')}],['2026-11']);
+ await assert.rejects(store.observe(s,hopts('large',3000,4000)),/STORAGE_FAILURE/);
+ assert.equal((await store.read(hscope)).visits[0].payload,undefined);
+});
 
 test('cold process restores validated snapshot, exact maps and original observation time without a provider',async()=>{
   const db=new DB(),value=observation('first'),writer=createDurableHrReadModel({db,now:()=>2500});

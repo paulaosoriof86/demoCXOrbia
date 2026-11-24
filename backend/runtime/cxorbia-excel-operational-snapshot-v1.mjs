@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import {resolveCountryHrPeriodBinding} from './cxorbia-country-hr-binding-v1.mjs';
+import {resolveCountryHrPeriodBinding,discoverExcelMonthlyWorksheets} from './cxorbia-country-hr-binding-v1.mjs';
 import {parseTab,buildPeriods,buildShoppers} from '../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
 import {summarizeCanonicalPeriods,validateCanonicalHistory} from '../../tools/hr-source/tya-canonical-visit-state-r20.mjs';
 // I3 F2: read-only original Excel HR, scoped by durable Firestore project/country/period.
@@ -156,10 +156,26 @@ const headerFields=rows=>{
  }
  return null;
 };
-export async function resolveExcelOriginalProjectPlan({db,scope}={}){
+export function selectHrPeriodWindow({projectId,periodIds,timeZone='UTC',requestedPeriodId,now=new Date()}={}){
+ if(!str(projectId)||!Array.isArray(periodIds)||periodIds.some(p=>!validPeriod(projectId,p)))fail('PERIOD_SELECTION');
+ const date=now instanceof Date?now:new Date(now);if(!Number.isFinite(date.getTime()))fail('PERIOD_CLOCK');
+ let parts;try{parts=new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit'}).formatToParts(date);}catch{fail('PERIOD_TIMEZONE');}
+ const year=Number(parts.find(p=>p.type==='year').value),month=Number(parts.find(p=>p.type==='month').value);
+ const key=offset=>new Date(Date.UTC(year,month-1+offset,1)).toISOString().slice(0,7);
+ const routine=[-1,0,1].map(n=>projectId+'-'+key(n)),catalog=[...new Set(periodIds)].sort();
+ if(requestedPeriodId&&(!validPeriod(projectId,requestedPeriodId)||!catalog.includes(requestedPeriodId)))fail('REQUESTED_PERIOD_NOT_REGISTERED');
+ const historical=Boolean(requestedPeriodId&&!routine.includes(requestedPeriodId));
+ return {schemaVersion:'cxorbia.hr-read-scope.v1',mode:historical?'explicit_period':'rolling_window',timeZone,referenceMonth:key(0),
+  previousPeriodId:routine[0],currentPeriodId:routine[1],nextPeriodId:routine[2],nextPeriodAvailable:catalog.includes(routine[2]),
+  periodIds:historical?[requestedPeriodId]:routine.filter(p=>catalog.includes(p)),
+  ...(historical?{requestedPeriodId}:{}),catalogPeriodIds:catalog};
+}
+
+export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),readInventory,inventoryCache,discoveryContexts}={}){
  if(!db?.doc||!validScope(scope))fail('INVALID_SCOPE');
  // HTTP route flags do not change the identity of an operational source.
- scope={tenantId:scope.tenantId,projectId:scope.projectId};
+ const requestedPeriodId=str(scope.hrPeriodId||'');
+ scope={tenantId:scope.tenantId,projectId:scope.projectId,...(requestedPeriodId?{hrPeriodId:requestedPeriodId}:{})};
  // Reuse document snapshots only within this plan. The independent plan
  // resolution after the provider read obtains new snapshots and detects drift.
  const sourceDb=db,planReads=new Map();
@@ -173,7 +189,10 @@ export async function resolveExcelOriginalProjectPlan({db,scope}={}){
  const source=raw.operationalSource||raw.routeSource||{};
  if(source.mode!=='external'||source.providerType!=='excel_online'||source.readPolicy!=='external_live'||
    !['external_read_only','bidirectional_gated'].includes(source.writePolicy)||!Array.isArray(source.countryBindings))fail('SOURCE_POLICY');
- const countries=[...(raw.countries||[])].sort(),jobs=[],settings=[];
+ const timeZone=raw.hrReadWindow?.timeZone||source.timeZone||raw.timeZone||raw.timezone||'UTC';
+ const reference=selectHrPeriodWindow({projectId:scope.projectId,periodIds:[],timeZone,now});
+ const wanted=[reference.previousPeriodId,reference.currentPeriodId,reference.nextPeriodId,...(requestedPeriodId?[requestedPeriodId]:[])];
+ const countries=[...(raw.countries||[])].sort(),jobs=[],settings=[],configured=[],discoveries={};
  if(!countries.length||new Set(countries).size!==countries.length||countries.length!==source.countryBindings.length)fail('COUNTRY_SCOPE');
  for(const countryCode of countries){
   const found=source.countryBindings.filter(c=>c.countryCode===countryCode);
@@ -187,17 +206,48 @@ export async function resolveExcelOriginalProjectPlan({db,scope}={}){
   const periods=[...new Set(row.periodSheets.map(x=>str(x.periodId)))].sort();
   if(!periods.every(x=>validPeriod(scope.projectId,x)))fail('PERIOD_IDS');
   settings.push({countryCode,stamp:stamp(s),periods});
-  for(const periodId of periods)jobs.push(await resolveCountryHrPeriodBinding({db,...scope,countryCode,periodId,purpose:'operational'}));
+  let discovery=discoveryContexts?.[countryCode];
+  if(!discovery&&typeof readInventory==='function'&&wanted.some(p=>!periods.includes(p))){
+   const anchor=await resolveCountryHrPeriodBinding({db,...scope,countryCode,periodId:periods.at(-1),purpose:'operational'});
+   const cacheKey=sha([scope.tenantId,scope.projectId,countryCode,anchor.proof.workbookSha256,anchor.proof.settingStamp,reference.referenceMonth,[...new Set(wanted)].sort()]);
+   let saved=inventoryCache?.get(cacheKey);
+   if(!saved||saved.expiresAt<=new Date(now).getTime()){
+    const task=(async()=>{const inventory=await readInventory(anchor);
+     if(inventory?.complete!==true||!Array.isArray(inventory.worksheets)||!/^[a-f0-9]{64}$/.test(inventory.inventoryHash||''))fail('INVENTORY_INCOMPLETE');
+     const catalog=[...new Set([...periods,...wanted])].map(periodId=>({periodId,periodKey:periodId.slice(-7)}));
+     const found=discoverExcelMonthlyWorksheets({worksheets:inventory.worksheets,periodCatalog:catalog,existing:row.periodSheets});
+     if(found.issues.length)fail('INVENTORY_AMBIGUOUS');
+     const byId=new Map(inventory.worksheets.map(x=>[x.id,x]));
+     const entries=found.entries.filter(x=>!periods.includes(x.periodId)&&wanted.includes(x.periodId));
+     if(entries.some(x=>x.scenarioKey))fail('INVENTORY_NEW_SCENARIO_REQUIRES_BINDING');
+     return {tenantId:scope.tenantId,projectId:scope.projectId,countryCode,providerBindingId:foundBindingId(),
+      workbookFingerprint:anchor.proof.workbookSha256,settingStamp:anchor.proof.settingStamp,inventoryHash:inventory.inventoryHash,complete:true,
+      entries:entries.map(x=>({...x,visibility:byId.get(x.worksheetId)?.visibility})),observedAt:new Date(now).getTime(),expiresAt:new Date(now).getTime()+86400000};
+     function foundBindingId(){return anchor.privateProvider.providerBindingId;}
+    })();
+    saved={tenantId:scope.tenantId,projectId:scope.projectId,expiresAt:new Date(now).getTime()+86400000,promise:task};
+    if(inventoryCache){inventoryCache.set(cacheKey,saved);while(inventoryCache.size>64)inventoryCache.delete(inventoryCache.keys().next().value);}
+    task.catch(()=>{if(inventoryCache?.get(cacheKey)===saved)inventoryCache.delete(cacheKey);});
+   }
+   discovery=await saved.promise;
+  }
+  if(discovery)discoveries[countryCode]=discovery;
+  configured.push({countryCode,periods:[...new Set([...periods,...(discovery?.entries||[]).map(x=>x.periodId)])].sort()});
  }
+ const readScope=selectHrPeriodWindow({projectId:scope.projectId,periodIds:configured.flatMap(c=>c.periods),timeZone,requestedPeriodId,now});
+ if(readScope.mode==='rolling_window')delete scope.hrPeriodId;
+ if(!readScope.periodIds.length)fail('NO_REGISTERED_PERIOD_IN_WINDOW');
+ for(const {countryCode,periods}of configured)for(const periodId of periods.filter(p=>readScope.periodIds.includes(p)))
+  jobs.push(await resolveCountryHrPeriodBinding({db,...scope,countryCode,periodId,purpose:'operational',discovery:discoveries[countryCode]}));
  jobs.sort((a,b)=>a.scope.periodId.localeCompare(b.scope.periodId)||a.scope.countryCode.localeCompare(b.scope.countryCode));
  const unique=new Set(jobs.map(x=>x.scope.countryCode+'|'+x.scope.periodId));
  if(unique.size!==jobs.length)fail('DUPLICATE_SCOPE');
  const proof={schemaVersion:'cxorbia.i3.f2.excel-original-plan.v1',...scope,providerType:'excel_online',
-   readPolicy:'external_live',writePolicy:source.writePolicy,projectStamp:stamp(project),settings,
+   readPolicy:'external_live',writePolicy:source.writePolicy,projectStamp:stamp(project),settings,readScope,
    bindingFingerprints:jobs.map(x=>x.proof.bindingFingerprint),periodCount:new Set(jobs.map(x=>x.scope.periodId)).size,
    jobCount:jobs.length,hrWrites:false,production:false};
  proof.bindingFingerprint=sha(proof);
- return {scope,project:raw,proof,bindings:jobs};
+ return {scope,project:raw,proof,readScope,discoveryContexts:discoveries,periodCatalog:readScope.catalogPeriodIds.map(periodId=>({tenantId:scope.tenantId,projectId:scope.projectId,id:periodId,periodId,key:periodId.slice(-7),periodKey:periodId.slice(-7),externalReadCurrent:readScope.periodIds.includes(periodId)})),bindings:jobs};
 }
 async function limited(items,limit,fn){
  const out=new Array(items.length);let n=0;
@@ -332,10 +382,11 @@ export async function readExcelOriginalProjectSnapshot({db,plan,columnMap,cinema
   tenantId,projectId,tenantName:str(plan.project.tenantName||tenantId),projectName:str(plan.project.name||plan.project.projectName||projectId),
   source:{type:'excel_online_original',providerType:'excel_online',accessMode:'make_graph_delegated',
     sourceRevision:revision,sourceSafe:true,rawWorkbookExposed:false,privateContactDataExposed:false,
-    columnMapContract:columnMap.contractId,canonicalStateAcrossAllDetectedPeriods:true},
+    columnMapContract:columnMap.contractId,canonicalStateAcrossAllDetectedPeriods:plan.readScope.periodIds.length===plan.readScope.catalogPeriodIds.length},
   tenantConfig:{tenantId,tenantName:str(plan.project.tenantName||tenantId),configurable:true},projectConfig:{...plan.project,projectId,hrSourceType:'excel_online_original'},
   sourceRevision:revision,sourceSafe:true,imported:false,firestoreWrites:0,production:false,
-  periods,visits,shoppers,counts,periodOperationalSummary:summary,
+  periods,visits,shoppers,counts,periodOperationalSummary:summary,periodCatalog:plan.periodCatalog,
+  readScope:{...plan.readScope,countryPeriods:plan.bindings.map(b=>({countryCode:b.scope.countryCode,periodId:b.scope.periodId})),freshPeriodIds:plan.readScope.periodIds},
   tabsRead:tabs.map(x=>({country:x.country,periodKey:x.key,scenarioKey:x.scenarioKey})),
   issues:missing.length?[{code:'DURABLE_NOT_IN_CURRENT_EXTERNAL_SOURCE',severity:'review',count:missing.length,
     writesAllowed:false,sourceAuthority:'excel_online_original'}]:[],

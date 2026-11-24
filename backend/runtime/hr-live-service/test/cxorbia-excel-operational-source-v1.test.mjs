@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../../cxorbia-excel-operational-snapshot-v1.mjs';
+import {resolveExcelOriginalProjectPlan as resolvePlan,selectHrPeriodWindow,readExcelOriginalProjectSnapshot} from '../../cxorbia-excel-operational-snapshot-v1.mjs';
 import {parseTab} from '../../../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
+const resolveExcelOriginalProjectPlan=options=>resolvePlan({now:new Date('2026-11-24T18:00:00Z'),...options});
 const columnMap=JSON.parse(fs.readFileSync(new URL('../../../contracts/tya-hr-column-map-r20-v1.json',import.meta.url),'utf8'));
 const cinemaRegistry=JSON.parse(fs.readFileSync(new URL('../../../contracts/tya-cinepolis-cinema-identity-r20-v1.json',import.meta.url),'utf8'));
 const source={mode:'external',authority:'external_source',providerType:'excel_online',
@@ -46,6 +47,40 @@ const readBinding=async binding=>({privateProviderRows:binding.privateProvider.w
  worksheetId:s.worksheetId,scenarioKey:s.scenarioKey,values:values(binding.scope.countryCode)})),
  proof:{bindingFingerprint:binding.proof.bindingFingerprint,sourceRevision:'a'.repeat(64),
  externalRevisionIndependentlyVerified:true,hrWrites:0}});
+
+test('month policy uses configured timezone, adjacent months, year rollover and explicit historical demand',()=>{
+ const projectId='p',periodIds=['p-2026-05','p-2026-10','p-2026-11','p-2026-12','p-2027-01'];
+ const q=options=>selectHrPeriodWindow({projectId,periodIds,timeZone:'America/Guatemala',now:'2026-12-01T02:00:00Z',...options});
+ assert.deepEqual(q().periodIds,['p-2026-10','p-2026-11','p-2026-12']);assert.equal(q().currentPeriodId,'p-2026-11');
+ assert.deepEqual(q({requestedPeriodId:'p-2026-05'}).periodIds,['p-2026-05']);assert.equal(q({requestedPeriodId:'p-2026-05'}).mode,'explicit_period');
+ assert.deepEqual(q({now:'2027-01-15T12:00:00Z'}).periodIds,['p-2026-12','p-2027-01']);
+ assert.equal(q({periodIds:periodIds.filter(p=>!p.endsWith('2026-12'))}).nextPeriodAvailable,false);
+ assert.throws(()=>q({requestedPeriodId:'foreign-2026-05'}),/REQUESTED_PERIOD_NOT_REGISTERED/);
+});
+test('explicit current-period selection has the same plan/revision identity as the routine window',async()=>{
+ const db=fixture(),scope={tenantId:'tya',projectId:'cinepolis'};
+ const [a,b]=await Promise.all([resolveExcelOriginalProjectPlan({db,scope}),resolveExcelOriginalProjectPlan({db,scope:{...scope,hrPeriodId:'cinepolis-2026-11'}})]);
+ assert.deepEqual(a.proof,b.proof);assert.deepEqual(a.scope,b.scope);
+});
+test('a verified new month is discovered from metadata, cached, rebound with real document stamps and never persisted',async()=>{
+ const db=fixture(),cache=new Map(),scope={tenantId:'tya',projectId:'cinepolis'};let calls=0;
+ const readInventory=async binding=>{calls++;return {complete:true,inventoryHash:'c'.repeat(64),worksheets:[
+  {id:binding.privateProvider.worksheets[0].worksheetId,name:'NOVIEMBRE 26',visibility:'Visible'},
+  {id:'{00000000-0000-0000-0000-000000000002}',name:'DICIEMBRE 26',visibility:'Visible'},
+  {id:'{00000000-0000-0000-0000-000000000003}',name:'ENERO 27',visibility:'Visible'}]};};
+ const plan=await resolveExcelOriginalProjectPlan({db,scope,readInventory,inventoryCache:cache});
+ assert.equal(calls,2);assert.equal(plan.bindings.length,4);assert.equal(plan.readScope.nextPeriodAvailable,true);
+ assert.equal(plan.bindings.filter(b=>b.scope.periodId.endsWith('2026-12')).every(b=>b.proof.bindingOrigin==='verified_provider_inventory'),true);
+ const again=await resolveExcelOriginalProjectPlan({db,scope,readInventory,inventoryCache:cache});assert.equal(calls,2);assert.deepEqual(again.proof,plan.proof);
+ const after=await resolveExcelOriginalProjectPlan({db,scope,discoveryContexts:plan.discoveryContexts});assert.deepEqual(after.proof,plan.proof);
+ const bad=structuredClone(plan.discoveryContexts);bad.GT.settingStamp='invented';
+ await assert.rejects(resolveExcelOriginalProjectPlan({db,scope,discoveryContexts:bad}),/DISCOVERY_SCOPE/);
+});
+test('incomplete inventory cannot establish next-month absence and ambiguous future scenario cannot auto-bind',async()=>{
+ const db=fixture(),scope={tenantId:'tya',projectId:'cinepolis'};
+ await assert.rejects(resolveExcelOriginalProjectPlan({db,scope,readInventory:async()=>({complete:false,inventoryHash:'c'.repeat(64),worksheets:[]})}),/INVENTORY_INCOMPLETE/);
+ await assert.rejects(resolveExcelOriginalProjectPlan({db,scope,readInventory:async()=>({complete:true,inventoryHash:'c'.repeat(64),worksheets:[{id:'{00000000-0000-0000-0000-000000000002}',name:'VIP DICIEMBRE 26',visibility:'Visible'}]})}),/INVENTORY_NEW_SCENARIO_REQUIRES_BINDING/);
+});
 test('configured original Excel project resolves two independent source-bound country/periods',async()=>{
  const db=fixture(),plan=await resolveExcelOriginalProjectPlan({db,scope:{tenantId:'tya',projectId:'cinepolis'}});
  assert.equal(plan.proof.providerType,'excel_online');
@@ -64,7 +99,7 @@ test('HTTP aliases and internal reads share the same operational plan identity',
    plans[0].bindings.map(x=>x.proof.bindingFingerprint));
  }
 });
-test('38 country-period bindings read three snapshots and a new plan detects changed source metadata',async()=>{
+test('19 registered months select six country-period bindings and read three metadata snapshots and a new plan detects changed source metadata',async()=>{
  const scope={tenantId:'tya',projectId:'cinepolis'},docs=new Map(),reads=[];
  const projectPath='tenants/tya/projects/cinepolis',gtPath='tenants/tya/integrationSettings/gt';
  docs.set(projectPath,record(project,1));
@@ -86,7 +121,7 @@ test('38 country-period bindings read three snapshots and a new plan detects cha
   }};
  }};
  const first=await resolveExcelOriginalProjectPlan({db,scope});
- assert.equal(first.bindings.length,38);assert.equal(first.proof.periodCount,19);
+ assert.equal(first.bindings.length,6);assert.equal(first.proof.periodCount,3);
  assert.equal(reads.length,3);assert.equal(new Set(reads).size,3);
  const changed=docs.get(gtPath).data();changed.itemId='item-GT!changed';
  docs.set(gtPath,record(changed,4));reads.length=0;
@@ -389,3 +424,4 @@ test('two visits in the same country/month/cinema/cut never reuse a single durab
  assert.equal(rows[1].escenario,'Scenario B');
  assert.equal(result.proof.firestoreWrites,0);
 });
+

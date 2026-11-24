@@ -28,7 +28,7 @@ assert.ok(snapshotBegin>=0&&snapshotEnd>snapshotBegin&&refreshGuardEnd>refreshBe
 function snapshotHarness(resolveBinding,{cached=null,start=null}={}){
  return new Function('resolveProjectHrReadBinding','initialCache','start',`
   let cache=initialCache,inFlight=null,inFlightBinding=null;
-  const CACHE_MS=5000,refreshes=[];
+  const CACHE_MS=5000,refreshes=[],scopedHrCache=new Map();
   ${source.slice(refreshBegin,refreshGuardEnd)}
     refreshes.push(binding.proof.bindingFingerprint);
     return start?start(binding):{revision:'fresh-'+binding.proof.bindingFingerprint,bindingProof:binding.proof};

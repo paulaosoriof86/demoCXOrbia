@@ -119,6 +119,7 @@
     const authContext=CX.backendAuth?.context?.()||{};
     if(String(authority.role||'')!==String(authContext.role||'')||String(authority.authNamespace||'')!==String(authContext.authNamespace||''))return false;
     const readAt=Date.parse(authority.sourceReadAt||'');
+    if(authority.readScope?.mode==='explicit_period')return false;
     if(authority.externalReadCurrent!==true||!Number.isFinite(readAt)||readAt>Date.now()||Date.now()-readAt>=pollMs)return false;
     rememberAutomaticAttempt(scope,readAt);
     currentRevision=revision;failures=0;pendingProtectedRefresh=false;finishProtectedCheck({revision,externalReadCurrent:authority.externalReadCurrent,sourceReadAt:authority.sourceReadAt,hrFreshness:authority.hrFreshness});
@@ -127,6 +128,9 @@
   async function check(reason){
     const scope=runtimeScope();
     const automatic=automaticReasons.has(reason);
+    const selectedHistory=window.CX_PROTECTED_AUTH_HR_AUTHORITY?.readScope?.mode==='explicit_period'?window.CX_PROTECTED_AUTH_HR_AUTHORITY.readScope.requestedPeriodId:null;
+    if(selectedHistory&&automatic)return {ok:true,skipped:true,reason:'historical_period_on_demand_only'};
+    if(selectedHistory&&authenticatedHumanRuntime&&typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY==='function')return window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('explicit_historical_refresh',{periodId:selectedHistory});
     if(automatic&&document.visibilityState==='hidden')return {ok:true,skipped:true,reason:'automatic_hr_hidden_tab'};
     if(scope.project?.operationalSource?.mode==='internal')return {ok:true,skipped:true,reason:'internal_project_firestore_authority'};
     if(!scope.projectId)return {ok:false,skipped:true,reason:'project_selection_required'};
@@ -142,7 +146,7 @@
       return {ok:true,skipped:true,reason:'automatic_hr_interval',nextCheckInMs:pollMs-(now-previousAttempt)};
     rememberAutomaticAttempt(scope,now);checking=true;markUpdating();
     try{
-      const meta=await getJson('meta',{fresh:'1'});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
+      const meta=await getJson('meta',{fresh:'1',...(!automatic?{inventory:'1'}:{})});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
         const protectedRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim();
         if(protectedRevision)currentRevision=protectedRevision;
@@ -151,7 +155,7 @@
           // check, never a stale snapshot; session and scope are rechecked then.
           if(busy()){pendingProtectedRefresh=true;finishProtectedCheck(meta,true);failures=0;return {ok:true,changed:true,deferred:true,revision:meta.revision,authority:'protected_auth_hr_reconcile'};}
           pendingProtectedRefresh=false;
-          window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('live_watcher_revision_change',true);
+          window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('live_watcher_revision_change',true,{expectedRevision:meta.revision});
           failures=0;
           return {ok:true,changed:true,delegated:true,revision:meta.revision,authority:'protected_auth_hr_reconcile'};
         }

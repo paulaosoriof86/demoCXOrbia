@@ -469,7 +469,7 @@
       const pPeriod=str(p?.periodId||p?.projectId),state=str(p?.estado||p?.status).toLowerCase();
       if(p?._archived===true||!currentPostPeriod||pPeriod!==currentPostPeriod)continue;
       const v=postVisit(liveVisitById,p?.visitId||p?.visitaId,p)||postVisit(liveVisitByRow,p?.hrRowId,p,true)||null;
-      if(!v)continue;
+      if(!v||v.externalReadCurrent===false||v.confirmedHistory===true)continue;
       const vf=facets(v),appShopper=str(p?.shopperId),hrShopper=str(v?.shopperId);
       let reason='';
       if(state==='pendiente'&&(vf.assigned===true||vf.available!==true))reason='pending_superseded_by_live_hr';

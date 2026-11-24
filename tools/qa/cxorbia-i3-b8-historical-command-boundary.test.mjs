@@ -19,7 +19,7 @@ function boundaryHarness(){
   const context={CX,document:{readyState:'complete'},addEventListener:()=>{},setTimeout:()=>{},queueMicrotask:()=>{}};
   context.window=context;
   vm.runInNewContext(source,context,{filename:'cxorbia-cxdata-command-boundary-v1.js'});
-  return {CX,commands};
+  return {CX,commands,context};
 }
 
 test('B8 historical paid command carries exact HR revision, date and Paula authority to the provider',async()=>{
@@ -96,4 +96,16 @@ test('identical historical calls generate the same idempotency key without chang
  const {CX,commands}=boundaryHarness();const before=JSON.stringify(CX.data._visitas),meta={ackAware:true,reconciliationBatchId:'same',sourceRef:'explicit'};
  await CX.data.reconcileHistoricalPayments(['v1'],'pending',meta);await CX.data.reconcileHistoricalPayments(['v1'],'pending',meta);
  assert.equal(commands[0].idempotencyKey,commands[1].idempotencyKey);assert.equal(JSON.stringify(CX.data._visitas),before);assert.equal(meta.sourceRevision,undefined);
+});
+
+test('windowed command boundary rejects historical assignment and finance before transport until that exact period is read',async()=>{
+ const {CX,commands,context}=boundaryHarness();
+ const rows=CX.data._visitas.map(v=>({...v,tenantId:'tya',projectId:'cinepolis',rootProjectId:'cinepolis',periodId:'cinepolis-2026-09',country:'GT'}));CX.data._visitas=rows;
+ context.CX_TYA_HR_SOURCE_SAFE={sourceSafe:true,tenantId:'tya',projectId:'cinepolis',visits:[],readScope:{countryPeriods:[{countryCode:'GT',periodId:'cinepolis-2026-11'}]}};
+ context.CX_TYA_HR_LIVE_META={externalReadCurrent:true};
+ assert.equal((await CX.data.assignVisit('v1','shopper',{ackAware:true})).code,'HR_PERIOD_FRESH_READ_REQUIRED');
+ assert.equal((await CX.data.reconcileHistoricalPayments(['v1'],'pending',{ackAware:true})).code,'HR_PERIOD_FRESH_READ_REQUIRED');assert.equal(commands.length,0);
+ context.CX_TYA_HR_SOURCE_SAFE.visits=rows;context.CX_TYA_HR_SOURCE_SAFE.readScope.countryPeriods=[{countryCode:'GT',periodId:'cinepolis-2026-09'}];
+ assert.equal((await CX.data.assignVisit('v1','shopper',{ackAware:true})).providerAck,true);assert.equal(commands[0].periodId,'cinepolis-2026-09');
+ context.CX_TYA_HR_LIVE_META.externalReadCurrent=false;assert.equal((await CX.data.reconcileHistoricalPayments(['v1'],'pending',{ackAware:true})).code,'HR_PERIOD_FRESH_READ_REQUIRED');assert.equal(commands.length,1);
 });

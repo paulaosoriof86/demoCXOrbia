@@ -155,11 +155,36 @@ window.CX = window.CX || {};
   }
   window.CX_TYA_APPLY_HR_FRESHNESS=applyHrFreshness;
 
+  function presentationSnapshot(snapshot,meta){
+    const history=snapshot.confirmedHistory,identity=sourceIdentity(snapshot),raw=Object.assign({},snapshot);
+    delete raw.confirmedHistory;
+    const currentVisits=safeArray(snapshot.visits).map(v=>Object.assign({},v,{externalReadCurrent:meta.externalReadCurrent!==false,sourceReadAt:meta.sourceReadAt||null,confirmedHistory:false}));
+    if(!history)return {raw,visible:Object.assign({},raw,{visits:currentVisits})};
+    if(history.schemaVersion!=='cxorbia.hr-confirmed-history.v1'||history.tenantId!==identity.tenantId||history.projectId!==identity.projectId||history.externalReadCurrent!==false)
+      throw new Error('HR_HISTORY_SCOPE_INVALID');
+    const key=v=>str(v.countryCode||v.country||v.pais)+'|'+str(v.periodId||identity.projectId+'-'+v.periodKey);
+    const covered=new Set(safeArray(snapshot.readScope?.countryPeriods).map(key));
+    if(!covered.size||safeArray(snapshot.visits).some(v=>!covered.has(key(v))))throw new Error('HR_HISTORY_READ_COVERAGE_INVALID');
+    const observations=new Map(safeArray(history.observations).map(o=>[key(o),o]));
+    const historical=safeArray(history.visits).filter(v=>!covered.has(key(v))).map(v=>{
+      const next=Object.assign({},v,{externalReadCurrent:false,sourceReadAt:observations.get(key(v))?.sourceReadAt||null,confirmedHistory:true});
+      delete next.hrFieldEditing;delete next.hrReviewObservation;return next;
+    });
+    const visits=historical.concat(currentVisits);
+    if(new Set(visits.map(v=>str(v.visitId||v.id))).size!==visits.length)throw new Error('HR_HISTORY_DUPLICATE_VISIT');
+    const periods=new Map();for(const p of [...safeArray(history.periods),...safeArray(snapshot.periodCatalog),...safeArray(snapshot.periods)]){
+      const key=str(p.key||p.periodKey);if(key)periods.set(key,Object.assign({},periods.get(key)||{},p,{key}));
+    }
+    const shoppers=new Map();for(const s of [...safeArray(history.shoppers),...safeArray(snapshot.shoppers)])shoppers.set(str(s.shopperId||s.id),s);
+    return {raw,visible:Object.assign({},raw,{visits,periods:[...periods.values()].sort((a,b)=>a.key.localeCompare(b.key)),shoppers:[...shoppers.values()]} )};
+  }
+
   function buildSnapshotCandidate(snapshot,meta={},options={}){
-    const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&safeArray(snapshot.periods).length&&safeArray(snapshot.visits).length&&CX.data);
+    const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&Array.isArray(snapshot.visits)&&(safeArray(snapshot.periods).length||safeArray(snapshot.readScope?.countryPeriods).length)&&CX.data);
     if(!valid)throw new Error('Snapshot HR live inválido o vacío.');
+    const presentation=presentationSnapshot(snapshot,meta);snapshot=presentation.raw;
     const identity=sourceIdentity(snapshot);
-    const periods=mapPeriods(snapshot,identity),visits=mapVisits(snapshot,identity),shoppers=mapShoppers(snapshot),posts=mapPosts(visits,identity);
+    const periods=mapPeriods(presentation.visible,identity),visits=mapVisits(presentation.visible,identity),shoppers=mapShoppers(presentation.visible),posts=mapPosts(visits,identity);
     /* WORK GT11 GT12 HN06: initial demo/legacy storage is NOT a valid HR period source.
        Preserve a current HR-approved period if already active; otherwise honor only
        a Firebase principal-scoped tab preference validated by THIS provider snapshot.
@@ -172,18 +197,19 @@ window.CX = window.CX || {};
     const authCountry=String(CX.backendAuth?.context?.()?.country||'').trim().toUpperCase();
     const validHint=hint?periods.find(p=>p.id===hint.periodId&&p.projectId===identity.projectId&&
       (!authCountry||p.countries?.includes(authCountry))):null;
-    const latest=latestOf(periods),preferred=periods.find(p=>p.periodKey===previousPeriodKey)||validHint||
-      periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
+    const latest=latestOf(periods),preferred=periods.find(p=>p.id===options.periodId)||periods.find(p=>p.periodKey===previousPeriodKey)||validHint||
+      periods.find(p=>p.id===snapshot.readScope?.currentPeriodId)||periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
     const sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
     const previewMeta=Object.assign({},CX.data.previewMeta||{},{
       tenantId:identity.tenantId,projectId:identity.projectId,projectName:identity.projectName,sourceTitle:snapshot.source&&snapshot.source.title,
       generatedAt:snapshot.generatedAt||meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,sourceRevision:meta.revision||null,
+      readScope:snapshot.readScope||null,freshVisitCount:safeArray(snapshot.visits).length,confirmedHistoricalVisitCount:visits.filter(v=>v.confirmedHistory===true).length,
       periods:periods.length,tabs:snapshot.counts&&snapshot.counts.tabs,totalVisits:visits.length,countries:snapshot.counts&&snapshot.counts.byCountry,
       production:false,imported:false,sourceSafe:true,piiProtected:true,runtimeSyncActive:false,runtimeReadActive:true,revisionStable:true,
       operationalIdentityPreview:snapshot.operationalIdentityPreview===true,operationalIdentityScope:snapshot.operationalIdentityScope||null,
       note:snapshot.operationalIdentityPreview===true?'Lectura HR viva DEV con nombre operativo visible; contacto, DPI, banco y credenciales siguen excluidos.':'Lectura HR viva source-safe preparada fuera del estado visible.'
     });
-    return {version:'a05-atomic-live-snapshot-candidate-v1',snapshot,meta:Object.assign({},meta,{runtimeRead:true,sourceSafe:true}),identity,
+    return {version:'a05-atomic-live-snapshot-candidate-v1',snapshot,presentationSnapshot:presentation.visible,meta:Object.assign({},meta,{runtimeRead:true,sourceSafe:true,readScope:snapshot.readScope||null}),identity,
       data:{projects:periods,shoppers,_visitas:visits,_posts:posts,currentProjectId:identity.projectId,currentPeriodId:preferred&&preferred.id,periodOperationalSummary:safeArray(snapshot.periodOperationalSummary),sourceMode,previewMeta},
       brandPatch:{id:identity.tenantId,tenantId:identity.tenantId,clientName:identity.tenantName,demoMode:false,countries:identity.countries},
       dataSourcePatch:{mode:'connected',status:'ready',sourceRef:snapshot.operationalIdentityPreview===true?('hr-live-runtime:'+identity.tenantId+':'+identity.projectId+':display-name-only'):('hr-live-runtime:'+identity.tenantId+':'+identity.projectId),updatedAt:meta.sourceReadAt||meta.generatedAt||new Date().toISOString(),runtimeSyncActive:false,runtimeReadActive:true,updating:false,warnings:snapshot.operationalIdentityPreview===true?['DEV operativo: nombre shopper visible desde HR viva; contacto, DPI, banco y credenciales permanecen protegidos.']:[],blockers:[]}
@@ -199,7 +225,7 @@ window.CX = window.CX || {};
     if(CX.dataSource){Object.assign(CX.dataSource,Object.assign({},candidate.dataSourcePatch||{},options.dataSourcePatch||{}));try{localStorage.setItem('cx_data_mode','connected');localStorage.setItem('cx_demo_mode','off');}catch(e){}}
     const projects=safeArray(CX.data.projects),visits=safeArray(CX.data._visitas),shoppers=safeArray(CX.data.shoppers),currentPeriodId=CX.data.currentPeriodId;
     window.CX_TYA_VISIBLE_DATA_CONTRACT={tenantId:candidate.identity.tenantId,rootProjectId:candidate.identity.projectId,projectName:candidate.identity.projectName,periodCount:projects.length,uniquePeriodIds:new Set(projects.map(p=>p.id)).size,visitCount:visits.length,shopperCount:shoppers.length,currentPeriodId,currentPeriodVisits:visits.filter(v=>String(v.periodId)===String(currentPeriodId)).length,sourceRevision:CX.data.previewMeta?.sourceRevision||candidate.meta?.revision||null,sourceReadAt:candidate.meta?.sourceReadAt||null,genericProjectCount:projects.filter(p=>['retail','banca','food'].includes(p.id)).length,sourceSafe:true,operationalIdentityPreview:candidate.snapshot?.operationalIdentityPreview===true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true,atomicPublication:true};
-    if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(candidate.snapshot,candidate.meta||{});
+    if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(candidate.presentationSnapshot||candidate.snapshot,Object.assign({},candidate.meta||{},{readScope:candidate.snapshot.readScope||null,includesConfirmedHistory:!!candidate.presentationSnapshot}));
     applyHrFreshness(candidate.meta||{});
     if(CX.clienteData&&typeof CX.clienteData.invalidate==='function')CX.clienteData.invalidate();refreshBadge();
     document.documentElement.setAttribute('data-cx-tenant',candidate.identity.tenantId);document.documentElement.setAttribute('data-cx-project',candidate.identity.projectId);document.documentElement.setAttribute('data-cx-source',CX.data.previewMeta?.externalReadCurrent===false?'hr-last-confirmed':'hr-live');

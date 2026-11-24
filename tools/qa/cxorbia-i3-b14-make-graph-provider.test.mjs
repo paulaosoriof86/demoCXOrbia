@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap,withMakeGraphToolboxReader} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+import {readExcelWorksheetInventoryThroughMake,readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap,withMakeGraphToolboxReader} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 const contract={contractId:'test-mapping',headerVariants:[{id:'full',required:['País','ID CINEMA','Shopping'],countrySource:'column'}],
  columns:{pais:{aliases:['País'],critical:true},idCinema:{aliases:['ID CINEMA'],critical:true},shopping:{aliases:['Shopping'],critical:true}}};
 const values=[['País','ID CINEMA','Shopping'],['GT','001','Cine Test']];
@@ -137,4 +137,12 @@ test('F3 explicitly gated project can use the same read-only delegated reader wi
  const {result,requests}=await call(output(),{binding:{...binding,proof:{...binding.proof,writePolicy:'bidirectional_gated'}}});
  assert.equal(result.proof.hrWrites,0);assert.equal(result.proof.providerWriteRequests,0);assert.equal(result.proof.externalRevisionIndependentlyVerified,true);
  assert.equal(requests.length,1);assert.equal(JSON.parse(requests[0].input.body).data.operation,undefined);
+});
+
+test('metadata inventory uses actual ReturnData names and proves both independent responses complete',async()=>{
+ const sheets=[{id:'sheet',name:'NOVIEMBRE 26',visibility:'Visible'}];let input;
+ const out={...output(),inventory1:sheets,inventory2:structuredClone(sheets),inventoryComplete1:true,inventoryComplete2:true};
+ const read=await readExcelWorksheetInventoryThroughMake({binding,runScenario:async data=>{input=data;return out;}});
+ assert.equal(input.operation,'inventory');assert.equal(read.hrRowsRead,0);assert.equal(read.complete,true);assert.equal(read.worksheets.length,1);
+ for(const delta of [{inventoryComplete1:false},{inventoryComplete2:undefined},{inventory2:[{id:'other',name:'NOVIEMBRE 26',visibility:'Visible'}]},{projectId:'foreign'},{status2:404}])await assert.rejects(readExcelWorksheetInventoryThroughMake({binding,runScenario:async()=>({...out,...delta})}),/INVENTORY_/);
 });

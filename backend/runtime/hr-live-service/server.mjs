@@ -17,10 +17,10 @@ import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } fr
 import { isMailboxRuntimePath, maybeHandleMailboxRequest } from './mailbox-runtime.mjs';
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
-import { readExcelPeriodThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
+import { readExcelPeriodThroughMake, readExcelWorksheetInventoryThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
 import {HR_WRITABLE_VISIT_FIELDS} from '../cxorbia-operational-command-provider-v1.mjs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot,authorizedHrReviewObservation} from '../cxorbia-excel-operational-snapshot-v1.mjs';
-import {createDurableHrReadModel,hrReadModelKey} from './hr-read-model.mjs';
+import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey} from './hr-read-model.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -51,6 +51,10 @@ const ALLOWED_ORIGINS=new Set([
 const VOLATILE_REVISION_KEYS=new Set(['generatedAt','lastSnapshotAt','sourceSnapshotAt','tabRegistryObservedAt']);
 
 let cache=null;
+const scopedHrCache=new Map(),hrInventoryCache=new Map();
+let confirmedHrHistory=null;
+function historyStore(){return confirmedHrHistory||=createConfirmedHrHistory({db:ensureAdmin().db});}
+function retainScopedSnapshot(current){const key=current.bindingProof?.bindingFingerprint;if(key){scopedHrCache.set(key,current);while(scopedHrCache.size>8)scopedHrCache.delete(scopedHrCache.keys().next().value);}return current;}
 let inFlight=null;
 let inFlightBinding=null;
 let lastRefreshError=null;
@@ -66,7 +70,7 @@ const HR_READ_MODEL_MAX_AGE_MS=24*60*60*1000;
 function durableHrReadContext(binding){
   if(!hrReaderOwnersFingerprint){
     const owners=['backend/runtime/hr-live-service/server.mjs','backend/runtime/hr-live-service/hr-read-model.mjs',
-      'backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs','backend/runtime/cxorbia-country-hr-binding-v1.mjs',
+      'backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs','backend/runtime/cxorbia-country-hr-binding-v1.mjs','backend/runtime/cxorbia-make-graph-provider-v1.mjs',
       'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','tools/hr-source/tya-canonical-visit-state-r20.mjs'];
     hrReaderOwnersFingerprint=crypto.createHash('sha256').update(JSON.stringify(
       owners.map(name=>[name,crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT,name))).digest('hex')]))).digest('hex');
@@ -84,7 +88,9 @@ async function persistHrReadModel(scope,current){
   const binding=await resolveProjectHrReadBinding(scope);
   if(binding.proof.bindingFingerprint!==current.bindingProof?.bindingFingerprint)
     throw Error('MAPPING_FAILURE:HR_BINDING_CHANGED_BEFORE_READ_MODEL_PUBLISH');
-  try{const {store,key}=durableHrReadContext(binding);lastReadModelPersistence={...await store.publish(key,current),bindingFingerprint:binding.proof.bindingFingerprint};lastReadModelError=null;}
+  try{const {store,key}=durableHrReadContext(binding);lastReadModelPersistence={...await store.publish(key,current),bindingFingerprint:binding.proof.bindingFingerprint};
+    if(current.snapshot.readScope?.countryPeriods)lastReadModelPersistence.confirmedHistory=await historyStore().observe(current.snapshot,{sourceReadAt:current.loadedAt,sourceReadStartedAt:current.sourceReadStartedAt||current.loadedAt,revision:current.revision,evidence:{receiptPath:'runtime_authenticated_external_observation',bindingFingerprint:binding.proof.bindingFingerprint}});
+    lastReadModelError=null;}
   catch{lastReadModelPersistence={published:false,reason:'read_model_persistence_unavailable',bindingFingerprint:binding.proof.bindingFingerprint};lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_WRITE';}
   return lastReadModelPersistence;
 }
@@ -224,7 +230,7 @@ function snapshotScope(snapshot){
   if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
   return {tenantId,projectId};
 }
-const SAFE_PROJECT_CONFIG_KEYS=Object.freeze(['name','client','industry','sucursales','countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo','isr','regalias','periodicidad','periodoCumpl','scenarios','scenarioDimensions','quincenas','cuestionario','questionnaireProgramsByPeriod']);
+const SAFE_PROJECT_CONFIG_KEYS=Object.freeze(['name','client','industry','sucursales','countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo','isr','regalias','periodicidad','periodoCumpl','scenarios','scenarioDimensions','quincenas','cuestionario','questionnaireProgramsByPeriod','hrReadWindow']);
 function safeProjectConfig(raw={}){
   const out={};
   for(const key of SAFE_PROJECT_CONFIG_KEYS)if(raw[key]!==undefined)out[key]=JSON.parse(JSON.stringify(raw[key]));
@@ -254,7 +260,7 @@ function loadExcelMappingLibrary(mappingRef,root=ROOT){
 // VRM-358: this existing reader is a scoped adapter. Resolve its configured
 // private binding BEFORE reading HR; never borrow a global workbook or another
 // project's cache. Other adapters must supply their own proved mapping.
-async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,root=ROOT}={}){
+async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,root=ROOT,discoveryContexts}={}){
   const fail=code=>{throw new Error('MAPPING_FAILURE:HR_BINDING_'+code);};
   const mappingFile=path.join(root,'backend/contracts/tya-hr-column-map-r20-v1.json');
   const mappingBytes=fs.readFileSync(mappingFile),mapping=JSON.parse(mappingBytes);
@@ -271,7 +277,8 @@ async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,r
     const refs=[...new Set((source.countryBindings||[]).map(row=>row.mappingRef))];
     if(refs.length!==1)fail('MAPPING_AMBIGUOUS');
     loadExcelMappingLibrary(refs[0],root);
-    const plan=await resolveExcelOriginalProjectPlan({db,scope});
+    const plan=await resolveExcelOriginalProjectPlan({db,scope,discoveryContexts,inventoryCache:hrInventoryCache,
+      readInventory:binding=>withOriginalToolboxReader(runScenario=>readExcelWorksheetInventoryThroughMake({binding,runScenario}))});
     return {...plan,mappingRef:refs[0]};
   }
   // Legacy Google adapter remains scoped to its own approved library. Excel
@@ -340,16 +347,18 @@ async function withOriginalToolboxWriter(consume){
 }
 async function writeOriginalHrField(event,options){
   const {db}=ensureAdmin();
-  const binding=await resolveCountryHrPeriodBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
+  const plan=await resolveProjectHrReadBinding({tenantId:event.tenantId,projectId:event.projectId,hrPeriodId:event.periodId});
+  const resolveBinding=request=>resolveCountryHrPeriodBinding({...request,discovery:plan.discoveryContexts?.[request.countryCode]});
+  const binding=await resolveBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
   const {columnMap,cinemaRegistry}=loadExcelMappingLibrary(binding.privateProvider.mappingRef);
   let target;
-  try{target=await resolveExcelFieldWriteTarget({db,event,columnMap,cinemaRegistry,
+  try{target=await resolveExcelFieldWriteTarget({db,event,columnMap,cinemaRegistry,resolveBinding,
     readBinding:binding=>readOriginalThroughToolbox(binding,columnMap)});}
   catch(error){
     // This exact guard follows independent provider reads and exact row identity
     // validation. A changed cell is a causal conflict, never a retryable PATCH.
     if(error?.message!=='MAPPING_FAILURE:B14_FIELD_SOURCE_BASE_CHANGED')throw error;
-    const after=await resolveCountryHrPeriodBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
+    const after=await resolveBinding({db,tenantId:event.tenantId,projectId:event.projectId,countryCode:event.countryCode,periodId:event.periodId,purpose:'operational'});
     if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)throw Error('MAPPING_FAILURE:B14_FIELD_BINDING_CHANGED_DURING_READ');
     return {tenantId:event.tenantId,projectId:event.projectId,periodId:event.periodId,countryCode:event.countryCode,
       visitId:event.visitId,hrRowId:event.hrRowId,fieldKey:event.fieldKey,eventId:event.eventId,eventDigest:event.eventDigest,
@@ -361,6 +370,7 @@ async function writeOriginalHrField(event,options){
     // begun before the write must not become a fresh cache after its ACK.
     const pending=inFlight;if(pending)await Promise.allSettled([pending]);
     if(cache?.snapshot?.tenantId===event.tenantId&&cache?.snapshot?.projectId===event.projectId)cache.loadedAt=0;
+    for(const current of scopedHrCache.values())if(current.snapshot.tenantId===event.tenantId&&current.snapshot.projectId===event.projectId)current.loadedAt=0;
   }
   return result;
 }
@@ -620,7 +630,7 @@ async function refreshSnapshot(binding){
         readBinding:countryPeriod=>readExcelPeriodThroughMake({binding:countryPeriod,columnMap,runScenario})}));
       stagesMs.readOriginalExcel=Date.now()-stageStart;
       const current=await withDurableProjectConfig(source.snapshot);
-      const after=await resolveProjectHrReadBinding(binding.scope);
+      const after=await resolveProjectHrReadBinding(binding.scope,{discoveryContexts:binding.discoveryContexts});
       if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)
         throw Error('MAPPING_FAILURE:EXCEL_BINDING_CHANGED_DURING_READ');
       const actual=snapshotScope(current);
@@ -630,7 +640,7 @@ async function refreshSnapshot(binding){
       next.bindingProof={...binding.proof,readerCount:source.proof.periodReads,
         runtimeConsumptionVerified:true,sourceRevision:source.proof.sourceRevision,rawRowsExposed:false};
       next.sourceReadStartedAt=started;next.externalReadCurrent=true;
-      cache=next;
+      cache=retainScopedSnapshot(next);
       lastRefreshStagesMs={...stagesMs};
       lastRefreshProviderReads={excelOnlineOriginal:{periodReads:source.proof.periodReads,
         matchedDurable:source.proof.matchedDurable,unmatchedActive:source.proof.unmatchedActive}};
@@ -715,6 +725,7 @@ async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={})
     binding=await resolveProjectHrReadBinding(scope);
   }
   if(forceFresh)return refreshSnapshot(binding);
+  if(scopedHrCache.has(binding.proof.bindingFingerprint))cache=scopedHrCache.get(binding.proof.bindingFingerprint);
   const matches=cache?.origin!=='build_bootstrap'&&cache?.bindingProof?.bindingFingerprint===binding.proof.bindingFingerprint;
   const age=matches&&cache.externalReadCurrent!==false?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
@@ -780,6 +791,8 @@ function runtimeMeta(current){
     readModelWriteAck:current.readModelWriteAck||null,readModelPersistenceError:lastReadModelError,
     runtimeRead:true,
     sourceSafe:true,
+    readScope:current.snapshot.readScope||null,
+    periodCatalog:current.snapshot.periodCatalog||null,
     projectReadBinding:current.bindingProof||null,
     sourceAccessMode:current.snapshot.source?.accessMode||null,
     tabRegistryMode:current.snapshot.source?.tabRegistryMode||null,
@@ -857,8 +870,8 @@ const server=http.createServer(async(req,res)=>{
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
       configure:async command=>{
         const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
-          'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.status.update','reservation.status.update','visit.sync.confirm']);
-        const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId}:undefined;
+          'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create','application.status.update','reservation.create','reservation.status.update','visit.sync.confirm','finance.reconcile.visit','finance.historical.reconcile']);
+        const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId,...(hrCommands.has(command?.commandType)&&command.periodId?{hrPeriodId:command.periodId}:{})}:undefined;
         const current=await buildSnapshot({forceFresh:hrCommands.has(command?.commandType),scope});
         return configureCommandRuntime(current.snapshot,current);
       },
@@ -900,7 +913,13 @@ const server=http.createServer(async(req,res)=>{
       return sendJson(res,200,{ok:true,...read.proof,bindingPurpose:'original_readback',sourceSafe:true,writes:false,hrWrites:false,production:false});
     }
     const forceFresh=url.searchParams.get('fresh')==='1';
+    // An explicit refresh may discover a newly created monthly tab. Routine
+    // requests reuse the scoped inventory; no historical worksheet rows are read.
+    if(forceFresh&&url.searchParams.get('inventory')==='1')for(const [key,value]of hrInventoryCache)
+      if(value.tenantId===requestedScope.tenantId&&value.projectId===requestedScope.projectId)hrInventoryCache.delete(key);
     const protectedRequested=url.searchParams.get('protectedState')==='1';
+    const requestedPeriodId=url.searchParams.get('hrPeriodId');
+    if(requestedPeriodId)requestedScope.hrPeriodId=requestedPeriodId;
     const {current,principal,timing}=await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);
     const actualScope=snapshotScope(current.snapshot);
     if(actualScope.tenantId!==requestedScope.tenantId||actualScope.projectId!==requestedScope.projectId){
@@ -914,6 +933,7 @@ const server=http.createServer(async(req,res)=>{
       const protectedView=await protectedPlatformState(current,principal,requestedScope,operational);
       meta.protectedTiming={...timing,protectedStateMs:Date.now()-protectedStateStartedAt,totalProtectedRequestMs:Date.now()-protectedRequestStartedAt};
       snapshot=protectedView.snapshot;protectedState=protectedView.protectedState;
+      if(current.snapshot.source?.providerType==='excel_online')snapshot.confirmedHistory=await historyStore().read(requestedScope);
     }else{
       snapshot=operational?operationalSnapshot(current):current.snapshot;
       if(protectedRequested)meta.protectedTiming={...timing,protectedStateMs:0,totalProtectedRequestMs:Date.now()-protectedRequestStartedAt,metadataOnly:true};

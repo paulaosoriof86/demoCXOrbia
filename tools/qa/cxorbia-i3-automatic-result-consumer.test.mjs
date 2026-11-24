@@ -44,6 +44,8 @@ for(const [name,mutate]of [
  ['ledger latest DEV',o=>{o.ledger.latestDev={runId:1};}],
  ['descriptor next block',o=>{o.descriptor.nextPlannedBlock.exactPending='repeat old deployment';}],
  ['nested hosting source',o=>{o.ledger.currentTruth.currentHostingSourceSha='old';}],
+ ['nested candidate materialization',o=>{o.ledger.canonicalFunctionalCandidate.currentMaterialization={runId:1};}],
+ ['nested matrix materialization',o=>{o.matrix.productSource.currentMaterialization={runId:1};}],
  ['module serving source',o=>{o.matrix.modules[0].lastServedSource='old';}],
  ])test(`previously unguarded active alias rejects ${name}`,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
 test('historical archives stay historical and do not become active source assertions',()=>{
@@ -111,4 +113,21 @@ test('startup recovers every missing attempt and ignores mutable checkpoint date
 test('publication stage advances while D08/C09/C10 obligations remain explicit',()=>{
  const {out}=project();assert.ok(!out.matrix.modules.some(m=>m.classification==='SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION'));
  const persistence=out.matrix.modules.find(m=>m.domain==='persistence-command-ack-boundary');assert.match(persistence.actionRequired,/D08.*C09\/C10/);
+});
+
+function windowFixture(f){return {schemaVersion:'cxorbia.i3.hr-period-window-dev.v1',decision:'PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ',
+ ...Object.fromEntries(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].map(k=>[k,f.result[k]])),runId:String(f.run.id),runAttempt:f.run.run_attempt,revision:f.result.hrRevision,
+ rolling:{mode:'rolling_window',periodIds:['p-2026-10','p-2026-11']},returned:{mode:'rolling_window',periodIds:['p-2026-10','p-2026-11'],revision:f.result.hrRevision},explicit:{mode:'explicit_period',periodIds:['p-2026-09']},
+ history:{available:true,externalReadCurrent:false,originalSeedVisits:836,periods:19},production:false,fullDomain:false,authenticatedUiCertified:false,firestoreWrites:0,authWrites:0,hrWrites:0,commandPosts:0,operationalImports:0};}
+test('typed window proof removes only its completed action and preserves all domain obligations',()=>{
+ const f=fixture();f.hrWindow=windowFixture(f);f.requireHrWindow=true;
+ const {out}=project(f);assert.ok(!out.pointer.nextPlannedBlock.taskIds.includes('HR_PERIOD_WINDOW'));
+ assert.deepEqual(out.pointer.nextPlannedBlock.completedTaskIds,['HR_PERIOD_WINDOW']);
+ assert.match(out.pointer.exactNextAction,/reading window, retained history and explicit older-period read are verified/);
+ assert.match(out.matrix.modules.find(x=>x.domain==='canonical-hr-state-adapters').actionRequired,/Complete authenticated durable HR/);
+ assert.equal(validateCurrentAuthorityAliases(out).pass,true);assert.equal(out.matrix.modules.filter(x=>x.classification==='MATCH').length,6);
+});
+test('requested HR window result cannot be silently omitted',()=>{const f=fixture();f.requireHrWindow=true;assert.throws(()=>makeMaterializationReceipt(f),/HR_WINDOW_REQUIRED/);});
+for(const key of ['runId','runAttempt','revision','sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','production','hrWrites','fullDomain'])test('typed window proof rejects wrong '+key,()=>{
+ const f=fixture();f.hrWindow=windowFixture(f);f.hrWindow[key]=typeof f.hrWindow[key]==='number'?99:typeof f.hrWindow[key]==='boolean'?true:'wrong';assert.throws(()=>makeMaterializationReceipt(f),/HR_WINDOW_/);
 });

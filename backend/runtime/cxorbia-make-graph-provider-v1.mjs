@@ -101,6 +101,27 @@ export async function readExcelPeriodThroughMake({binding,token,scenarioId,range
       rawWorkbookExposed:false,rawContactDataExposed:false,providerAck:false,hrWrites:0,providerWriteRequests:0,production:false}};
 }
 
+// Inventory reads worksheet metadata only. Both independent responses must be
+// complete and identical before absence can mean that a next month is not ready.
+export async function readExcelWorksheetInventoryThroughMake({binding,runScenario}={}){
+  const scope=binding?.scope||{},p=binding?.privateProvider||{},proof=binding?.proof||{},sheet=p.worksheets?.[0];
+  if(typeof runScenario!=='function'||proof.providerType!=='excel_online'||!sheet||
+    !/^[a-f0-9]{64}$/.test(proof.bindingFingerprint||''))fail('MAPPING_FAILURE','INVENTORY_BINDING');
+  const inputs={...scope,bindingFingerprint:proof.bindingFingerprint,driveId:p.driveId,itemId:p.itemId,
+    worksheetId:sheet.worksheetId,rangeAddress:p.readRangeAddress||'A1:AI140',operation:'inventory'};
+  const out=await runScenario(inputs);
+  if(!out||Object.keys(scope).some(k=>str(out[k])!==str(scope[k]))||out.bindingFingerprint!==proof.bindingFingerprint||
+    str(out.worksheetId)!==str(sheet.worksheetId)||Number(out.status1)!==200||Number(out.status2)!==200)
+    fail('PROVIDER_FAILURE','INVENTORY_ACK');
+  if(out.inventoryComplete1!==true||out.inventoryComplete2!==true||!Array.isArray(out.inventory1)||!Array.isArray(out.inventory2))
+    fail('PROVIDER_FAILURE','INVENTORY_INCOMPLETE');
+  const clean=items=>items.map(s=>({id:str(s.id),name:str(s.name),visibility:str(s.visibility)})).sort((a,b)=>a.id.localeCompare(b.id));
+  const first=clean(out.inventory1),second=clean(out.inventory2);
+  if(first.some(s=>!isPrivate(s.id)||!s.name||!['Visible','Hidden','VeryHidden'].includes(s.visibility))||
+    new Set(first.map(s=>s.id)).size!==first.length||digest(first)!==digest(second))fail('PROVIDER_FAILURE','INVENTORY_CONFLICT');
+  return {worksheets:first,inventoryHash:digest(first),complete:true,hrRowsRead:0,hrWrites:0,providerWriteRequests:0};
+}
+
 
 // A refresh owns one authenticated connection; each scope still performs its
 // own two independently checked Graph reads. No HR response is cached here.

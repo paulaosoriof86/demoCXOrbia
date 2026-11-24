@@ -270,6 +270,7 @@ test('F3 server turns only independently proved changed-base target guard into t
  const source=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8'),first=source.indexOf('async function writeOriginalHrField('),last=source.indexOf('async function verifiedProtectedPrincipal(',first);
  const event=targetFixture().event;let calls=0,mode='changed',reads=0;
  const context={ensureAdmin:()=>({db:{}}),loadExcelMappingLibrary:()=>({}),readOriginalThroughToolbox:()=>{},
+  resolveProjectHrReadBinding:async requested=>{assert.deepEqual(JSON.parse(JSON.stringify(requested)),{tenantId:event.tenantId,projectId:event.projectId,hrPeriodId:event.periodId});return {discoveryContexts:{}};},
   resolveCountryHrPeriodBinding:async()=>({proof:{bindingFingerprint:mode==='binding-change'&&++reads>1?'different':'fixed'},privateProvider:{mappingRef:'fixture'}}),
   resolveExcelFieldWriteTarget:async()=>{throw Error(mode==='other'?'MAPPING_FAILURE:B14_FIELD_ROW_REFERENCE':'MAPPING_FAILURE:B14_FIELD_SOURCE_BASE_CHANGED');},
   withOriginalToolboxWriter:()=>{calls++;throw Error('unexpected writer');}};

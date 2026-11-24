@@ -48,9 +48,18 @@ function execute(t,scenario={},patch={}){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-p0367-key-qa-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   fs.writeFileSync(path.join(dir,'gcloud'),gcloud,{mode:0o755});fs.writeFileSync(path.join(dir,'scenario.json'),JSON.stringify(scenario));
   const descriptor={status:'HOLD_I3_GTHN_PENDING_DEV',productSourceSha:'a'.repeat(40),productTreeAuthority:'d'.repeat(40),i4Authorized:false,pairedBuildResumeRequest:{state:'RESUME_EXACT_SUCCESSFUL_BUILD',originalBuildRunId:2774},currentMailboxEnvironmentHold:{state:'HOLD_MAIL_UNCONFIGURED',classification:'ENVIRONMENT_FAILURE',sourceSha:'a'.repeat(40),sourceTree:'d'.repeat(40),runtimeRevision:scenario.holdWrongPredecessor?'other':'cxorbia-live-hr-dev-00389-p4r',failedRunId:2774,production:false}};
+  if(scenario.newBuild){
+    delete descriptor.pairedBuildResumeRequest;
+    descriptor.currentMaterialization={sourceSha:'9'.repeat(40),runtimeRevision:'cxorbia-live-hr-dev-00389-p4r'};
+    descriptor.postDeployRunSeal={...descriptor.currentMaterialization,mode:'PREDECESSOR_SERVING_PENDING_SOURCE'};
+    descriptor.pendingDevSuccessor={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'RUNTIME_AND_HOSTING',sourceSha:descriptor.productSourceSha,sourceTree:descriptor.productTreeAuthority,production:false,devPublished:false,servingPairedMaterialization:descriptor.currentMaterialization,servingRuntimeSeal:descriptor.postDeployRunSeal};
+    if(scenario.badPending)descriptor.pendingDevSuccessor.sourceTree='f'.repeat(40);
+    if(scenario.badSeal)descriptor.pendingDevSuccessor.servingRuntimeSeal={runtimeRevision:'wrong'};
+    if(!scenario.noBuild)fs.writeFileSync(path.join(dir,'build.json'),JSON.stringify({builds:scenario.badBuildCount?0:1,production:false,sourceSha:descriptor.productSourceSha,sourceTree:descriptor.productTreeAuthority,imageTag:scenario.badImage?'wrong':'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:'+'b'.repeat(64)}));
+  }
   fs.writeFileSync(path.join(dir,'descriptor.json'),JSON.stringify(descriptor));
   const env={...process.env,PATH:dir+':'+process.env.PATH,QA_SCENARIO:path.join(dir,'scenario.json'),QA_TRACE:path.join(dir,'trace.jsonl'),QA_CREATED:path.join(dir,'created'),
-    PROJECT:'cxorbia-backend-dev',SERVICE:'cxorbia-live-hr-dev',REGION:'us-central1',FOCAL_SOURCE:'a'.repeat(40),ACTIVE_STATUS:'HOLD_I3_P0367_SOURCE_READY',
+    PROJECT:'cxorbia-backend-dev',SERVICE:'cxorbia-live-hr-dev',REGION:'us-central1',FOCAL_SOURCE:'a'.repeat(40),FOCAL_TREE:'d'.repeat(40),ACTIVE_STATUS:'HOLD_I3_P0367_SOURCE_READY',
     LEGAL_ENABLE_NAME:'LEGAL_ENABLE',LEGAL_ENABLE_VALUE:'true',LEGAL_GATE_NAME:'LEGAL_GATE',LEGAL_GATE_VALUE:'true',I3_HR_CACHE_PIN_NAME:'HR_CACHE_PIN',I3_HR_CACHE_PIN_VALUE:'fixture',CANDIDATE_DESCRIPTOR:scenario.mailHold?path.join(dir,'descriptor.json'):'',FOCAL_OUT:dir,...patch};
   const result=spawnSync('bash',[script,'gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:'+'b'.repeat(64)],{env,encoding:'utf8',timeout:15000});
   const commands=fs.existsSync(env.QA_TRACE)?fs.readFileSync(env.QA_TRACE,'utf8').trim().split('\n').filter(Boolean).map(JSON.parse):[];
@@ -114,4 +123,13 @@ test('explicit E08 HOLD rejects any prior mounted or plaintext key and predecess
   for(const scenario of [{mounted:true},{plaintext:true},{holdWrongPredecessor:true}]){
     const r=execute(t,{...scenario,mailHold:true});assert.notEqual(r.status,0);assert.equal(r.update,undefined);assert.equal(matching(r,'secrets describe').length,0);assert.equal(matching(r,'secrets create').length,0);
   }
+});
+
+test('a newly built exact source can retain the evidenced mailbox HOLD without inventing a resume',t=>{
+ const r=execute(t,{mailHold:true,newBuild:true,lookupError:'PERMISSION_DENIED'});assert.equal(r.status,0,r.stderr);assert.ok(r.update);
+ for(const command of ['secrets create','secrets versions describe','secrets get-iam-policy','secrets add-iam-policy-binding'])assert.equal(matching(r,command).length,0);
+ assert.match(r.update.args[r.update.args.indexOf('--update-env-vars')+1],/CXORBIA_USER_MAILBOX_ENABLED=false/);
+});
+for(const bad of ['badPending','badSeal','noBuild','badBuildCount','badImage','mounted','plaintext','holdWrongPredecessor'])test('new build mailbox HOLD rejects '+bad+' before runtime mutation',t=>{
+ const r=execute(t,{mailHold:true,newBuild:true,[bad]:true,lookupError:'PERMISSION_DENIED'});assert.notEqual(r.status,0);assert.equal(r.update,undefined);
 });
