@@ -316,6 +316,19 @@
       const cmd=buildFinance('finance.movement.create','financialMovement',null,payload,'absent',Object.assign({permission:'finance.movement.write'},meta));
       return execute(cmd,meta);
     };
+    D.updateFinancialMovementMetadata=function(movementId,patch,meta){
+      meta=commandMeta(meta);const c=ctx();
+      const matches=(Array.isArray(D.__financialMovements)?D.__financialMovements:[]).filter(row=>str(row.id)===str(movementId));
+      const current=matches.length===1?matches[0]:null;
+      if(!current||current.global===true||str(current.tenantId)!==c.tenantId||str(current.projectId)!==c.projectId||str(current.periodId)!==c.periodId||versionOf(current)==='source-current'){
+        const result=CX.commandAdapter?.blocked?.({commandType:'finance.movement.metadata.update',entityType:'financialMovement'},'FINANCE_MOVEMENT_SOURCE_READ_REQUIRED')||{ok:false,status:'blocked',code:'FINANCE_MOVEMENT_SOURCE_READ_REQUIRED'};
+        return meta.ackAware?Promise.resolve(surfaceBlocked(result)):legacyFailClosed(result);
+      }
+      const payload={patch:Object.assign({},patch||{}),reason:str(meta.reason),authorityRef:str(meta.authorityRef)};
+      const cmd=buildBase('finance.movement.metadata.update','financialMovement',str(movementId),payload,meta.expectedVersion??versionOf(current),Object.assign({},meta,{permission:'finance.movement.write'}));
+      if(meta.idempotencyKey)cmd.idempotencyKey=str(meta.idempotencyKey);
+      return execute(cmd,meta);
+    };
     D.createFinanceAccount=function(kind,rec,meta){
       rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);const payload=Object.assign({},rec,{kind});delete payload.__commandMeta;
       const cmd=buildFinance('finance.account.create','financeAccount',null,payload,'absent',Object.assign({permission:'finance.account.write'},meta));

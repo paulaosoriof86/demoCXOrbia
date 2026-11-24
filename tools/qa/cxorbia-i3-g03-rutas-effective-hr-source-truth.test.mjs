@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const source=readFileSync(new URL('../../app/modules/operacion-extra.js',import.meta.url),'utf8');
 const hrSource=readFileSync(new URL('../../app/core/hr.js',import.meta.url),'utf8');
 
-function renderRutas({canonical,external=true,sourceRevision='d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2',rows}={}){
+function renderRutas({canonical,external=true,sourceRevision='d19eb12ad8c1c5140b5711ea390deaae50b0edd35ff4f982a69bfdcabbc86dd2',rows,hrOverride}={}){
   const modules=new Map();
   const period={id:'cinepolis-2026-10',name:'Cinépolis OCT 2026'};
   const hr={
@@ -16,6 +16,7 @@ function renderRutas({canonical,external=true,sourceRevision='d19eb12ad8c1c5140b
     external:()=>rows||[{extId:'HR-001',visitId:'VIS-001',sucursal:'Sucursal uno',ciudad:'Guatemala',pais:'GT',quincena:'Q1',escenario:'General',fecha:'2026-10-15',fechaProgramada:'2026-10-15',disponibleDesde:'2026-10-11',reembolso:10,shopper:'Operador',estado:'asignada'}],
     diff:()=>({nuevos:[],updates:[],iguales:[],total:1})
   };
+  Object.assign(hr,hrOverride||{});
   const CX={module:(name,render)=>modules.set(name,render),hr,paisFlag:()=>'',data:{__liveHrSourceRevision:sourceRevision}};
   vm.runInNewContext(source,{CX,setTimeout:()=>{}},{filename:'operacion-extra.js'});
   const ui={el:()=>({innerHTML:''}),ph:(title)=>`<h1>${title}</h1>`,bdg:label=>label,aiBox:label=>label};
@@ -87,4 +88,32 @@ test('B11: canonical source preserves distinct scheduled and available dates fro
   assert.equal(rows[1].fechaProgramada,'2026-11-11');
   assert.equal(rows[1].disponibleDesde,'2026-11-07');
   assert.deepEqual(live.map(v=>v.agendada),['','2026-11-11']);
+});
+
+function countrySourceFixture(countries=['GT','HN']){
+  const project={id:'independent-project',name:'Proyecto de prueba',countries,operationalSource:{mode:'external',providerType:'excel_online',readPolicy:'external_live',countryBindings:countries.map(countryCode=>({countryCode,providerBindingId:'private-'+countryCode,mappingRef:'mapped-'+countryCode}))}};
+  const CX={cxDataCommandBoundary:{canonicalMode:()=>true},data:{currentProjectId:project.id,project:()=>project,period:()=>({id:'period'}),__liveHrVisits:[]},bus:{on:()=>{}}};
+  vm.runInNewContext(hrSource,{CX,window:{CX}},{filename:'hr.js'});
+  return {project,CX};
+}
+test('VRM368: each valid country-owned Excel configuration is online without a global workbook binding',()=>{
+  for(const countries of [['GT'],['HN'],['GT','HN'],['CR']]){
+    const {CX}=countrySourceFixture(countries);
+    assert.equal(CX.hr.esOnline(),true);assert.match(CX.hr.fuente(),/vínculos seguros por país/);
+    assert.doesNotMatch(CX.hr.fuente(),/verificada|conectada|ACK/);
+    CX.hrSource={operationalReadback:()=>({verified:true})};assert.match(CX.hr.fuente(),/operacional verificada/);
+  }
+});
+test('VRM368: incomplete, duplicate or mixed global country bindings cannot claim configured online HR',()=>{
+  for(const breakSource of [p=>p.operationalSource.countryBindings.pop(),p=>p.operationalSource.countryBindings[1].countryCode='GT',p=>p.operationalSource.countryBindings[0].mappingRef='',p=>p.operationalSource.providerBindingId='global',p=>p.operationalSource.readPolicy='snapshot',p=>p.countries=[]]){
+    const {project,CX}=countrySourceFixture();breakSource(project);assert.equal(CX.hr.esOnline(),false);assert.match(CX.hr.fuente(),/pendiente/);
+  }
+  const {project,CX}=countrySourceFixture();project.operationalSource={mode:'internal'};assert.equal(CX.hr.esOnline(),false);assert.equal(CX.hr.fuente(),'Fuente interna del proyecto');
+  project.operationalSource={mode:'external',providerType:'google_sheets',providerBindingId:'existing',mappingRef:'existing-map'};assert.equal(CX.hr.esOnline(),true);
+});
+test('VRM368: the loaded route owner uses the shared country configuration without exposing private IDs',()=>{
+  const {CX}=countrySourceFixture();
+  const html=renderRutas({canonical:true,hrOverride:CX.hr});
+  assert.match(html,/excel_online/);assert.match(html,/vínculos seguros por país/);assert.match(html,/Revisión HR publicada/);
+  assert.doesNotMatch(html,/Fuente interna del proyecto|pendiente de vínculo seguro|private-GT|mapped-GT/);
 });

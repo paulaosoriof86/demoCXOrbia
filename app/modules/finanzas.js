@@ -17,6 +17,19 @@ const REIMBURSEMENT_REQUIRES_CONFIRMED_SOURCE_CONTRACT='reimbursementSource_reem
 function cxFinanceCommandCommitted(result){
   return result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true;
 }
+// VRM-369: only manual project advances expose metadata correction; financial
+// amounts, source, canonical cash period and linked obligations remain immutable.
+function cxFinanceMetadataEditable(row){
+  return !!row&&row.global!==true&&row.tipo==='ingreso'&&['anticipo','remesa'].includes(String(row.tipoIngreso||''))&&/^admin-entry:[a-f0-9]{40}$/.test(String(row.sourceRef||''))&&!row.accountId&&!row.visitId&&!row.visitaId&&!row.lote&&!row.loteId;
+}
+function cxFinanceMetadataReadback(ack,rows,before,patch){
+  if(!cxFinanceCommandCommitted(ack)||ack.metadataOnly!==true||ack.amountsChanged!==false||ack.movementCreated!==false)return false;
+  const matches=(rows||[]).filter(row=>String(row.id)===String(before.id));if(matches.length!==1)return false;
+  const after=matches[0],ignored=new Set(['cat','fecha','desc','version','updatedAt','updatedBy','metadataCorrection']);
+  const stable=value=>Array.isArray(value)?value.map(stable):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,stable(value[key])])):value;
+  const facts=row=>JSON.stringify(stable(Object.fromEntries(Object.entries(row).filter(([key])=>!ignored.has(key)))));
+  return facts(after)===facts(before)&&Object.entries(patch).every(([key,value])=>String(after[key]??'')===String(value))&&String(after.version)===String(ack.movement?.version);
+}
 /* R12: use the remote provider's explicitly recognized revenue flags.
    A remittance, advance or CxC recovery is cash movement, not earned operating revenue. */
 function cxFinanceOperatingRevenueEligible(m,providerBacked){
@@ -714,7 +727,7 @@ CX.module('movimientos', ({data,ui})=>{
           <td style="font-size:11px">${TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo}</td><td>${m.pais||'—'}</td>
           <td style="text-align:right;font-weight:700;color:var(--${m.monto<0?'red':'green'})">${curOf(m)===PENDING_CURRENCY?'<span class="bdg bdg-a">Pendiente de moneda</span>':(m.monto<0?'− ':'+ ')+_mvMoney(m,Math.abs(m.monto))}</td>
           <td>${ui.bdg(m.estado||'—',(m.estado||'').includes('Cx')?'a':m.monto<0?'r':'g')}</td>
-          <td style="text-align:right">${m.id?`<button class="btn btn-ghost btn-sm" data-delm="${m.id}" style="color:var(--red);padding:2px 6px">✕</button>`:''}</td></tr>`).join('')}
+          <td style="text-align:right">${connectedFinance()&&!isG&&cxFinanceMetadataEditable(m)?`<button class="btn btn-soft btn-sm" data-edit-movement-metadata="${m.id}">Corregir datos</button>`:''}${m.id?`<button class="btn btn-ghost btn-sm" data-delm="${m.id}" style="color:var(--red);padding:2px 6px">✕</button>`:''}</td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:14px">${ui.aiBox('Separo ingresos por comisiones, honorarios, anticipos y facturación de los financiamientos (que van a CxP). Registro cuentas por cobrar y por pagar iniciales en la importación y vinculo cada abono a su egreso. Las remesas recibidas se concilian aquí.','Tesorería completa, no solo gastos del proyecto')}</div>
     </div>`;
@@ -859,6 +872,34 @@ CX.module('movimientos', ({data,ui})=>{
     if(cxcF)cxcF.addEventListener('input',()=>{const q=cxcF.value.toLowerCase();host.querySelectorAll('#cxcBody .cxcRow').forEach(row=>{row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';});});
     const cxpF=host.querySelector('#cxpFind');
     if(cxpF)cxpF.addEventListener('input',()=>{const q=cxpF.value.toLowerCase();host.querySelectorAll('#cxpBody .cxpRow').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});});
+    host.querySelectorAll('[data-edit-movement-metadata]').forEach(button=>button.addEventListener('click',()=>{
+      if(!connectedFinance()||isG||CX.permissions?.gate?.('finance.movement.write',CX.permissions.ctx(),ui)!==true)return;
+      const current=durableMovements.filter(row=>String(row.id)===button.dataset.editMovementMetadata);
+      if(current.length!==1||!cxFinanceMetadataEditable(current[0])){ui.toast('Actualiza la lectura del anticipo antes de corregirlo.','warn');return;}
+      const before=JSON.parse(JSON.stringify(current[0])),expected=before.version??before.updatedAt;
+      if(expected===undefined||typeof data.updateFinancialMovementMetadata!=='function'){ui.toast('La corrección requiere una versión remota vigente.','warn');return;}
+      const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const key='finance-metadata-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+      ui.modal('Corregir datos del anticipo',`<p style="font-size:12.5px">Se conserva el importe de ${safe(before.currency||before.moneda)} ${safe(before.amount??before.monto)} y su período de cobro.</p><label class="lbl">Concepto</label><input class="inp" id="metadataCat" maxlength="200" value="${safe(before.cat)}"><label class="lbl">Fecha del cobro</label><input class="inp" id="metadataDate" type="date" value="${safe(before.fecha)}"><label class="lbl">Descripción</label><textarea class="inp" id="metadataDesc" maxlength="2000">${safe(before.desc)}</textarea><label class="lbl">Motivo de la corrección</label><input class="inp" id="metadataReason" maxlength="500" placeholder="Describe el dato correcto y su soporte"><p style="font-size:12px;color:var(--t2)">La corrección queda auditada. No genera otro ingreso ni confirma pagos a shoppers.</p><button class="btn btn-pr" id="metadataSave">Guardar corrección</button>`,{onMount:(overlay,close)=>{
+        const save=overlay.querySelector('#metadataSave');let submitted=null,acknowledgement=null;
+        save.addEventListener('click',async()=>{
+          if(!submitted){
+            const patch={cat:overlay.querySelector('#metadataCat').value.trim(),fecha:overlay.querySelector('#metadataDate').value,desc:overlay.querySelector('#metadataDesc').value.trim()},reason=overlay.querySelector('#metadataReason').value.trim();
+            if(!patch.cat||!patch.fecha||!reason){ui.toast('Completa concepto, fecha y motivo.','warn');return;}
+            submitted={patch,meta:scopedMeta({ackAware:true,reason,authorityRef:'user-confirmed-finance-metadata-correction',expectedVersion:expected,idempotencyKey:key})};
+            overlay.querySelectorAll('input,textarea').forEach(input=>input.disabled=true);
+          }
+          save.disabled=true;save.textContent=acknowledgement?'Verificando…':'Confirmando…';
+          try{
+            if(!acknowledgement){const result=await data.updateFinancialMovementMetadata(before.id,submitted.patch,submitted.meta);if(!cxFinanceCommandCommitted(result)||result.metadataOnly!==true)throw new Error(String(result?.code||'FINANCE_METADATA_ACK_REQUIRED'));acknowledgement=result;}
+            const readback=await data.getFinancialMovements({...ledgerRequest(),requireServerRead:true});
+            if(scope!=='proyecto'||String(data.currentProjectId)!==canonicalProjectId()||String(data.currentPeriodId)!==String(canonicalPeriodId)||readback?.status!=='ok'||readback.serverConfirmed!==true||!cxFinanceMetadataReadback(acknowledgement,readback.items,before,submitted.patch))throw new Error('FINANCE_METADATA_READBACK_PENDING');
+            data.__financialMovements=readback.items;durableMovements=readback.items;
+            close();draw();ui.toast('Datos corregidos y confirmados en la fuente remota.','ok');
+          }catch(error){save.disabled=false;save.textContent=acknowledgement?'Verificar actualización':'Reintentar confirmación';save.dataset.providerResultCode=String(error?.message||'FINANCE_METADATA_UNCONFIRMED').slice(0,100);ui.toast(acknowledgement?'La corrección fue recibida; falta confirmar su lectura.':'La corrección no está confirmada. Si cambió otra sesión, cierra y actualiza el anticipo.','warn',5500);}
+        });
+      }});
+    }));
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{if(connectedFinance()){ui.toast('El movimiento durable no se elimina localmente. Usa un ajuste/contramovimiento auditado.','warn',4200);return;}CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');

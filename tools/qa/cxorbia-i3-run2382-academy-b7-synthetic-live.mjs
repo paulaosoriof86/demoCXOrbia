@@ -141,7 +141,44 @@ function academyUiQaPrimitives(){
   return {str,stable,hash,check,same,without,progressKey,describeCommand,verifyBundle,verifyMembership,verifyCourse};
 }
 
-function runAcademyUiQaSelfTest(){
+// QA-only deadlines: keep the observed await and its outcome in the artifact.
+// A timeout is an ENVIRONMENT_FAILURE, never a provider ACK or permission failure.
+function d08DeadlineHarness(result,save,redact=String){
+  result.awaitJournal??=[];
+  return async function awaited(stage,operation,timeoutMs=45000){
+    const row={sequence:result.awaitJournal.length+1,stage,state:'WAITING',startedAt:new Date().toISOString(),timeoutMs};
+    result.awaitJournal.push(row);save();let timer;
+    try{
+      const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>{
+        row.state='TIMED_OUT';row.finishedAt=new Date().toISOString();save();
+        reject(Error('ENVIRONMENT_FAILURE:D08_AWAIT_TIMEOUT:'+stage));
+      },timeoutMs);});
+      const value=await Promise.race([Promise.resolve().then(operation),timeout]);
+      row.state='FULFILLED';return value;
+    }catch(error){if(row.state!=='TIMED_OUT')row.state='REJECTED';row.error=redact(error?.message||error);throw error;}
+    finally{clearTimeout(timer);row.finishedAt=new Date().toISOString();save();}
+  };
+}
+
+async function d08DeadlineSelfTest(){
+  const assert=(ok,name)=>{if(!ok)throw Error('D08_DEADLINE_SELF_TEST:'+name);};
+  const result={},snapshots=[],awaited=d08DeadlineHarness(result,()=>snapshots.push(JSON.parse(JSON.stringify(result))));let passed=0;
+  assert(await awaited('readback',()=>Promise.resolve(7),100)===7,'resolved value');passed++;
+  assert(snapshots[0].awaitJournal[0].state==='WAITING'&&result.awaitJournal[0].state==='FULFILLED','persist before and after');passed++;
+  try{await awaited('original rejection',()=>Promise.reject(Error('PERSISTENCE_FAILURE:owned drift')),100);throw Error('missed');}
+  catch(error){assert(error.message==='PERSISTENCE_FAILURE:owned drift'&&result.awaitJournal[1].state==='REJECTED','preserve rejection');passed++;}
+  let release;const slow=new Promise(resolve=>{release=resolve;});
+  try{await awaited('new session replay action',()=>slow,5);throw Error('missed');}
+  catch(error){assert(error.message==='ENVIRONMENT_FAILURE:D08_AWAIT_TIMEOUT:new session replay action','bounded unresolved action');passed++;}
+  release('late');await Promise.resolve();await Promise.resolve();
+  assert(result.awaitJournal[2].state==='TIMED_OUT','late completion never promotes timeout');passed++;
+  const unsettled=r=>r.some(x=>x.dispatched===true&&x.responseParsed!==true);
+  assert(unsettled([{dispatched:true,responseParsed:false}]),'uncertain write holds cleanup');passed++;
+  assert(!unsettled([{dispatched:false,responseParsed:false},{dispatched:true,responseParsed:true}]),'no undispatched false positive');passed++;
+  return passed;
+}
+
+async function runAcademyUiQaSelfTest(){
   const h=academyUiQaPrimitives(),{check,describeCommand,verifyBundle,verifyMembership,verifyCourse}=h;
   const course={courseId:'s_ruta',audience:'shopper',revision:'a'.repeat(64),lessons:[{id:'sr1',quiz:[]},{id:'sr2',quiz:[]}]};
   const identity={uid:'qa_d08_12345678_1_shopper',role:'shopper',name:'QA D08',courseId:'s_ruta',expectedMembership:{uid:'qa_d08_12345678_1_shopper',qaSynthetic:true}};
@@ -183,6 +220,7 @@ function runAcademyUiQaSelfTest(){
   positive('owned updated draft cleanup',()=>verifyCourse(draft2,[created,updated],draftSpec));
   negative('unplanned draft field update',()=>describeCommand({...update,payload:{...update.payload,patch:{...update.payload.patch,createdByUserId:'real-user'}}},admin,{type:update.commandType,mode:'write'},draftSpec));
   positive('observed browser actor label remains non-authoritative',()=>describeCommand({...c,actor:{actorId:'authenticated-user',role:'shopper'}},identity,{...plan,actorId:'authenticated-user'},spec));
+  passed+=await d08DeadlineSelfTest();
   console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
 }
 
@@ -214,12 +252,20 @@ async function runAcademyUiQa(){
   const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
   const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
     runtimeRevision:qa.runtimeRevision,runtimeDigest:qa.runtimeDigest,hostingVersion:qa.hostingVersion,scope:'D08_FOCAL_UI_PROVIDER_PROGRESS_EDIT_AND_ROLE_NEGATIVES_NOT_FULL_CERTIFICATIONS_DOMAIN',
-    identities,creationJournal:[],roles:{},negatives:[],resources:[],sessionDiagnostics:[],cleanup:{ok:false},serving:{},safety:{hrWrites:0,realLearnerWrites:0,realCourseWrites:0,realVisitsWritten:0,paymentWrites:0,emailCalls:0,calendarCalls:0,productionDeploys:0}};
+    identities,creationJournal:[],requestJournal:[],awaitJournal:[],roles:{},negatives:[],resources:[],sessionDiagnostics:[],cleanup:{ok:false},serving:{},safety:{hrWrites:0,realLearnerWrites:0,realCourseWrites:0,realVisitsWritten:0,paymentWrites:0,emailCalls:0,calendarCalls:0,productionDeploys:0}};
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');save();
   const records=new Map(),contexts=[],liveSessions=[];let browser=null,fixturesStarted=false,productionBefore='';
   const authIdentity=u=>({uid:u.uid,displayName:u.displayName||'',disabled:u.disabled,email:u.email||null,emailVerified:u.emailVerified,phoneNumber:u.phoneNumber||null,photoURL:u.photoURL||null,creationTime:u.metadata.creationTime,providerData:u.providerData||[],mfa:u.multiFactor?.enrolledFactors||[]});
-  const gcloud=args=>execFileSync('gcloud',args,{encoding:'utf8',maxBuffer:8*1024*1024}).trim();
+  const gcloud=args=>execFileSync('gcloud',args,{encoding:'utf8',timeout:45000,maxBuffer:8*1024*1024}).trim();
   const redact=v=>String(v??'').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,700);
+  const awaited=d08DeadlineHarness(result,save,redact);
+  // SDK/Auth calls do not all accept AbortSignal. Persist their deadline and hold
+  // destructive cleanup if a dispatched command has no terminal HTTP response.
+  for(const method of ['createUser','setCustomUserClaims','createCustomToken','getUser','deleteUser']){
+    const original=auth[method].bind(auth);
+    auth[method]=(...args)=>awaited('auth.'+method,()=>original(...args),45000);
+  }
+  const readDoc=(path,stage='document.read')=>awaited(stage+':'+path,()=>db.doc(path).get(),45000);
   async function serving(stage){
     const service=JSON.parse(gcloud(['run','services','describe',e.SERVICE,'--project',projectName,'--region',e.REGION,'--format=json'])),traffic=(service.status?.traffic||[]).filter(x=>Number(x.percent||0)>0);
     check(service.status?.latestReadyRevisionName===qa.runtimeRevision&&traffic.length>0&&traffic.every(x=>x.revisionName===qa.runtimeRevision)&&traffic.reduce((a,x)=>a+Number(x.percent||0),0)===100,'RELEASE_COMPOSITION_FAILURE:D08_RUNTIME_DRIFT');
@@ -238,11 +284,11 @@ async function runAcademyUiQa(){
   async function track(command,identity,plan){
     const r=describeCommand(command,identity,plan,spec),old=records.get(r.receiptPath);
     if(old){check(old.uid===r.uid&&old.commandSha256===r.commandSha256&&plan.mode==='replay','SOURCE_FAILURE:D08_IDEMPOTENCY_PLAN_COLLISION');return old;}
-    check((await Promise.all([r.receiptPath,r.auditPath,r.trailPath].map(p=>db.doc(p).get()))).every(x=>!x.exists),'SOURCE_FAILURE:D08_RECEIPT_COLLISION');
+    check((await Promise.all([r.receiptPath,r.auditPath,r.trailPath].map(p=>readDoc(p,'command.preflight')))).every(x=>!x.exists),'SOURCE_FAILURE:D08_RECEIPT_COLLISION');
     records.set(r.receiptPath,r);result.creationJournal.push(r);save();return r;
   }
   async function observe(record){
-    const docs=await Promise.all([record.receiptPath,record.auditPath,record.trailPath].map(p=>db.doc(p).get()));
+    const docs=await Promise.all([record.receiptPath,record.auditPath,record.trailPath].map(p=>readDoc(p,'command.readback')));
     const bundle=Object.fromEntries(['receipt','audit','trail'].map((k,i)=>[k,docs[i].exists?docs[i].data():null]));
     if(verifyBundle(record,bundle,spec)){
       if(record.bundle)check(same(record.bundle,bundle),'PERSISTENCE_FAILURE:D08_RECEIPT_CHANGED');
@@ -252,18 +298,22 @@ async function runAcademyUiQa(){
   }
   async function proveState(){
     const committed=[...records.values()].filter(r=>r.bundle),snapshots={};
-    for(const identity of identities){const row=(await db.doc(identity.memberPath).get()).data();verifyMembership(row,identity,committed,spec);snapshots[identity.uid]=hash(row);}
-    const course=await tenant.collection('academyCourses').doc(customId).get();verifyCourse(course.exists?course.data():null,committed,spec);snapshots.course=course.exists?hash(course.data()):null;return snapshots;
+    for(const identity of identities){const row=(await readDoc(identity.memberPath,'proveState.member')).data();verifyMembership(row,identity,committed,spec);snapshots[identity.uid]=hash(row);}
+    const course=await readDoc(tenant.collection('academyCourses').doc(customId).path,'proveState.course');verifyCourse(course.exists?course.data():null,committed,spec);snapshots.course=course.exists?hash(course.data()):null;return snapshots;
   }
   async function session(identity,label){
-    const context=await browser.newContext({viewport:{width:1440,height:1000}});contexts.push(context);
-    const empty=await context.storageState();check(empty.origins.length===0&&empty.cookies.length===0,'ENVIRONMENT_FAILURE:D08_NEW_CONTEXT_NOT_EMPTY');
-    const page=await context.newPage(),ses={identity,label,context,page,expected:null,postCount:0};liveSessions.push(ses);
+    const context=await awaited(label+':context.new',()=>browser.newContext({viewport:{width:1440,height:1000}}),30000);contexts.push(context);
+    context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);
+    const nativeClose=context.close.bind(context);context.close=()=>awaited(label+':context.close',()=>nativeClose(),10000);
+    const empty=await awaited(label+':storage.empty',()=>context.storageState(),15000);check(empty.origins.length===0&&empty.cookies.length===0,'ENVIRONMENT_FAILURE:D08_NEW_CONTEXT_NOT_EMPTY');
+    const page=await awaited(label+':page.new',()=>context.newPage(),15000),ses={identity,label,context,page,expected:null,postCount:0};liveSessions.push(ses);
+    const nativeEvaluate=page.evaluate.bind(page);page.__d08NativeEvaluate=nativeEvaluate;
+    page.evaluate=(fn,arg)=>{const caller=String(new Error().stack||'').split('\n').slice(2).find(x=>x.includes('synthetic-live.mjs:'))||'page.evaluate';return awaited(label+':page.evaluate:'+caller.trim(),()=>nativeEvaluate(fn,arg),95000);};
     const diagnostic={label,role:identity.role,initialStorageEmpty:true,stage:'OPENING',network:[],pageErrors:[]};result.sessionDiagnostics.push(diagnostic);save();
     page.on('pageerror',err=>{if(diagnostic.pageErrors.length<10)diagnostic.pageErrors.push(redact(err.message));});
     page.on('requestfailed',r=>{if(diagnostic.network.length<35)diagnostic.network.push({path:new URL(r.url()).pathname,error:redact(r.failure()?.errorText)});});
     await page.route('**/v1/cxorbia/commands',async route=>{
-      try{check(ses.expected,'AUTH_FAILURE:D08_UNPLANNED_BROWSER_COMMAND');const command=route.request().postDataJSON();ses.lastRecord=await track(command,identity,ses.expected);ses.postCount++;await route.continue();}
+      try{check(ses.expected,'AUTH_FAILURE:D08_UNPLANNED_BROWSER_COMMAND');const command=route.request().postDataJSON();ses.lastRecord=await track(command,identity,ses.expected);check(ses.expected&&ses.activeRequest&&!ses.activeRequest.closed,'ENVIRONMENT_FAILURE:D08_LATE_REQUEST_ABORTED');ses.postCount++;ses.activeRequest.recordPath=ses.lastRecord.receiptPath;ses.activeRequest.dispatched=true;ses.activeRequest.dispatchedAt=new Date().toISOString();save();await awaited(label+':request.continue',()=>route.continue(),10000);}
       catch(error){diagnostic.interceptionError=redact(error.message);result.interceptionError=diagnostic.interceptionError;save();await route.abort('failed').catch(()=>{});}
     });
     const url=host+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
@@ -287,13 +337,15 @@ async function runAcademyUiQa(){
       await page.evaluate(()=>CX.router.nav('aprendizaje'));await page.locator('#acadManuales').waitFor({state:'visible',timeout:30000});
       if(identity.role==='admin'){await page.locator('#acadAud').selectOption('admin');}
       diagnostic.stage='READY';save();return ses;
-    }catch(error){diagnostic.stage='FAILED';diagnostic.error=redact(error.message);diagnostic.authority=await page.evaluate(()=>({gate:window.CX_C6_HR_AUTHORITY_GATE?.reason||null,authorityError:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.error||null,academyOwner:window.CX?.data?.__academyState?.progressOwnerUid||null})).catch(()=>({}));save();throw error;}
+    }catch(error){diagnostic.stage='FAILED';diagnostic.error=redact(error.message);diagnostic.authority=await awaited(label+':failure.authority',()=>page.__d08NativeEvaluate(()=>({gate:window.CX_C6_HR_AUTHORITY_GATE?.reason||null,authorityError:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.error||null,academyOwner:window.CX?.data?.__academyState?.progressOwnerUid||null})),5000).catch(()=>({}));save();throw error;}
   }
   async function perform(ses,plan,action){
     check(!ses.expected,'ENVIRONMENT_FAILURE:D08_OVERLAPPING_DISPATCH');ses.expected={...plan,actorId:plan.actorId||ses.boundaryActorId};ses.lastRecord=null;
+    ses.activeRequest={sequence:result.requestJournal.length+1,session:ses.label,commandType:plan.type,mode:plan.mode,dispatched:false,responseParsed:false,startedAt:new Date().toISOString()};result.requestJournal.push(ses.activeRequest);save();
     try{
-      const [response]=await Promise.all([ses.page.waitForResponse(r=>{try{return new URL(r.url()).pathname==='/v1/cxorbia/commands'&&r.request().postDataJSON()?.commandType===plan.type;}catch{return false;}},{timeout:90000}),action()]);
-      const ack=await response.json(),record=ses.lastRecord;check(record&&!result.interceptionError,'SOURCE_FAILURE:D08_COMMAND_NOT_JOURNALED');await observe(record);
+      const responseTask=awaited(ses.label+':command.response',()=>ses.page.waitForResponse(r=>{try{return new URL(r.url()).pathname==='/v1/cxorbia/commands'&&r.request().postDataJSON()?.commandType===plan.type;}catch{return false;}},{timeout:90000}),92000).then(async response=>{const ack=await awaited(ses.label+':command.response.json',()=>response.json(),30000);ses.activeRequest.responseParsed=true;ses.activeRequest.httpStatus=response.status();ses.activeRequest.finishedAt=new Date().toISOString();save();return {ack};});
+      const [{ack}]=await Promise.all([responseTask,awaited(ses.label+':command.action',action,95000)]);
+      const record=ses.lastRecord;check(record&&!result.interceptionError,'SOURCE_FAILURE:D08_COMMAND_NOT_JOURNALED');await observe(record);
       if(plan.mode==='negative'){
         check(!record.bundle&&ack.ok===false&&ack.providerAck===false&&ack.providerWrites===0&&ack.code===plan.expectedCode,'AUTH_FAILURE:D08_NEGATIVE_NOT_DENIED:'+s(ack.code));
         await proveState();result.negatives.push({case:plan.negative,role:ses.identity.role,code:ack.code,zeroWrites:true,receiptAbsent:true});
@@ -304,9 +356,17 @@ async function runAcademyUiQa(){
         await proveState();record.providerAck=true;record.durableReadback=true;
       }
       save();return {ack,record};
-    }finally{ses.expected=null;}
+    }finally{ses.expected=null;ses.activeRequest.closed=true;save();}
   }
-  const rawPost=(ses,command)=>ses.page.evaluate(async c=>{const token=await firebase.auth().currentUser.getIdToken(true),r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(c)});return {status:r.status};},command);
+  const rawPost=(ses,command)=>ses.page.evaluate(async c=>{
+    const controller=new AbortController();window.__D08_REQUEST_ABORT=controller;let tokenTimer;
+    const httpTimer=setTimeout(()=>controller.abort(),75000);
+    try{
+      const token=await Promise.race([firebase.auth().currentUser.getIdToken(true),new Promise((_,reject)=>{tokenTimer=setTimeout(()=>reject(Error('ENVIRONMENT_FAILURE:D08_TOKEN_DEADLINE')),20000);})]);
+      clearTimeout(tokenTimer);
+      const r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(c),signal:controller.signal});return {status:r.status};
+    }finally{clearTimeout(tokenTimer);clearTimeout(httpTimer);delete window.__D08_REQUEST_ABORT;}
+  },command);
   async function resource(ses){
     const before=ses.postCount,role=ses.identity.role,page=ses.page;
     const manual=await page.evaluate(role=>{const m=(CX.manualesData?.MANUALES||[]).find(x=>x.rol===role&&x.secciones?.length>1);return m?{id:m.id,title:m.titulo,count:m.secciones.length}:null;},role);check(manual,'SOURCE_FAILURE:D08_REAL_ROLE_MANUAL_MISSING');
@@ -347,25 +407,25 @@ async function runAcademyUiQa(){
   }
   try{
     await serving('before');productionBefore=hash(Buffer.from(await(await fetch('https://tya-plataforma.web.app/',{cache:'no-store',signal:AbortSignal.timeout(45000)})).arrayBuffer()));
-    const projectDoc=await project.get();check(projectDoc.exists&&projectDoc.data().deleted!==true&&(projectDoc.data().tenantId===undefined||projectDoc.data().tenantId===tenantId),'SOURCE_FAILURE:D08_PROJECT');
+    const projectDoc=await readDoc(project.path,'preflight.project');check(projectDoc.exists&&projectDoc.data().deleted!==true&&(projectDoc.data().tenantId===undefined||projectDoc.data().tenantId===tenantId),'SOURCE_FAILURE:D08_PROJECT');
     // Same normalization already used by the protected HR bridge; values still
     // come from the current project document and the explicit QA request.
     const countryCode=v=>{const raw=s(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();return raw==='HN'||raw==='HONDURAS'?'HN':raw==='GT'||raw==='GUATEMALA'?'GT':'';};
     const configured=(projectDoc.data().countries||[]).map(countryCode);check(configured.includes(country),'SOURCE_FAILURE:D08_COUNTRY_NOT_IN_CURRENT_PROJECT');result.projectCountryAuthority={country,projectSha256:hash(projectDoc.data())};
-    const canonicalAdminProjects=(await tenant.collection('projects').select('deleted').get()).docs.filter(x=>x.data().deleted!==true).map(x=>x.id).sort();check(canonicalAdminProjects.includes(projectId),'AUTH_FAILURE:D08_ADMIN_PROJECTS');
+    const canonicalAdminProjects=(await awaited('preflight.admin.projects',()=>tenant.collection('projects').select('deleted').get())).docs.filter(x=>x.data().deleted!==true).map(x=>x.id).sort();check(canonicalAdminProjects.includes(projectId),'AUTH_FAILURE:D08_ADMIN_PROJECTS');
     const docPaths=[...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];
-    check((await Promise.all(docPaths.map(p=>db.doc(p).get()))).every(x=>!x.exists),'SOURCE_FAILURE:D08_FIXTURE_DOC_COLLISION');
+    check((await Promise.all(docPaths.map(p=>readDoc(p,'fixture.preflight')))).every(x=>!x.exists),'SOURCE_FAILURE:D08_FIXTURE_DOC_COLLISION');
     for(const identity of identities){try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:D08_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
     fixturesStarted=true;result.fixtureIdsPreflightAbsent=true;save();
     for(const identity of identities){
       const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:identity.namespace,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08',...(identity.role==='shopper'?{shopperId:identity.uid,country}:{})};
       identity.expectedClaims=claims;identity.state='AUTH_CREATE_DISPATCHED';save();const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});identity.authIdentity=authIdentity(created);identity.state='CLAIMS_DISPATCHED';save();await auth.setCustomUserClaims(identity.uid,claims);
       const staff=identity.role==='admin'?{entitlementMode:'TYA_COMPLETE',claimsDigest:hash(JSON.stringify({authNamespace:'staff',projectIds:canonicalAdminProjects,role:'admin',tenantId})),providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+identity.uid)}:{};
-      identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff};identity.memberCreateDispatched=true;save();await db.doc(identity.memberPath).create(identity.expectedMembership);
-      if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await db.doc(identity.profilePath).create(identity.expectedProfile);check(same((await db.doc(identity.profilePath).get()).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
-      check(same((await db.doc(identity.memberPath).get()).data(),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_READBACK');const actual=await auth.getUser(identity.uid);check(same(actual.customClaims,claims)&&same(authIdentity(actual),identity.authIdentity),'AUTH_FAILURE:D08_AUTH_READBACK');identity.state='CREATED_VERIFIED';save();
+      identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff};identity.memberCreateDispatched=true;save();await awaited('fixture.member.create:'+identity.uid,()=>db.doc(identity.memberPath).create(identity.expectedMembership));
+      if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await awaited('fixture.profile.create:'+identity.uid,()=>db.doc(identity.profilePath).create(identity.expectedProfile));check(same((await readDoc(identity.profilePath,'fixture.profile.readback')).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
+      check(same((await readDoc(identity.memberPath,'fixture.member.readback')).data(),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_READBACK');const actual=await auth.getUser(identity.uid);check(same(actual.customClaims,claims)&&same(authIdentity(actual),identity.authIdentity),'AUTH_FAILURE:D08_AUTH_READBACK');identity.state='CREATED_VERIFIED';save();
     }
-    const {chromium}=await import('playwright');browser=await chromium.launch({headless:true});
+    const {chromium}=await import('playwright');browser=await awaited('browser.launch',()=>chromium.launch({headless:true}),45000);
     for(const identity of identities.filter(x=>!x.observer)){
       const ses=await session(identity,identity.label);await resource(ses);await progressUi(ses);await ses.context.close();const fresh=await newSessionProof(identity);
       if(identity.role==='admin'){
@@ -397,11 +457,13 @@ async function runAcademyUiQa(){
     check(!result.interceptionError&&['admin','shopper','cliente'].every(role=>result.roles[role]?.independentNewSession&&result.roles[role]?.replayNoDuplicate)&&result.resources.length===3&&result.authorizedAdminEdit?.independentNewSession,'FUNCTIONAL_DEFECT:D08_COVERAGE_INCOMPLETE');result.functionalPass=true;save();
   }catch(error){result.error=redact(error.message||error);result.classification=result.error.match(/(SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):/)?.[1]||'FUNCTIONAL_DEFECT';save();}
   finally{
-    await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await browser.close().catch(()=>{});
+    await Promise.allSettled(liveSessions.map(ses=>awaited(ses.label+':http.abort',()=>ses.page.__d08NativeEvaluate(()=>window.__D08_REQUEST_ABORT?.abort()),3000)));
+    await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await awaited('browser.close',()=>browser.close(),10000).catch(()=>{});
     if(!fixturesStarted)result.cleanup={ok:true,writesNotStarted:true,remainingOwnedDocuments:0,remainingOwnedAuth:0};
     else try{
+      check(!result.requestJournal.some(r=>r.dispatched===true&&r.responseParsed!==true),'ENVIRONMENT_FAILURE:D08_UNSETTLED_COMMAND_CLEANUP_HELD');
       const known=new Set([...records.values()].flatMap(r=>[r.receiptPath,r.auditPath,r.trailPath])),uids=identities.map(x=>x.uid),deleted=[];
-      await db.runTransaction(async tx=>{
+      await awaited('cleanup.firestore.transaction',()=>db.runTransaction(async tx=>{
         for(const collection of ['commandReceipts','academyAudit','entityAuditTrail']){const found=await tx.get(tenant.collection(collection).where('actorUid','in',uids));check(found.docs.every(x=>known.has(x.ref.path)),'PERSISTENCE_FAILURE:D08_UNEXPECTED_ACTOR_REFERENCE:'+collection);}
         const createdCourses=await tx.get(tenant.collection('academyCourses').where('createdByUserId','in',uids));check(createdCourses.docs.every(x=>x.id===customId),'PERSISTENCE_FAILURE:D08_UNEXPECTED_COURSE');
         const refs=[];const committed=[];
@@ -415,18 +477,23 @@ async function runAcademyUiQa(){
         }
         const course=await tx.get(tenant.collection('academyCourses').doc(customId));verifyCourse(course.exists?course.data():null,committed,spec);if(course.exists)refs.push(course.ref);
         for(const ref of refs)tx.delete(ref);deleted.splice(0,deleted.length,...refs.map(x=>x.path));
-      });
+      },{maxAttempts:1}),60000);
       let deletedAuth=0;
       for(const identity of identities){try{const user=await auth.getUser(identity.uid),claims=user.customClaims||{},initialClaims=identity.state==='CLAIMS_DISPATCHED'&&Object.keys(claims).length===0;check(identity.authIdentity&&same(authIdentity(user),identity.authIdentity)&&(same(claims,identity.expectedClaims)||initialClaims),'AUTH_FAILURE:D08_AUTH_CLEANUP_OWNERSHIP');await auth.deleteUser(identity.uid);deletedAuth++;}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
-      const paths=[...known,...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];check((await Promise.all(paths.map(p=>db.doc(p).get()))).every(x=>!x.exists),'PERSISTENCE_FAILURE:D08_DOC_RESIDUE');
+      const paths=[...known,...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];check((await Promise.all(paths.map(p=>readDoc(p,'cleanup.absence')))).every(x=>!x.exists),'PERSISTENCE_FAILURE:D08_DOC_RESIDUE');
       for(const identity of identities){try{await auth.getUser(identity.uid);throw Error('AUTH_FAILURE:D08_AUTH_RESIDUE');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
       result.cleanup={ok:true,exactKnownPathsOnly:true,deletedDocuments:deleted.length,deletedAuth,remainingOwnedDocuments:0,remainingOwnedAuth:0,ownershipTransaction:true};
     }catch(error){result.cleanup={...result.cleanup,ok:false,error:redact(error.message||error),journalPath:out+'/result.json',manualDeletionAuthorized:false};}
     try{await serving('after');if(productionBefore){const r=await fetch('https://tya-plataforma.web.app/',{cache:'no-store',signal:AbortSignal.timeout(45000)});check(r.ok,'PROVIDER_FAILURE:D08_PRODUCTION_READBACK');result.productionIndexUnchanged=hash(Buffer.from(await r.arrayBuffer()))===productionBefore;check(result.productionIndexUnchanged,'ENVIRONMENT_FAILURE:D08_PRODUCTION_INDEX_DRIFT');}}catch(error){result.postflightError=redact(error.message||error);}
-    if(result.functionalPass&&result.cleanup.ok&&result.serving.before?.exact&&result.serving.after?.exact&&result.productionIndexUnchanged&&!result.postflightError)result.decision='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP';save();
+    if(result.functionalPass&&result.cleanup.ok&&!result.awaitJournal.some(r=>r.state==='TIMED_OUT')&&result.serving.before?.exact&&result.serving.after?.exact&&result.productionIndexUnchanged&&!result.postflightError)result.decision='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP';save();
   }
   console.log(JSON.stringify({decision:result.decision,sourceSha,runId,roles:Object.keys(result.roles),commands:records.size,cleanup:result.cleanup,error:result.error||result.postflightError||null,fullDomain:false}));
   if(result.decision!=='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP')process.exitCode=2;
+  if(result.awaitJournal.some(r=>r.state==='TIMED_OUT')){
+    await awaited('firestore.terminate',()=>db.terminate(),10000).catch(()=>{});save();
+    // Abort leftover transport handles after saving HOLD; do not wait 45 minutes.
+    process.exit(2);
+  }
 }
 
 async function runClientCollaborationQa(){
@@ -910,7 +977,7 @@ if(process.env.CXORBIA_I3_QA_SCOPE==='D08_PREFLIGHT'){
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_VERIFY'){
   runD08ResultVerify();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI_SELF_TEST'){
-  runAcademyUiQaSelfTest();
+  await runAcademyUiQaSelfTest();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI'){
   await runAcademyUiQa();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='EXCEL_CANONICAL_ID_READONLY'){

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-exact-owner-scope.v1",
+  "findingId": "VRM-368",
+  "createdAt": "2026-11-24T10:15:23.536448+00:00",
+  "iteration": "I3",
+  "state": "P0_PROVEN_BEFORE_CODE",
+  "classification": "VISUAL_DEFECT",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V388.json",
+  "moduleTruth": [
+    {
+      "owner": "app/core/hr.js",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "latestApprovedSource": "ed5b708c17b481bde00cb95dda3b426a0e27a890",
+      "latestApprovedBlob": "d40ba559e9545789a3c6fbc1c98d8d19cb5d2ec0",
+      "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "F9Blob": "d29605947a7b455119d74ddcf29ac34c4720e437",
+      "sourceSuccessor": "d665f71c77a4142843b9653d5e12cdf82fb85f6a",
+      "HEAD": "d665f71c77a4142843b9653d5e12cdf82fb85f6a",
+      "HEADBlob": "d40ba559e9545789a3c6fbc1c98d8d19cb5d2ec0",
+      "lastVerifiedLiveSource": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+      "lastVerifiedLiveReceipt": "docs/checkpoints/CXORBIA_I3_RUN2758_BINDING_SCOPE_PAIRED_DEV_PASS_20261124.json",
+      "liveSuccessorReadbackPending": "RUN2761"
+    }
+  ],
+  "allowedProductFiles": [
+    "app/core/hr.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs"
+  ],
+  "reproduction": {
+    "globalBindingRequiredByLegacyUi": true,
+    "validExcelCountryBindingsHaveNoGlobalBindingByContract": true,
+    "liveRowsAlreadyUseCanonicalProviderSnapshot": true,
+    "incorrectUiLabel": "Interna / pendiente de vínculo seguro"
+  },
+  "allowedChanges": [
+    "Recognize exact complete per-country Excel binding configuration without inventing remote verification.",
+    "Use one shared source-configuration predicate and truthful internal/configured/pending labels.",
+    "Preserve real operational readback as stronger verification; do not expose private workbook references or use localStorage."
+  ],
+  "invariants": {
+    "newWorkflow": false,
+    "newCandidate": false,
+    "newProduct": false,
+    "hrWrites": false,
+    "financialWrites": false,
+    "production": false
+  },
+  "singleWriter": "root",
+  "preservedNonAuthoritySource": {
+    "path": "app/modules/rutas.js",
+    "unchanged": true,
+    "reason": "Matrix V388 explicitly excludes this duplicate route from the entrypoint. Loaded route owner app/modules/operacion-extra.js consumes CX.hr.esOnline/fuente; only its shared owner needs correction."
+  }
+}

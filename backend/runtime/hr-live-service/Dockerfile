@@ -9,6 +9,9 @@ COPY backend/runtime/hr-live-service/server.mjs ./backend/runtime/hr-live-servic
 COPY backend/runtime/hr-live-service/certification-runtime.mjs ./backend/runtime/hr-live-service/certification-runtime.mjs
 COPY backend/runtime/hr-live-service/dev-visual.mjs ./backend/runtime/hr-live-service/dev-visual.mjs
 COPY backend/runtime/hr-live-service/user-admin.mjs ./backend/runtime/hr-live-service/user-admin.mjs
+COPY backend/runtime/hr-live-service/mailbox-runtime.mjs ./backend/runtime/hr-live-service/mailbox-runtime.mjs
+COPY backend/runtime/hr-live-service/mailbox-pop3.mjs ./backend/runtime/hr-live-service/mailbox-pop3.mjs
+COPY backend/config/mailbox-provider-policy.source-safe.json ./backend/config/mailbox-provider-policy.source-safe.json
 COPY backend/runtime/hr-live-service/legal-runtime.mjs ./backend/runtime/hr-live-service/legal-runtime.mjs
 COPY backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs ./backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
 COPY backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs ./backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs

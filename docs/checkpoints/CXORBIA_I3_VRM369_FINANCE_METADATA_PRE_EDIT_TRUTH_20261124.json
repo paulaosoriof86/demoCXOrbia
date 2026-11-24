@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-369",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "observedAt": "2026-11-24T10:14:02.301222+00:00",
+  "preEdit": true,
+  "baseHead": "d665f71c77a4142843b9653d5e12cdf82fb85f6a",
+  "moduleDomain": "finance-core-liquidation-costs",
+  "contractIds": [
+    "C09",
+    "C10"
+  ],
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V388.json",
+  "owners": [
+    {
+      "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "headBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
+      "workingSha256": "79f4f18f6d684d58b97fa0c5295448afe5cf20dbd162001b015b95b6bd2852f4",
+      "f9Blob": null,
+      "declaredSuccessorBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
+      "servedSourceBlob": "57aefc43bf0f1bf31fdeea4eb3e80119c9cd82ff",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "headBlob": "b204cde5304d0b4b9cd4df9a54e305882c957742",
+      "workingSha256": "4f22ad32bf288ac46760c78608ada280a88afcbe21499c60467f070318b0717a",
+      "f9Blob": null,
+      "declaredSuccessorBlob": "36436a54e498ccb20252e28fba427abac5f650ca",
+      "servedSourceBlob": "36436a54e498ccb20252e28fba427abac5f650ca",
+      "classification": "MATCH",
+      "changeReason": "Additive registration for the new exact metadata command; existing command routing preserved."
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "headBlob": "e1bf9435261d188b50a4e4115c10e70ea56bd819",
+      "workingSha256": "c726123531d3d762bd8ad2e022d171b62de14e999ba99e7c64a682c1e667ec9d",
+      "f9Blob": "3bc12a27c9762b2cb03ad12e846386b1b73bbf90",
+      "declaredSuccessorBlob": "f4d4e19f3f6bb1087f21a0d4a04c623b93d8be74",
+      "servedSourceBlob": "f4d4e19f3f6bb1087f21a0d4a04c623b93d8be74",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "headBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "workingSha256": "3f98f30564a18fbfa924d723d45e617a169e887c0a7136f44d85216d99dcf510",
+      "f9Blob": "623fab9ba1e06c39f83beda610bb771e23910a07",
+      "declaredSuccessorBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "servedSourceBlob": "f1545f0439863090e04b4729e8483616f7d209cf",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "app/core/backend-finance-benefits.js",
+      "headBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "workingSha256": "2fe664c9ba1c65bd712cf55875cb77a2ff3f9623e49b47c5d71158dfded7b13d",
+      "provenDefect": "Project movement reader uses q.get() with no source:server and no cache/pending-write guard; a metadata ACK readback cannot claim independently confirmed provider data without explicit server mode.",
+      "f9Blob": "dc492b96ede5da4fbd065564a4f130b14b15dd4f",
+      "declaredSuccessorBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "servedSourceBlob": "66856002901be88aefb38acc0aaab635a8872c2b",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    }
+  ],
+  "provenDefect": "Provider COMMAND_TYPES + runtime FINANCE_COMMANDS + CXData boundary expose movement.create but no metadata update. create rejects an existing movementId. Current UI has only create and local delete blocked for durable data. The authorized correction of existing November advance cannot be completed safely through present owner.",
+  "acceptedEvidence": [
+    "RUN2595 exact two owner-described advance identities already located",
+    "Private verified RUN2595 JSON SHA256 fa27333ecaa77469270a91aae4026dd745c9d89f253c79b1ab0519ee6594798f",
+    "RUN1992 C04/C05 provider and prior finance B5 preserved; no broader reproof authorized by this P0"
+  ],
+  "ownerDirective": "docs/checkpoints/CXORBIA_FINANCE_SEPT2026_PAULA_SETTLEMENT_DIRECTIVE_OCTNOV_CXP_20261109.json",
+  "minimalCorrection": "Existing second advance cat and fecha only after current exact ID/version/source preflight and root review; no amount, currency, country, sourceRef, financial period, new movement, account allocation, settlement, payout or bank write",
+  "sourcePlan": "Add one CAS/idempotent metadata command to existing provider + dispatcher + boundary + current movements UI and explicit server-only readback in existing ledger reader; fixtures/tests isolated; no workflow or service creation",
+  "repositoryWritesByAgent": 0,
+  "providerWritesByAgent": 0,
+  "ciRunsByAgent": 0,
+  "realFinanceWritesAuthorizedByThisProposal": false,
+  "rootSoleWriter": true,
+  "noDomainPromotion": true,
+  "baselineAuthority": {
+    "f9": {
+      "release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+      "source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71"
+    },
+    "lastAcceptedEvidence": "RUN1992 C04/C05 and B5 owner scoped approval preserved; metadata update absent at current owners",
+    "declaredProductSource": "3206918d84ed45d33851bff266de42ad59e546cb",
+    "declaredProductTree": "8842eca5f51bc8b7fba40fb9794d6f328ae17a0a",
+    "servedSource": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+    "servedRuntime": "cxorbia-live-hr-dev-00386-82w",
+    "servedHosting": "sites/cxorbia-backend-dev/versions/5974006f029fb872",
+    "servedReceipt": "docs/checkpoints/CXORBIA_I3_RUN2758_BINDING_SCOPE_PAIRED_DEV_PASS_20261124.json",
+    "currentHeadAtPreEdit": "d665f71c77a4142843b9653d5e12cdf82fb85f6a",
+    "newMetadataFeatureLive": false
+  }
+}

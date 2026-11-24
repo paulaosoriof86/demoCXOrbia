@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-finance-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply','finance.budget.save','finance.budget.delete']);
+export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.movement.metadata.update','finance.account.create','finance.account.apply','finance.budget.save','finance.budget.delete']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 // Global is an administrative fact of the tenant, never a synthetic project or
 // an aggregate of project ledgers. Reuse only the existing manual ledger commands.
@@ -61,6 +61,7 @@ function validateCommand(command={}){
     'finance.historical.reconcile':'historicalPaymentReconciliation',
     'finance.payment.batch':'paymentBatch',
     'finance.movement.create':'financialMovement',
+    'finance.movement.metadata.update':'financialMovement',
     'finance.account.create':'financeAccount',
     'finance.account.apply':'financeAccount',
     'finance.budget.save':'financeBudget',
@@ -71,6 +72,7 @@ function validateCommand(command={}){
     'finance.historical.reconcile':'finance.reconcile',
     'finance.payment.batch':'finance.markPaid',
     'finance.movement.create':'finance.movement.write',
+    'finance.movement.metadata.update':'finance.movement.write',
     'finance.account.create':'finance.account.write',
     'finance.account.apply':'finance.account.apply',
     'finance.budget.save':'finance.budget.write',
@@ -103,6 +105,20 @@ function validateCommand(command={}){
   if(type==='finance.payment.batch'&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_VISIT_IDS_REQUIRED');
   if(type==='finance.account.apply'&&!str(command.entityId||command.payload?.accountId))errors.push('FINANCE_ACCOUNT_ID_REQUIRED');
   if(type==='finance.budget.delete'&&!str(command.entityId))errors.push('FINANCE_BUDGET_ID_REQUIRED');
+  if(type==='finance.movement.metadata.update'){
+    if(!/^[a-zA-Z0-9_-]{1,128}$/.test(str(command.entityId)))errors.push('FINANCE_MOVEMENT_ID_REQUIRED');
+    if(['source-current','absent'].includes(str(command.expectedVersion)))errors.push('FINANCE_METADATA_EXACT_VERSION_REQUIRED');
+    const payload=command.payload,patch=payload?.patch;
+    if(!payload||typeof payload!=='object'||Array.isArray(payload)||Object.keys(payload).some(k=>!['patch','reason','authorityRef','periodId'].includes(k))||(payload.periodId!==undefined&&str(payload.periodId)!==str(command.periodId)))errors.push('FINANCE_METADATA_PAYLOAD_INVALID');
+    if(!patch||typeof patch!=='object'||Array.isArray(patch)||!Object.keys(patch).length||Object.keys(patch).some(k=>!['cat','fecha','desc'].includes(k)))errors.push('FINANCE_METADATA_FIELDS_FORBIDDEN');
+    if(!str(payload?.reason)||str(payload?.reason).length>500||!str(payload?.authorityRef)||str(payload?.authorityRef).length>500)errors.push('FINANCE_METADATA_AUTHORITY_REQUIRED');
+    if(patch&&Object.hasOwn(patch,'cat')&&(typeof patch.cat!=='string'||!str(patch.cat)||patch.cat.length>200||/[<>\x00-\x1f]/.test(patch.cat)))errors.push('FINANCE_METADATA_CONCEPT_INVALID');
+    if(patch&&Object.hasOwn(patch,'desc')&&(typeof patch.desc!=='string'||patch.desc.length>2000||/[<>\x00-\x08\x0b\x0c\x0e-\x1f]/.test(patch.desc)))errors.push('FINANCE_METADATA_DESCRIPTION_INVALID');
+    if(patch&&Object.hasOwn(patch,'fecha')){
+      const date=str(patch.fecha),epoch=Date.parse(date+'T00:00:00Z');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(epoch)||new Date(epoch).toISOString().slice(0,10)!==date)errors.push('FINANCE_METADATA_DATE_INVALID');
+    }
+  }
   return {ok:errors.length===0,errors};
 }
 
@@ -441,6 +457,37 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
               status:budget.status,createdAt:stamp},{merge:false});
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:budgetId,entity:budget,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:stamp},{merge:false});
             return ack(command,{entityType:'financeBudget',entityId:budgetId,budget,providerWrites:3,idempotentReplay:false,hrWrites:0,externalPaymentWrites:0,bankWrites:0});
+          }
+          if(command.commandType==='finance.movement.metadata.update'){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const p=prior.data()||{};
+              if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(p.status==='committed')return ack(command,{entityType:'financialMovement',entityId:p.entityId,movement:p.entity,metadataOnly:true,amountsChanged:false,movementCreated:false,idempotentReplay:true,providerWrites:0,hrWrites:0,financialFactsSha256:p.financialFactsSha256});
+            }
+            const movementId=str(command.entityId),movementRef=tenant.collection('financialMovements').doc(movementId);
+            const [movementSnap,projectSnap]=await Promise.all([tx.get(movementRef),tx.get(project)]);
+            if(!movementSnap.exists)throw new Error('FINANCE_MOVEMENT_MISSING');
+            const existing=movementSnap.data()||{};
+            if(!projectSnap.exists||str(existing.id)!==movementId||str(existing.tenantId)!==str(command.tenantId)||str(existing.projectId)!==str(command.projectId)||str(existing.periodId)!==str(command.periodId)||existing.global===true)throw new Error('FINANCE_MOVEMENT_SCOPE_CONFLICT');
+            if(str(command.expectedVersion)!==str(versionOf(existing)))throw new Error('FINANCE_METADATA_EXPECTED_VERSION_CONFLICT');
+            if(existing.version!=null&&(!Number.isSafeInteger(Number(existing.version))||Number(existing.version)<0||Number(existing.version)>=Number.MAX_SAFE_INTEGER))throw new Error('FINANCE_METADATA_VERSION_INVALID');
+            if(existing.tipo!=='ingreso'||!['anticipo','remesa'].includes(str(existing.tipoIngreso))||!/^admin-entry:[a-f0-9]{40}$/.test(str(existing.sourceRef))||existing.accountId||existing.visitaId||existing.visitId||existing.lote||existing.loteId)throw new Error('FINANCE_METADATA_MANUAL_ADVANCE_REQUIRED');
+            if(actor.role!=='super'&&actor.countries.length&&!actor.countries.includes(str(existing.country||existing.pais)))throw new Error('FINANCE_ACTOR_COUNTRY_DENIED');
+            const patch=Object.fromEntries(Object.entries(command.payload.patch).map(([k,v])=>[k,str(v)]));
+            // Receipt date and canonical cash ledger period must stay consistent.
+            // Program month remains descriptive; no period transfer is implied.
+            if(patch.fecha&&str(existing.periodId).match(/20\d{2}-(?:0[1-9]|1[0-2])$/)?.[0]!==patch.fecha.slice(0,7))throw new Error('FINANCE_METADATA_CASH_PERIOD_CONFLICT');
+            const excluded=new Set(['cat','fecha','desc','version','updatedAt','updatedBy','metadataCorrection']);
+            const financialFacts=value=>Object.fromEntries(Object.entries(value).filter(([k])=>!excluded.has(k)));
+            const beforeFacts=sha(financialFacts(existing)),stamp=now();
+            const correction={authorityRef:str(command.payload.authorityRef),reason:str(command.payload.reason),authorityType:'USER_DECLARED_METADATA_CORRECTION',providerReceiptId:receiptId(command),bankEvidenceConfirmed:false};
+            const next={...existing,...patch,version:Number(existing.version||0)+1,updatedAt:stamp,updatedBy:actor.uid,metadataCorrection:correction};
+            if(sha(financialFacts(next))!==beforeFacts)throw new Error('FINANCE_METADATA_FINANCIAL_FACTS_CHANGED');
+            tx.set(movementRef,{...patch,version:next.version,updatedAt:stamp,updatedBy:actor.uid,metadataCorrection:correction},{merge:true});
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financialMovement',entityId:movementId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,metadataOnly:true,amountsChanged:false,movementCreated:false,bankWrites:0,hrWrites:0,financialFactsSha256:beforeFacts,beforeMetadata:Object.fromEntries(Object.keys(patch).map(k=>[k,existing[k]??null])),afterMetadata:patch,...correction,createdAt:stamp},{merge:false});
+            tx.set(receipt,{status:'committed',commandDigest:digest,entityId:movementId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:next,metadataOnly:true,financialFactsSha256:beforeFacts,updatedAt:stamp},{merge:false});
+            return ack(command,{entityType:'financialMovement',entityId:movementId,movement:next,metadataOnly:true,amountsChanged:false,movementCreated:false,financialFactsSha256:beforeFacts,idempotentReplay:false,providerWrites:3,hrWrites:0});
           }
           if(command.commandType==='finance.movement.create'){
             const prior=await tx.get(receipt);

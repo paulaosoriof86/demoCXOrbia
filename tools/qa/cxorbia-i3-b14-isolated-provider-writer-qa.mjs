@@ -128,7 +128,249 @@ async function runProviderProbe(){
   }
 }
 
+// VRM365/F3: exact isolated project through the existing deployed command route.
+// This branch is opt-in. Import and --self-test never initialize providers.
+export const F3_QA=Object.freeze({tenantId:'tya',projectId:'f3-qa-20261124',periodId:'f3-qa-20261124-2026-11',
+  firebaseProject:'cxorbia-backend-dev',baseUrl:'https://cxorbia-backend-dev.web.app',
+  service:'cxorbia-live-hr-dev',region:'us-central1',mappingRef:'tya-hr-column-map-r20-v1',
+  driveId:'B2D2B478DAC4DD05',countries:['GT','HN'],fields:['escenario','tipoCombo','agendada','shopperId'],
+  visits:{GT:'hr_excel_45c62e0543d229c8ca625f3cf857',HN:'hr_excel_ec25c41b6656f0000daef0af1398'},
+  items:{GT:'B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e',HN:'B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7'}});
+const f3Stable=v=>Array.isArray(v)?v.map(f3Stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,f3Stable(v[k])])):v;
+const f3Digest=v=>sha(JSON.stringify(f3Stable(v)));
+const f3Same=(a,b)=>f3Digest(a??null)===f3Digest(b??null);
+const f3Need=(ok,code)=>{if(!ok)throw Error(code);};
+const f3Code=e=>String(e?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,180);
+const f3Owner=(run,attempt)=>'f3-qa-'+run+'-'+attempt;
+export function assertF3EndpointScope(env,manifest){
+  f3Need(env.CXORBIA_F3_QA_ENDPOINT_GATE==='PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124','AUTH_FAILURE:F3_QA_GATE');
+  f3Need(env.GITHUB_REF===QA_BRANCH&&env.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia','ENVIRONMENT_FAILURE:F3_QA_REPO_BRANCH');
+  f3Need(/^\d{8,}$/.test(String(env.GITHUB_RUN_ID||''))&&/^\d+$/.test(String(env.GITHUB_RUN_ATTEMPT||'1')),'ENVIRONMENT_FAILURE:F3_QA_RUN');
+  f3Need(env.CXORBIA_F3_QA_BASE_URL===F3_QA.baseUrl&&env.GOOGLE_CLOUD_PROJECT===F3_QA.firebaseProject,'ENVIRONMENT_FAILURE:F3_QA_ENDPOINT');
+  f3Need(manifest?.schemaVersion==='cxorbia.f3.remote-fixture.v1'&&manifest.tenantId===F3_QA.tenantId&&manifest.projectId===F3_QA.projectId&&manifest.periodId===F3_QA.periodId,'MAPPING_FAILURE:F3_QA_MANIFEST_SCOPE');
+  f3Need(/^[a-f0-9]{40}$/.test(env.CXORBIA_F3_QA_SOURCE_SHA||'')&&/^[a-f0-9]{40}$/.test(env.CXORBIA_F3_QA_SOURCE_TREE||''),'SOURCE_FAILURE:F3_QA_SOURCE_PIN');
+  f3Need(/^cxorbia-live-hr-dev-\d{5}-[a-z0-9]+$/.test(env.CXORBIA_F3_QA_RUNTIME_REVISION||'')&&/^sha256:[a-f0-9]{64}$/.test(env.CXORBIA_F3_QA_RUNTIME_DIGEST||''),'SOURCE_FAILURE:F3_QA_RUNTIME_PIN');
+  f3Need(/^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/.test(env.CXORBIA_F3_QA_HOSTING_VERSION||''),'SOURCE_FAILURE:F3_QA_HOSTING_PIN');
+  f3Need(Object.keys(manifest.countries||{}).sort().join(',')==='GT,HN','MAPPING_FAILURE:F3_QA_COUNTRIES');
+  for(const country of F3_QA.countries){
+    const row=manifest.countries[country],identity=country==='GT'?['Guatemala','2022002','C. Miraflores']:['Honduras','2052001','C. Las Cascadas Honduras'];
+    f3Need(row.driveId===F3_QA.driveId&&row.itemId===F3_QA.items[country]&&row.worksheetName==='CXR_B14_QA_'+country+'_20261119','MAPPING_FAILURE:F3_QA_PROVIDER_SCOPE');
+    f3Need(/^[A-Za-z0-9{][A-Za-z0-9{}!._:-]{0,239}$/.test(row.worksheetId||'')&&row.worksheetFingerprint===sha(row.worksheetId),'MAPPING_FAILURE:F3_QA_WORKSHEET_PROOF');
+    f3Need(row.providerReadStatus===200&&/^[a-f0-9]{32}$/i.test(row.providerExecutionId||'')&&Number.isFinite(Date.parse(row.observedAt)),'PROVIDER_FAILURE:F3_QA_OBSERVATION_PROOF');
+    f3Need(Array.isArray(row.headerValues)&&row.headerValues.length===26&&f3Same(row.headerValues.slice(0,4),['fixtureId','fieldValue','eventId','eventDigest'])&&f3Same(row.rowIdentityValues,identity),'MAPPING_FAILURE:F3_QA_HEADER_IDENTITY');
+    f3Need(row.headerValues[10]==='Tipo de Combo'&&row.headerValues[11]==='Tipo de Compra'&&row.headerValues[14]==='Shopper Asignado'&&row.headerValues[18]==='Fecha programada','MAPPING_FAILURE:F3_QA_FIELD_COLUMNS');
+  }
+  return {runId:String(env.GITHUB_RUN_ID),runAttempt:String(env.GITHUB_RUN_ATTEMPT||'1'),owner:f3Owner(env.GITHUB_RUN_ID,env.GITHUB_RUN_ATTEMPT||'1')};
+}
+export function f3FixtureDocuments(manifest,owner){
+  const scope={tenantId:F3_QA.tenantId,projectId:F3_QA.projectId},countryBindings=F3_QA.countries.map(countryCode=>({countryCode,providerBindingId:owner+'-'+countryCode,mappingRef:F3_QA.mappingRef}));
+  const project={...scope,id:F3_QA.projectId,name:'CXOrbia F3 isolated QA',countries:['GT','HN'],version:1,qaOwner:owner,synthetic:true,
+    operationalSource:{mode:'external',providerType:'excel_online',readPolicy:'external_live',writePolicy:'bidirectional_gated',periodDiscovery:'provider_auto',countryBindings}};
+  const records=[{path:'tenants/tya/projects/'+F3_QA.projectId,data:project}];
+  for(const country of F3_QA.countries){
+    const provider=manifest.countries[country],binding=countryBindings.find(x=>x.countryCode===country);
+    records.push({path:'tenants/tya/integrationSettings/'+binding.providerBindingId,data:{...scope,qaOwner:owner,synthetic:true,countryCode:country,
+      providerBindingId:binding.providerBindingId,providerType:'excel_online',mappingRef:F3_QA.mappingRef,readPolicy:'external_live',writePolicy:'bidirectional_gated',enabled:true,hrWritesEnabled:true,
+      driveId:provider.driveId,itemId:provider.itemId,readRangeAddress:'A1:Z2',periodSheets:[{periodId:F3_QA.periodId,worksheetId:provider.worksheetId,worksheetName:provider.worksheetName}],
+      fieldWriter:{schemaVersion:'cxorbia.hr-field-writer-binding.v1',enabled:true,protocolVersion:'cxorbia.hr-field-transport.v1',remoteEventReceipt:true,observedBaseGuard:true,
+        allowedFields:[...F3_QA.fields],rowIdentityColumns:['pais','idCinema','shopping'],fieldMap:{escenario:{columnKey:'tipoCompra',valueKind:'text'},tipoCombo:{columnKey:'tipoCombo',valueKind:'text'},agendada:{columnKey:'fechaProgramada',valueKind:'date'},shopperId:{columnKey:'shopper',valueKind:'shopper'}}}}});
+    for(const letter of ['a','b']){const shopperId='qa_f3_20261124_'+country.toLowerCase()+'_'+letter,label='CXOrbia QA '+country+' F3 '+letter.toUpperCase();
+      records.push({path:'tenants/tya/shoppers/'+shopperId,data:{tenantId:'tya',id:shopperId,shopperId,projectIds:[F3_QA.projectId],pais:country,country,hrWriteLabel:label,nombre:label,synthetic:true,qaOwner:owner,active:true,version:1}});
+    }
+  }
+  return records;
+}
+export function f3FieldCommand({owner,serial,visit,revision,version,fieldKey,value}){
+  f3Need(F3_QA.fields.includes(fieldKey)&&visit.tenantId==='tya'&&visit.projectId===F3_QA.projectId&&visit.periodId===F3_QA.periodId&&F3_QA.visits[visit.country||visit.pais]===(visit.id||visit.visitId),'MAPPING_FAILURE:F3_QA_COMMAND_SCOPE');
+  f3Need(/^[a-f0-9]{64}$/.test(revision||'')&&version!==undefined,'SOURCE_FAILURE:F3_QA_COMMAND_BASE');
+  const id=visit.id||visit.visitId;
+  return {version:'cxorbia-command-adapter-v1',commandType:'visit.hr.fields.update',entityType:'visit',entityId:id,tenantId:'tya',projectId:F3_QA.projectId,periodId:F3_QA.periodId,
+    expectedVersion:version,idempotencyKey:owner+'-field-'+serial,authorization:{providerEnforcementRequired:true,permission:'visit.hr.fields.update'},
+    payload:{visitId:id,hrRowId:visit.hrRowId,countryCode:visit.country||visit.pais,sourceRevision:revision,baseFieldValues:{[fieldKey]:visit[fieldKey]??null},patch:{[fieldKey]:value}}};
+}
+export function assertF3RemoteAck(result){
+  f3Need(result?.ok===true&&result.status==='committed'&&result.hrProviderAck===true&&result.readbackVerified===true&&result.successUiAllowed===true&&result.hrFieldEventIds?.length===1,'PERSISTENCE_FAILURE:F3_QA_REMOTE_ACK_REQUIRED');
+  f3Need(/^hfe-[a-f0-9]{64}$/.test(result.hrFieldEventIds[0]),'PERSISTENCE_FAILURE:F3_QA_EVENT_ID');
+  return result.hrFieldEventIds[0];
+}
+export function f3OwnedCleanupPath(path,owner,commands=[]){
+  const project='tenants/tya/projects/'+F3_QA.projectId;
+  if(path===project||path.startsWith(project+'/'))return true;
+  if(path.startsWith('tenants/tya/integrationSettings/'+owner+'-')&&F3_QA.countries.some(c=>path==='tenants/tya/integrationSettings/'+owner+'-'+c))return true;
+  if(/^tenants\/tya\/shoppers\/qa_f3_20261124_(gt|hn)_[ab]$/.test(path))return true;
+  if(path==='tenants/tya/users/'+owner+'-admin')return true;
+  return commands.some(c=>path===c||path.startsWith(c+'/'));
+}
+async function runF3EndpointProbe(){
+  const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
+  const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
+  fs.mkdirSync(path.dirname(outPath),{recursive:true});
+  const receipt={schemaVersion:'cxorbia.i3.f3.qa-endpoint.v1',state:'HOLD',decision:'PENDING',runId,runAttempt,qaOwner:owner,
+    sourceSha:env.CXORBIA_F3_QA_SOURCE_SHA,sourceTree:env.CXORBIA_F3_QA_SOURCE_TREE,sourceProof:'EXACT_PARENT_CERTIFIED_RUNTIME_PINS_REQUIRED',
+    runtimeRevision:env.CXORBIA_F3_QA_RUNTIME_REVISION,runtimeDigest:env.CXORBIA_F3_QA_RUNTIME_DIGEST,hostingVersion:env.CXORBIA_F3_QA_HOSTING_VERSION,
+    tenantId:'tya',projectId:F3_QA.projectId,periodId:F3_QA.periodId,baseUrl:F3_QA.baseUrl,remoteFixtureDigest:f3Digest(manifest),
+    productionWrites:0,operationalHrWrites:0,syntheticOnly:true,notesPrivacyProven:false,ordinaryPasswordAuthenticationProven:false,
+    applicationAckProven:false,b14Closed:false,newModuleMatches:0,cases:[],events:[],cleanup:{firestore:false,auth:false,remoteMake:false},
+    guarantees:{atomicHumanExcelCas:false,observedBaseGuard:true,remoteReceiptAndIndependentRead:true,uncertainWriteRetry:false},
+    unproven:['provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture']};
+  const save=()=>fs.writeFileSync(outPath,JSON.stringify(receipt,null,2)+'\n');save();
+  const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
+  const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
+  const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']});
+  const cloudClient=await cloud.getClient(),principal=String(typeof cloudClient.getServiceAccountEmail==='function'?await cloudClient.getServiceAccountEmail():cloudClient.email||'');
+  f3Need(principal===QA_PRINCIPAL,'AUTH_FAILURE:F3_QA_SERVICE_ACCOUNT');
+  const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject},owner),auth=getAuth(app),db=getFirestore(app);
+  const adminUid=owner+'-admin',claims={tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:[F3_QA.projectId],qaOwner:owner};
+  let token='',authCreated=false,baselineReady=false,baselineLock=null,lockPath='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
+  const written=new Map(),commands=[],reconcilePaths=new Set(),projectPath='tenants/tya/projects/'+F3_QA.projectId;
+  const profiles=f3FixtureDocuments(manifest,owner),recordCase=(name,details={})=>{receipt.cases.push({name,...details});save();};
+  const httpJson=async(url,options={})=>{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(180000),...options});const text=await r.text();let body;try{body=JSON.parse(text);}catch{throw Error('PROVIDER_FAILURE:F3_QA_NON_JSON_'+r.status);}return {status:r.status,body};};
+  const cloudGet=async url=>(await cloudClient.request({method:'GET',url,timeout:30000,retry:false,maxRedirects:0})).data;
+  const runtimeRead=async()=>{
+    const base='https://'+F3_QA.region+'-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/'+F3_QA.firebaseProject;
+    const service=await cloudGet(base+'/services/'+F3_QA.service),revision=await cloudGet(base+'/revisions/'+env.CXORBIA_F3_QA_RUNTIME_REVISION);
+    const latest=service.status?.latestReadyRevisionName,traffic=service.status?.traffic||[],image=revision.status?.imageDigest||'';
+    f3Need(latest===env.CXORBIA_F3_QA_RUNTIME_REVISION&&traffic.some(x=>x.revisionName===latest&&x.percent===100)&&image.endsWith(env.CXORBIA_F3_QA_RUNTIME_DIGEST),'RELEASE_COMPOSITION_FAILURE:F3_QA_RUNTIME_DRIFT');
+    const channel=await cloudGet('https://firebasehosting.googleapis.com/v1beta1/sites/'+F3_QA.firebaseProject+'/channels/live');
+    f3Need(channel.release?.version?.name===env.CXORBIA_F3_QA_HOSTING_VERSION,'RELEASE_COMPOSITION_FAILURE:F3_QA_HOSTING_DRIFT');
+    const environment=revision.spec?.containers?.[0]?.env||[];
+    f3Need(environment.find(x=>x.name==='CXORBIA_F3_HR_FIELDS_ENABLED')?.value==='true','ENVIRONMENT_FAILURE:F3_QA_RUNTIME_WRITER_DISABLED');
+    f3Need(environment.some(x=>x.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN'&&x.valueFrom?.secretKeyRef)&&environment.some(x=>x.name==='CXORBIA_F3_MAKE_TOOLBOX_URL'&&(x.value||x.valueFrom?.secretKeyRef)),'AUTH_FAILURE:F3_QA_WRITER_SECRET_UNCONFIGURED');
+    return {revision:latest,digest:env.CXORBIA_F3_QA_RUNTIME_DIGEST,hostingVersion:env.CXORBIA_F3_QA_HOSTING_VERSION,readAt:new Date().toISOString()};
+  };
+  const readLive=async()=>{
+    const {status,body}=await httpJson(F3_QA.baseUrl+'/api/tenants/tya/projects/'+F3_QA.projectId+'/hr-live?fresh=1&protectedState=1',{headers:{Authorization:'Bearer '+token}});
+    f3Need(status===200&&body.snapshot?.tenantId==='tya'&&body.snapshot?.projectId===F3_QA.projectId&&body.snapshot?.sourceSafe===true&&body._runtime?.writes===false,'PROVIDER_FAILURE:F3_QA_LIVE_READ');
+    const rows=body.snapshot.visits||[];f3Need(rows.length===2&&new Set(rows.map(x=>x.id||x.visitId)).size===2,'MAPPING_FAILURE:F3_QA_VISIT_COUNT');
+    for(const c of F3_QA.countries){const v=rows.find(x=>(x.id||x.visitId)===F3_QA.visits[c]);f3Need(v&&v.periodId===F3_QA.periodId&&(v.country||v.pais)===c&&v.hrRowId===manifest.countries[c].worksheetName+'!2'&&v.excelWorksheetFingerprint===manifest.countries[c].worksheetFingerprint,'MAPPING_FAILURE:F3_QA_VISIT_IDENTITY');
+      f3Need(v.hrFieldEditing?.enabled===true&&f3Same(v.hrFieldEditing.fields.map(x=>x.key).sort(),[...F3_QA.fields].sort()),'FUNCTIONAL_DEFECT:F3_QA_EDITOR_CAPABILITY');}
+    return {rows,revision:body._runtime.revision};
+  };
+  const commandPaths=command=>{
+    if(command.commandType==='hr.snapshot.reconcile')return ['tenants/tya/commandReceipts/hr-'+f3Digest([F3_QA.projectId,command.idempotencyKey])];
+    return ['tenants/tya/commandReceipts/'+sha(command.tenantId+'\0'+command.projectId+'\0'+command.periodId+'\0'+command.idempotencyKey).slice(0,40),
+      'tenants/tya/entityAuditTrail/'+sha(command.idempotencyKey+'\0'+command.commandType+'\0'+command.entityId).slice(0,40)];
+  };
+  const send=async command=>{const response=await httpJson(F3_QA.baseUrl+'/v1/cxorbia/commands',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},body:JSON.stringify(command)});return response;};
+  const remember=async command=>{for(const p of commandPaths(command)){if(!commands.includes(p)){f3Need(!(await db.doc(p).get()).exists,'PERSISTENCE_FAILURE:F3_QA_RECEIPT_BASELINE_NOT_ABSENT');commands.push(p);}}};
+  const postWithBoundedRecovery=async command=>{
+    await remember(command);let last;
+    for(let attempt=0;attempt<3;attempt++){
+      try{last=await send(command);}catch(error){last={status:0,body:{status:'transport_uncertain',code:f3Code(error)}};}
+      if(last.body?.status==='committed')return last;
+      if(last.body?.status==='conflict'||last.body?.status==='blocked')return last;
+      if(![0,202,503,504].includes(last.status))return last;
+      receipt.lastPending={commandId:command.idempotencyKey,httpStatus:last.status,code:last.body?.code||null,eventIds:last.body?.hrFieldEventIds||[]};save();
+      if(attempt<2)await new Promise(resolve=>setTimeout(resolve,25000));
+    }
+    return last;
+  };
+  const reconcile=async(serial)=>{
+    const live=await readLive(),key=owner+'-reconcile-'+serial,command={version:'cxorbia-command-adapter-v1',commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:live.revision,
+      expectedVersion:live.revision,tenantId:'tya',projectId:F3_QA.projectId,periodId:null,requirePeriod:false,payload:{},idempotencyKey:key};
+    const p=commandPaths(command)[0];reconcilePaths.add(p);await remember(command);const result=await send(command);
+    f3Need(result.status===200&&result.body.ok===true&&result.body.readbackVerified===true&&result.body.authWrites===0,'PERSISTENCE_FAILURE:F3_QA_RECONCILE_ACK');
+    recordCase('explicit_reconcile_'+serial,{sourceRevision:live.revision,receiptPath:p,authWrites:result.body.authWrites});
+  };
+  let serial=0;
+  const executeField=async(country,fieldKey,value,caseName)=>{
+    const live=await readLive(),visit=live.rows.find(x=>(x.id||x.visitId)===F3_QA.visits[country]),durable=await db.doc(projectPath+'/visits/'+F3_QA.visits[country]).get();
+    f3Need(durable.exists,'PERSISTENCE_FAILURE:F3_QA_DURABLE_VISIT');
+    const command=f3FieldCommand({owner,serial:++serial,visit,revision:live.revision,version:durable.data().version,fieldKey,value});
+    const response=await postWithBoundedRecovery(command);f3Need(response.status===200,'PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED');const eventId=assertF3RemoteAck(response.body);
+    const eventSnap=await db.doc(projectPath+'/hrFieldEvents/'+eventId).get(),deliverySnap=await db.doc(projectPath+'/hrFieldDeliveries/'+eventId).get(),event=eventSnap.data(),delivery=deliverySnap.data();
+    f3Need(eventSnap.exists&&event.origin==='platform'&&event.actorUid===adminUid&&event.fieldKey===fieldKey&&event.countryCode===country&&event.periodId===F3_QA.periodId&&f3Same(event.after,value),'PERSISTENCE_FAILURE:F3_QA_EVENT_READBACK');
+    f3Need(deliverySnap.exists&&delivery.status==='committed'&&delivery.providerAck===true&&delivery.readbackVerified===true&&delivery.eventDigest===event.eventDigest&&/^[a-f0-9]{32}$/i.test(delivery.providerExecutionId||''),'PROVIDER_FAILURE:F3_QA_DELIVERY_READBACK');
+    const after=await readLive(),observed=after.rows.find(x=>(x.id||x.visitId)===F3_QA.visits[country]);f3Need(f3Same(observed[fieldKey],value),'PROVIDER_FAILURE:F3_QA_INDEPENDENT_READBACK');
+    const attempts=(await db.doc(projectPath+'/hrFieldDeliveries/'+eventId).collection('attempts').get()).docs.map(x=>({id:x.id,...x.data()}));
+    const physical=attempts.filter(x=>x.id.endsWith('-intent')&&x.recoveryOnly!==true).length;f3Need(physical===1,'PERSISTENCE_FAILURE:F3_QA_MULTIPLE_WRITE_ATTEMPTS');
+    const metadata={eventId,eventDigest:event.eventDigest,countryCode:country,fieldKey,providerExecutionId:delivery.providerExecutionId,deliveryDigest:f3Digest(delivery),
+      remoteEventKey:'event:'+eventId,remoteHeadKey:f3Digest(['tya',F3_QA.projectId,F3_QA.periodId,country,F3_QA.visits[country],fieldKey]),sourceRevisionBefore:live.revision,sourceRevisionAfter:after.revision};
+    receipt.events.push(metadata);recordCase(caseName,{...metadata,ackVerified:true,independentSourceReadback:true,nonRecoveryAttempts:physical});
+    return {command,eventId,attempts:attempts.length,after};
+  };
+  try{
+    receipt.runtimeBefore=await runtimeRead();save();
+    const projectRef=db.doc(projectPath);f3Need(!(await projectRef.get()).exists&&(await projectRef.listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_PROJECT_NOT_ABSENT');
+    try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_USER_EXISTS');}catch(error){if(error.code!=='auth/user-not-found')throw error;}
+    const member={path:'tenants/tya/users/'+adminUid,data:{...claims,uid:adminUid,active:true,status:'active',synthetic:true,qaOwner:owner}};
+    for(const rec of [...profiles,member])f3Need(!(await db.doc(rec.path).get()).exists,'PERSISTENCE_FAILURE:F3_QA_BASELINE_NOT_ABSENT');
+    for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10);f3Need(!(await db.doc('tenants/tya/shopperIdentityCrosswalk/'+id).get()).exists,'PERSISTENCE_FAILURE:F3_QA_ALIAS_NOT_ABSENT');}
+    const lock=await db.doc(lockPath).get();baselineLock=lock.exists?lock.data():null;
+    f3Need(!baselineLock||baselineLock.status==='committed','PERSISTENCE_FAILURE:F3_QA_RECONCILE_SCOPE_NOT_QUIESCENT');baselineReady=true;
+    for(const rec of [...profiles,member]){written.set(rec.path,f3Digest(rec.data));await db.doc(rec.path).create(rec.data);f3Need(f3Same((await db.doc(rec.path).get()).data(),rec.data),'PERSISTENCE_FAILURE:F3_QA_SETUP_READBACK');}
+    authCreated=true;await auth.createUser({uid:adminUid,displayName:'CXOrbia isolated QA operator',disabled:false});await auth.setCustomUserClaims(adminUid,claims);
+    const init=await httpJson(F3_QA.baseUrl+'/__/firebase/init.json');f3Need(init.body.projectId===F3_QA.firebaseProject&&!!init.body.apiKey,'AUTH_FAILURE:F3_QA_FIREBASE_CONFIG');
+    let custom=await auth.createCustomToken(adminUid,claims);const exchanged=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});custom='';
+    token=exchanged.body.idToken||'';f3Need(exchanged.status===200&&token,'AUTH_FAILURE:F3_QA_TOKEN_EXCHANGE');const decoded=await auth.verifyIdToken(token,true);f3Need(decoded.uid===adminUid&&decoded.role==='admin'&&decoded.tenantId==='tya'&&f3Same(decoded.projectIds,[F3_QA.projectId]),'AUTH_FAILURE:F3_QA_CLAIMS_READBACK');
+    const baseline=await readLive();for(const row of baseline.rows)f3Need(row.shopperId==null&&row.agendada==null&&row.escenario==='CXOrbia QA Escenario A'&&row.tipoCombo==='CXOrbia QA Combo A','MAPPING_FAILURE:F3_QA_SEED_NOT_BASELINE');
+    receipt.initialSourceRevision=baseline.revision;await reconcile('initial');
+    let first;
+    for(const country of F3_QA.countries){
+      const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
+      for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write');if(!first)first=row;}
+    }
+    // Retry the exact committed command. Actual transport fault injection is a
+    // separate proof obligation and is not claimed by this endpoint run.
+    const replay=await send(first.command);assertF3RemoteAck(replay.body);
+    const attemptsAfter=(await db.doc(projectPath+'/hrFieldDeliveries/'+first.eventId).collection('attempts').get()).size;
+    f3Need(attemptsAfter===first.attempts&&replay.body.idempotentReplay===true,'PERSISTENCE_FAILURE:F3_QA_REPLAY_WROTE');recordCase('exact_replay_no_write',{eventId:first.eventId});
+    const tampered=structuredClone(first.command);tampered.payload.patch.escenario='CXOrbia QA Escenario C';const bad=await send(tampered);
+    f3Need(bad.body.ok===false&&bad.body.code==='OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD','PERSISTENCE_FAILURE:F3_QA_IDEMPOTENCY_CONFLICT');recordCase('same_key_changed_payload_rejected');
+    const newer=await executeField('GT','escenario','CXOrbia QA Escenario C','GT_escenario_ordered_successor');
+    const stale=structuredClone(first.command);stale.idempotencyKey=owner+'-stale-base';stale.expectedVersion=(await db.doc(projectPath+'/visits/'+F3_QA.visits.GT).get()).data().version;
+    await remember(stale);const blocked=await send(stale);f3Need(blocked.body.ok===false&&['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(blocked.body.code),'PERSISTENCE_FAILURE:F3_QA_STALE_BASE_ACCEPTED');recordCase('stale_base_rejected');
+    const oldReplay=await send(first.command);assertF3RemoteAck(oldReplay.body);const current=await readLive();f3Need(current.rows.find(x=>(x.id||x.visitId)===F3_QA.visits.GT).escenario==='CXOrbia QA Escenario C','PERSISTENCE_FAILURE:F3_QA_OLD_EVENT_ROLLBACK');recordCase('old_committed_receipt_replay_does_not_rollback',{historicalAck:true,currentEventId:newer.eventId});
+    for(const country of F3_QA.countries){for(const [fieldKey,value]of [['shopperId',null],['agendada',null],['tipoCombo','CXOrbia QA Combo A'],['escenario','CXOrbia QA Escenario A']])await executeField(country,fieldKey,value,country+'_'+fieldKey+'_restore');}
+    await reconcile('restored');receipt.runtimeAfter=await runtimeRead();receipt.applicationAckProven=true;receipt.remoteValuesRestored=true;
+    receipt.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING';
+  }catch(error){receipt.failure=f3Code(error);receipt.decision='HOLD_F3_ISOLATED_ENDPOINT';throw error;
+  }finally{
+    token='';
+    const cleanupErrors=[],snapshots=[];
+    const enumerate=async ref=>{const snap=await ref.get();if(snap.exists)snapshots.push({path:ref.path,data:snap.data()});for(const collection of await ref.listCollections())for(const doc of (await collection.get()).docs)await enumerate(doc.ref);};
+    const remove=async row=>{f3Need(f3OwnedCleanupPath(row.path,owner,commands),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_SCOPE');await db.runTransaction(async tx=>{const ref=db.doc(row.path),live=await tx.get(ref);if(!live.exists)return;f3Need(f3Same(live.data(),row.data),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_DRIFT');tx.delete(ref);});f3Need(!(await db.doc(row.path).get()).exists,'PERSISTENCE_FAILURE:F3_QA_CLEANUP_READBACK');};
+    if(baselineReady){
+      try{
+        const project=await db.doc(projectPath).get();if(project.exists)f3Need(project.data().qaOwner===owner,'PERSISTENCE_FAILURE:F3_QA_PROJECT_OWNER');
+        // An HTTP timeout can leave an executing server lease. Do not erase its
+        // journal or binding while it can still commit a remote operation.
+        let heads;
+        for(let attempt=0;attempt<5;attempt++){
+          heads=await db.doc(projectPath).collection('hrFieldHeads').get();
+          if(!heads.docs.some(x=>x.data().leaseOwner&&Number(x.data().leaseUntil)>Date.now()))break;
+          if(attempt===4)throw Error('PERSISTENCE_FAILURE:F3_QA_ACTIVE_REMOTE_LEASE');
+          await new Promise(resolve=>setTimeout(resolve,25000));
+        }
+        const events=await db.doc(projectPath).collection('hrFieldEvents').get();
+        for(const doc of events.docs){
+          const event=doc.data();f3Need(event.tenantId==='tya'&&event.projectId===F3_QA.projectId&&event.periodId===F3_QA.periodId&&/^hfe-[a-f0-9]{64}$/.test(doc.id),'PERSISTENCE_FAILURE:F3_QA_JOURNAL_SCOPE');
+          const deliveryRef=db.doc(projectPath+'/hrFieldDeliveries/'+doc.id),delivery=await deliveryRef.get(),attempts=await deliveryRef.collection('attempts').get();
+          let item=receipt.events.find(e=>e.eventId===doc.id);
+          if(!item){item={eventId:doc.id,eventDigest:event.eventDigest,countryCode:event.countryCode,fieldKey:event.fieldKey,remoteEventKey:'event:'+doc.id,
+            remoteHeadKey:f3Digest(['tya',F3_QA.projectId,F3_QA.periodId,event.countryCode,event.visitId,event.fieldKey])};receipt.events.push(item);}
+          item.event=event;item.delivery=delivery.exists?delivery.data():null;item.attempts=attempts.docs.map(x=>({id:x.id,...x.data()}));
+        }
+        save();
+        await enumerate(db.doc(projectPath));for(const p of commands)await enumerate(db.doc(p));
+        for(const row of snapshots.sort((a,b)=>b.path.split('/').length-a.path.split('/').length))await remove(row);
+        for(const [p]of written){if(p===projectPath)continue;const snap=await db.doc(p).get();if(snap.exists){f3Need(snap.data().qaOwner===owner&&f3Digest(snap.data())===written.get(p),'PERSISTENCE_FAILURE:F3_QA_DOCUMENT_OWNER_OR_DRIFT');await remove({path:p,data:snap.data()});}}
+        for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10),p='tenants/tya/shopperIdentityCrosswalk/'+id,snap=await db.doc(p).get();if(snap.exists){const row=snap.data();f3Need(row.projectId===F3_QA.projectId&&row.tenantId==='tya'&&receipt.events.some(e=>e.eventId===row.originEventId),'PERSISTENCE_FAILURE:F3_QA_ALIAS_OWNER');commands.push(p);await remove({path:p,data:row});}}
+        await db.runTransaction(async tx=>{const ref=db.doc(lockPath),snap=await tx.get(ref),current=snap.exists?snap.data():null;if(f3Same(current,baselineLock))return;f3Need(current&&current.projectId===F3_QA.projectId&&reconcilePaths.has(current.receiptPath)&&current.status==='committed','PERSISTENCE_FAILURE:F3_QA_LOCK_OWNER');if(baselineLock)tx.set(ref,baselineLock);else tx.delete(ref);});
+        f3Need(f3Same((await db.doc(lockPath).get()).data()??null,baselineLock),'PERSISTENCE_FAILURE:F3_QA_LOCK_RESTORE');
+        f3Need(!(await db.doc(projectPath).get()).exists&&(await db.doc(projectPath).listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_SUBTREE_CLEANUP');receipt.cleanup.firestore=true;
+      }catch(error){cleanupErrors.push(f3Code(error));}
+    }
+    if(authCreated)try{const user=await auth.getUser(adminUid);f3Need(user.uid===adminUid&&(user.customClaims?.qaOwner===owner||Object.keys(user.customClaims||{}).length===0&&user.displayName==='CXOrbia isolated QA operator'),'AUTH_FAILURE:F3_QA_CLEANUP_USER_OWNER');await auth.deleteUser(adminUid);try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_AUTH_CLEANUP_READBACK');}catch(error){if(error.code!=='auth/user-not-found')throw error;}receipt.cleanup.auth=true;}catch(error){cleanupErrors.push(f3Code(error));}
+    receipt.remoteCleanup={required:true,scenarioId:10199316,dataStoreId:213856,eventKeys:receipt.events.map(e=>e.remoteEventKey),headKeys:[...new Set(receipt.events.map(e=>e.remoteHeadKey))],worksheetNames:F3_QA.countries.map(c=>manifest.countries[c].worksheetName),rule:'ROOT_VERIFIES_EXACT_KEYS_AND_CURRENT_OWNER_BEFORE_DELETE_THEN_READS_ABSENCE'};
+    if(cleanupErrors.length){receipt.cleanupErrors=cleanupErrors;receipt.decision='HOLD_F3_QA_CLEANUP_UNVERIFIED';process.exitCode=1;}
+    receipt.state='HOLD';save();await appSdk.deleteApp(app);
+    console.log('CXORBIA_F3_QA_ENDPOINT_RECEIPT='+JSON.stringify({decision:receipt.decision,applicationAckProven:receipt.applicationAckProven,cases:receipt.cases.length,events:receipt.events.length,cleanup:receipt.cleanup,productionWrites:0,operationalHrWrites:0,b14Closed:false}));
+  }
+}
+
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   if(process.argv.includes('--self-test'))selfTest();
+  else if(process.argv.includes('--f3-endpoint'))runF3EndpointProbe().catch(err=>{console.error('F3_QA_ENDPOINT_HOLD',f3Code(err));process.exitCode=1;});
   else runProviderProbe().catch(err=>{console.error('B14_QA_PROVIDER_PROBE_HOLD',String(err?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,160));process.exitCode=1;});
 }

@@ -14,6 +14,7 @@ import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-adm
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, createHrSnapshotReconciler } from './cxorbia-command-runtime-v1.mjs';
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
+import { isMailboxRuntimePath, maybeHandleMailboxRequest } from './mailbox-runtime.mjs';
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
 import { readExcelPeriodThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
@@ -743,6 +744,10 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('Access-Control-Allow-Methods','GET, POST, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type, Idempotency-Key');
     return res.end();
+  }
+  if(isMailboxRuntimePath(url.pathname)){
+    await maybeHandleMailboxRequest(req,res,url);
+    return;
   }
   if(isLegalRuntimePath(url.pathname)){
     await maybeHandleLegalRuntimeRequest(req,res,url);

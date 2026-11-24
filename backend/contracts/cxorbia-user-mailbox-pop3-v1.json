@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "contract": "cxorbia-user-mailbox-pop3-v1",
+  "findingId": "P0367",
+  "iteration": "I3",
+  "status": "SOURCE_PROPOSAL_REAL_PROVIDER_NOT_CERTIFIED",
+  "predecessorContracts": [
+    "app/contracts/email-provider-agnostic-user-mailbox-phase-a.tya.contract.json",
+    "app/contracts/email-user-mailbox-preview-phase-a.tya.contract.json"
+  ],
+  "providerTypesImplemented": [
+    "pop3_smtp_generic"
+  ],
+  "ownership": "one primary mailbox per authenticated tenant/UID; no client supplied target UID",
+  "metadataPath": "tenants/{tenantId}/users/{uid}/mailboxes/primary",
+  "credentialPath": "tenants/{tenantId}/users/{uid}/mailboxes/primary/private/credential",
+  "messagePath": "tenants/{tenantId}/users/{uid}/mailboxes/primary/accounts/{accountKey}/messages/{sha256AccountUidl}",
+  "apiBase": "/api/tenants/{tenantId}/mailboxes/self",
+  "routes": {
+    "GET status": "current owner status and allowed provider policy",
+    "POST connect": "owner credential over HTTPS; strict POP TLS AUTH+UIDL ACK then encrypted persistence",
+    "POST sync": "bounded live UIDL scan, durable cursor, provider presence and idempotent message import",
+    "GET messages": "owner cached headers with last observed state and pagination",
+    "GET messages/{id}": "provider UIDL lookup of current message number, bounded MIME body; archived copy visibly marked if absent upstream",
+    "POST disconnect": "delete local encrypted credential and fence old requests; no remote account/mail deletion"
+  },
+  "security": {
+    "tls": "implicit TLS1.2+ with system certificate trust and SNI; exact host allowlist and public DNS only",
+    "popPort": 995,
+    "smtpPort": 465,
+    "plaintextFallback": false,
+    "startTlsFallback": false,
+    "secrets": "AES-256-GCM with AAD tenant+uid+account; root key only Secret Manager-mounted server environment",
+    "directBrowserFirestoreAccess": "default deny by existing rules; API only",
+    "authorization": "Firebase verifyIdToken(checkRevoked=true), exact tenant/UID and active durable membership/claims each request",
+    "receiptPrivacy": "no password, token, raw provider response or mailbox body in QA logs"
+  },
+  "sync": {
+    "identity": "UIDL unique ID plus mailbox account key; never POP sequence number",
+    "batchMessages": 25,
+    "scanWindow": 100,
+    "maxRawMessageBytes": 20971520,
+    "providerPresenceWindow": 100,
+    "pollSecondsWhileMailboxVisible": 60,
+    "pushRealtime": false,
+    "reconnectAfterAuthFailure": "explicit; stop automatic credential retries",
+    "transientFailureBackoffSeconds": [
+      60,
+      120,
+      240,
+      480,
+      900
+    ],
+    "concurrency": "server lease + generation fencing; UIDL create-if-absent in Firestore transaction"
+  },
+  "enabledCapabilities": {
+    "receive": false,
+    "send": false,
+    "remoteDelete": false,
+    "oauth": false,
+    "sourceReceiveImplemented": true,
+    "sourceSmtpConfigurationAndNoCredentialProbeImplemented": true,
+    "smtpSendImplemented": false,
+    "attachmentDownloadImplemented": false,
+    "crossEntityLinkImplemented": false
+  },
+  "activationRequirements": [
+    "strict no-credential TLS POP995/SMTP465 probe PASS for actual host",
+    "CXORBIA_USER_MAILBOX_ENABLED=true through canonical runtime config",
+    "CXORBIA_MAILBOX_CREDENTIAL_KEY_B64 mounted from a dedicated Secret Manager version: exactly32bytes base64",
+    "each user POP credential supplied only to authenticated HTTPS own-mailbox connect; account password is not Firebase password",
+    "authenticated receive ACK/session/reload/second-owner-negative evidence on exact materialized artifact"
+  ],
+  "neverInfer": [
+    "local Outlook Sent/archive folders from POP inbox",
+    "TLS socket success as authenticated mailbox connection",
+    "connection requested as provider ACK",
+    "draft as sent",
+    "another project backend/credential as transferable authorization",
+    "in-app HR alert as external mail delivery"
+  ],
+  "phaseAClosure": false,
+  "productionAuthorized": false,
+  "automaticEmails": false,
+  "leaveMessagesOnServer": true,
+  "popDeleCommandPresent": false,
+  "references": [
+    "https://www.rfc-editor.org/rfc/rfc8314.html",
+    "https://www.rfc-editor.org/rfc/rfc1939.html",
+    "https://github.com/postalsys/postal-mime/tree/master"
+  ]
+}

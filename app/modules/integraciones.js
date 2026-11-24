@@ -41,7 +41,7 @@ CX.intStore = {
     // CORREO Y COMUNICACIÓN
     {id:'outlook', cat:'CORREO Y COMUNICACIÓN', icon:'✉️', n:'Outlook / Microsoft 365', desc:'Bandeja integrada; vincula correos a proyectos, shoppers, clientes y gestiones.', cfg:['email','client_id'], plan:'pro'},
     {id:'gmail', cat:'CORREO Y COMUNICACIÓN', icon:'📧', n:'Gmail / Google Workspace', desc:'Sincroniza correos y contactos de Google.', cfg:['email'], plan:'pro'},
-    {id:'imap', cat:'CORREO Y COMUNICACIÓN', icon:'📬', n:'IMAP / POP3 (dominio propio)', desc:'Conecta cualquier proveedor con dominio corporativo.', cfg:['host','port','email','pass'], plan:'estandar'},
+    {id:'imap', cat:'CORREO Y COMUNICACIÓN', icon:'📬', n:'Mi correo corporativo (POP3)', desc:'Abre tu buzón personal y conecta la cuenta autorizada para tu usuario. El estado real se consulta en Mi correo.', cfg:['email'], plan:'estandar'},
     {id:'whatsapp', cat:'CORREO Y COMUNICACIÓN', icon:'💬', n:'WhatsApp Business (API + Web)', desc:'Recordatorios, notificaciones, encuestas y mensajería a shoppers y clientes.', cfg:['phone','token'], plan:'estandar'},
     {id:'telegram', cat:'CORREO Y COMUNICACIÓN', icon:'✈️', n:'Telegram', desc:'Notificaciones internas del equipo y alertas operativas.', cfg:['bot_token'], plan:'pro'},
     {id:'sms', cat:'CORREO Y COMUNICACIÓN', icon:'📱', n:'SMS', desc:'Avisos de visita, recordatorios y alertas por mensaje de texto.', cfg:['api_key'], plan:'enterprise'},
@@ -165,6 +165,7 @@ CX.module('integraciones', ({ui,data})=>{
   const canUse=(p)=> (planLevel[p]||0) <= (planLevel[PLAN]||0);
 
   const configModal=(item)=>{
+    if(item.id==='imap'){CX.router.nav('correo');return;}
     if(!item.cfg||!item.cfg.length){
       /* Bloque B (auditoría V101 — 20260711): una integración sin campos de configuración
          NO tiene conexión real solo por activar el toggle — antes decía "activado" sin más.
@@ -207,6 +208,7 @@ CX.module('integraciones', ({ui,data})=>{
   };
 
   const card=(item)=>{
+    if(item.id==='imap')return `<div class="card" style="padding:16px"><b>📬 Mi correo corporativo (POP3)</b><p style="font-size:12px;color:var(--t2)">Una cuenta por usuario. Consulta el estado confirmado del proveedor y tu bandeja en Mi correo.</p><button class="btn btn-soft btn-sm intCfg" data-id="imap">Abrir Mi correo</button></div>`;
     const on=CX.intStore.isOn(item.id); const ok=canUse(item.plan);
     const status=CX.intStore.status(item.id);
     /* estado honesto (Bloque 2 — corrección exacta): 'requested' ≠ 'pending_backend' ≠
@@ -228,7 +230,7 @@ CX.module('integraciones', ({ui,data})=>{
 
   const draw=()=>{
     const items=CX.intStore.ITEMS;
-    const activeCount=items.filter(i=>CX.intStore.status(i.id)!=='not_requested').length;
+    const activeCount=items.filter(i=>i.id!=='imap'&&CX.intStore.status(i.id)!=='not_requested').length;
     host.innerHTML=`
       <div class="between" style="margin-bottom:6px"><div>${ui.ph('Integraciones & Add-ons','Conecta tu ecosistema — activables por plan · configura una vez, funciona en toda la plataforma')}</div>
         <div class="flex" style="gap:8px">${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;const modeLbl={demo:'Demo',source_safe_preview:'Vista previa',connected:'Conectado'}[sc&&sc.sourceReadMode]||'';return sc?ui.bdg('fuente: '+modeLbl+(sc.runtimeSyncActive?' · activo':''),sc.runtimeSyncActive?'g':'n'):'';})()}<span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de activación</span></div></div>

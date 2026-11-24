@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-367",
+  "iteration": "I3",
+  "state": "P0_PROVEN_BEFORE_CODE",
+  "classification": "FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "preparedAt": "2026-11-24T10:05:14.536371+00:00",
+  "scope": "Existing E08 user-mailbox UI/provider integration only; not a new product, workflow, candidate or domain 22",
+  "preApplicationEvidence": {
+    "auditPath": "/workspace/scratch/87e17e3f9919/CXORBIA_EMAIL_PER_USER_AUDIT_20261124.md",
+    "auditFileMtimeUtc": "2026-11-24T09:40:40.131434+00:00",
+    "meaning": "Audit proved existing local-only connection, absent provider routes and per-user E08 requirement before this scratch proposal; OAuth proposal was superseded by later POP3 screenshots. No repository code applied by this agent."
+  },
+  "authority": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V388.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V715_2026-11-24.json",
+    "f9Release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "f9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "sourceSuccessor": "3206918d84ed45d33851bff266de42ad59e546cb",
+    "controlHeadAtBase": "6c50ebff2b7969a7b9bf81536ef91f15f95dae3d",
+    "liveSourceReceipt": "docs/checkpoints/CXORBIA_I3_RUN2758_BINDING_SCOPE_PAIRED_DEV_PASS_20261124.json",
+    "liveSourceAtAudit": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+    "liveReceiptIsHistoricalByTimeOfApplication": true,
+    "existingE08FrozenPlan": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json#E08"
+  },
+  "owners": [
+    {
+      "path": "app/modules/correo.js",
+      "f9Blob": "be3cbf808498de86265410682625a45e57541b97",
+      "sourceSuccessorBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "baseHeadBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "servedSourceBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "workingBeforeSha256": "58228f2d21ec7e780335a930914bd8dbac8ff42fc08cb9fb985a1034abd27340"
+    },
+    {
+      "path": "app/modules/integraciones.js",
+      "f9Blob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "sourceSuccessorBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "baseHeadBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "servedSourceBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "workingBeforeSha256": "22f74ad7748f88f04111c224ffc36f8cde8f3a2599671558f2cabfc0ea8e4397"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "f9Blob": "451e993b6ce6951e74eb8f8caae7ec1e42139beb",
+      "sourceSuccessorBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "baseHeadBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "servedSourceBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "workingBeforeSha256": "a3cbd3cb3f9902e6169cdb6ff3cb45a730db5f1544a8846ea4a995314a12e681"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/Dockerfile",
+      "f9Blob": "ec61d4ef6a920b304f1f6b85829eb4db73ce1688",
+      "sourceSuccessorBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "baseHeadBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "servedSourceBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "workingBeforeSha256": "6f2412029143d0e51dc48b8a4b799efbd89ffdf89f05cf0e9123fecf813d8c24"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/package.json",
+      "f9Blob": "cf077fe5a6311b190e63711c8dc0a66f7e3c7fe7",
+      "sourceSuccessorBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "baseHeadBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "servedSourceBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "workingBeforeSha256": "231ca37b6fd3127da66fffa00fc62257446cbc69f9532da6a33e748220ac8004"
+    }
+  ],
+  "provenDefects": [
+    "correo.js declares connected from localStorage without provider ACK and carries non-provider send behavior",
+    "integraciones.js has no real mailbox connectionRef; prior POP3 modal saved only browser preference",
+    "Current service lacks per-UID POP3 mailbox API, encrypted credential owner and durable UIDL cursor"
+  ],
+  "providerEvidence": {
+    "screenshots": [
+      "upload/image(20261124-094400).png",
+      "upload/image(20261124-094421).png"
+    ],
+    "providerType": "pop3_smtp_generic",
+    "host": "vfct23005.avnam.net",
+    "popPort": 995,
+    "popScreenshotSecurityLabel": "StartTLS",
+    "smtpPort": 465,
+    "smtpScreenshotSecurityLabel": "SSL/TLS (recomendado)",
+    "implicitTlsProviderProbe": "PENDING_ROOT_EXISTING_CI",
+    "credentialsSuppliedByScreenshots": false
+  },
+  "sourceProposal": {
+    "singleTechnicalWriter": "root",
+    "repositoryWritesByAgent": 0,
+    "providerWritesByAgent": 0,
+    "ciRunsByAgent": 0,
+    "newWorkflow": false,
+    "newService": false,
+    "production": false,
+    "canSend": false,
+    "deleteRemoteMessages": false,
+    "hrDependent": false,
+    "hrReviewNotificationsOwner": "root independent in-app lane"
+  },
+  "qa": {
+    "localFocalTests": 14,
+    "pass": 14,
+    "fail": 0,
+    "realProviderTlsProbe": "NOT_EXECUTED_BY_AGENT",
+    "realMailboxAuth": "NOT_EXECUTED",
+    "realMailRead": "NOT_EXECUTED",
+    "realMailSend": "DISABLED_NOT_AUTHORIZED",
+    "domainClosure": false
+  },
+  "nextExactAction": "Root reviews focal owner patch, composes in existing candidate, runs canonical source tests plus no-credential TLS probe in existing job, deploys gated source. Mount server encryption key through existing Secret Manager lane and provision only each consenting user mailbox credential. Require exact authenticated POP AUTH+UIDL/readback, isolated second-session/tenant denial and same artifact before E08 receive claim.",
+  "allowedProductFiles": [
+    "app/modules/correo.js",
+    "app/modules/integraciones.js",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/config/mailbox-provider-policy.source-safe.json",
+    "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+    "backend/runtime/hr-live-service/mailbox-pop3.mjs",
+    "backend/runtime/hr-live-service/mailbox-runtime.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/mailbox-user-pop3.test.mjs",
+    "tools/qa/cxorbia-i3-p0367-mail-tls-readonly.mjs"
+  ],
+  "rootApplicationPredecessor": {
+    "sourceSha": "d665f71c77a4142843b9653d5e12cdf82fb85f6a",
+    "patchApplyCheck": "PASS",
+    "serverPredecessorBlob": "d711ef281406976fc0adbd8610941d0b4e9096f2",
+    "preservedF3AndReviewHunks": true
+  },
+  "moduleTruth": [
+    {
+      "path": "app/modules/correo.js",
+      "f9Blob": "be3cbf808498de86265410682625a45e57541b97",
+      "sourceSuccessorBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "baseHeadBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "servedSourceBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "workingBeforeSha256": "58228f2d21ec7e780335a930914bd8dbac8ff42fc08cb9fb985a1034abd27340",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "app/modules/integraciones.js",
+      "f9Blob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "sourceSuccessorBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "baseHeadBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "servedSourceBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "workingBeforeSha256": "22f74ad7748f88f04111c224ffc36f8cde8f3a2599671558f2cabfc0ea8e4397",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "f9Blob": "451e993b6ce6951e74eb8f8caae7ec1e42139beb",
+      "sourceSuccessorBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "baseHeadBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "servedSourceBlob": "c937d0ae7cad497684571603a8001bf0e2ba9f16",
+      "workingBeforeSha256": "a3cbd3cb3f9902e6169cdb6ff3cb45a730db5f1544a8846ea4a995314a12e681",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/Dockerfile",
+      "f9Blob": "ec61d4ef6a920b304f1f6b85829eb4db73ce1688",
+      "sourceSuccessorBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "baseHeadBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "servedSourceBlob": "a6aca82680c9db70fee7997bed693a74e8377f83",
+      "workingBeforeSha256": "6f2412029143d0e51dc48b8a4b799efbd89ffdf89f05cf0e9123fecf813d8c24",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/package.json",
+      "f9Blob": "cf077fe5a6311b190e63711c8dc0a66f7e3c7fe7",
+      "sourceSuccessorBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "baseHeadBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "servedSourceBlob": "49568eac1b9ec626536ac179947de74a95aa1aa6",
+      "workingBeforeSha256": "231ca37b6fd3127da66fffa00fc62257446cbc69f9532da6a33e748220ac8004",
+      "classification": "TRUE_FUNCTIONAL_DEFECT"
+    }
+  ],
+  "localTlsDiagnostic": {
+    "path": "p0367-mail-tls-local-readonly.json",
+    "outcome": "MAIL_DNS_FAILED_BOTH_PORTS",
+    "classification": "ENVIRONMENT_FAILURE",
+    "providerAvailabilityDetermined": false,
+    "credentialCommands": 0,
+    "messageReads": 0,
+    "sends": 0,
+    "deletes": 0
+  }
+}

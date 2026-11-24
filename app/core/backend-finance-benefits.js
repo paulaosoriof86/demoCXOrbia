@@ -88,11 +88,12 @@ window.CX = window.CX || {};
   async function readLedger(q,input){
     const global=input.global===true;
     const expectedTenant=tenantId(input),expectedPeriod=input.periodId;
-    const snap=await (global?q.get({source:'server'}):q.get());
-    if(global&&(snap.metadata?.fromCache!==false||snap.metadata?.hasPendingWrites!==false))throw new Error('FINANCE_GLOBAL_REMOTE_READ_REQUIRED');
+    const server=global||input.requireServerRead===true;
+    const snap=await (server?q.get({source:'server'}):q.get());
+    if(server&&(snap.metadata?.fromCache!==false||snap.metadata?.hasPendingWrites!==false))throw new Error(global?'FINANCE_GLOBAL_REMOTE_READ_REQUIRED':'FINANCE_REMOTE_READ_REQUIRED');
     const items=snap.docs.map(docData);
     if(global&&items.some((row,i)=>snap.docs[i].data()?.id!==snap.docs[i].id||row.id!==snap.docs[i].id||row.global!==true||row.projectId!==null||row.tenantId!==expectedTenant||row.periodId!==expectedPeriod))throw new Error('FINANCE_GLOBAL_READ_SCOPE_MISMATCH');
-    return {items,status:'ok'};
+    return {items,status:'ok',serverConfirmed:server};
   }
 
   async function getFinancialMovements(input){

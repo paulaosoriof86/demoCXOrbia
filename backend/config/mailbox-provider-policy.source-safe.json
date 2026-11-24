@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "owner": "P0367",
+  "tenants": {
+    "tya": {
+      "providers": [{
+        "id": "tya-corporate-pop3",
+        "label": "Correo corporativo T&A",
+        "providerType": "pop3_smtp_generic",
+        "host": "vfct23005.avnam.net",
+        "port": 995,
+        "security": "implicit_tls",
+        "smtpHost": "vfct23005.avnam.net",
+        "smtpPort": 465,
+        "smtpSecurity": "implicit_tls",
+        "allowedEmailDomains": ["tyaconsultores.com"],
+        "tlsVerificationStatus": "PENDING_NO_CREDENTIAL_PROVIDER_PROBE",
+        "sendEnabled": false,
+        "deleteEnabled": false
+      }]
+    }
+  },
+  "proofBoundary": "User screenshots identify provider and ports; POP 995 label StartTLS is unresolved until verified strict TLS greeting. No credential or successful connection is inferred from this configuration."
+}

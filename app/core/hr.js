@@ -19,6 +19,22 @@ window.CX = window.CX || {};
     _ext:{},               // HR externa simulada por proyecto (fuente de verdad externa)
 
     _canonical(){return CX.cxDataCommandBoundary?.canonicalMode?.()===true;},
+    sourceConfiguration(project){
+      project=project||CX.data?.project?.()||{};
+      const source=project.operationalSource||project.routeSource||{},mode=source.mode||'unknown';
+      if(mode!=='external')return {mode,configured:mode==='internal',countries:[]};
+      if(source.providerType==='excel_online'){
+        const countries=Array.isArray(project.countries)?project.countries.map(x=>String(x).trim().toUpperCase()):[];
+        const bindings=Array.isArray(source.countryBindings)?source.countryBindings:[];
+        const keys=bindings.map(x=>String(x?.countryCode||''));
+        const configured=source.readPolicy==='external_live'&&countries.length>0&&new Set(countries).size===countries.length&&
+          countries.every(x=>/^[A-Z]{2}$/.test(x))&&bindings.length===countries.length&&new Set(keys).size===keys.length&&
+          bindings.every(x=>countries.includes(x?.countryCode)&&typeof x.providerBindingId==='string'&&x.providerBindingId.trim()&&typeof x.mappingRef==='string'&&x.mappingRef.trim())&&
+          !['providerBindingId','integrationSettingId','providerRef','mappingRef'].some(key=>source[key]);
+        return {mode,configured:Boolean(configured),providerType:source.providerType,countries:configured?countries:[]};
+      }
+      return {mode,configured:Boolean((source.providerBindingId||source.integrationSettingId||source.providerRef)&&source.mappingRef),providerType:source.providerType||'Proveedor externo',countries:[]};
+    },
     fuente(p){
       if(this._canonical()){
         // El readback operacional publicado y el formulario de registro/preview
@@ -26,14 +42,14 @@ window.CX = window.CX || {};
         // administrativo aún no configurado.
         if(CX.hrSource?.operationalReadback?.(CX.data?.currentProjectId)?.verified===true)
           return 'Fuente externa · HR operacional verificada';
-        const project=CX.data?.project?.()||{},src=project.operationalSource||project.routeSource||{},binding=src.providerBindingId||src.integrationSettingId||src.providerRef||'';
-        if(src.mode==='internal')return 'Fuente interna del proyecto';
-        return binding?((src.providerType||'Proveedor externo')+' · vínculo seguro'):'Fuente externa · pendiente de vínculo seguro';
+        const config=this.sourceConfiguration();
+        if(config.mode==='internal')return 'Fuente interna del proyecto';
+        return config.configured?((config.providerType||'Proveedor externo')+(config.countries.length?' · vínculos seguros por país':' · vínculo seguro')):'Fuente externa · pendiente de vínculo seguro';
       }
       p=p||CX.data.period();return(p.hrMap&&p.hrMap.fuente)||'Hoja creada en plataforma';
     },
     esOnline(p){
-      if(this._canonical()){const project=CX.data?.project?.()||{},src=project.operationalSource||project.routeSource||{};return src.mode==='external'&&!!(src.providerBindingId||src.integrationSettingId||src.providerRef)&&!!src.mappingRef;}
+      if(this._canonical()){const config=this.sourceConfiguration();return config.mode==='external'&&config.configured;}
       const f=this.fuente(p);return/sheets|online|excel/i.test(f);
     },
     setFuente(p,f){

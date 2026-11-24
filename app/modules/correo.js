@@ -1,312 +1,81 @@
-/* CXOrbia · Correo integrado — 3 paneles, trazabilidad, modo demo / Outlook / Gmail / IMAP */
-CX.module('correo',({data,role,ui})=>{
+/* P0367: one provider-backed mailbox per authenticated user; no local mailbox authority. */
+CX.module('correo',({ui})=>{
   const host=ui.el('div');
-  const CONN_KEY='cx_mail_conn', STAR_KEY='cx_mail_starred';
-  const getConn=()=>{try{return JSON.parse(localStorage.getItem(CONN_KEY)||'null');}catch(e){return null;}};
-  const setConn=(v)=>localStorage.setItem(CONN_KEY,JSON.stringify(v));
-  const getStarred=()=>{try{return JSON.parse(localStorage.getItem(STAR_KEY)||'[]');}catch(e){return[];}};
-  const toggleStar=(id)=>{const s=getStarred(),i=s.indexOf(id);i>=0?s.splice(i,1):s.push(id);localStorage.setItem(STAR_KEY,JSON.stringify(s));};
-
-  /* ── Datos demo ──
-     P0-2 (paquete genérico 20260711): estos fixtures solo deben poder mostrarse en modo 'demo'.
-     El shell ya bloquea el 100% del render fuera de demo (ver app.js renderDataSourceBlock), pero
-     este guard es una segunda capa: si por cualquier razón este módulo se invocara fuera de ese
-     flujo, _DEMO_RAW nunca se expone como si fuera correo real. */
-  const _DEMO_RAW=[
-    {id:'em1',folder:'inbox',read:false,from:'Contacto Cliente Demo',email:'cmendez@clienteretail.demo',
-     subject:'Revisión reporte junio — comentarios y 3 sucursales críticas',
-     preview:'Estimado equipo, adjunto mis comentarios sobre el reporte de junio. En general positivos — el promedio subió a 81%…',
-     body:`<p>Estimado equipo,</p><p>El reporte de junio muestra resultados positivos en general — el promedio subió de 74% a 81%. Sin embargo, tenemos tres sucursales con score por debajo del 65%: <b>Plaza Fontabella, Miraflores y Pradera Xela</b>. Necesitamos un plan de acción para estas antes del próximo reporte.</p><p>¿Podemos agendar una llamada esta semana?</p><p>Saludos,<br><b>Contacto Cliente Demo</b><br>Coordinador de Operaciones · Cliente Retail Guatemala</p>`,
-     date:'2026-06-20',time:'10:32',
-     tags:[{label:'Cliente Retail GT',type:'cliente'},{label:'Ronda Junio',type:'proyecto'}],
-     attachments:[{name:'Reporte_Junio_2026.pdf',size:'1.2 MB'}]},
-    {id:'em2',folder:'inbox',read:false,from:'Evaluador Demo 02',email:'evaluador02@demo.local',
-     subject:'Cuestionario enviado · Sucursal Z12 — Miraflores',
-     preview:'Buenas tardes, les confirmo que completé la visita en sucursal Miraflores (Z12). El asesor tardó 14 min…',
-     body:`<p>Buenas tardes,</p><p>Les confirmo que completé la visita en la sucursal <b>Miraflores (Z12)</b> el día de hoy. El cuestionario fue enviado desde la plataforma.</p><p>Puntos a destacar: el servicio en sala fue lento (14 min de espera), y la limpieza del baño no cumplió el protocolo. Las evidencias fotográficas están adjuntas en el sistema.</p><p>Saludos,<br><b>Evaluador Demo 02</b> · Shopper #SH-0023</p>`,
-     date:'2026-06-20',time:'15:47',
-     tags:[{label:'Evaluador Demo 02',type:'shopper'},{label:'Cliente Retail GT',type:'cliente'}],
-     attachments:[]},
-    {id:'em3',folder:'inbox',read:true,from:'Contacto Cliente Demo 2',email:'contacto2@clienteretail.demo',
-     subject:'Consulta — interpretación del score mayo vs. junio',
-     preview:'Hola, quiero entender si el aumento de 68% a 71% es estadísticamente significativo con 2 sucursales nuevas…',
-     body:`<p>Hola equipo,</p><p>Quiero entender si el incremento de score mayo (68%) vs. junio (71%) es estadísticamente significativo, considerando que tuvimos 2 sucursales nuevas. También: ¿los hallazgos de "tiempo de espera en caja" siguen siendo el top 1? Si es así, ya tomamos acciones internas y quiero ver si hay mejora.</p><p>Gracias,<br><b>Contacto Cliente Demo 2</b><br>Gerente de Experiencia · Cliente Retail</p>`,
-     date:'2026-06-19',time:'09:15',
-     tags:[{label:'Cliente Retail',type:'cliente'}],
-     attachments:[]},
-    {id:'em4',folder:'inbox',read:true,from:'Prospecto Demo',email:'prospecto@empresa-demo.com',
-     subject:'Interés en plataforma de mystery shopping — Honduras (45 sucursales)',
-     preview:'Buenos días, buscamos un proveedor de MS para nuestra red de 45 sucursales en HN, sector retail (ropa y calzado)…',
-     body:`<p>Buenos días,</p><p>Les escribo porque buscamos un proveedor de mystery shopping para nuestra red de <b>45 sucursales en Honduras</b> (sector retail, ropa y calzado). Nos interesa: evaluación mensual de servicio, protocolo de caja, reporte ejecutivo con hallazgos y planes de acción.</p><p>¿Podemos agendar una llamada esta semana?</p><p><b>Prospecto Demo</b><br>Directora de Operaciones · Empresa Demo HN</p>`,
-     date:'2026-06-19',time:'08:02',
-     tags:[{label:'Prospecto CRM',type:'lead'}],
-     attachments:[]},
-    {id:'em5',folder:'inbox',read:true,from:'Make · Sistema',email:'noreply@make.com',
-     subject:'[Automatización] Visita aprobada — Juan Pérez asignado a SUC-089',
-     preview:'Se aprobó la postulación de Juan Pérez para la visita SUC-089 · Oakland. Notificación preparada por WhatsApp (ejemplo demo).',
-     body:`<p><b>Automatización disparada: Visita aprobada</b></p><p>Shopper: <b>Juan Pérez</b><br>Sucursal: SUC-089 · Centro Comercial Oakland<br>Proyecto: Cliente Retail GT · Ronda Junio 2026<br>Fecha asignada: 22/06/2026<br>Honorario: Q 250.00</p><p>Notificación preparada por WhatsApp al shopper (ejemplo demo · envío real pendiente de activación). <a href="#" style="color:var(--brand)">Ver en plataforma →</a></p>`,
-     date:'2026-06-18',time:'16:22',
-     tags:[{label:'Sistema Make',type:'sistema'},{label:'Cliente Retail GT',type:'cliente'}],
-     attachments:[]},
-    {id:'em6',folder:'sent',read:true,from:'Tú',email:'admin@cxorbia.com',
-     subject:'Re: Revisión reporte junio — comentarios',
-     preview:'Hola, con gusto agendamos una llamada el miércoles a las 10am. Los hallazgos de las 3 sucursales…',
-     body:`<p>Hola,</p><p>Con gusto agendamos la llamada. ¿El miércoles a las 10am te funciona? Llevaremos el detalle de las 3 sucursales y un borrador de plan de acción.</p><p>Saludos.</p>`,
-     date:'2026-06-20',time:'11:05',
-     tags:[{label:'Cliente Retail GT',type:'cliente'}],attachments:[]},
-  ];
-  /* DEMO expuesto al resto del módulo: vacío fuera de modo demo (guard P0-2) */
-  const DEMO = (CX.dataSource && CX.dataSource.showFixtures ? CX.dataSource.showFixtures() : true) ? _DEMO_RAW : [];
-
-  let folder='inbox', activeId=null;
-
-  /* ── Helpers ── */
-  const tagBadge=(t)=>{
-    const C={cliente:'#2196d3',shopper:'#8b5cf6',proyecto:'#059669',lead:'#f59e0b',sistema:'#64748b'};
-    const c=C[t.type]||'#64748b';
-    return `<span class="mail-tag" data-tnav="${t.type}|${encodeURIComponent(t.label)}" style="background:${c}18;border:1px solid ${c}40;color:${c}">🔗 ${t.label}</span>`;
-  };
-  const fmtDate=(d)=>{const today=new Date().toISOString().slice(0,10);if(d===today)return 'Hoy';const diff=Math.floor((new Date(today)-new Date(d))/86400000);if(diff===1)return 'Ayer';return new Date(d+'T00:00:00').toLocaleDateString('es',{day:'numeric',month:'short'});};
-  const getEmails=()=>{const s=getStarred();if(folder==='starred')return DEMO.filter(e=>s.includes(e.id));return DEMO.filter(e=>e.folder===folder);};
-  const unread=()=>DEMO.filter(e=>e.folder==='inbox'&&!e.read).length;
-
-  const AI_REPLIES={
-    em1:'Hola,\n\nGracias por tus comentarios. Agendemos el miércoles a las 10am. Llevaremos el detalle de las 3 sucursales con score crítico y un borrador de plan de acción para cada una.\n\nSaludos.',
-    em2:'Hola María,\n\nMuchas gracias por confirmar la visita. Los datos y evidencias quedaron registrados correctamente. El pago de Q 250.00 será procesado en la próxima quincena.\n\nSaludos.',
-    em3:'Hola Roberto,\n\nEl incremento de 68% a 71% (+3pp) es estadísticamente relevante con tu muestra. Las 2 sucursales nuevas tienen efecto acotado dado el promedio ponderado.\n\nRespecto a "tiempo de espera en caja": sigue en el top 1 pero bajó de 43% de fallas a 38% — mejora visible. Julio confirmará si las acciones internas tienen mayor impacto.\n\nSaludos.',
-    em4:'Buenos días Ana,\n\nMuchas gracias por su interés. Con gusto agendamos una llamada para presentarles nuestra propuesta para Honduras. ¿Le funciona el jueves a las 3pm?\n\nSaludos.',
-  };
-
-  /* ── Render ── */
-  const draw=()=>{
-    const conn=getConn(); const emails=getEmails(); const active=activeId?DEMO.find(e=>e.id===activeId):null; const starred=getStarred();
-    host.innerHTML=`
-<style>
-.mail-folder{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:2px;transition:background .12s}
-.mail-folder:hover{background:var(--brand-light)!important}
-.mail-item{padding:12px 14px;border-bottom:1px solid var(--border-2);cursor:pointer;transition:background .12s}
-.mail-item:hover{background:var(--panel-2)!important}
-.mail-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;margin:1px 2px}
-</style>
-<div style="display:flex;flex-direction:column;height:calc(100vh - 115px);min-height:520px">
-  <!-- Banner modo demo / conectado -->
-  <div style="background:${conn?'#f0faf4':'#fffbeb'};border:1px solid ${conn?'#bbf7d0':'#fde68a'};border-radius:10px;padding:9px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <span style="font-size:13px;color:var(--t2);flex:1">${conn
-      ?`🟡 Preparado como <b>${conn.email}</b> (${conn.provider}) · conexión y sincronización reales pendientes de activación`
-      :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar tu bandeja (requiere activación). <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
-    </span>
-    ${conn?`<button class="btn btn-ghost btn-sm" id="mailDisconn" style="color:var(--red)">Desconectar</button>`:
-           `<button class="btn btn-pr btn-sm" id="mailConn" style="background:#dc2626;border-color:#dc2626">Conectar Outlook / Gmail</button>`}
-  </div>
-  <!-- 3 paneles -->
-  <div style="display:grid;grid-template-columns:160px 1fr 1.7fr;flex:1;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg);min-height:0">
-    <!-- Carpetas -->
-    <div style="border-right:1px solid var(--border);background:var(--panel-2);display:flex;flex-direction:column;overflow:hidden">
-      <div style="padding:12px 10px;flex:1;overflow-y:auto">
-        <button class="btn btn-pr btn-sm" id="mailCompose" style="width:100%;margin-bottom:12px">✏️ Redactar</button>
-        ${[['inbox','Recibidos','📥',unread()],['sent','Enviados','📤',0],['starred','Destacados','⭐',starred.length],['drafts','Borradores','📝',0]].map(([f,lbl,ic,cnt])=>`
-        <div class="mail-folder" data-folder="${f}" style="font-weight:${folder===f?700:400};background:${folder===f?'var(--brand-light)':'transparent'}">
-          <span>${ic}</span><span style="flex:1">${lbl}</span>${cnt>0?`<span style="background:var(--brand);color:#fff;border-radius:20px;padding:0 7px;font-size:10px;font-weight:700">${cnt}</span>`:''}
-        </div>`).join('')}
-        <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:10px">
-          <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Trazabilidad</div>
-          ${[['🏢','cliente','Clientes'],['👤','shopper','Shoppers'],['📋','proyecto','Proyectos'],['💼','lead','CRM Leads']].map(([ic,t,lbl])=>`<div style="font-size:11.5px;color:var(--t3);padding:3px 4px">${ic} ${lbl}</div>`).join('')}
-        </div>
-      </div>
-    </div>
-    <!-- Lista de correos -->
-    <div style="border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column">
-      <div style="padding:10px 12px;border-bottom:1px solid var(--border);background:var(--panel-2);flex-shrink:0">
-        <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${{inbox:'Recibidos',sent:'Enviados',starred:'Destacados',drafts:'Borradores'}[folder]} <span style="font-weight:400;color:var(--t3)">(${emails.length})</span></div>
-      </div>
-      ${emails.length===0?`<div style="text-align:center;padding:40px 20px;color:var(--t3);font-size:13px">Sin correos aquí</div>`:''}
-      ${emails.map(e=>{const isStar=starred.includes(e.id);return `
-      <div class="mail-item" data-email="${e.id}" style="background:${activeId===e.id?'var(--brand-light)':e.read?'var(--bg)':'rgba(33,150,211,.04)'}">
-        <div style="display:flex;align-items:flex-start;gap:8px">
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-              <b style="font-size:13px;color:${e.read?'var(--t1)':'var(--brand)'}">${e.from}</b>
-              <span style="font-size:10.5px;color:var(--t3);flex-shrink:0;margin-left:8px">${fmtDate(e.date)}</span>
-            </div>
-            <div style="font-size:12.5px;color:var(--t1);font-weight:${e.read?400:600};margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.subject}</div>
-            <div style="font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.preview}</div>
-            ${e.tags.length?`<div style="margin-top:5px">${e.tags.slice(0,2).map(tagBadge).join('')}</div>`:''}
-          </div>
-          <button class="mail-star-btn" data-star="${e.id}" style="background:none;border:none;cursor:pointer;font-size:14px;color:${isStar?'#f59e0b':'var(--t3)'};padding:0;flex-shrink:0;line-height:1">${isStar?'★':'☆'}</button>
-        </div>
-      </div>`;}).join('')}
-    </div>
-    <!-- Lector -->
-    <div style="overflow-y:auto;display:flex;flex-direction:column">
-      ${active?`
-      <div style="padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0">
-        <div style="font-size:15px;font-weight:800;color:var(--t1);margin-bottom:10px">${active.subject}</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${active.from[0]}</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;color:var(--t1)">${active.from}</div>
-            <div style="font-size:11.5px;color:var(--t3)">${active.email} · ${fmtDate(active.date)} ${active.time}</div>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" id="mailReply">↩ Responder</button>
-            <button class="btn btn-ghost btn-sm" id="mailFwd">⇨ Reenviar</button>
-          </div>
-        </div>
-        ${active.tags.length?`<div style="margin-bottom:8px">${active.tags.map(tagBadge).join('')}</div>`:''}
-        ${active.attachments&&active.attachments.length?`<div style="display:flex;gap:6px;flex-wrap:wrap">${active.attachments.map(a=>`<div style="display:flex;align-items:center;gap:5px;background:var(--panel-2);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:11.5px;color:var(--t2)">📎 ${a.name} <span style="color:var(--t3)">${a.size}</span></div>`).join('')}</div>`:''}
-      </div>
-      <div style="padding:20px;flex:1;font-size:13.5px;color:var(--t2);line-height:1.75">${active.body}</div>
-      <div style="padding:12px 16px;border-top:1px solid var(--border);background:var(--panel-2);flex-shrink:0">
-        <div contenteditable="true" id="replyBox" style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-height:64px;background:var(--bg);font-size:13px;color:var(--t1);outline:none;margin-bottom:8px" placeholder="Escribe tu respuesta…"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" id="replyWA" title="Abre WhatsApp Web con un borrador manual — no es envío automático">💬 WA (borrador manual)</button>
-            <button class="btn btn-ghost btn-sm" id="replyAI" title="Generar respuesta con IA">✨ IA</button>
-          </div>
-          <button class="btn btn-pr btn-sm" id="replySend">Enviar ↩</button>
-        </div>
-      </div>`:`
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);padding:40px">
-        <div style="font-size:40px;margin-bottom:12px">📭</div>
-        <div style="font-size:14px">Selecciona un correo para leerlo.</div>
-      </div>`}
-    </div>
-  </div>
-</div>
-<!-- Overlay redactar -->
-<div id="composeOverlay" style="display:none;position:fixed;bottom:20px;right:24px;width:480px;max-width:95vw;z-index:900">
-  <div class="card card-p" style="box-shadow:0 8px 32px rgba(0,0,0,.18)">
-    <div class="between" style="margin-bottom:12px">
-      <b style="font-size:13.5px">✏️ Nuevo correo</b>
-      <button class="btn btn-ghost btn-sm" id="closeCompose" style="color:var(--t3)">✕</button>
-    </div>
-    <input class="inp" id="composeTo" placeholder="Para: nombre@correo.com" style="margin-bottom:8px">
-    <input class="inp" id="composeSubj" placeholder="Asunto" style="margin-bottom:8px">
-    <div contenteditable="true" id="composeBody" style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-height:110px;background:var(--bg);font-size:13px;color:var(--t1);outline:none;margin-bottom:10px"></div>
-    <div class="between">
-      <button class="btn btn-ghost btn-sm" id="composeAI">✨ IA</button>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" id="composeDraft">Borrador</button>
-        <button class="btn btn-pr btn-sm" id="composeSend">Enviar</button>
-      </div>
-    </div>
-  </div>
-</div>`;
-    bind();
-  };
-
-  const bind=()=>{
-    host.querySelectorAll('[data-folder]').forEach(el=>el.addEventListener('click',()=>{folder=el.dataset.folder;activeId=null;draw();}));
-    host.querySelectorAll('[data-email]').forEach(el=>el.addEventListener('click',e=>{
-      if(e.target.closest('[data-star],.mail-star-btn'))return;
-      activeId=el.dataset.email;
-      const em=DEMO.find(x=>x.id===activeId);if(em)em.read=true;
-      draw();
-    }));
-    host.querySelectorAll('.mail-star-btn').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();toggleStar(btn.dataset.star||btn.closest('[data-star]')?.dataset.star||btn.dataset.star);draw();}));
-    host.querySelectorAll('[data-tnav]').forEach(el=>el.addEventListener('click',(e)=>{
-      e.stopPropagation();
-      const[type,rawLabel]=el.dataset.tnav.split('|');
-      const label=decodeURIComponent(rawLabel);
-      const navMap={cliente:'clientes',shopper:'shoppers',proyecto:'visitas',lead:'crm',sistema:'automatizaciones'};
-      const typeLabel={cliente:'🏢 Cliente',shopper:'👤 Shopper',proyecto:'📋 Proyecto',lead:'💼 Lead CRM',sistema:'🤖 Sistema'};
-      ui.modal('🔗 Trazabilidad · '+label,`
-        <div style="background:var(--brand-light);border-radius:9px;padding:10px 14px;margin-bottom:14px">
-          <div style="font-size:12px;color:var(--brand-dark)">${typeLabel[type]||type}: <b>${label}</b></div>
-          <div style="font-size:11.5px;color:var(--brand-dark);opacity:.8;margin-top:4px">Este correo está vinculado a este registro. Puedes ir al registro o agregar una nota de trazabilidad.</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="btn btn-pr btn-sm" id="tnavGo">Abrir ${typeLabel[type]||type} → ${label}</button>
-          <button class="btn btn-soft btn-sm" id="tnavNote">+ Agregar nota de seguimiento</button>
-          <button class="btn btn-ghost btn-sm" id="tnavClose">Cerrar</button>
-        </div>`,
-      {onMount:(ov,close)=>{
-        ov.querySelector('#tnavGo').addEventListener('click',()=>{close();if(navMap[type])CX.router.nav(navMap[type]);else ui.toast('Sección no disponible','warn');});
-        ov.querySelector('#tnavNote').addEventListener('click',()=>{close();ui.toast('Nota de seguimiento guardada en '+label,'ok');});
-        ov.querySelector('#tnavClose').addEventListener('click',close);
-      }});
-    }));
-    host.querySelector('#mailReply')?.addEventListener('click',()=>host.querySelector('#replyBox')?.focus());
-    host.querySelector('#mailFwd')?.addEventListener('click',()=>{
-      host.querySelector('#composeOverlay').style.display='block';
-      const a=DEMO.find(e=>e.id===activeId);if(a){host.querySelector('#composeSubj').value='Fwd: '+a.subject;host.querySelector('#composeBody').innerHTML='<br><br><hr style="border-top:1px solid #ccc;margin:8px 0"><i>--- Mensaje original ---<br>De: '+a.from+' ('+a.email+')<br>Asunto: '+a.subject+'</i><br>'+a.body;}
-    });
-    host.querySelector('#replySend')?.addEventListener('click',()=>{
-      const body=host.querySelector('#replyBox').innerText.trim();
-      if(!body){ui.toast('Escribe algo primero','warn');return;}
-      const a=DEMO.find(e=>e.id===activeId);
-      DEMO.push({id:'s'+Date.now(),folder:'sent',read:true,from:'Tú',email:'admin@cxorbia.com',
-        subject:'Re: '+(a?a.subject:''),preview:body.slice(0,80),
-        body:`<p>${body.replace(/\n/g,'<br>')}</p>`,
-        date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),
-        tags:a?a.tags:[],attachments:[]});
-      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real pendiente de activación':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
-    });
-    host.querySelector('#replyWA')?.addEventListener('click',()=>{
-      const a=DEMO.find(e=>e.id===activeId);if(!a)return;
-      const phone='502'+Math.floor(Math.random()*90000000+10000000);
-      window.open('https://wa.me/'+phone+'?text='+encodeURIComponent('Re: '+a.subject+'\n\n'),'_blank');
-    });
-    host.querySelector('#replyAI')?.addEventListener('click',()=>{
-      const box=host.querySelector('#replyBox');if(!box)return;
-      box.textContent='Generando respuesta…';
-      setTimeout(()=>{
-        if(CX.ai&&CX.ai.ready()){
-          const a=DEMO.find(e=>e.id===activeId);
-          CX.ai.ask('Responde este correo de forma profesional y concisa (máx 80 palabras):\nDe: '+a.from+'\nAsunto: '+a.subject+'\nContenido: '+a.preview).then(r=>box.textContent=r).catch(()=>box.textContent=AI_REPLIES[activeId]||'Hola,\n\nGracias por tu correo. Con gusto atendemos tu consulta.\n\nSaludos.');
-        } else {
-          box.textContent=AI_REPLIES[activeId]||'Hola,\n\nGracias por tu correo. Con gusto atendemos tu consulta.\n\nSaludos.';
-        }
-      },1000);
-    });
-    host.querySelector('#mailCompose')?.addEventListener('click',()=>{host.querySelector('#composeOverlay').style.display='block';['composeTo','composeSubj'].forEach(id=>host.querySelector('#'+id).value='');host.querySelector('#composeBody').innerHTML='';});
-    host.querySelector('#closeCompose')?.addEventListener('click',()=>host.querySelector('#composeOverlay').style.display='none');
-    host.querySelector('#composeSend')?.addEventListener('click',()=>{
-      const to=host.querySelector('#composeTo').value.trim(),subj=host.querySelector('#composeSubj').value.trim();
-      if(!to||!subj){ui.toast('Completa destinatario y asunto','warn');return;}
-      DEMO.push({id:'s'+Date.now(),folder:'sent',read:true,from:'Tú',email:'admin@cxorbia.com',
-        subject:subj,preview:host.querySelector('#composeBody').innerText.slice(0,80),
-        body:host.querySelector('#composeBody').innerHTML,
-        date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),tags:[],attachments:[]});
-      host.querySelector('#composeOverlay').style.display='none';
-      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real pendiente de activación':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
-    });
-    host.querySelector('#composeDraft')?.addEventListener('click',()=>{host.querySelector('#composeOverlay').style.display='none';ui.toast('Guardado como borrador','ok');});
-    host.querySelector('#composeAI')?.addEventListener('click',()=>{
-      const subj=host.querySelector('#composeSubj').value||'su consulta';
-      host.querySelector('#composeBody').innerHTML=`<p>Estimado/a,</p><p>Me comunico en relación a ${subj}.</p><p>Quedo a sus órdenes para cualquier duda o comentario.</p><p>Saludos cordiales,</p>`;
-      ui.toast('Borrador generado (plantilla local)','ok');
-    });
-    host.querySelector('#mailConn')?.addEventListener('click',()=>showConnModal());
-    host.querySelector('#mailDisconn')?.addEventListener('click',()=>{localStorage.removeItem(CONN_KEY);ui.toast('Cuenta desconectada','ok');draw();});
-  };
-
-  const showConnModal=()=>ui.modal('Conectar cuenta de correo',`
-    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Prepara la conexión de tu bandeja real (Outlook/Hotmail, Gmail o IMAP genérico) — la autenticación y sincronización real las gestiona el sistema central, nunca este prototipo en el navegador.</p>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
-      <button class="btn btn-pr btn-sm" id="connOL" style="text-align:left;padding:12px 16px;font-size:13px;background:#0078d4;border-color:#0078d4">
-        <b>📧 Preparar Outlook / Hotmail / Microsoft 365</b><br><span style="font-size:11px;font-weight:400;opacity:.85">empresa@outlook.com · hotmail.com · tudominio.com (Microsoft 365)</span>
-      </button>
-      <button class="btn btn-soft btn-sm" id="connGM" style="text-align:left;padding:12px 16px;font-size:13px">
-        <b>📬 Preparar Gmail / Google Workspace</b><br><span style="font-size:11px;font-weight:400;opacity:.75">empresa@gmail.com · tudominio.com (Workspace)</span>
-      </button>
-    </div>
-    <div style="border-top:1px solid var(--border);padding-top:12px">
-      <div style="font-size:11.5px;font-weight:700;color:var(--t2);margin-bottom:8px">IMAP genérico — cualquier dominio corporativo</div>
-      <input class="inp" id="imapEmail" placeholder="correo@tuempresa.com" style="margin-bottom:6px">
-      <input class="inp" id="imapHost" placeholder="Servidor IMAP (ej: imap.tuempresa.com)" style="margin-bottom:10px">
-      <button class="btn btn-soft btn-sm" id="connIMAP" style="width:100%">Preparar conexión IMAP</button>
-    </div>
-    <div style="margin-top:12px;padding:8px 12px;background:var(--brand-light);border-radius:8px;font-size:11.5px;color:var(--brand-dark)">
-      🔒 Este prototipo nunca pide ni guarda tu contraseña real. El acceso real se autoriza cuando esté conectado — aquí solo dejas listo el proveedor/correo para esa conexión.
-    </div>
-  `,{onMount:(ov,close)=>{
-    const connect=(provider,email)=>{setConn({provider,email});close();ui.toast(provider+' preparado (vista previa) · conexión y sincronización reales pendientes de activación','ok');draw();};
-    ov.querySelector('#connOL').addEventListener('click',()=>connect('Outlook','admin@tuempresa.com'));
-    ov.querySelector('#connGM').addEventListener('click',()=>connect('Gmail','admin@tuempresa.com'));
-    ov.querySelector('#connIMAP').addEventListener('click',()=>{const em=ov.querySelector('#imapEmail').value.trim();if(!em){ui.toast('Escribe tu correo','warn');return;}connect('IMAP ('+em.split('@')[1]+')',em);});
-  }});
-
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const state={status:null,messages:[],selected:null,cursor:null,error:'',busy:false,uid:null,disposed:false};
+  const controllers=new Set();let unsubscribe=null,timer=null;
+  const auth=()=>window.firebase?.auth?.();
+  const tenant=()=>String(window.CX_TENANT_RUNTIME_CONFIG?.tenantId||CX.data?.ctx?.()?.tenantId||'').trim();
+  const errors={MAIL_AUTH_FAILED:'El servidor de correo rechazó las credenciales. Revisa tu dirección y contraseña.',MAIL_AUTH_REQUIRED:'Inicia sesión para abrir tu buzón.',MAIL_SESSION_INVALID:'Tu sesión caducó. Vuelve a iniciar sesión.',MAIL_MEMBERSHIP_DENIED:'Tu sesión no tiene acceso a este buzón.',MAIL_DISABLED:'La conexión de correo está pendiente de activación del servidor.',MAIL_ENCRYPTION_KEY_REQUIRED:'Falta completar la configuración segura del servidor de correo.',MAIL_TLS_FAILED:'No se pudo verificar la conexión segura con el servidor de correo.',MAIL_DNS_FAILED:'El servidor de correo no respondió.',MAIL_SYNC_BUSY:'Hay una lectura del buzón en curso. Intenta de nuevo en unos segundos.',MAIL_SYNC_COOLDOWN:'La bandeja acaba de actualizarse. Espera unos segundos.',MAIL_MESSAGE_NOT_FOUND:'El mensaje ya no está disponible en el servidor de correo.',MAIL_MESSAGE_TOO_LARGE:'Este mensaje supera el límite de lectura de 20 MB.',MAIL_CONNECTION_CHANGED:'La conexión cambió durante la lectura. Actualiza la bandeja.',MAIL_CONFIG_CONFLICT:'La cuenta cambió mientras se conectaba. Actualiza la pantalla.',MAIL_EMAIL_NOT_ALLOWED:'Usa una cuenta autorizada para el proveedor seleccionado.'};
+  const explain=error=>errors[error?.code||error?.message]||'No se pudo completar la lectura. La bandeja conserva la última lectura confirmada.';
+  function clear(){state.status=null;state.messages=[];state.selected=null;state.cursor=null;state.error='';for(const c of controllers)c.abort();controllers.clear();}
+  function dispose(){state.disposed=true;clearInterval(timer);unsubscribe?.();clear();}
+  async function request(suffix,method='GET',body){
+    const user=auth()?.currentUser,tenantId=tenant();
+    if(!user||!tenantId)throw Error('MAIL_AUTH_REQUIRED');
+    const uid=user.uid,controller=new AbortController();controllers.add(controller);
+    try{
+      const token=await user.getIdToken(true);
+      if(state.disposed||auth()?.currentUser?.uid!==uid)throw Error('MAIL_SESSION_INVALID');
+      const response=await fetch('/api/tenants/'+encodeURIComponent(tenantId)+'/mailboxes/self/'+suffix,{method,headers:{Authorization:'Bearer '+token,Accept:'application/json',...(method==='POST'?{'Content-Type':'application/json'}:{})},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store',credentials:'same-origin',signal:controller.signal});
+      const result=await response.json();
+      if(state.disposed||auth()?.currentUser?.uid!==uid)throw Error('MAIL_SESSION_INVALID');
+      if(!response.ok||result.ok!==true){const error=Error(result.error||'MAIL_PROVIDER_FAILED');error.code=result.error;throw error;}
+      return result;
+    }finally{controllers.delete(controller);}
+  }
+  async function perform(task){
+    if(state.busy||state.disposed)return;state.busy=true;state.error='';draw();
+    try{await task();}catch(error){if(!state.disposed&&error.name!=='AbortError')state.error=explain(error);}
+    finally{state.busy=false;if(!state.disposed)draw();}
+  }
+  async function loadList(append=false){
+    const result=await request('messages'+(append&&state.cursor?'?before='+encodeURIComponent(state.cursor):''));
+    state.messages=append?[...state.messages,...result.messages.filter(row=>!state.messages.some(old=>old.id===row.id))]:result.messages;
+    state.cursor=result.nextCursor;
+  }
+  async function reload(sync=false,older=false){
+    state.status=await request('status');
+    if(!state.status.canRead){state.messages=[];state.selected=null;return;}
+    if(sync){await request('sync','POST',{older});state.status=await request('status');}
+    await loadList();
+  }
+  function draw(){
+    const status=state.status,connected=status?.canRead===true,selected=state.selected;
+    const last=status?.lastSyncAt?new Date(status.lastSyncAt).toLocaleString('es'):'Sin lectura de mensajes';
+    host.innerHTML=`<style>.cx-user-mail-grid{display:grid;grid-template-columns:150px minmax(240px,320px) minmax(260px,1fr);min-height:480px;border:1px solid var(--border);border-radius:12px;overflow:hidden}.cx-user-mail-list{border-right:1px solid var(--border);max-height:68vh;overflow:auto}.cx-user-mail-reader{padding:20px;min-width:0;max-height:68vh;overflow:auto}.cx-user-mail-row{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--border);padding:14px;background:var(--panel);color:var(--t1);cursor:pointer}.cx-user-mail-row[aria-current=true]{background:var(--brand-light)}@media(max-width:850px){.cx-user-mail-grid{grid-template-columns:1fr}.cx-user-mail-folders{display:none}.cx-user-mail-list{max-height:260px;border-right:0;border-bottom:1px solid var(--border)}}.cx-user-mail-error{padding:12px;border:1px solid var(--danger,#b91c1c);border-radius:8px;margin:12px 0}.cx-user-mail-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;font:inherit}</style>
+    <section class="card card-p" data-mailbox-owner="self" data-provider-backed="true" aria-busy="${state.busy}">
+      <div class="between" style="gap:12px;flex-wrap:wrap"><div><h2 style="margin:0 0 6px">Mi correo</h2><p style="margin:0;color:var(--t2)">Tu bandeja corporativa, vinculada a tu sesión de CXOrbia.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-soft btn-sm" id="mail-refresh" ${!connected||state.busy?'disabled':''}>Actualizar</button><button class="btn btn-pr btn-sm" id="mail-connect" ${!status?.enabled||state.busy?'disabled':''}>${connected?'Cambiar conexión':'Conectar mi cuenta'}</button>${status?.connectionStatus==='connected'?'<button class="btn btn-ghost btn-sm" id="mail-disconnect" '+(state.busy?'disabled':'')+'>Desconectar</button>':''}</div></div>
+      <div style="margin:14px 0;padding:12px;background:var(--panel-2);border-radius:8px"><b>${connected?'Cuenta conectada: '+esc(status.emailAddress):status?.connectionStatus==='revoked'?'Cuenta desconectada':status?.enabled?'Conecta tu cuenta para recibir correo':'Conexión segura pendiente de activación'}</b><div style="font-size:12px;color:var(--t2);margin-top:5px">${connected?'Última lectura: '+esc(last)+'. Se comprueban nuevos mensajes cada minuto mientras esta pantalla está abierta.':'La conexión se confirma cuando el servidor acepta tus credenciales y permite leer la bandeja.'}</div></div>
+      ${state.error?'<div class="cx-user-mail-error" role="alert">'+esc(state.error)+'</div>':''}
+      <div class="cx-user-mail-grid"><aside class="cx-user-mail-folders" style="padding:16px;background:var(--panel-2)"><b>Recibidos</b><p style="font-size:12px;color:var(--t2)">Los mensajes permanecen en el servidor.</p><button class="btn btn-ghost btn-sm" disabled title="El envío todavía no está activado">Redactar</button><p style="font-size:12px;color:var(--t3)">Envío pendiente de activación. No se envían correos automáticamente.</p></aside>
+      <div class="cx-user-mail-list" aria-label="Mensajes recibidos">${state.messages.map(row=>'<button class="cx-user-mail-row" data-message="'+row.id+'" aria-current="'+(selected?.id===row.id)+'" '+(state.busy?'disabled':'')+'><div style="font-size:12px;color:var(--t2)">'+esc(row.fromName||row.fromAddress||'Remitente')+'</div><div style="font-weight:'+(row.read?'500':'750')+';margin:5px 0">'+esc(row.subject)+'</div>'+(row.providerPresent===false?'<small>Conservado en CXOrbia · ya no está en el servidor</small><br>':'')+'<small>'+esc(row.date?new Date(row.date).toLocaleString('es'):'Fecha no indicada')+'</small></button>').join('')||'<p style="padding:20px;color:var(--t2)">'+(state.busy?'Leyendo el buzón…':connected?'Aún no hay mensajes leídos. Usa Actualizar para consultar el servidor.':'La bandeja aparecerá después de conectar tu cuenta.')+'</p>'}${state.cursor?'<button class="btn btn-soft btn-sm" id="mail-more" '+(state.busy?'disabled':'')+'>Ver más mensajes leídos</button>':''}${status?.hasOlder?'<button class="btn btn-ghost btn-sm" id="mail-older" '+(state.busy?'disabled':'')+'>Leer mensajes anteriores del servidor</button>':''}</div>
+      <article class="cx-user-mail-reader">${selected?(selected.providerPresent===false?'<p role="status">Copia leída anteriormente: este mensaje ya no está en el servidor de correo.</p>':'')+'<h3 style="margin-top:0;overflow-wrap:anywhere">'+esc(selected.subject)+'</h3><p><b>'+esc(selected.fromName)+'</b> '+esc(selected.fromAddress)+'</p><p style="font-size:12px;color:var(--t2)">Para: '+esc((selected.to||[]).map(row=>row.address||row.name).join(', '))+'</p><pre class="cx-user-mail-body">'+esc(selected.text||'(Sin cuerpo de texto)')+'</pre>'+((selected.attachments||[]).length?'<h4>Adjuntos del mensaje</h4><ul>'+selected.attachments.map(a=>'<li>'+esc(a.filename||'Adjunto')+' · '+esc(Math.ceil(a.bytes/1024))+' KB</li>').join('')+'</ul><p style="font-size:12px;color:var(--t2)">Los adjuntos se muestran como referencia; su descarga aún no está activada.</p>':'')+'<p style="font-size:11px;color:var(--t3);overflow-wrap:anywhere">Referencia CXOrbia: '+esc(selected.id)+'</p><button class="btn btn-soft btn-sm" disabled>Responder · envío pendiente</button>':'<p style="color:var(--t2)">Selecciona un correo para leerlo.</p>'}</article></div>
+      <p style="font-size:12px;color:var(--t3);margin-bottom:0">Las carpetas locales de Outlook y los mensajes que ya no estén en el servidor no se importan mediante POP. Las alertas de revisión de hojas de ruta continúan dentro de CXOrbia, independientemente del correo.</p>
+    </section>`;
+    host.querySelector('#mail-refresh')?.addEventListener('click',()=>perform(()=>reload(true)));
+    host.querySelector('#mail-more')?.addEventListener('click',()=>perform(()=>loadList(true)));
+    host.querySelector('#mail-older')?.addEventListener('click',()=>perform(()=>reload(true,true)));
+    host.querySelector('#mail-connect')?.addEventListener('click',connectModal);
+    host.querySelector('#mail-disconnect')?.addEventListener('click',()=>perform(async()=>{await request('disconnect','POST',{});clear();await reload();}));
+    host.querySelectorAll('[data-message]').forEach(button=>button.addEventListener('click',()=>perform(async()=>{state.selected=(await request('messages/'+button.dataset.message)).message;const row=state.messages.find(item=>item.id===state.selected.id);if(row)row.read=true;})));
+  }
+  function connectModal(){
+    if(!state.status?.enabled)return;
+    const providers=state.status.providers||[],initial=state.status.emailAddress||'';
+    ui.modal('Conectar mi cuenta de correo',`<form id="mail-account-form"><label>Proveedor<select class="inp" name="providerId">${providers.map(row=>'<option value="'+esc(row.id)+'">'+esc(row.label)+'</option>').join('')}</select></label><label style="display:block;margin-top:12px">Tu correo<input class="inp" name="emailAddress" type="email" autocomplete="username" required value="${esc(initial)}"></label><label style="display:block;margin-top:12px">Contraseña de tu correo<input class="inp" name="password" type="password" autocomplete="current-password" required maxlength="1024"></label><p style="font-size:12px;color:var(--t2)">La contraseña se envía por HTTPS y queda cifrada en el servidor, vinculada sólo a tu usuario. CXOrbia conserva los correos en el servidor y no realiza envíos automáticos.</p><div id="mail-connect-error" role="alert"></div><button class="btn btn-pr" type="submit">Verificar y conectar</button></form>`,{onMount:(overlay,close)=>{
+      const form=overlay.querySelector('form'),password=form.elements.password;
+      form.addEventListener('submit',async event=>{event.preventDefault();const button=form.querySelector('button');if(button.disabled)return;button.disabled=true;const payload={providerId:form.elements.providerId.value,emailAddress:form.elements.emailAddress.value,password:password.value};password.value='';
+        try{const result=await request('connect','POST',payload);payload.password='';state.status=result;close();await perform(()=>reload(true));}
+        catch(error){overlay.querySelector('#mail-connect-error').textContent=explain(error);}
+        finally{payload.password='';password.value='';button.disabled=false;}
+      });
+    }});
+  }
   draw();
+  const instance=auth();
+  if(instance){unsubscribe=instance.onAuthStateChanged(user=>{if(state.disposed)return;if(state.uid!==user?.uid){clear();state.uid=user?.uid||null;state.busy=false;draw();if(user)void perform(()=>reload());}});}
+  else{state.error='Inicia sesión para abrir tu buzón.';draw();}
+  timer=setInterval(()=>{if(!host.isConnected){dispose();return;}if(!document.hidden&&state.status?.canRead&&!state.busy)void perform(()=>reload(true));},60000);
   return host;
 });
