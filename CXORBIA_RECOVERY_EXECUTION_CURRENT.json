@@ -264,7 +264,7 @@
     "status": "HOLD_I3_GTHN_PENDING_DEV",
     "priority": "READ_CURRENT_HUMAN_PASS_RECEIPT_AND_MONOTONE_ACCOUNTING_BEFORE_OLDER_SNAPSHOTS",
     "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
-    "sourceTree": "a73f5579a5d791012e911d5ca3e74d343b716a1d",
+    "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
     "devRuntime": "cxorbia-live-hr-dev-00389-p4r",
     "devHosting": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
     "lastNewProofs": {
@@ -27327,5 +27327,20 @@
     "sourceTestsPass": 615,
     "sourceTestsFail": 0,
     "production": false
+  },
+  "vrm372HumanAcceptanceAliasRepair": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "activePhaseAClosureLock20261110.sourceTree",
+    "before": "a73f5579a5d791012e911d5ca3e74d343b716a1d",
+    "after": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+    "failedRunId": 45420999554,
+    "productChanged": false,
+    "humanPassPreserved": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "newDomainMatches": 0
   }
 }
