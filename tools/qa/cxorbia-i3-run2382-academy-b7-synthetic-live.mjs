@@ -7,9 +7,427 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
-import {getAuth} from 'firebase-admin/auth';
-import {getFirestore} from 'firebase-admin/firestore';
+// Control-only modes use Node builtins, so source gates and self-tests run without
+// installing or initializing Firebase. Live modes load the same SDK versions later.
+let applicationDefault,initializeApp,getApps,getAuth,getFirestore;
+async function loadQaFirebaseDependencies(){
+  const [app,auth,firestore]=await Promise.all([import('firebase-admin/app'),import('firebase-admin/auth'),import('firebase-admin/firestore')]);
+  ({applicationDefault,initializeApp,getApps}=app);({getAuth}=auth);({getFirestore}=firestore);
+}
+
+function runD08Preflight(){
+  const e=process.env,read=p=>JSON.parse(fs.readFileSync(p,'utf8')),check=(ok,code)=>{if(!ok)throw Error(code);};
+  check(e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_BRANCH');
+  check(execFileSync('git',['rev-parse',e.FOCAL_SOURCE+'^{tree}'],{encoding:'utf8'}).trim()===e.FOCAL_TREE,'RELEASE_COMPOSITION_FAILURE:D08_SOURCE_TREE');
+  execFileSync('git',['diff','--quiet',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'],{stdio:'pipe'});
+  execFileSync(process.execPath,['--check','tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs'],{stdio:'pipe'});
+  fs.mkdirSync(e.QA_OUT,{recursive:true});
+  const c=read('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),d=read(e.CANDIDATE_DESCRIPTOR),pointer=c.currentD08UiQaRequest||{};
+  check(c.production==='DO_NOT_TOUCH'&&c.authorizationI4===false&&/^docs\/checkpoints\/[^/]+\.json$/.test(pointer.path||''),'AUTH_FAILURE:D08_REQUEST_POINTER');
+  check(execFileSync('git',['hash-object',pointer.path],{encoding:'utf8'}).trim()===pointer.gitBlob,'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_BLOB');
+  const q=read(pointer.path),seal=d.postDeployRunSeal||{};
+  check(q.schemaVersion==='cxorbia.i3.d08-ui-qa-request.v1'&&q.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&q.production===false&&q.hrIndependent===true&&q.sourceSha===e.FOCAL_SOURCE&&q.sourceTree===e.FOCAL_TREE&&q.tenantId===e.TENANT_ID&&q.projectId===e.PROJECT_ID,'AUTH_FAILURE:D08_REQUEST_SCOPE');
+  for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])check(q[k]===seal[k],'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_SEAL_'+k);
+  check(q.pairedReceiptPath===seal.receiptPath&&/^docs\/checkpoints\/[^/]+\.json$/.test(q.pairedReceiptPath||'')&&execFileSync('git',['hash-object',q.pairedReceiptPath],{encoding:'utf8'}).trim()===q.pairedReceiptGitBlob,'RELEASE_COMPOSITION_FAILURE:D08_PAIRED_RECEIPT');
+  const variables={D08_QA_REQUEST:pointer.path,CXORBIA_I3_QA_SCOPE:'D08_ACADEMY_UI',CXORBIA_I3_QA_ISOLATED_WRITE_GATE:'PAULA_AUTHORIZED_D08_DEV_ONLY',DEV_REVISION:q.runtimeRevision,RUNTIME_DIGEST:q.runtimeDigest,HOSTING_VERSION_NAME:q.hostingVersion};
+  for(const [k,v] of Object.entries(variables)){check(typeof v==='string'&&!/[\r\n]/.test(v),'SOURCE_FAILURE:D08_ENV_VALUE');fs.appendFileSync(e.GITHUB_ENV,k+'='+v+'\n');}
+  console.log(JSON.stringify({decision:'PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT',sourceSha:q.sourceSha,providerWrites:0}));
+}
+
+function verifyD08UiResult(r){
+  const check=(ok,code)=>{if(!ok)throw Error(code);};
+  check(r.decision==='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP'&&r.functionalPass===true,'FUNCTIONAL_DEFECT:D08_RESULT_NOT_PASS');
+  check(r.cleanup?.ok===true&&r.cleanup.exactKnownPathsOnly===true&&r.cleanup.remainingOwnedDocuments===0&&r.cleanup.remainingOwnedAuth===0,'PERSISTENCE_FAILURE:D08_RESULT_CLEANUP');
+  check(r.serving?.before?.exact===true&&r.serving?.after?.exact===true&&r.productionIndexUnchanged===true,'RELEASE_COMPOSITION_FAILURE:D08_RESULT_SERVING');
+  check(r.hrIndependent===true&&r.fullDomain===false&&r.production===false,'SOURCE_FAILURE:D08_RESULT_SCOPE');
+  check(r.safety?.hrWrites===0&&r.safety.realLearnerWrites===0&&r.safety.realCourseWrites===0&&r.safety.realVisitsWritten===0,'AUTH_FAILURE:D08_RESULT_UNAUTHORIZED_WRITE');
+  check(['admin','shopper','cliente'].every(role=>r.roles?.[role]?.independentNewSession===true&&r.roles[role].replayNoDuplicate===true&&r.roles[role].providerAck===true)&&Array.isArray(r.resources)&&r.resources.length===3&&r.authorizedAdminEdit?.independentNewSession===true,'FUNCTIONAL_DEFECT:D08_RESULT_COVERAGE');
+  return {decision:'PASS_D08_RESULT_ARTIFACT_CONTRACT',providerWrites:0,fullDomain:false};
+}
+
+function runD08ResultVerify(){
+  const r=JSON.parse(fs.readFileSync(process.env.QA_OUT+'/result.json','utf8'));
+  console.log(JSON.stringify(verifyD08UiResult(r)));
+}
+
+/* D08 proposal: insert this block before runClientCollaborationQa in the existing runner.
+ * No automatic MATCH promotion. Source-owned courses/manuals are read; only disposable
+ * QA identities, their progress and one tagged draft course can be written.
+ */
+function academyUiQaPrimitives(){
+  const str=v=>String(v??'').trim();
+  const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
+  const hash=v=>crypto.createHash('sha256').update(Buffer.isBuffer(v)?v:typeof v==='string'?v:JSON.stringify(stable(v))).digest('hex');
+  const check=(ok,code)=>{if(!ok)throw Error(code);};
+  const same=(a,b)=>hash(a)===hash(b);
+  const without=(o,keys)=>Object.fromEntries(Object.entries(o||{}).filter(([k])=>!keys.includes(k)));
+  const progressKey=p=>hash([p.origin,p.audience,p.courseId,p.revision]);
+  function describeCommand(c,identity,plan,spec){
+    check(identity&&spec.identities.some(x=>x.uid===identity.uid),'AUTH_FAILURE:D08_UNPLANNED_ACTOR');
+    check(c&&c.commandType===plan.type&&c.tenantId===spec.tenantId&&c.projectId===spec.projectId&&str(c.idempotencyKey)&&str(c.idempotencyKey).length<=250,'SOURCE_FAILURE:D08_COMMAND_SCOPE');
+    // The current browser boundary can label Admin/Cliente as "authenticated-user".
+    // That label is not identity authority: bind the observed boundary here and verify
+    // the actual Firebase UID independently in every receipt/audit/readback below.
+    check(c.actor?.actorId===(plan.actorId||identity.uid)&&c.actor?.role===identity.role,'AUTH_FAILURE:D08_COMMAND_ACTOR');
+    check(['write','replay','negative'].includes(plan.mode),'SOURCE_FAILURE:D08_COMMAND_MODE');
+    const p=c.payload||{},kind=c.commandType==='academy.progress.lesson.complete'?'progress':'course';
+    let rid,auditId,trailId,course;
+    if(kind==='progress'){
+      check(c.entityType==='academyProgress'&&c.entityId===p.courseId&&c.periodId===null&&c.requireProject===true&&c.requirePeriod===false&&c.authorization?.permission==='academy.progress.self','SOURCE_FAILURE:D08_PROGRESS_BOUNDARY');
+      check(Object.keys(p).every(k=>['origin','audience','courseId','revision','lessonId','answers'].includes(k))&&p.origin==='base'&&Number.isInteger(c.expectedVersion)&&c.expectedVersion>=0,'SOURCE_FAILURE:D08_PROGRESS_PAYLOAD');
+      course=spec.courses.find(x=>x.courseId===p.courseId&&x.audience===p.audience&&x.revision===p.revision);
+      const lesson=course?.lessons.find(x=>x.id===p.lessonId);
+      check(course&&lesson&&Array.isArray(p.answers)&&p.answers.length===lesson.quiz.length&&p.answers.every((v,i)=>Number.isInteger(v)&&v>=0&&v<lesson.quiz[i].options),'SOURCE_FAILURE:D08_PROGRESS_REFERENCE');
+      check(plan.courseId===p.courseId&&plan.lessonId===p.lessonId,'SOURCE_FAILURE:D08_UNPLANNED_LESSON');
+      if(plan.mode!=='negative')check(identity.courseId===p.courseId&&identity.role===p.audience&&!identity.observer,'AUTH_FAILURE:D08_REAL_OR_OTHER_LEARNER_WRITE');
+      else check(plan.negative==='wrong_audience'&&identity.observer===true&&identity.role==='shopper'&&p.audience==='cliente','SOURCE_FAILURE:D08_UNPLANNED_NEGATIVE');
+      rid='academy-progress-'+hash([identity.uid,c.idempotencyKey]).slice(0,40);auditId=rid;trailId=rid;
+    }else{
+      check(['academy.course.create','academy.course.update'].includes(c.commandType)&&c.entityType==='academyCourse'&&c.entityId===spec.courseId&&c.requirePeriod===false,'SOURCE_FAILURE:D08_UNPLANNED_COURSE_COMMAND');
+      check(c.periodId===null||typeof c.periodId==='string'&&c.periodId.length>0,'SOURCE_FAILURE:D08_COURSE_PERIOD');
+      check(p.audience==='admin','SOURCE_FAILURE:D08_DRAFT_AUDIENCE');
+      if(c.commandType==='academy.course.create'){
+        check(plan.mode==='write'&&identity.role==='admin'&&c.expectedVersion==='absent'&&c.authorization?.permission==='academy.create','AUTH_FAILURE:D08_DRAFT_CREATE');
+        check(p.id===spec.courseId&&p.n===spec.draftName&&p.desc===spec.draftDescription&&p.cat==='Operación'&&p.cert===false&&Array.isArray(p.lessons)&&p.lessons.length===0&&p.estado==='borrador'&&p.contentVersion===1&&p.workflowVersion===1,'SOURCE_FAILURE:D08_DRAFT_CREATE_PAYLOAD');
+        check(p.qaSynthetic===true&&p.qaRunId===spec.runId&&p.qaRunAttempt===spec.attempt&&p.qaPurpose==='D08'&&same(p.scope,spec.draftScope),'SOURCE_FAILURE:D08_DRAFT_CREATE_OWNERSHIP');
+      }else{
+        check(Number.isInteger(c.expectedVersion)&&c.expectedVersion>0&&c.authorization?.permission==='academy.edit','SOURCE_FAILURE:D08_DRAFT_UPDATE_VERSION');
+        check(p.patch&&Object.keys(p.patch).every(k=>['n','desc','cat','scope'].includes(k))&&p.contentChange===true,'SOURCE_FAILURE:D08_DRAFT_UPDATE_FIELDS');
+        check(p.patch.n===spec.updatedName&&p.patch.desc===spec.updatedDescription&&p.patch.cat==='Operación'&&same(p.patch.scope,spec.draftScope),'SOURCE_FAILURE:D08_DRAFT_UPDATE_PAYLOAD');
+        if(plan.mode==='negative')check(['role_denied','stale_version'].includes(plan.negative)&&(plan.negative==='role_denied'?['shopper','cliente'].includes(identity.role):identity.role==='admin'),'AUTH_FAILURE:D08_NEGATIVE_UPDATE_ACTOR');
+        else check(identity.role==='admin','AUTH_FAILURE:D08_DRAFT_UPDATE_ACTOR');
+      }
+      rid=hash(spec.tenantId+'\0'+c.idempotencyKey).slice(0,40);
+      auditId='aa-'+hash(c.idempotencyKey).slice(0,32);trailId='academy-'+hash(c.idempotencyKey).slice(0,32);
+    }
+    const prefix='tenants/'+spec.tenantId;
+    return {uid:identity.uid,role:identity.role,kind,mode:plan.mode,negative:plan.negative||null,command:c,commandSha256:hash(c),commandDigest:kind==='progress'?hash({actorUid:identity.uid,tenantId:spec.tenantId,commandType:c.commandType,payload:p}):hash(c),progressKey:kind==='progress'?progressKey(p):null,
+      receiptPath:prefix+'/commandReceipts/'+rid,auditPath:prefix+'/academyAudit/'+auditId,trailPath:prefix+'/entityAuditTrail/'+trailId};
+  }
+  function verifyBundle(record,bundle,spec){
+    const {receipt,audit,trail}=bundle,any=!!(receipt||audit||trail);
+    if(!any)return false;
+    const c=record.command,p=c.payload;
+    check(receipt&&audit&&trail,'PERSISTENCE_FAILURE:D08_PARTIAL_COMMAND_BUNDLE');
+    check(receipt.status==='committed'&&receipt.providerAck===true&&receipt.actorUid===record.uid&&receipt.commandDigest===record.commandDigest&&receipt.commandType===c.commandType&&receipt.entityId===c.entityId&&receipt.entityType===c.entityType,'PERSISTENCE_FAILURE:D08_RECEIPT_OWNERSHIP');
+    for(const a of [audit,trail])check(a.actorUid===record.uid&&a.actorRole===record.role&&a.tenantId===spec.tenantId&&a.projectId===spec.projectId&&a.commandType===c.commandType&&a.entityId===c.entityId&&a.entityType===c.entityType&&a.idempotencyKey===c.idempotencyKey&&(a.periodId??null)===(c.periodId??null),'PERSISTENCE_FAILURE:D08_AUDIT_OWNERSHIP');
+    if(record.kind==='progress')check(receipt.progressKey===record.progressKey&&audit.lessonId===p.lessonId&&audit.courseRevision===p.revision&&audit.progressVersion===receipt.entityVersion,'PERSISTENCE_FAILURE:D08_PROGRESS_AUDIT');
+    return true;
+  }
+  function verifyMembership(row,identity,committed,spec){
+    check(row&&same(without(row,['academyProgress']),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_NON_PROGRESS_DRIFT');
+    const records=committed.filter(r=>r.uid===identity.uid&&r.kind==='progress'),saved=row.academyProgress;
+    if(!records.length){check(saved===undefined,'PERSISTENCE_FAILURE:D08_UNPLANNED_PROGRESS');return;}
+    check(saved&&saved.schemaVersion===1&&saved.ownerUid===identity.uid&&saved.tenantId===spec.tenantId&&Object.keys(saved).every(k=>['schemaVersion','ownerUid','tenantId','courses'].includes(k)),'PERSISTENCE_FAILURE:D08_PROGRESS_OWNER');
+    const keys=[...new Set(records.map(r=>r.progressKey))].sort();
+    check(same(Object.keys(saved.courses||{}).sort(),keys),'PERSISTENCE_FAILURE:D08_UNPLANNED_PROGRESS_COURSE');
+    for(const key of keys){
+      const list=records.filter(r=>r.progressKey===key).sort((a,b)=>a.bundle.receipt.entityVersion-b.bundle.receipt.entityVersion),p=list[0].command.payload,course=spec.courses.find(x=>x.courseId===p.courseId&&x.audience===p.audience&&x.revision===p.revision),lessons={};
+      list.forEach((r,i)=>{check(r.bundle.receipt.entityVersion===i+1&&r.command.expectedVersion===i&&!lessons[r.command.payload.lessonId],'PERSISTENCE_FAILURE:D08_PROGRESS_VERSION_SEQUENCE');lessons[r.command.payload.lessonId]=100;});
+      const actual=saved.courses[key],expected={origin:p.origin,audience:p.audience,courseId:p.courseId,revision:p.revision,version:list.length,lessons,completed:course.lessons.every(l=>lessons[l.id]===100)};
+      check(same(without(actual,['updatedAt']),expected)&&Number.isFinite(Date.parse(actual.updatedAt)),'PERSISTENCE_FAILURE:D08_PROGRESS_PAYLOAD_DRIFT');
+    }
+  }
+  function verifyCourse(row,committed,spec){
+    const records=committed.filter(r=>r.kind==='course').sort((a,b)=>a.bundle.receipt.entityVersion-b.bundle.receipt.entityVersion);
+    if(!records.length){check(!row,'PERSISTENCE_FAILURE:D08_UNPLANNED_DRAFT');return;}
+    const create=records[0],c=create.command,p=c.payload;
+    check(c.commandType==='academy.course.create'&&create.bundle.receipt.entityVersion===1,'PERSISTENCE_FAILURE:D08_DRAFT_CREATE_RECEIPT');
+    const identity=spec.identities.find(x=>x.uid===create.uid),clean=without(p,['id','version','createdAt','createdBy','updatedAt','updatedBy','seed','sourceOwned']);
+    let expected={...clean,id:spec.courseId,tenantId:spec.tenantId,audience:'admin',estado:'borrador',contentVersion:1,workflowVersion:1,version:1,createdBy:create.uid,createdByUserId:create.uid,creador:identity.name,updatedBy:create.uid};
+    records.slice(1).forEach((r,i)=>{check(r.command.commandType==='academy.course.update'&&r.bundle.receipt.entityVersion===i+2&&r.command.expectedVersion===i+1,'PERSISTENCE_FAILURE:D08_DRAFT_VERSION_SEQUENCE');expected={...expected,...r.command.payload.patch,contentVersion:expected.contentVersion+1,version:expected.version+1,updatedBy:r.uid};});
+    check(row&&same(without(row,['createdAt','updatedAt']),expected)&&Number.isFinite(Date.parse(row.createdAt))&&Number.isFinite(Date.parse(row.updatedAt)),'PERSISTENCE_FAILURE:D08_DRAFT_OWNERSHIP_OR_CONCURRENT_CHANGE');
+  }
+  return {str,stable,hash,check,same,without,progressKey,describeCommand,verifyBundle,verifyMembership,verifyCourse};
+}
+
+function runAcademyUiQaSelfTest(){
+  const h=academyUiQaPrimitives(),{check,describeCommand,verifyBundle,verifyMembership,verifyCourse}=h;
+  const course={courseId:'s_ruta',audience:'shopper',revision:'a'.repeat(64),lessons:[{id:'sr1',quiz:[]},{id:'sr2',quiz:[]}]};
+  const identity={uid:'qa_d08_12345678_1_shopper',role:'shopper',name:'QA D08',courseId:'s_ruta',expectedMembership:{uid:'qa_d08_12345678_1_shopper',qaSynthetic:true}};
+  const spec={tenantId:'qaTenant',projectId:'qaProject',runId:'12345678',attempt:'1',courseId:'qa_draft',identities:[identity],courses:[course]};
+  const c={commandType:'academy.progress.lesson.complete',entityType:'academyProgress',entityId:'s_ruta',tenantId:spec.tenantId,projectId:spec.projectId,periodId:null,requireProject:true,requirePeriod:false,actor:{actorId:identity.uid,role:'shopper'},authorization:{permission:'academy.progress.self'},idempotencyKey:'key-one',expectedVersion:0,payload:{origin:'base',audience:'shopper',courseId:'s_ruta',revision:course.revision,lessonId:'sr1',answers:[]}};
+  const plan={type:c.commandType,mode:'write',courseId:'s_ruta',lessonId:'sr1'},r=describeCommand(c,identity,plan,spec);
+  const audit={actorUid:identity.uid,actorRole:'shopper',tenantId:spec.tenantId,projectId:spec.projectId,periodId:null,commandType:c.commandType,entityId:c.entityId,entityType:c.entityType,idempotencyKey:c.idempotencyKey};
+  const bundle={receipt:{status:'committed',providerAck:true,actorUid:identity.uid,commandDigest:r.commandDigest,commandType:c.commandType,entityId:c.entityId,entityType:c.entityType,progressKey:r.progressKey,entityVersion:1},audit:{...audit,lessonId:'sr1',courseRevision:course.revision,progressVersion:1},trail:audit};r.bundle=bundle;
+  const member={...identity.expectedMembership,academyProgress:{schemaVersion:1,ownerUid:identity.uid,tenantId:spec.tenantId,courses:{[r.progressKey]:{...c.payload,version:1,lessons:{sr1:100},completed:false,updatedAt:'2026-11-24T00:00:00.000Z'}}}};
+  delete member.academyProgress.courses[r.progressKey].lessonId;delete member.academyProgress.courses[r.progressKey].answers;
+  let passed=0;const positive=(name,fn)=>{fn();passed++;},negative=(name,fn)=>{let rejected=false;try{fn();}catch{rejected=true;}check(rejected,'D08_SELF_TEST_ACCEPTED:'+name);passed++;};
+  positive('owned progress bundle',()=>check(verifyBundle(r,bundle,spec),'D08_SELF_TEST_BUNDLE'));
+  positive('owned progress member',()=>verifyMembership(member,identity,[r],spec));
+  negative('cross-tenant dispatch',()=>describeCommand({...c,tenantId:'foreign'},identity,plan,spec));
+  negative('foreign actor',()=>describeCommand({...c,actor:{actorId:'real-user',role:'shopper'}},identity,plan,spec));
+  negative('unplanned type',()=>describeCommand({...c,commandType:'visit.state.update'},identity,{...plan,type:'visit.state.update'},spec));
+  negative('owner spoof in progress',()=>describeCommand({...c,payload:{...c.payload,ownerUid:'real-user'}},identity,plan,spec));
+  negative('partial receipt bundle',()=>verifyBundle(r,{...bundle,trail:null},spec));
+  negative('foreign receipt owner',()=>verifyBundle(r,{...bundle,receipt:{...bundle.receipt,actorUid:'real-user'}},spec));
+  negative('modified non-progress member field',()=>verifyMembership({...member,qaSynthetic:false},identity,[r],spec));
+  negative('foreign progress owner',()=>verifyMembership({...member,academyProgress:{...member.academyProgress,ownerUid:'real-user'}},identity,[r],spec));
+  negative('unexpected course progress',()=>verifyMembership({...member,academyProgress:{...member.academyProgress,courses:{...member.academyProgress.courses,foreign:{}}}},identity,[r],spec));
+  negative('unexpected completed lesson',()=>verifyMembership({...member,academyProgress:{...member.academyProgress,courses:{[r.progressKey]:{...member.academyProgress.courses[r.progressKey],lessons:{sr1:100,sr2:100}}}}},identity,[r],spec));
+  negative('unplanned draft',()=>verifyCourse({id:'real-course'},[],spec));
+  positive('absent draft',()=>verifyCourse(null,[],spec));
+  const admin={uid:'qa_d08_12345678_1_admin',role:'admin',name:'QA D08 Admin'},draftScope={tenantId:['qaTenant'],projectId:[],rol:['admin'],pais:[],nivel:[],modulo:[],paquete:[]};
+  const draftSpec={...spec,identities:[...spec.identities,admin],draftScope,draftName:'QA draft',draftDescription:'QA description',updatedName:'QA updated',updatedDescription:'QA changed'};
+  const create={commandType:'academy.course.create',entityType:'academyCourse',entityId:'qa_draft',tenantId:spec.tenantId,projectId:spec.projectId,periodId:null,requirePeriod:false,actor:{actorId:admin.uid,role:'admin'},authorization:{permission:'academy.create'},expectedVersion:'absent',idempotencyKey:'draft-create',payload:{id:'qa_draft',n:draftSpec.draftName,desc:draftSpec.draftDescription,cat:'Operación',cert:false,lessons:[],estado:'borrador',contentVersion:1,workflowVersion:1,audience:'admin',scope:draftScope,qaSynthetic:true,qaRunId:spec.runId,qaRunAttempt:spec.attempt,qaPurpose:'D08'}};
+  const created=describeCommand(create,admin,{type:create.commandType,mode:'write'},draftSpec);created.bundle={receipt:{entityVersion:1}};
+  const draft={...create.payload,id:'qa_draft',tenantId:spec.tenantId,version:1,createdBy:admin.uid,createdByUserId:admin.uid,creador:admin.name,updatedBy:admin.uid,createdAt:'2026-11-24T00:00:00Z',updatedAt:'2026-11-24T00:00:00Z'};
+  positive('owned draft cleanup',()=>verifyCourse(draft,[created],draftSpec));
+  negative('unowned draft creator',()=>verifyCourse({...draft,createdByUserId:'real-user'},[created],draftSpec));
+  negative('concurrent draft edit',()=>verifyCourse({...draft,desc:'changed outside journal'},[created],draftSpec));
+  negative('non-draft publication',()=>verifyCourse({...draft,estado:'publicado_preview'},[created],draftSpec));
+  negative('untagged draft creation',()=>describeCommand({...create,payload:{...create.payload,qaSynthetic:false}},admin,{type:create.commandType,mode:'write'},draftSpec));
+  const update={...create,commandType:'academy.course.update',authorization:{permission:'academy.edit'},expectedVersion:1,idempotencyKey:'draft-update',payload:{audience:'admin',contentChange:true,patch:{n:draftSpec.updatedName,desc:draftSpec.updatedDescription,cat:'Operación',scope:draftScope}}};
+  const updated=describeCommand(update,admin,{type:update.commandType,mode:'write'},draftSpec);updated.bundle={receipt:{entityVersion:2}};
+  const draft2={...draft,...update.payload.patch,version:2,contentVersion:2};
+  positive('owned updated draft cleanup',()=>verifyCourse(draft2,[created,updated],draftSpec));
+  negative('unplanned draft field update',()=>describeCommand({...update,payload:{...update.payload,patch:{...update.payload.patch,createdByUserId:'real-user'}}},admin,{type:update.commandType,mode:'write'},draftSpec));
+  positive('observed browser actor label remains non-authoritative',()=>describeCommand({...c,actor:{actorId:'authenticated-user',role:'shopper'}},identity,{...plan,actorId:'authenticated-user'},spec));
+  console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
+}
+
+async function runAcademyUiQa(){
+  const e=process.env,h=academyUiQaPrimitives(),{str:s,stable,hash,check,same,without,describeCommand,verifyBundle,verifyMembership,verifyCourse}=h;
+  const sourceSha=s(e.FOCAL_SOURCE),sourceTree=s(e.FOCAL_TREE),runId=s(e.GITHUB_RUN_ID),attempt=s(e.GITHUB_RUN_ATTEMPT||'1'),out=s(e.QA_OUT);
+  const projectName=s(e.PROJECT),tenantId=s(e.TENANT_ID),projectId=s(e.PROJECT_ID),host=s(e.HOSTING_URL).replace(/\/$/,'');
+  const requestPath=s(e.D08_QA_REQUEST),readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+  check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&projectName==='cxorbia-backend-dev'&&host==='https://cxorbia-backend-dev.web.app'&&e.SERVICE==='cxorbia-live-hr-dev'&&e.REGION==='us-central1'&&e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831'&&tenantId&&projectId&&out&&/^\d{8,}$/.test(runId)&&/^\d+$/.test(attempt)&&/^[a-f0-9]{40}$/.test(sourceSha)&&/^[a-f0-9]{40}$/.test(sourceTree)&&/^docs\/checkpoints\/[^/]+\.json$/.test(requestPath),'SOURCE_FAILURE:D08_SCOPE_GATE');
+  const current=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),descriptor=readJson(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),qa=readJson(requestPath),seal=descriptor.postDeployRunSeal||{};
+  check(current.production==='DO_NOT_TOUCH'&&current.authorizationI4===false&&descriptor.productSourceSha===sourceSha&&descriptor.productTreeAuthority===sourceTree&&current.currentD08UiQaRequest?.path===requestPath&&execFileSync('git',['hash-object',requestPath],{encoding:'utf8'}).trim()===current.currentD08UiQaRequest.gitBlob,'AUTH_FAILURE:D08_REQUEST_AUTHORITY');
+  check(qa.schemaVersion==='cxorbia.i3.d08-ui-qa-request.v1'&&qa.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&qa.production===false&&qa.tenantId===tenantId&&qa.projectId===projectId&&qa.sourceSha===sourceSha&&qa.sourceTree===sourceTree&&qa.hrIndependent===true,'SOURCE_FAILURE:D08_REQUEST_SCOPE');
+  for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])check(qa[k]===seal[k],'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_SEAL_'+k);
+  check(qa.pairedReceiptPath===seal.receiptPath&&/^docs\/checkpoints\/[^/]+\.json$/.test(qa.pairedReceiptPath)&&execFileSync('git',['hash-object',qa.pairedReceiptPath],{encoding:'utf8'}).trim()===qa.pairedReceiptGitBlob,'RELEASE_COMPOSITION_FAILURE:D08_PAIRED_RECEIPT');
+  check(execFileSync('git',['rev-parse',sourceSha+'^{tree}'],{encoding:'utf8'}).trim()===sourceTree,'RELEASE_COMPOSITION_FAILURE:D08_SOURCE_TREE');
+  execFileSync('git',['diff','--exit-code',sourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules'],{stdio:'pipe'});
+  const country=s(qa.country).toUpperCase(),tag='qa_d08_'+runId+'_'+attempt,customId=tag+'_course';
+  check(/^[A-Z]{2}$/.test(country)&&same(qa.draftScope?.tenantId,[tenantId])&&same(qa.draftScope?.rol,['admin'])&&same(qa.draftScope?.projectId,[])&&Object.keys(qa.draftScope).every(k=>['tenantId','projectId','pais','rol','nivel','modulo','paquete'].includes(k)),'SOURCE_FAILURE:D08_FIXTURE_SCOPE');
+  const draftScope={tenantId:[tenantId],projectId:qa.draftScope.projectId,pais:[],rol:['admin'],nivel:[],modulo:[],paquete:[]};
+  check(same({...draftScope,...qa.draftScope},draftScope),'SOURCE_FAILURE:D08_FIXTURE_UNSUPPORTED_SCOPE');
+  const base=readJson('backend/contracts/cxorbia-academy-base-progress-contract-v1.json');
+  const selections=[['admin','admin','a_fin_op'],['shopper','shopper','s_ruta'],['cliente','cliente','cl_ruta'],['other','shopper',null]];
+  const identities=selections.map(([label,role,courseId])=>({uid:tag+'_'+label,label,role,courseId,observer:label==='other',namespace:role==='shopper'?'shopper':'staff',name:'QA D08 '+runId+' '+label,memberPath:'tenants/'+tenantId+'/users/'+tag+'_'+label,profilePath:role==='shopper'?'tenants/'+tenantId+'/shoppers/'+tag+'_'+label:null,state:'PLANNED_ABSENT'}));
+  const courses=selections.filter(x=>x[2]).map(([,audience,id])=>base.courses.find(c=>c.audience===audience&&c.courseId===id));
+  check(courses.every(c=>c&&c.lessons.length>=2&&c.lessons.some(l=>l.quiz.length>0)&&!c.technicalOnly),'SOURCE_FAILURE:D08_BASE_CONTRACT');
+  const spec={tenantId,projectId,runId,attempt,identities,courses,courseId:customId,draftScope,draftName:'QA D08 '+runId+' borrador',draftDescription:'Fixture temporal de edición autorizada D08.',updatedName:'QA D08 '+runId+' editado',updatedDescription:'Edición D08 confirmada por proveedor y sesión nueva.'};
+  fs.mkdirSync(out,{recursive:true});
+  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName});
+  const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
+  const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
+    runtimeRevision:qa.runtimeRevision,runtimeDigest:qa.runtimeDigest,hostingVersion:qa.hostingVersion,scope:'D08_FOCAL_UI_PROVIDER_PROGRESS_EDIT_AND_ROLE_NEGATIVES_NOT_FULL_CERTIFICATIONS_DOMAIN',
+    identities,creationJournal:[],roles:{},negatives:[],resources:[],sessionDiagnostics:[],cleanup:{ok:false},serving:{},safety:{hrWrites:0,realLearnerWrites:0,realCourseWrites:0,realVisitsWritten:0,paymentWrites:0,emailCalls:0,calendarCalls:0,productionDeploys:0}};
+  const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');save();
+  const records=new Map(),contexts=[],liveSessions=[];let browser=null,fixturesStarted=false,productionBefore='';
+  const authIdentity=u=>({uid:u.uid,displayName:u.displayName||'',disabled:u.disabled,email:u.email||null,emailVerified:u.emailVerified,phoneNumber:u.phoneNumber||null,photoURL:u.photoURL||null,creationTime:u.metadata.creationTime,providerData:u.providerData||[],mfa:u.multiFactor?.enrolledFactors||[]});
+  const gcloud=args=>execFileSync('gcloud',args,{encoding:'utf8',maxBuffer:8*1024*1024}).trim();
+  const redact=v=>String(v??'').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,700);
+  async function serving(stage){
+    const service=JSON.parse(gcloud(['run','services','describe',e.SERVICE,'--project',projectName,'--region',e.REGION,'--format=json'])),traffic=(service.status?.traffic||[]).filter(x=>Number(x.percent||0)>0);
+    check(service.status?.latestReadyRevisionName===qa.runtimeRevision&&traffic.length>0&&traffic.every(x=>x.revisionName===qa.runtimeRevision)&&traffic.reduce((a,x)=>a+Number(x.percent||0),0)===100,'RELEASE_COMPOSITION_FAILURE:D08_RUNTIME_DRIFT');
+    const revision=JSON.parse(gcloud(['run','revisions','describe',qa.runtimeRevision,'--project',projectName,'--region',e.REGION,'--format=json'])),vars=new Map((revision.spec?.containers?.[0]?.env||[]).map(x=>[x.name,x.value]));
+    check('sha256:'+s(revision.status?.imageDigest).split('sha256:').at(-1)===qa.runtimeDigest&&vars.get('CXORBIA_RECOVERY_SOURCE_SHA')===sourceSha,'RELEASE_COMPOSITION_FAILURE:D08_RUNTIME_SOURCE_DIGEST');
+    const token=gcloud(['auth','print-access-token']),res=await fetch('https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/channels/live',{headers:{authorization:'Bearer '+token},signal:AbortSignal.timeout(45000)});
+    check(res.ok,'PROVIDER_FAILURE:D08_HOSTING_INVENTORY');const hosting=await res.json();check(hosting.release?.version?.name===qa.hostingVersion,'RELEASE_COMPOSITION_FAILURE:D08_HOSTING_DRIFT');
+    const assets={};
+    for(const path of ['app/modules/academia.js','app/core/manuales-data.js','app/core/backend-browser-auth.js','app/adapters/cxorbia-command-adapter-v1.js','app/adapters/tya-protected-auth-hr-authority-bridge-v2.js']){
+      const source=execFileSync('git',['show',sourceSha+':'+path],{maxBuffer:8*1024*1024}),r=await fetch(host+'/'+path.slice(4)+'?d08qa='+runId+'-'+stage,{cache:'no-store',signal:AbortSignal.timeout(45000)});
+      check(r.ok,'PROVIDER_FAILURE:D08_SERVED_ASSET');const served=Buffer.from(await r.arrayBuffer());check(source.equals(served),'RELEASE_COMPOSITION_FAILURE:D08_ASSET_PARITY:'+path);
+      assets[path]={gitBlob:execFileSync('git',['rev-parse',sourceSha+':'+path],{encoding:'utf8'}).trim(),sourceSha256:hash(source),servedSha256:hash(served),byteParity:true};
+    }
+    result.serving[stage]={exact:true,sourceSha,sourceTree,runtimeRevision:qa.runtimeRevision,runtimeDigest:qa.runtimeDigest,hostingVersion:qa.hostingVersion,assets};save();
+  }
+  async function track(command,identity,plan){
+    const r=describeCommand(command,identity,plan,spec),old=records.get(r.receiptPath);
+    if(old){check(old.uid===r.uid&&old.commandSha256===r.commandSha256&&plan.mode==='replay','SOURCE_FAILURE:D08_IDEMPOTENCY_PLAN_COLLISION');return old;}
+    check((await Promise.all([r.receiptPath,r.auditPath,r.trailPath].map(p=>db.doc(p).get()))).every(x=>!x.exists),'SOURCE_FAILURE:D08_RECEIPT_COLLISION');
+    records.set(r.receiptPath,r);result.creationJournal.push(r);save();return r;
+  }
+  async function observe(record){
+    const docs=await Promise.all([record.receiptPath,record.auditPath,record.trailPath].map(p=>db.doc(p).get()));
+    const bundle=Object.fromEntries(['receipt','audit','trail'].map((k,i)=>[k,docs[i].exists?docs[i].data():null]));
+    if(verifyBundle(record,bundle,spec)){
+      if(record.bundle)check(same(record.bundle,bundle),'PERSISTENCE_FAILURE:D08_RECEIPT_CHANGED');
+      record.bundle=bundle;record.bundleSha256=hash(bundle);
+    }
+    return !!record.bundle;
+  }
+  async function proveState(){
+    const committed=[...records.values()].filter(r=>r.bundle),snapshots={};
+    for(const identity of identities){const row=(await db.doc(identity.memberPath).get()).data();verifyMembership(row,identity,committed,spec);snapshots[identity.uid]=hash(row);}
+    const course=await tenant.collection('academyCourses').doc(customId).get();verifyCourse(course.exists?course.data():null,committed,spec);snapshots.course=course.exists?hash(course.data()):null;return snapshots;
+  }
+  async function session(identity,label){
+    const context=await browser.newContext({viewport:{width:1440,height:1000}});contexts.push(context);
+    const empty=await context.storageState();check(empty.origins.length===0&&empty.cookies.length===0,'ENVIRONMENT_FAILURE:D08_NEW_CONTEXT_NOT_EMPTY');
+    const page=await context.newPage(),ses={identity,label,context,page,expected:null,postCount:0};liveSessions.push(ses);
+    const diagnostic={label,role:identity.role,initialStorageEmpty:true,stage:'OPENING',network:[],pageErrors:[]};result.sessionDiagnostics.push(diagnostic);save();
+    page.on('pageerror',err=>{if(diagnostic.pageErrors.length<10)diagnostic.pageErrors.push(redact(err.message));});
+    page.on('requestfailed',r=>{if(diagnostic.network.length<35)diagnostic.network.push({path:new URL(r.url()).pathname,error:redact(r.failure()?.errorText)});});
+    await page.route('**/v1/cxorbia/commands',async route=>{
+      try{check(ses.expected,'AUTH_FAILURE:D08_UNPLANNED_BROWSER_COMMAND');const command=route.request().postDataJSON();ses.lastRecord=await track(command,identity,ses.expected);ses.postCount++;await route.continue();}
+      catch(error){diagnostic.interceptionError=redact(error.message);result.interceptionError=diagnostic.interceptionError;save();await route.abort('failed').catch(()=>{});}
+    });
+    const url=host+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
+    try{
+      for(let i=0;i<3;i++){
+        await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>window.firebase?.apps?.length>0,null,{timeout:90000});
+        const token=await auth.createCustomToken(identity.uid);
+        try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}catch(error){if(!/context was destroyed|navigation|network|interrupted/i.test(String(error)))throw error;}
+        await page.waitForLoadState('domcontentloaded');if(await page.evaluate(uid=>window.firebase?.auth?.().currentUser?.uid===uid,identity.uid).catch(()=>false))break;
+      }
+      await page.goto('about:blank');await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+      await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
+      await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());diagnostic.stage='AUTHENTICATED_WAITING_CONTEXT';save();
+      await page.waitForFunction(({uid,role,namespace,tenantId,projectId})=>{
+        const a=window.CX?.backendAuth?.context?.()||{},p=window.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},academy=d.__academyState||{};
+        return a.authenticated===true&&a.role===role&&a.authNamespace===namespace&&a.tenantId===tenantId&&firebase.auth().currentUser?.uid===uid&&p.actorUid===uid&&p.role===role&&p.tenantId===tenantId&&h.applied===true&&h.actorUid===uid&&g.ready===true&&!g.blocked&&d.currentProjectId===projectId&&academy.authority==='firestore_tenant_academy'&&academy.progressOwnerUid===uid&&academy.progress?.ownerUid===uid&&academy.progressAuthority==='firestore_user_academy_progress'&&CX.acadData?._canonical?.()===true;
+      },{uid:identity.uid,role:identity.role,namespace:identity.namespace,tenantId,projectId},{timeout:150000});
+      diagnostic.observed=await page.evaluate(()=>{const a=CX.backendAuth.context(),h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};return {authenticated:a.authenticated,role:a.role,namespace:a.authNamespace,tenantId:a.tenantId,projectId:CX.data.currentProjectId,periodId:CX.data.currentPeriodId,sourceRevision:CX.data.previewMeta?.sourceRevision||null,shopperCountry:h.shopperCountry||null,shopperReady:h.exactSessionShopperReady===true,ownVisits:h.ownVisits??null,boundaryActorId:CX.cxDataCommandBoundary.context().actorId};});
+      ses.boundaryActorId=diagnostic.observed.boundaryActorId;check(ses.boundaryActorId,'AUTH_FAILURE:D08_BOUNDARY_ACTOR_MISSING');
+      if(identity.role==='shopper')check(diagnostic.observed.shopperCountry===country&&diagnostic.observed.shopperReady&&diagnostic.observed.ownVisits===0,'AUTH_FAILURE:D08_SHOPPER_FIXTURE_PROFILE');
+      await page.evaluate(()=>CX.router.nav('aprendizaje'));await page.locator('#acadManuales').waitFor({state:'visible',timeout:30000});
+      if(identity.role==='admin'){await page.locator('#acadAud').selectOption('admin');}
+      diagnostic.stage='READY';save();return ses;
+    }catch(error){diagnostic.stage='FAILED';diagnostic.error=redact(error.message);diagnostic.authority=await page.evaluate(()=>({gate:window.CX_C6_HR_AUTHORITY_GATE?.reason||null,authorityError:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.error||null,academyOwner:window.CX?.data?.__academyState?.progressOwnerUid||null})).catch(()=>({}));save();throw error;}
+  }
+  async function perform(ses,plan,action){
+    check(!ses.expected,'ENVIRONMENT_FAILURE:D08_OVERLAPPING_DISPATCH');ses.expected={...plan,actorId:plan.actorId||ses.boundaryActorId};ses.lastRecord=null;
+    try{
+      const [response]=await Promise.all([ses.page.waitForResponse(r=>{try{return new URL(r.url()).pathname==='/v1/cxorbia/commands'&&r.request().postDataJSON()?.commandType===plan.type;}catch{return false;}},{timeout:90000}),action()]);
+      const ack=await response.json(),record=ses.lastRecord;check(record&&!result.interceptionError,'SOURCE_FAILURE:D08_COMMAND_NOT_JOURNALED');await observe(record);
+      if(plan.mode==='negative'){
+        check(!record.bundle&&ack.ok===false&&ack.providerAck===false&&ack.providerWrites===0&&ack.code===plan.expectedCode,'AUTH_FAILURE:D08_NEGATIVE_NOT_DENIED:'+s(ack.code));
+        await proveState();result.negatives.push({case:plan.negative,role:ses.identity.role,code:ack.code,zeroWrites:true,receiptAbsent:true});
+      }else{
+        check(ack.ok===true&&ack.status==='committed'&&ack.committed===true&&ack.providerAck===true&&ack.readbackVerified===true&&ack.successUiAllowed===true&&ack.entityId===record.command.entityId&&record.bundle,'PERSISTENCE_FAILURE:D08_PROVIDER_ACK:'+s(ack.code));
+        check(plan.mode==='replay'?ack.idempotentReplay===true&&ack.providerWrites===0:ack.idempotentReplay===false&&ack.providerWrites===4,'PERSISTENCE_FAILURE:D08_WRITE_OR_REPLAY_COUNT');
+        if(record.kind==='progress')check(ack.entityReadback?.ownerUid===ses.identity.uid&&ack.entityReadback?.tenantId===tenantId&&ack.entityReadback?.progressKey===record.progressKey,'PERSISTENCE_FAILURE:D08_PROGRESS_ACK_OWNER');
+        await proveState();record.providerAck=true;record.durableReadback=true;
+      }
+      save();return {ack,record};
+    }finally{ses.expected=null;}
+  }
+  const rawPost=(ses,command)=>ses.page.evaluate(async c=>{const token=await firebase.auth().currentUser.getIdToken(true),r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(c)});return {status:r.status};},command);
+  async function resource(ses){
+    const before=ses.postCount,role=ses.identity.role,page=ses.page;
+    const manual=await page.evaluate(role=>{const m=(CX.manualesData?.MANUALES||[]).find(x=>x.rol===role&&x.secciones?.length>1);return m?{id:m.id,title:m.titulo,count:m.secciones.length}:null;},role);check(manual,'SOURCE_FAILURE:D08_REAL_ROLE_MANUAL_MISSING');
+    await page.locator('#acadManuales').click();await page.locator('.manualPick[data-mid="'+manual.id+'"]').click();
+    const body=page.locator('.acad-content');await body.waitFor({state:'visible'});const first=await body.innerText();check(first.trim().length>80,'FUNCTIONAL_DEFECT:D08_RESOURCE_EMPTY');
+    await body.screenshot({path:out+'/'+ses.label+'-resource.png'});await page.locator('#mNext').click();const second=await body.innerText();check(second.trim().length>80&&first!==second,'FUNCTIONAL_DEFECT:D08_RESOURCE_NAVIGATION');
+    check(ses.postCount===before,'PERSISTENCE_FAILURE:D08_RESOURCE_READ_WROTE');result.resources.push({role,id:manual.id,title:manual.title,sections:manual.count,firstSectionSha256:hash(first),secondSectionSha256:hash(second),realSourceOwned:true,readOnly:true});
+    await page.evaluate(()=>CX.router.nav('aprendizaje'));await page.locator('#acadManuales').waitFor({state:'visible'});save();
+  }
+  async function progressUi(ses){
+    const identity=ses.identity,course=courses.find(c=>c.courseId===identity.courseId),page=ses.page,card=page.locator('[data-course="'+course.courseId+'"]');
+    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Comenzar'),'PERSISTENCE_FAILURE:D08_FRESH_LEARNER_NOT_EMPTY');await card.screenshot({path:out+'/'+identity.label+'-course-before.png'});await card.click();
+    for(const lesson of course.lessons){
+      await page.locator('[data-li="'+lesson.id+'"]').click();
+      const plan={type:'academy.progress.lesson.complete',mode:'write',courseId:course.courseId,lessonId:lesson.id};
+      if(lesson.quiz.length){
+        const count=ses.postCount;check(await page.locator('.acad-question').count()===lesson.quiz.length&&await page.locator('#finQuiz').isDisabled(),'FUNCTIONAL_DEFECT:D08_QUIZ_REVIEW_GATE');
+        await page.locator('.acad-verify[data-qi="0"]').click();check(await page.locator('#finQuiz').isDisabled()&&ses.postCount===count,'PERSISTENCE_FAILURE:D08_INCOMPLETE_QUIZ_WRITE');
+        for(let qi=0;qi<lesson.quiz.length;qi++){await page.locator('input[name="q'+qi+'"][value="'+lesson.quiz[qi].answer+'"]').check();await page.locator('.acad-verify[data-qi="'+qi+'"]').click();await page.locator('#fb'+qi).waitFor({state:'visible'});check((await page.locator('#fb'+qi).innerText()).includes('Correcto'),'FUNCTIONAL_DEFECT:D08_QUIZ_FEEDBACK');}
+        check(await page.locator('#finQuiz').isEnabled(),'FUNCTIONAL_DEFECT:D08_REVIEWED_QUIZ_DISABLED');await page.locator('.acad-question').first().screenshot({path:out+'/'+identity.label+'-evaluation.png'});
+        await perform(ses,plan,()=>page.locator('#finQuiz').click());
+      }else{
+        const body=page.locator('.acad-content');check(await body.isVisible()&&(await body.innerText()).trim().length>80,'FUNCTIONAL_DEFECT:D08_LESSON_BODY');
+        if(lesson===course.lessons[0])await body.screenshot({path:out+'/'+identity.label+'-lesson.png'});
+        await perform(ses,plan,()=>page.locator('#nextL').click());
+      }
+      await page.waitForFunction(({id,lessonId,audience})=>{const c=CX.acadData.COURSES[audience].find(x=>x.id===id);return CX.acadData.courseProgress(c,audience).lessons?.[lessonId]===100;},{id:course.courseId,lessonId:lesson.id,audience:course.audience},{timeout:30000});
+    }
+    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Completado'),'FUNCTIONAL_DEFECT:D08_COMPLETION_NOT_VISIBLE');await card.screenshot({path:out+'/'+identity.label+'-course-complete.png'});
+    result.roles[identity.role]={courseId:course.courseId,courseRevision:course.revision,lessons:course.lessons.length,evaluationQuestions:course.lessons.reduce((n,l)=>n+l.quiz.length,0),uiCourse:true,uiContent:true,uiEvaluation:true,uiProgress:true,providerAck:true,durableReadback:true};save();
+  }
+  async function newSessionProof(identity){
+    const ses=await session(identity,identity.label+'-new-session'),page=ses.page,card=page.locator('[data-course="'+identity.courseId+'"]');await card.waitFor({state:'visible'});
+    check((await card.innerText()).includes('Completado'),'PERSISTENCE_FAILURE:D08_NEW_SESSION_PROGRESS_MISSING');await card.screenshot({path:out+'/'+identity.label+'-new-session.png'});
+    const original=[...records.values()].filter(r=>r.uid===identity.uid&&r.kind==='progress'&&r.bundle).at(-1),before=await proveState();
+    await perform(ses,{type:original.command.commandType,mode:'replay',courseId:identity.courseId,lessonId:original.command.payload.lessonId},()=>rawPost(ses,original.command));
+    check(same(before,await proveState()),'PERSISTENCE_FAILURE:D08_REPLAY_CHANGED_STATE');result.roles[identity.role].independentNewSession=true;result.roles[identity.role].replayNoDuplicate=true;save();return ses;
+  }
+  try{
+    await serving('before');productionBefore=hash(Buffer.from(await(await fetch('https://tya-plataforma.web.app/',{cache:'no-store',signal:AbortSignal.timeout(45000)})).arrayBuffer()));
+    const projectDoc=await project.get();check(projectDoc.exists&&projectDoc.data().deleted!==true&&(projectDoc.data().tenantId===undefined||projectDoc.data().tenantId===tenantId),'SOURCE_FAILURE:D08_PROJECT');
+    // Same normalization already used by the protected HR bridge; values still
+    // come from the current project document and the explicit QA request.
+    const countryCode=v=>{const raw=s(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();return raw==='HN'||raw==='HONDURAS'?'HN':raw==='GT'||raw==='GUATEMALA'?'GT':'';};
+    const configured=(projectDoc.data().countries||[]).map(countryCode);check(configured.includes(country),'SOURCE_FAILURE:D08_COUNTRY_NOT_IN_CURRENT_PROJECT');result.projectCountryAuthority={country,projectSha256:hash(projectDoc.data())};
+    const canonicalAdminProjects=(await tenant.collection('projects').select('deleted').get()).docs.filter(x=>x.data().deleted!==true).map(x=>x.id).sort();check(canonicalAdminProjects.includes(projectId),'AUTH_FAILURE:D08_ADMIN_PROJECTS');
+    const docPaths=[...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];
+    check((await Promise.all(docPaths.map(p=>db.doc(p).get()))).every(x=>!x.exists),'SOURCE_FAILURE:D08_FIXTURE_DOC_COLLISION');
+    for(const identity of identities){try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:D08_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
+    fixturesStarted=true;result.fixtureIdsPreflightAbsent=true;save();
+    for(const identity of identities){
+      const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:identity.namespace,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08',...(identity.role==='shopper'?{shopperId:identity.uid,country}:{})};
+      identity.expectedClaims=claims;identity.state='AUTH_CREATE_DISPATCHED';save();const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});identity.authIdentity=authIdentity(created);identity.state='CLAIMS_DISPATCHED';save();await auth.setCustomUserClaims(identity.uid,claims);
+      const staff=identity.role==='admin'?{entitlementMode:'TYA_COMPLETE',claimsDigest:hash(JSON.stringify({authNamespace:'staff',projectIds:canonicalAdminProjects,role:'admin',tenantId})),providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+identity.uid)}:{};
+      identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff};identity.memberCreateDispatched=true;save();await db.doc(identity.memberPath).create(identity.expectedMembership);
+      if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await db.doc(identity.profilePath).create(identity.expectedProfile);check(same((await db.doc(identity.profilePath).get()).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
+      check(same((await db.doc(identity.memberPath).get()).data(),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_READBACK');const actual=await auth.getUser(identity.uid);check(same(actual.customClaims,claims)&&same(authIdentity(actual),identity.authIdentity),'AUTH_FAILURE:D08_AUTH_READBACK');identity.state='CREATED_VERIFIED';save();
+    }
+    const {chromium}=await import('playwright');browser=await chromium.launch({headless:true});
+    for(const identity of identities.filter(x=>!x.observer)){
+      const ses=await session(identity,identity.label);await resource(ses);await progressUi(ses);await ses.context.close();const fresh=await newSessionProof(identity);
+      if(identity.role==='admin'){
+        const payload={id:customId,n:spec.draftName,desc:spec.draftDescription,cat:'Operación',ic:'🧪',color:'#475569',cert:false,lessons:[],scope:draftScope,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};
+        await perform(fresh,{type:'academy.course.create',mode:'write'},()=>fresh.page.evaluate(p=>CX.acadData.addCourse('admin',p,CX.permissions.ctx()),payload));
+        await fresh.page.locator('.acad-edit[data-cid="'+customId+'"]').click();await fresh.page.locator('#ecN').fill(spec.updatedName);await fresh.page.locator('#ecD').fill(spec.updatedDescription);await fresh.page.locator('#ecC').selectOption({label:'Operación'});
+        await fresh.page.locator('#ecScProj').selectOption(draftScope.projectId);await fresh.page.locator('#ecScRol').selectOption(['admin']);
+        for(const id of ['#ecScPais','#ecScNivel','#ecScModulo','#ecScPaquete'])await fresh.page.locator(id).selectOption([]);
+        check(await fresh.page.evaluate(({tenantId,projectIds})=>CX.BRAND.id===tenantId&&JSON.stringify([...document.querySelector('#ecScProj').selectedOptions].map(x=>x.value))===JSON.stringify(projectIds),{tenantId,projectIds:draftScope.projectId}),'SOURCE_FAILURE:D08_DRAFT_SCOPE_SELECTOR');
+        const edited=await perform(fresh,{type:'academy.course.update',mode:'write'},()=>fresh.page.locator('#ecSave').click());await fresh.page.locator('#ecSave').waitFor({state:'hidden'});check(edited.ack.entityReadback?.version===2&&edited.ack.entityReadback?.contentVersion===2,'PERSISTENCE_FAILURE:D08_EDIT_VERSION');
+        await fresh.context.close();const adminAgain=await session(identity,'admin-edit-new-session');const card=adminAgain.page.locator('[data-course="'+customId+'"]');await card.waitFor({state:'visible'});check((await card.innerText()).includes(spec.updatedName)&&(await card.innerText()).includes(spec.updatedDescription),'PERSISTENCE_FAILURE:D08_EDIT_NEW_SESSION');await card.screenshot({path:out+'/admin-edit-new-session.png'});
+        const stale={...edited.record.command,idempotencyKey:tag+'_stale_edit',expectedVersion:1};await perform(adminAgain,{type:'academy.course.update',mode:'negative',negative:'stale_version',expectedCode:'ACADEMY_EXPECTED_VERSION_CONFLICT'},()=>rawPost(adminAgain,stale));
+        const before=await proveState();await perform(adminAgain,{type:'academy.course.update',mode:'replay'},()=>rawPost(adminAgain,edited.record.command));check(same(before,await proveState()),'PERSISTENCE_FAILURE:D08_EDIT_REPLAY_CHANGED');result.authorizedAdminEdit={providerAck:true,durableReadback:true,independentNewSession:true,replayNoDuplicate:true,version:2,contentVersion:2,state:'borrador',courseId:customId};await adminAgain.context.close();
+      }else{
+        check(await fresh.page.locator('.acad-edit').count()===0,'AUTH_FAILURE:D08_EDITOR_VISIBLE_TO_LEARNER');
+        const postCount=fresh.postCount,uiDenied=await fresh.page.evaluate(({id,patch})=>CX.acadData.editCourse('admin',id,patch,CX.permissions.ctx()),{id:customId,patch:{n:spec.updatedName,desc:spec.updatedDescription,cat:'Operación',scope:draftScope}});
+        check(uiDenied.ok===false&&fresh.postCount===postCount,'AUTH_FAILURE:D08_UI_EDIT_PERMISSION');result.negatives.push({case:'ui_edit_permission',role:identity.role,zeroCommands:true});
+        const original=[...records.values()].find(r=>r.command.commandType==='academy.course.update'&&r.mode==='write'),denied={...original.command,actor:{actorId:identity.uid,role:identity.role,projectIds:[projectId]},expectedVersion:2,idempotencyKey:tag+'_'+identity.label+'_denied_edit'};
+        await perform(fresh,{type:'academy.course.update',mode:'negative',negative:'role_denied',expectedCode:'ACADEMY_ACTOR_DENIED',actorId:identity.uid},()=>rawPost(fresh,denied));await fresh.context.close();
+      }
+    }
+    const observer=identities.find(x=>x.observer),other=await session(observer,'other-shopper');
+    const self=await other.page.evaluate(()=>({owner:CX.data.__academyState.progressOwnerUid,progress:CX.data.__academyState.progress}));check(self.owner===observer.uid&&self.progress.ownerUid===observer.uid&&Object.keys(self.progress.courses||{}).length===0,'AUTH_FAILURE:D08_OTHER_LEARNER_LEAK');
+    const ownCard=other.page.locator('[data-course="s_ruta"]');check((await ownCard.innerText()).includes('Comenzar'),'AUTH_FAILURE:D08_OTHER_LEARNER_UI_PROGRESS');
+    const foreignPath=identities.find(x=>x.label==='shopper').memberPath,readDenied=await other.page.evaluate(async path=>{try{await firebase.firestore().doc(path).get({source:'server'});return false;}catch(error){return String(error?.code||'').includes('permission-denied');}},foreignPath);check(readDenied,'AUTH_FAILURE:D08_FOREIGN_MEMBERSHIP_READ');
+    result.negatives.push({case:'other_learner',role:'shopper',emptyOwnProgress:true,foreignMemberReadDenied:true});
+    const course=courses.find(c=>c.audience==='cliente'),lesson=course.lessons[0],wrong={version:'cxorbia-academy-command-boundary-v1',commandType:'academy.progress.lesson.complete',entityType:'academyProgress',entityId:course.courseId,tenantId,projectId,periodId:null,requireProject:true,requirePeriod:false,actor:{actorId:observer.uid,role:'shopper',projectIds:[projectId]},expectedVersion:0,idempotencyKey:tag+'_wrong_audience',payload:{origin:'base',audience:course.audience,courseId:course.courseId,revision:course.revision,lessonId:lesson.id,answers:lesson.quiz.map(q=>q.answer)},source:'d08-qa-negative',authorization:{providerEnforcementRequired:true,permission:'academy.progress.self'}};
+    await perform(other,{type:wrong.commandType,mode:'negative',negative:'wrong_audience',expectedCode:'ACADEMY_PROGRESS_COURSE_DENIED',courseId:course.courseId,lessonId:lesson.id,actorId:observer.uid},()=>rawPost(other,wrong));await other.context.close();
+    check(!result.interceptionError&&['admin','shopper','cliente'].every(role=>result.roles[role]?.independentNewSession&&result.roles[role]?.replayNoDuplicate)&&result.resources.length===3&&result.authorizedAdminEdit?.independentNewSession,'FUNCTIONAL_DEFECT:D08_COVERAGE_INCOMPLETE');result.functionalPass=true;save();
+  }catch(error){result.error=redact(error.message||error);result.classification=result.error.match(/(SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):/)?.[1]||'FUNCTIONAL_DEFECT';save();}
+  finally{
+    await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await browser.close().catch(()=>{});
+    if(!fixturesStarted)result.cleanup={ok:true,writesNotStarted:true,remainingOwnedDocuments:0,remainingOwnedAuth:0};
+    else try{
+      const known=new Set([...records.values()].flatMap(r=>[r.receiptPath,r.auditPath,r.trailPath])),uids=identities.map(x=>x.uid),deleted=[];
+      await db.runTransaction(async tx=>{
+        for(const collection of ['commandReceipts','academyAudit','entityAuditTrail']){const found=await tx.get(tenant.collection(collection).where('actorUid','in',uids));check(found.docs.every(x=>known.has(x.ref.path)),'PERSISTENCE_FAILURE:D08_UNEXPECTED_ACTOR_REFERENCE:'+collection);}
+        const createdCourses=await tx.get(tenant.collection('academyCourses').where('createdByUserId','in',uids));check(createdCourses.docs.every(x=>x.id===customId),'PERSISTENCE_FAILURE:D08_UNEXPECTED_COURSE');
+        const refs=[];const committed=[];
+        for(const r of records.values()){
+          const docs=await Promise.all([r.receiptPath,r.auditPath,r.trailPath].map(p=>tx.get(db.doc(p)))),bundle=Object.fromEntries(['receipt','audit','trail'].map((k,i)=>[k,docs[i].exists?docs[i].data():null]));
+          if(!verifyBundle(r,bundle,spec))continue;if(r.bundleSha256)check(hash(bundle)===r.bundleSha256,'PERSISTENCE_FAILURE:D08_CLEANUP_RECEIPT_CHANGED');r.bundle=bundle;committed.push(r);refs.push(...docs.map(x=>x.ref));
+        }
+        for(const identity of identities){
+          const member=await tx.get(db.doc(identity.memberPath));if(member.exists){check(identity.memberCreateDispatched===true,'PERSISTENCE_FAILURE:D08_UNOWNED_MEMBER');verifyMembership(member.data(),identity,committed,spec);refs.push(member.ref);}
+          if(identity.profilePath){const profile=await tx.get(db.doc(identity.profilePath));if(profile.exists){check(identity.profileCreateDispatched===true&&same(profile.data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_CONCURRENT_CHANGE');refs.push(profile.ref);}}
+        }
+        const course=await tx.get(tenant.collection('academyCourses').doc(customId));verifyCourse(course.exists?course.data():null,committed,spec);if(course.exists)refs.push(course.ref);
+        for(const ref of refs)tx.delete(ref);deleted.splice(0,deleted.length,...refs.map(x=>x.path));
+      });
+      let deletedAuth=0;
+      for(const identity of identities){try{const user=await auth.getUser(identity.uid),claims=user.customClaims||{},initialClaims=identity.state==='CLAIMS_DISPATCHED'&&Object.keys(claims).length===0;check(identity.authIdentity&&same(authIdentity(user),identity.authIdentity)&&(same(claims,identity.expectedClaims)||initialClaims),'AUTH_FAILURE:D08_AUTH_CLEANUP_OWNERSHIP');await auth.deleteUser(identity.uid);deletedAuth++;}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
+      const paths=[...known,...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];check((await Promise.all(paths.map(p=>db.doc(p).get()))).every(x=>!x.exists),'PERSISTENCE_FAILURE:D08_DOC_RESIDUE');
+      for(const identity of identities){try{await auth.getUser(identity.uid);throw Error('AUTH_FAILURE:D08_AUTH_RESIDUE');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
+      result.cleanup={ok:true,exactKnownPathsOnly:true,deletedDocuments:deleted.length,deletedAuth,remainingOwnedDocuments:0,remainingOwnedAuth:0,ownershipTransaction:true};
+    }catch(error){result.cleanup={...result.cleanup,ok:false,error:redact(error.message||error),journalPath:out+'/result.json',manualDeletionAuthorized:false};}
+    try{await serving('after');if(productionBefore){const r=await fetch('https://tya-plataforma.web.app/',{cache:'no-store',signal:AbortSignal.timeout(45000)});check(r.ok,'PROVIDER_FAILURE:D08_PRODUCTION_READBACK');result.productionIndexUnchanged=hash(Buffer.from(await r.arrayBuffer()))===productionBefore;check(result.productionIndexUnchanged,'ENVIRONMENT_FAILURE:D08_PRODUCTION_INDEX_DRIFT');}}catch(error){result.postflightError=redact(error.message||error);}
+    if(result.functionalPass&&result.cleanup.ok&&result.serving.before?.exact&&result.serving.after?.exact&&result.productionIndexUnchanged&&!result.postflightError)result.decision='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP';save();
+  }
+  console.log(JSON.stringify({decision:result.decision,sourceSha,runId,roles:Object.keys(result.roles),commands:records.size,cleanup:result.cleanup,error:result.error||result.postflightError||null,fullDomain:false}));
+  if(result.decision!=='PASS_I3_D08_UI_PROVIDER_NEW_SESSION_EDIT_NEGATIVES_CLEANUP')process.exitCode=2;
+}
 
 async function runClientCollaborationQa(){
   const e=process.env,s=v=>String(v??'').trim(),hash=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
@@ -485,7 +903,17 @@ async function runExcelCanonicalReadOnly(){
   result.durationMs=Date.now()-started;fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }
 
-if(process.env.CXORBIA_I3_QA_SCOPE==='EXCEL_CANONICAL_ID_READONLY'){
+const qaControlOnlyScopes=new Set(['D08_PREFLIGHT','D08_VERIFY','D08_ACADEMY_UI_SELF_TEST']);
+if(!qaControlOnlyScopes.has(process.env.CXORBIA_I3_QA_SCOPE))await loadQaFirebaseDependencies();
+if(process.env.CXORBIA_I3_QA_SCOPE==='D08_PREFLIGHT'){
+  runD08Preflight();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_VERIFY'){
+  runD08ResultVerify();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI_SELF_TEST'){
+  runAcademyUiQaSelfTest();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='D08_ACADEMY_UI'){
+  await runAcademyUiQa();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='EXCEL_CANONICAL_ID_READONLY'){
   await runExcelCanonicalReadOnly();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='HR_DURABLE_REVISION_READONLY'){
   await runHrDurableRevisionDiagnostic();

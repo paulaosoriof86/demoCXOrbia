@@ -18,6 +18,7 @@ const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
 const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
 const ROOT=String(process.env.R20_HOSTING_URL||'https://cxorbia-backend-dev.web.app');
 const OUT=String(process.env.R20_SAFE_OUT||((process.env.PHASEA_LIVE_OUT||'.tmp')+'/r20'));
+const targetShopperId=String(process.env.R20_AUTHORIZED_TEST_SHOPPER_ID||'').trim();
 const word=v=>String(v??'').trim();
 const hash=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const receipt={schemaVersion:'cxorbia.i3.r20.one-proven-credential-readonly.v2',
@@ -56,9 +57,17 @@ if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PR
 let members,profiles;
 try{
  const tenant=getFirestore().collection('tenants').doc(TENANT);
- const [ms,ps]=await Promise.all([tenant.collection('users').get(),tenant.collection('shoppers').get()]);
- members=ms.docs.map(d=>({uid:d.id,...d.data()}));
- profiles=new Map(ps.docs.map(d=>[d.id,{id:d.id,...d.data()}]));
+ if(targetShopperId){
+  if(!/^[A-Za-z0-9_-]{1,120}$/.test(targetShopperId))throw Error('EXACT_SHOPPER_ID_REQUIRED');
+  const [ms,ps]=await Promise.all([tenant.collection('users').where('shopperId','==',targetShopperId).limit(9).get(),tenant.collection('shoppers').doc(targetShopperId).get()]);
+  if(ms.size===9)throw Error('EXACT_MEMBERSHIP_QUERY_TRUNCATED');
+  members=ms.docs.map(d=>({uid:d.id,...d.data()}));
+  profiles=new Map(ps.exists?[[ps.id,{id:ps.id,...ps.data()}]]:[]);
+ }else{
+  const [ms,ps]=await Promise.all([tenant.collection('users').get(),tenant.collection('shoppers').get()]);
+  members=ms.docs.map(d=>({uid:d.id,...d.data()}));
+  profiles=new Map(ps.docs.map(d=>[d.id,{id:d.id,...d.data()}]));
+ }
 }catch{
  emit('HOLD_R20_EXACT_MEMBERSHIP_PROVIDER_READ_FAILED','PROVIDER_FAILURE');process.exit(0);
 }
@@ -78,7 +87,7 @@ const sorted=members.filter(m=>m.active===true&&word(m.role).toLowerCase()==='sh
 for(const m of sorted){
  stats.activeShopperMembers++;
  const id=word(m.shopperId),profile=profiles.get(id);
- if(!profile||!id)continue;
+ if(!profile||!id||(targetShopperId&&id!==targetShopperId))continue;
  stats.exactProfiles++;
  const expected=rule(profile);
  const visible=word(m.visibleLogin||m.username||profile.visibleLogin||profile.username).toLowerCase();
@@ -97,10 +106,12 @@ for(const m of sorted){
     word(principal.email).toLowerCase()!==internalEmail(visible,'shopper',TENANT))continue;
   stats.authClaimMatch++;
  }catch{continue;}
- selected={login:visible,password:expected.password};
+ selected={login:visible,password:expected.password,shopperId:id};
  break;
 }
-receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(targetLogin)};
+receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(targetLogin||targetShopperId),
+ boundedShopperIdQuery:Boolean(targetShopperId),requestedShopperId:targetShopperId||null,
+ selectedShopperMatchesRequested:targetShopperId?selected?.shopperId===targetShopperId:null};
 if(!selected){
  emit('HOLD_R20_NO_SINGLE_EXISTING_PASSWORD_PROOF','AUTH_FAILURE');process.exit(0);
 }

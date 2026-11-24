@@ -1,0 +1,279 @@
+#!/usr/bin/env node
+/* I3 A08 residual QA on existing DEV only. No census, reset, write, fixture creation,
+ * command POST, or full-domain promotion. Passwords use the existing sealed R20 helper.
+ * API/Storage ACL sessions use existing real principals; they do not count as password proof.
+ * Never export tokens, logins, UIDs, paths, private bytes, or provider error bodies. */
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {spawnSync,execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+
+export const EXCEPTION_IDS=Object.freeze(['shopper_gt_a092a0647f','shopper_hn_3b3c2f5cc1','shp-3669abbb015a']);
+const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
+const ROOT='https://cxorbia-backend-dev.web.app',BUCKET=PROJECT+'.firebasestorage.app';
+const OUT='.tmp/cxorbia-i3-two-keepers-role-e2e-readonly';
+const str=x=>String(x??'').trim(),arr=x=>Array.isArray(x)?x:[];
+const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
+const fp=x=>sha(str(x)).slice(0,20);
+const need=(ok,code)=>{if(!ok)throw Error(code);};
+const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
+const save=result=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
+export function safeFailure(error){
+  const raw=str(error?.message||error);
+  const m=raw.match(/(?:SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):[A-Z0-9_]+/);
+  return m?.[0]||(/timeout|abort/i.test(raw)?'ENVIRONMENT_FAILURE:A08_TIMEOUT':'ENVIRONMENT_FAILURE:A08_PROBE_FAILED');
+}
+export function apiDenial(status,body,anonymous=false){
+  if(status!==(anonymous?401:403)||!body||typeof body!=='object'||Array.isArray(body))return false;
+  if(Object.keys(body).some(k=>!['ok','error','details'].includes(k)))return false;
+  const reasons=anonymous?['authorization_required']:['tenant_or_namespace_mismatch','user_admin_super_required'];
+  return body.ok===false&&reasons.includes(body.error)&&(body.details===undefined||body.details===null);
+}
+export function storageDenial(status,body,anonymous=false){
+  if(!(anonymous?[401,403]:[403]).includes(status)||!body||typeof body!=='object'||Array.isArray(body))return false;
+  if(Object.keys(body).some(k=>k!=='error')||!body.error||typeof body.error!=='object')return false;
+  return Number(body.error.code)===status&&typeof body.error.message==='string'&&
+    Object.keys(body.error).every(k=>['code','message'].includes(k));
+}
+export function evidenceTuple(item,id){
+  if(item?.tenantId!==TENANT||item?.projectId!==PROGRAM||item?.providerAck!==true||str(item.evidenceId)!==id)return null;
+  const periodId=str(item.periodId),visitId=str(item.visitId),shopperId=str(item.shopperId),storagePath=str(item.storagePath);
+  if(![periodId,visitId,shopperId,id].every(v=>/^[A-Za-z0-9_.-]{1,180}$/.test(v)))return null;
+  const prefix=`tenants/${TENANT}/projects/${PROGRAM}/periods/${periodId}/visits/${visitId}/evidence/${id}/`;
+  if(!storagePath.startsWith(prefix)||!/^[-A-Za-z0-9_.]+$/.test(storagePath.slice(prefix.length))||storagePath.includes('..'))return null;
+  if(!/^[a-f0-9]{64}$/.test(str(item.checksum))||!/^image\//.test(str(item.mimeType))||
+    !Number.isInteger(Number(item.size))||Number(item.size)<=0||Number(item.size)>=15*1024*1024)return null;
+  return {periodId,visitId,shopperId,storagePath,evidenceId:id,checksum:item.checksum,mimeType:item.mimeType,size:Number(item.size)};
+}
+export function finalDecision(result,before,after){
+  const same=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset','storageRuleset','receiptPath','receiptGitBlob'];
+  const seal=before?.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&before.servedAssetsMatch===41&&
+    after?.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&after.phase==='after'&&
+    same.every(k=>str(before[k])&&before[k]===after[k])&&before.sourceSha===result.sourceSha;
+  const passwords=result.passwordProofs?.length===3&&EXCEPTION_IDS.every(id=>result.passwordProofs.some(x=>x.shopperId===id&&x.pass===true));
+  const apis=result.apiProofs?.length===4&&result.apiProofs.every(x=>x.pass===true);
+  const storage=result.storageProof?.pass===true&&result.storageProof?.objectStable===true;
+  return {seal,passwords,apis,storage,pass:Boolean(seal&&passwords&&apis&&storage&&result.errors?.length===0)};
+}
+
+async function boundedBytes(response,max){
+  const reader=response.body?.getReader();
+  if(!reader)return Buffer.alloc(0);
+  const chunks=[];let length=0;
+  try{
+    for(;;){const {value,done}=await reader.read();if(done)break;length+=value.byteLength;
+      need(length<=max,'PROVIDER_FAILURE:A08_RESPONSE_TOO_LARGE');chunks.push(Buffer.from(value));}
+    return Buffer.concat(chunks,length);
+  }finally{await reader.cancel().catch(()=>{});}
+}
+async function safeJson(response,max=65536){
+  const bytes=await boundedBytes(response,max);
+  try{return JSON.parse(bytes.toString('utf8'));}catch{return null;}
+}
+async function run(){
+  fs.mkdirSync(OUT,{recursive:true});
+  if(process.argv.includes('--execute-and-seal')){
+    need(process.env.CXORBIA_A08_RESIDUAL_READONLY==='PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY','SOURCE_FAILURE:A08_READONLY_GATE_REQUIRED');
+    fs.rmSync(OUT+'/same-artifact-after.json',{force:true});
+    const self=fileURLToPath(import.meta.url);
+    const proof=spawnSync(process.execPath,[self],{env:process.env,stdio:'ignore',timeout:30*60*1000});
+    const after=spawnSync('bash',['tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'],{
+      env:{...process.env,CXORBIA_A08_PREFLIGHT_PHASE:'after'},stdio:'ignore',timeout:5*60*1000});
+    const final=spawnSync(process.execPath,[self,'--finalize'],{env:process.env,stdio:'ignore',timeout:30000});
+    let summary=null;try{summary=read(OUT+'/result.json');}catch{}
+    console.log(JSON.stringify({decision:summary?.decision||'HOLD_I3_A08_RESIDUAL_READONLY',
+      passwordPassCount:summary?.passwordProofs?.filter(x=>x.pass).length||0,
+      apiDenialPassCount:summary?.apiProofs?.filter(x=>x.pass).length||0,
+      storagePass:summary?.storageProof?.pass===true,artifactAfterPass:summary?.sameArtifactAfter===true,
+      failureCodes:summary?.errors?.map(x=>x.code)||[],
+      executionExitCodes:{proof:proof.status,after:after.status,final:final.status},fullA08Certified:false,newDomainMatches:0}));
+    if(proof.status!==0||after.status!==0||final.status!==0)process.exitCode=1;
+    return;
+  }
+  if(process.argv.includes('--finalize')){
+    let result;
+    try{
+      result=read(OUT+'/result.json');
+      const before=read(OUT+'/same-artifact-preflight.json'),after=read(OUT+'/same-artifact-after.json');
+      result.finalChecks=finalDecision(result,before,after);
+      result.sameArtifactAfter=result.finalChecks.seal;
+      result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':'HOLD_I3_A08_RESIDUAL_READONLY';
+      result.gate='HOLD';result.fullA08Certified=false;result.newDomainMatches=0;
+      save(result);console.log(JSON.stringify({decision:result.decision,checks:result.finalChecks,fullA08Certified:false,newDomainMatches:0}));
+      if(!result.finalChecks.pass)process.exitCode=1;
+    }catch(error){
+      if(result){result.errors??=[];result.errors.push({stage:'artifact-after',code:safeFailure(error)});result.decision='HOLD_I3_A08_RESIDUAL_READONLY';save(result);}
+      console.error('RELEASE_COMPOSITION_FAILURE:A08_FINAL_ARTIFACT_READBACK_MISSING');process.exitCode=1;
+    }
+    return;
+  }
+  const result={schemaVersion:'cxorbia.i3.a08.password3-api-storage.residual.readonly.v1',iteration:'I3',gate:'HOLD',
+    decision:'HOLD_I3_A08_RESIDUAL_READONLY',environment:PROJECT,fullA08Certified:false,newDomainMatches:0,
+    sourceSha:null,sourceTree:null,runtimeRevision:null,runtimeDigest:null,hostingVersion:null,
+    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,
+      apiOperation:'GET /api/v1/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
+      rolesRequiredForIntegralA08:['super','admin','ops','coordinador','shopper','cliente'],
+      rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false},
+    passwordProofs:[],apiProofs:[],storageProof:null,preservedEvidence:[],errors:[],
+    remainingIntegralA08:['Uncovered UI/claims/membership/API/Firestore/Storage cells for all six roles; retain exact accepted cells.'],
+    safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,storageWrites:0,hrWrites:0,
+      passwordChanges:0,passwordResets:0,fixtureCreates:0,builds:0,deploys:0,production:false,
+      credentialsExported:false,tokensExported:false,privateBytesExported:false,privatePathsExported:false}};
+  save(result);
+  const capture=async(stage,fn)=>{try{await fn();}catch(error){result.errors.push({stage,code:safeFailure(error)});}finally{save(result);}};
+  try{
+    need(process.env.CXORBIA_A08_RESIDUAL_READONLY==='PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY',
+      'SOURCE_FAILURE:A08_READONLY_GATE_REQUIRED');
+    const pin=read(process.env.CXORBIA_A08_PIN_PATH||OUT+'/current-artifact-pin.json');
+    const pre=read(OUT+'/same-artifact-preflight.json');
+    need(pin.decision==='PASS_A08_CURRENT_ARTIFACT_PIN'&&pre.decision==='PASS_I3_SAME_ARTIFACT_READONLY_PREFLIGHT'&&
+      pre.sourceSha===pin.sourceSha&&pre.servedAssetsMatch===41,'RELEASE_COMPOSITION_FAILURE:A08_EXACT_PREFLIGHT_REQUIRED');
+    for(const key of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])result[key]=pin[key];
+    result.receiptAuthority={path:pin.receiptPath,gitBlob:pin.receiptGitBlob};
+    const sa=read(str(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+    need(sa.project_id===PROJECT&&typeof sa.private_key==='string','ENVIRONMENT_FAILURE:A08_DEV_SERVICE_ACCOUNT_REQUIRED');
+    for(const file of [
+      'docs/checkpoints/CXORBIA_I3_RUN2610_A08_AUTH_EXCEPTIONS_AND_NEGATIVE_FIRESTORE_DEV_20261118.json',
+      'docs/checkpoints/CXORBIA_I3_A08_AUTH_ROLE_LIVE_E2E_HISTORICAL_DISABLED_CLASSIFICATION_20261119.json',
+      'docs/checkpoints/CXORBIA_I3_A08_NEGATIVE_RUN2643_READBACK_20261119.json']){
+      const content=execFileSync('git',['show','HEAD:'+file],{encoding:'utf8',maxBuffer:2*1024*1024,stdio:['ignore','pipe','ignore']});
+      const evidence=JSON.parse(content);
+      need(/^PASS_/.test(str(evidence.scopeDecision||evidence.decision)),'SOURCE_FAILURE:A08_ACCEPTED_RECEIPT_UNAVAILABLE');
+      result.preservedEvidence.push({path:file,gitBlob:execFileSync('git',['rev-parse','HEAD:'+file],{encoding:'utf8'}).trim(),
+        sha256:sha(content),credit:'HISTORICAL_ACCEPTED_SCOPE_PRESERVED_NOT_REEXECUTED'});
+    }
+    const [{applicationDefault,getApps,initializeApp},{getAuth},{getFirestore},{getStorage}]=await Promise.all([
+      import('firebase-admin/app'),import('firebase-admin/auth'),import('firebase-admin/firestore'),import('firebase-admin/storage')]);
+    if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT,storageBucket:BUCKET});
+    const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROGRAM);
+    const bucket=getStorage().bucket(BUCKET),members=new Map(),sessions=new Map();
+    const configResponse=await fetch(ROOT+'/__/firebase/init.json',{redirect:'error',signal:AbortSignal.timeout(30000)});
+    const config=await safeJson(configResponse);
+    need(configResponse.ok&&config?.projectId===PROJECT&&str(config.apiKey),'ENVIRONMENT_FAILURE:A08_FIREBASE_CONFIG_MISMATCH');
+    async function memberFor(shopperId){
+      if(members.has(shopperId))return members.get(shopperId);
+      const [profile,snap]=await Promise.all([tenant.collection('shoppers').doc(shopperId).get(),tenant.collection('users').where('shopperId','==',shopperId).limit(9).get()]);
+      need(profile.exists&&snap.size<9,'MAPPING_FAILURE:A08_EXACT_SHOPPER_PROFILE_OR_QUERY_UNAVAILABLE');
+      const eligible=[];
+      for(const doc of snap.docs){const m=doc.data()||{};
+        if(m.active!==true||m.role!=='shopper'||m.authNamespace!=='shopper'||!arr(m.projectIds).includes(PROGRAM))continue;
+        let user;try{user=await auth.getUser(doc.id);}catch(error){if(error?.code==='auth/user-not-found')continue;throw error;}
+        const c=user.customClaims||{};
+        if(user.disabled||c.role!=='shopper'||c.authNamespace!=='shopper'||c.tenantId!==TENANT||c.shopperId!==shopperId||!arr(c.projectIds).includes(PROGRAM))continue;
+        eligible.push({uid:doc.id,shopperId});
+      }
+      need(eligible.length===1,'AUTH_FAILURE:A08_EXACT_ACTIVE_PRINCIPAL_NOT_UNIQUE');
+      members.set(shopperId,eligible[0]);return eligible[0];
+    }
+    async function tokenFor(shopperId){
+      if(sessions.has(shopperId))return sessions.get(shopperId);
+      const member=await memberFor(shopperId),custom=await auth.createCustomToken(member.uid);
+      const response=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(config.apiKey),{
+        method:'POST',redirect:'error',headers:{'content-type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true}),signal:AbortSignal.timeout(45000)});
+      const value=await safeJson(response);
+      need(response.ok&&str(value?.idToken),'AUTH_FAILURE:A08_ACL_SESSION_UNAVAILABLE');
+      const claims=await auth.verifyIdToken(value.idToken,true);
+      need(claims.uid===member.uid&&claims.tenantId===TENANT&&claims.role==='shopper'&&claims.authNamespace==='shopper'&&
+        claims.shopperId===shopperId&&arr(claims.projectIds).includes(PROGRAM),'AUTH_FAILURE:A08_ACL_SESSION_SCOPE_MISMATCH');
+      sessions.set(shopperId,value.idToken);return value.idToken;
+    }
+    // One exact proven credential per ID. The helper never tries guessed variants or resets.
+    for(const id of EXCEPTION_IDS)await capture('password-'+id,async()=>{
+      const output=OUT+'/r20-'+id;
+      const proc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs'],{
+        env:{...process.env,R20_AUTHORIZED_TEST_SHOPPER_ID:id,R20_AUTHORIZED_TEST_LOGIN:'',R20_SOURCE_SHA:pin.sourceSha,
+          R20_HOSTING_URL:ROOT,R20_SAFE_OUT:output},encoding:'utf8',timeout:345000,maxBuffer:2*1024*1024,stdio:['ignore','pipe','pipe']});
+      let proof=null;try{proof=read(output+'/result.json');}catch{}
+      const pass=proc.status===0&&proof?.sourceSha===pin.sourceSha&&proof?.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&
+        proof.credentialProvenance==='EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS'&&proof.attemptedAccounts===1&&
+        proof.selection?.boundedShopperIdQuery===true&&proof.selection?.requestedShopperId===id&&proof.selection?.selectedShopperMatchesRequested===true&&
+        proof.sessionLifecycle?.restore===true&&proof.sessionLifecycle?.logout===true&&proof.sessionLifecycle?.relogin===true&&
+        proof.authWrites===0&&proof.passwordChanges===0&&proof.passwordResets===0&&proof.firestoreWrites===0&&proof.production===false;
+      result.passwordProofs.push({shopperId:id,pass,decision:str(proof?.decision)||'HOLD_R20_RESULT_UNAVAILABLE',
+        credentialProvenance:str(proof?.credentialProvenance)||'NOT_PROVEN',loginAttempts:Number(proof?.loginAttempts)||0,
+        evidencePath:output+'/result.json',evidenceSha256:proof?sha(fs.readFileSync(output+'/result.json')):null,
+        customTokenCountsAsPasswordProof:false});
+      need(pass,'AUTH_FAILURE:A08_EXACT_ORDINARY_PASSWORD_UNPROVEN');
+    });
+    for(const id of [null,...EXCEPTION_IDS])await capture('api-'+(id||'anonymous'),async()=>{
+      const token=id?await tokenFor(id):null;
+      const response=await fetch(ROOT+'/api/v1/tenants/'+TENANT+'/users',{
+        method:'GET',redirect:'error',headers:token?{authorization:'Bearer '+token,'cache-control':'no-store'}:{'cache-control':'no-store'},signal:AbortSignal.timeout(45000)});
+      let body=null;
+      if([401,403].includes(response.status))body=await safeJson(response);
+      else await response.body?.cancel().catch(()=>{});
+      const pass=apiDenial(response.status,body,id===null);
+      result.apiProofs.push({caseId:id||'anonymous',role:id?'shopper':'anonymous',httpStatus:response.status,
+        pass,denialResponseHasOnlyExpectedErrorFields:pass,principalVerified:id!==null,customTokenCountsAsPasswordProof:false});
+      need(pass,'AUTH_FAILURE:A08_API_ACCESS_NOT_EXACTLY_DENIED');
+    });
+    await capture('storage-existing-object',async()=>{
+      const snap=await project.collection('visitEvidence').limit(30).get();
+      result.storageDiscovery={boundedMetadataQuery:30,documentsObserved:snap.size,objectsCreated:0,object404CountsAsDenial:false};
+      let chosen=null;
+      for(const doc of snap.docs){
+        const tuple=evidenceTuple(doc.data(),doc.id);if(!tuple)continue;
+        let meta;try{[meta]=await bucket.file(tuple.storagePath).getMetadata();}catch(error){if(Number(error?.code)===404)continue;throw error;}
+        const custom=meta.metadata||{};
+        if(str(meta.bucket)!==BUCKET||Number(meta.size)!==tuple.size||str(meta.contentType)!==tuple.mimeType||
+          str(custom.tenantId)!==TENANT||str(custom.projectId)!==PROGRAM||str(custom.periodId)!==tuple.periodId||
+          str(custom.visitId)!==tuple.visitId||str(custom.evidenceId)!==tuple.evidenceId||
+          str(custom.shopperId)!==tuple.shopperId||str(custom.kind)!=='geo_checkin'||str(custom.checksum)!==tuple.checksum)continue;
+        const visit=await project.collection('visits').doc(tuple.visitId).get();
+        if(!visit.exists||str(visit.data()?.periodId)!==tuple.periodId)continue;
+        try{await memberFor(tuple.shopperId);}catch(error){
+          if(/A08_EXACT_ACTIVE_PRINCIPAL_NOT_UNIQUE|A08_EXACT_SHOPPER_PROFILE_OR_QUERY_UNAVAILABLE/.test(str(error.message)))continue;
+          throw error;
+        }
+        const cross=await tenant.collection('shopperIdentityCrosswalk').doc(tuple.shopperId).get();
+        const ownerCanonical=str(cross.exists?(cross.data()?.canonicalShopperId||cross.data()?.shopperId):tuple.shopperId)||tuple.shopperId;
+        let otherId=null;
+        for(const id of EXCEPTION_IDS){if(id===tuple.shopperId)continue;
+          const other=await tenant.collection('shopperIdentityCrosswalk').doc(id).get();
+          const canonical=str(other.exists?(other.data()?.canonicalShopperId||other.data()?.shopperId):id)||id;
+          if(canonical===ownerCanonical)continue;
+          await memberFor(id);otherId=id;break;
+        }
+        if(!otherId)continue;
+        chosen={tuple,meta,doc,otherId};break;
+      }
+      need(chosen,'PROVIDER_FAILURE:A08_EXISTING_PRIVATE_STORAGE_OBJECT_UNAVAILABLE');
+      const {tuple,meta,doc,otherId}=chosen;
+      const url='https://firebasestorage.googleapis.com/v0/b/'+encodeURIComponent(BUCKET)+'/o/'+encodeURIComponent(tuple.storagePath)+'?alt=media';
+      const ownerToken=await tokenFor(tuple.shopperId),otherToken=await tokenFor(otherId);
+      const own=await fetch(url,{method:'GET',redirect:'error',headers:{Authorization:'Firebase '+ownerToken,'cache-control':'no-store'},signal:AbortSignal.timeout(45000)});
+      if(!own.ok){await own.body?.cancel().catch(()=>{});throw Error('AUTH_FAILURE:A08_STORAGE_OWNER_READ_NOT_ALLOWED');}
+      const bytes=await boundedBytes(own,15*1024*1024);
+      const checksumMatches=bytes.length===tuple.size&&sha(bytes)===tuple.checksum;
+      bytes.fill(0);
+      need(checksumMatches,'PERSISTENCE_FAILURE:A08_STORAGE_OWNER_BYTES_MISMATCH');
+      const probes=[];
+      for(const [label,token] of [['other-shopper',otherToken],['anonymous',null]]){
+        const response=await fetch(url,{method:'GET',redirect:'error',headers:token?{Authorization:'Firebase '+token,'cache-control':'no-store'}:{'cache-control':'no-store'},signal:AbortSignal.timeout(45000)});
+        let body=null;
+        if([401,403].includes(response.status))body=await safeJson(response);
+        else await response.body?.cancel().catch(()=>{});
+        const pass=storageDenial(response.status,body,token===null);
+        probes.push({caseId:label,httpStatus:response.status,pass,errorOnlyResponse:pass});
+      }
+      const [[afterMeta],afterDoc]=await Promise.all([bucket.file(tuple.storagePath).getMetadata(),doc.ref.get()]);
+      const objectStable=str(meta.generation)!==''&&str(meta.generation)===str(afterMeta.generation)&&
+        str(meta.metageneration)===str(afterMeta.metageneration)&&Number(afterMeta.size)===tuple.size&&
+        afterDoc.exists&&doc.updateTime.isEqual(afterDoc.updateTime);
+      result.storageProof={objectFingerprint:fp(tuple.storagePath),ownerFingerprint:fp(tuple.shopperId),
+        otherShopperFingerprint:fp(otherId),existingObjectProven:true,metadataOwnerMatched:true,ownerReadStatus:own.status,
+        ownerBytesChecksumMatches:true,objectStable,probes,pass:objectStable&&probes.every(x=>x.pass),
+        providerWrites:0,object404CountsAsDenial:false,privateBytesExported:false,privatePathsExported:false};
+      need(result.storageProof.pass,'AUTH_FAILURE:A08_STORAGE_DENIAL_OR_STABILITY_UNPROVEN');
+    });
+    result.decision='PENDING_A08_FINAL_SAME_ARTIFACT_READBACK';
+  }catch(error){result.errors.push({stage:'preflight-or-setup',code:safeFailure(error)});}
+  finally{save(result);console.log(JSON.stringify({decision:result.decision,passwordsProven:result.passwordProofs.filter(x=>x.pass).length,
+    apiDenialsProven:result.apiProofs.filter(x=>x.pass).length,storageProven:result.storageProof?.pass===true,
+    failureCodes:result.errors.map(x=>x.code),fullA08Certified:false,newDomainMatches:0}));}
+  // The existing job always runs the after seal and --finalize, retaining partial proof.
+  if(result.errors.length)process.exitCode=1;
+}
+
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))await run();

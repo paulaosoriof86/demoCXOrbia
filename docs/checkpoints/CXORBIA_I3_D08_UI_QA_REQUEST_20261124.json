@@ -1,0 +1,59 @@
+{
+  "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "sourceTree": "97b943e502a8ee30270ace1e2b1e32d1e3699727",
+  "runtimeRevision": "cxorbia-live-hr-dev-00386-82w",
+  "runtimeDigest": "sha256:f8102cc99879421ecd87adce3ad8e015d1b23b77d9350d9172c2ee424f00ed4f",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/5974006f029fb872",
+  "schemaVersion": "cxorbia.i3.d08-ui-qa-request.v1",
+  "createdAt": "2026-11-24T09:01:15.993049+00:00",
+  "iteration": "I3",
+  "authorization": "PAULA_AUTHORIZED_D08_DEV_ONLY",
+  "authorizationBasis": "User current request to complete pending work and prior frozen D08 isolated QA authorization; real learners and real courses excluded",
+  "production": false,
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "country": "GT",
+  "hrIndependent": true,
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2758_BINDING_SCOPE_PAIRED_DEV_PASS_20261124.json",
+  "pairedReceiptGitBlob": "46331b77b8ac052cf6bf637a2e25ce43b88f3e68",
+  "pairedRunId": 45359320300,
+  "draftScope": {
+    "tenantId": [
+      "tya"
+    ],
+    "projectId": [],
+    "pais": [],
+    "rol": [
+      "admin"
+    ],
+    "nivel": [],
+    "modulo": [],
+    "paquete": []
+  },
+  "scopeNote": "Tenant/Admin draft only. Empty project scope is intentional and not project-scope certification.",
+  "allowedWrites": [
+    "Four isolated qa_d08 run+attempt identities and memberships, two exact shopper QA profiles",
+    "Progress of these QA learners only",
+    "One tagged QA Admin draft course and one authorized edit",
+    "Provider receipts and audits for these exact commands",
+    "Ownership-checked cleanup of this invocation only"
+  ],
+  "forbidden": [
+    "real learner progress",
+    "real course edit or publication",
+    "HR writes",
+    "real visit writes",
+    "production deploy",
+    "permission or rules change"
+  ],
+  "requiredEvidence": [
+    "Admin Shopper Cliente actual UI lessons quizzes resources progress",
+    "Provider ACK and durable independent readback",
+    "New sessions plus idempotent replay",
+    "Admin draft edit and negative learner roles",
+    "Foreign learner read denial",
+    "Current exact runtime and Hosting before/after",
+    "Owned QA cleanup with zero residuals"
+  ],
+  "fullDomainPromotionAutomatic": false
+}
