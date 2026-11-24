@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.partial-owner-evidence-retention-fix.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-24T21:41:26.893795+00:00",
+  "failureClass": "RELEASE_COMPOSITION_FAILURE",
+  "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "productSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "currentDevRuntime": "cxorbia-live-hr-dev-00391-8mg",
+  "currentDevHostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+  "defectsProven": [
+    "Pending findings were excluded before their owner receipts could be evaluated",
+    "Partial PROVIDER_WRITE receipts were rejected before complete-domain obligations existed",
+    "Only promoted-domain receipts survived terminalClosure save/load"
+  ],
+  "fixes": [
+    "Evaluate exact current owner receipts independently of pending finding state",
+    "Retain each accepted partial owner receipt durably and revalidate identity/owner/ACK on reuse",
+    "Report observed obligations and known missing obligations separately; absent frozen inventory remains unknown",
+    "Promote a domain only when original complete owner, obligation and P0 requirements pass"
+  ],
+  "validation": {
+    "commands": [
+      "node --test tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs"
+    ],
+    "tests": 85,
+    "passed": 85,
+    "failed": 0,
+    "cases": [
+      "Pending finding partial survives without domain promotion",
+      "Full frozen obligation set resolves exact finding",
+      "Missing inventory never invents denominator",
+      "Saved receipt reloads and deduplicates",
+      "Runtime drift invalidates current receipt"
+    ]
+  },
+  "remainingMethodWork": [
+    "Typed result normalization and immutable result-consumer queue draining",
+    "Precise D08 period-independent course scope authority",
+    "Apply recovered clauses without turning subtotal into full-domain coverage"
+  ],
+  "f3Retry": {
+    "priorProofCommit": "2518a3834d35514b0533ab9abda6bdde6ce7424a",
+    "previousRetryNotStarted": true,
+    "reason": "Prior commit modified only docs/checkpoints, outside canonical workflow push.paths",
+    "existingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingTrigger": "[i3-f3-qa-endpoint]",
+    "method": "This commit changes existing tools/qa owners already within paths; no new workflow or trigger route",
+    "readerFixReceipt": "docs/checkpoints/CXORBIA_I3_RUN2781_F3_READER_INVENTORY_FIX_20261124.json"
+  },
+  "newDomainMatches": 0,
+  "production": false,
+  "newBuilds": 0,
+  "newDeploys": 0
+}

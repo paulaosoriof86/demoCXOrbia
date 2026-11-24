@@ -120,6 +120,28 @@ test('separate bounded receipts accumulate only against frozen complete obligati
     receipt('read','READ_ONLY','cold',false),receipt('read','READ_ONLY','warm',false)]);
   assert.equal(decision(noList).matchModules,20);
 });
+test('pending finding accepts and durably retains a proved clause without closing the missing obligation',()=>{
+ const f=fixture('write',{requiredIds:['first','remaining']}),r=receipt('write','PROVIDER_WRITE','first',false);
+ f.ledger.findings['VRM-900']={priority:'P0_PROVEN',state:'PENDING_REAL_PROOF',moduleDomain:TYPES.write,owner:[OWNERS.write],terminalEvidence:{ownerSpecificReceipt:r}};
+ const out=evaluateTerminalModuleTruth(f),domain=out.terminalClosure.domainResults.find(x=>x.moduleDomain===TYPES.write);
+ assert.equal(out.terminalClosure.matchModules,20);assert.equal(out.terminalClosure.acceptedCurrentOwnerReceipts.length,1);
+ assert.deepEqual(domain.observedObligationIds,['first']);assert.deepEqual(domain.missingObligationIds,['remaining']);
+ assert.ok(out.terminalClosure.unresolvedP0.some(x=>x.id==='VRM-900'));
+ f.ledger.findings['VRM-900'].terminalEvidence.ownerSpecificReceipts=[r,receipt('write','PROVIDER_WRITE','remaining',false)];
+ const completed=evaluateTerminalModuleTruth(f);assert.equal(completed.terminalClosure.matchModules,21);assert.ok(completed.terminalClosure.closedByCurrentReceipt.includes('VRM-900'));
+});
+test('provider partial without a full inventory survives save/load and never invents a domain denominator',()=>{
+ const f=append(fixture('write'),receipt('write','PROVIDER_WRITE','observed',false));
+ const first=evaluateTerminalModuleTruth(f),domain=first.terminalClosure.domainResults.find(x=>x.moduleDomain===TYPES.write);
+ assert.equal(first.terminalClosure.matchModules,20);assert.equal(first.terminalClosure.acceptedCurrentOwnerReceipts.length,1);
+ assert.equal(domain.completeObligationInventory,false);assert.equal(domain.missingObligationIds,null);
+ f.pre=JSON.parse(JSON.stringify(first));f.additionalReceipts=[];
+ const second=evaluateTerminalModuleTruth(f);assert.equal(second.terminalClosure.matchModules,20);assert.equal(second.terminalClosure.acceptedCurrentOwnerReceipts.length,1);
+ f.additionalReceipts=[receipt('write','PROVIDER_WRITE','observed',false)];
+ assert.equal(evaluateTerminalModuleTruth(f).terminalClosure.acceptedCurrentOwnerReceipts.length,1);
+ f.identity={...f.identity,runtimeRevision:'different-runtime'};
+ const drift=evaluateTerminalModuleTruth(f);assert.equal(drift.terminalClosure.acceptedCurrentOwnerReceipts.length,0);assert.equal(drift.terminalClosure.matchModules,20);
+});
 test('ordinary credential login is an explicit non-writing proof kind',()=>{
   const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));
   f.additionalReceipts[0].mutationEvidence.authWrites=1;

@@ -227,14 +227,21 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
   const f=ledger.findings||{};
   const candidates=[];
   for(const [id,v] of Object.entries(f)){
-    if(!resolvedState(v.state))continue;
     const te=v.terminalEvidence||{},rs=Array.isArray(te.ownerSpecificReceipts)?te.ownerSpecificReceipts:(te.ownerSpecificReceipt?[te.ownerSpecificReceipt]:[]);
     for(const receipt of rs)candidates.push({findingId:id,receipt,additional:false});
   }
+  // A verified clause remains available while its finding/domain is pending.
+  // Every restored receipt passes the same current identity/owner/ACK checks.
+  for(const entry of pre.terminalClosure?.acceptedCurrentOwnerReceipts||[]){
+    const receipt={...entry.receipt,findingIds:entry.findingIds||[]};
+    candidates.push({findingId:receipt.findingIds.join('+'),receipt,additional:true});
+  }
   for(const receipt of additionalReceipts)candidates.push({findingId:(receipt.findingIds||[]).join('+'),receipt,additional:true});
+  const seenCandidate=new Set();
   for(const row of candidates){
     const {findingId:id,receipt:r}=row,domain=String(r.moduleDomain||''),mod=modules.find(m=>m.domain===domain);
     if(!mod)continue;
+    const key=sha256(JSON.stringify({findingId:id,receipt:r}));if(seenCandidate.has(key))continue;seenCandidate.add(key);
     const currentIdentity=r.sourceSha===SOURCE&&r.sourceTree===TREE&&r.runtimeRevision===RUNTIME&&r.runtimeDigest===DIGEST&&r.hostingVersion===HOSTING;
     if(!currentIdentity&&!approvedCarryForward(r,mod,sourceFiles,identity)){
       historicalReceipts.push({findingId:id,moduleDomain:domain,sourceSha:r.sourceSha,reason:'HISTORICAL_IDENTITY_NOT_CURRENT_RECEIPT'});continue;
@@ -268,10 +275,9 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
         errors.push(...scopeErrors(r,mod,sourceFiles,paths));
       }
       // Previously MATCH domains need only reproof of the affected owner files.
-      // A new full-domain promotion also needs explicit functional obligations.
-      if(mod.classification!=='MATCH')need((r.contractCoverage?.fullDomain===true ||
-        Array.isArray(mod.terminalRequiredObligationIds)&&mod.terminalRequiredObligationIds.length>0) &&
-        Array.isArray(r.contractCoverage?.obligations) && r.contractCoverage.obligations.length>0 &&
+      // Accept observed clauses independently from complete-domain promotion.
+      // moduleEvidenceRequirements still requires the full frozen inventory.
+      if(mod.classification!=='MATCH')need(Array.isArray(r.contractCoverage?.obligations) && r.contractCoverage.obligations.length>0 &&
         r.contractCoverage.obligations.every(x=>x.observed===true && x.evidenceRef),'FUNCTIONAL_OBLIGATIONS');
     }else errors.push('UNKNOWN_OPERATION_KIND');
     if(errors.length){rejectedReceipts.push({findingId:id,moduleDomain:domain,reasons:errors});continue;}
@@ -285,7 +291,10 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
     if(mod.classification==='MATCH'&&!pending.length)continue;
     const candidate=receiptsByDomain.get(mod.domain)||[];
     if(moduleEvidenceRequirements(mod,sourceFiles,candidate).reasons.length)continue;
-    for(const row of candidate)if(row.additional)for(const fid of row.receipt.findingIds||[])closedByCurrentReceipt.add(fid);
+    for(const row of candidate){
+      const ids=row.additional?(row.receipt.findingIds||[]):[row.findingId];
+      for(const fid of ids)closedByCurrentReceipt.add(fid);
+    }
   }
   const isResolved=id=>resolvedState(f[id]?.state)||closedByCurrentReceipt.has(id);
   for(const id of priorIds)if(!isResolved(id))addFailure('C3_PRIOR_P0_NOT_RESOLVED:'+id);
@@ -300,7 +309,11 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
     const {required,covered,reasons}=moduleEvidenceRequirements(mod,sourceFiles,candidate);
     const blockers=openP0.filter(([,v])=>v.moduleDomain===domain || (v.moduleDomains||[]).includes(domain));
     if(blockers.length)reasons.push('C3_DOMAIN_P0_OPEN:'+domain+':'+blockers.map(([id])=>id).join(','));
+    const observedObligationIds=[...new Set(candidate.flatMap(x=>(x.receipt.contractCoverage?.obligations||[]).map(o=>o.id)))].sort();
+    const requiredObligationIds=Array.isArray(mod.terminalRequiredObligationIds)&&mod.terminalRequiredObligationIds.length?mod.terminalRequiredObligationIds:null;
     domainResults.push({moduleDomain:domain,status:reasons.length?'HOLD':'GO',requiredOwnerPaths:required,coveredOwnerPaths:[...covered],reasons,
+      observedObligationIds,completeObligationInventory:requiredObligationIds!==null,requiredObligationIds,
+      missingObligationIds:requiredObligationIds?requiredObligationIds.filter(id=>!observedObligationIds.includes(id)):null,
       rejectedReceipts:rejectedReceipts.filter(x=>x.moduleDomain===domain),historicalReceiptCount:historicalReceipts.filter(x=>x.moduleDomain===domain).length});
     if(reasons.length){reasons.forEach(addFailure);continue;}
     promotionByDomain.set(domain,candidate);
@@ -321,13 +334,17 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
   if(nonMatchModules.length||nonMatchFiles.length)addFailure('C3_MODULE_TRUTH_NOT_CLOSED');
   const complete=failures.length===0;
   const receiptRows=[...promotionByDomain.entries()].flatMap(([moduleDomain,rows])=>rows.map(x=>({moduleDomain,findingId:x.findingId,decision:x.receipt.decision,ownerPaths:x.receipt.ownerPaths})));
+  const acceptedCurrentOwnerReceipts=[...new Map([...receiptsByDomain.values()].flat().map(row=>{
+    const entry={findingIds:row.additional?(row.receipt.findingIds||[]):[row.findingId],receipt:row.receipt};
+    return [sha256(JSON.stringify(entry)),entry];
+  })).values()];
   return {...pre,schemaVersion:'cxorbia.recovery.module-truth-matrix.v10-incremental-owner-receipts',generatedAt:new Date().toISOString(),
     productSource:{sha:SOURCE,treeSha:TREE},sourceFiles,modules,phaseAComplete:complete,allModulesMatch:nonMatchModules.length===0&&nonMatchFiles.length===0,
     terminalClosure:{decision:complete?'PASS_C3_TERMINAL_MODULE_TRUTH_21_21':'HOLD_C3_TERMINAL_MODULE_TRUTH',status:complete?'GO':'HOLD',
       moduleCount:21,matchModules:modules.filter(x=>x.classification==='MATCH').length,nonMatchModules:nonMatchModules.length,
       sourceSha:SOURCE,sourceTree:TREE,hrRevision:String(human.sourceRevision||''),runtimeRevision:RUNTIME,runtimeDigest:DIGEST,hostingVersion:HOSTING,
       hardenedFocalDecision:focal.decision||null,fullHumanDecision:human.decision||null,qaReservationAfter:qa.after??null,pendingOwnerByteParity:parity.decision||null,
-      terminalFindingsResolved:terminalIds.filter(isResolved),priorP0Resolved:priorIds.filter(isResolved),ownerSpecificReceipts:receiptRows,
+      terminalFindingsResolved:terminalIds.filter(isResolved),priorP0Resolved:priorIds.filter(isResolved),ownerSpecificReceipts:receiptRows,acceptedCurrentOwnerReceipts,
       domainResults,historicalReceipts,rejectedReceipts,closedByCurrentReceipt:[...closedByCurrentReceipt],
       unresolvedP0:openP0.map(([id,v])=>({id,state:v.state,priority:v.priority||v.severity})),failures,selfApproval:false,production:false}};
 }
