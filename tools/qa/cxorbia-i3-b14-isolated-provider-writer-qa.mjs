@@ -230,6 +230,22 @@ export function f3AssertCleanupLock({current,baseline,owner,reconcilePaths,recei
     row.result?.unresolvedEffects===0&&row.result?.unverifiedEffects===0,'PERSISTENCE_FAILURE:F3_QA_LOCK_RECEIPT_OWNER');
   return 'OWNED_COMMITTED_RECONCILIATION';
 }
+export function f3RequireRemoteRestoredBeforeCleanup(receipt){
+  const attempts=receipt.remoteCommandAttempts||[];
+  f3Need(attempts.length===0||receipt.remoteValuesRestored===true,'PERSISTENCE_FAILURE:F3_QA_REMOTE_RESTORE_REQUIRED');
+  return attempts.length?'REMOTE_VALUES_RESTORED':'NO_REMOTE_COMMAND_ATTEMPTED';
+}
+
+export function f3VerifyRestoredBaseline(baseline,live){
+  f3Need(baseline?.rows?.length===2&&live?.rows?.length===2&&/^[a-f0-9]{64}$/.test(live.revision||''),'PROVIDER_FAILURE:F3_QA_RESTORED_BASELINE_SCOPE');
+  for(const original of baseline.rows){
+    const matches=live.rows.filter(row=>(row.id||row.visitId)===original.visitId),row=matches[0];
+    f3Need(matches.length===1&&row.periodId===original.periodId&&(row.country||row.pais)===original.countryCode&&row.hrRowId===original.hrRowId&&row.excelWorksheetFingerprint===original.worksheetFingerprint,'MAPPING_FAILURE:F3_QA_RESTORED_BASELINE_IDENTITY');
+    f3Need(F3_QA.fields.every(key=>f3Same(row[key]??null,original.values[key])),'PROVIDER_FAILURE:F3_QA_REMOTE_BASELINE_NOT_RESTORED');
+  }
+  return {decision:'PASS_F3_EXACT_REMOTE_BASELINE_READBACK',sourceRevision:live.revision,visits:2,fields:8,readAt:new Date().toISOString()};
+}
+
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
@@ -280,7 +296,17 @@ async function runF3EndpointProbe(){
     return ['tenants/tya/commandReceipts/'+sha(command.tenantId+'\0'+command.projectId+'\0'+command.periodId+'\0'+command.idempotencyKey).slice(0,40),
       'tenants/tya/entityAuditTrail/'+sha(command.idempotencyKey+'\0'+command.commandType+'\0'+command.entityId).slice(0,40)];
   };
-  const send=async command=>{const response=await httpJson(F3_QA.baseUrl+'/v1/cxorbia/commands',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},body:JSON.stringify(command)});return response;};
+  const send=async command=>{
+    let attempt;
+    if(command.commandType==='visit.hr.fields.update'){
+      receipt.remoteValuesRestored=false;
+      attempt={command:structuredClone(command),receiptPaths:commandPaths(command),startedAt:new Date().toISOString(),state:'REMOTE_OUTCOME_UNCERTAIN'};
+      (receipt.remoteCommandAttempts??=[]).push(attempt);save();
+    }
+    const response=await httpJson(F3_QA.baseUrl+'/v1/cxorbia/commands',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},body:JSON.stringify(command)});
+    if(attempt){attempt.httpStatus=response.status;attempt.response=f3SafeEvidence(response.body);attempt.finishedAt=new Date().toISOString();attempt.state='RESPONSE_RECORDED_RESTORE_STILL_REQUIRED';save();}
+    return response;
+  };
   const remember=async command=>{for(const p of commandPaths(command)){if(!commands.includes(p)){f3Need(!(await db.doc(p).get()).exists,'PERSISTENCE_FAILURE:F3_QA_RECEIPT_BASELINE_NOT_ABSENT');commands.push(p);}}};
   const postWithBoundedRecovery=async command=>{
     await remember(command);let last;
@@ -347,7 +373,9 @@ async function runF3EndpointProbe(){
     let custom=await auth.createCustomToken(adminUid,claims);const exchanged=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});custom='';
     token=exchanged.body.idToken||'';f3Need(exchanged.status===200&&token,'AUTH_FAILURE:F3_QA_TOKEN_EXCHANGE');const decoded=await auth.verifyIdToken(token,true);f3Need(decoded.uid===adminUid&&decoded.role==='admin'&&decoded.tenantId==='tya'&&f3Same(decoded.projectIds,[F3_QA.projectId]),'AUTH_FAILURE:F3_QA_CLAIMS_READBACK');
     const baseline=await readLive();for(const row of baseline.rows)f3Need(row.shopperId==null&&row.agendada==null&&row.escenario==='CXOrbia QA Escenario A'&&row.tipoCombo==='CXOrbia QA Combo A','MAPPING_FAILURE:F3_QA_SEED_NOT_BASELINE');
-    receipt.initialSourceRevision=baseline.revision;await reconcile('initial');
+    receipt.initialSourceRevision=baseline.revision;
+    receipt.remoteBaseline={revision:baseline.revision,rows:baseline.rows.map(row=>({visitId:row.id||row.visitId,countryCode:row.country||row.pais,periodId:row.periodId,hrRowId:row.hrRowId,worksheetFingerprint:row.excelWorksheetFingerprint,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]??null]))})),readAt:new Date().toISOString()};save();
+    await reconcile('initial');
     let first;
     for(const country of F3_QA.countries){
       const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
@@ -365,11 +393,11 @@ async function runF3EndpointProbe(){
     await remember(stale);const blocked=await send(stale);f3Need(blocked.body.ok===false&&['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(blocked.body.code),'PERSISTENCE_FAILURE:F3_QA_STALE_BASE_ACCEPTED');recordCase('stale_base_rejected');
     const oldReplay=await send(first.command);assertF3RemoteAck(oldReplay.body);const current=await readLive();f3Need(current.rows.find(x=>(x.id||x.visitId)===F3_QA.visits.GT).escenario==='CXOrbia QA Escenario C','PERSISTENCE_FAILURE:F3_QA_OLD_EVENT_ROLLBACK');recordCase('old_committed_receipt_replay_does_not_rollback',{historicalAck:true,currentEventId:newer.eventId});
     for(const country of F3_QA.countries){for(const [fieldKey,value]of [['shopperId',null],['agendada',null],['tipoCombo','CXOrbia QA Combo A'],['escenario','CXOrbia QA Escenario A']])await executeField(country,fieldKey,value,country+'_'+fieldKey+'_restore');}
-    await reconcile('restored');receipt.runtimeAfter=await runtimeRead();receipt.applicationAckProven=true;receipt.remoteValuesRestored=true;
+    await reconcile('restored');receipt.remoteRestoreReadback=f3VerifyRestoredBaseline(receipt.remoteBaseline,await readLive());
+    receipt.runtimeAfter=await runtimeRead();receipt.applicationAckProven=true;receipt.remoteValuesRestored=true;
     receipt.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING';
   }catch(error){receipt.failure=f3Code(error);receipt.decision='HOLD_F3_ISOLATED_ENDPOINT';throw error;
   }finally{
-    token='';
     const cleanupErrors=[],snapshots=[];
     const enumerate=async ref=>{const snap=await ref.get();if(snap.exists)snapshots.push({path:ref.path,data:snap.data()});for(const collection of await ref.listCollections())for(const doc of (await collection.get()).docs)await enumerate(doc.ref);};
     const remove=async row=>{f3Need(f3OwnedCleanupPath(row.path,owner,commands),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_SCOPE');await db.runTransaction(async tx=>{const ref=db.doc(row.path),live=await tx.get(ref);if(!live.exists)return;f3Need(f3Same(live.data(),row.data),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_DRIFT');tx.delete(ref);});f3Need(!(await db.doc(row.path).get()).exists,'PERSISTENCE_FAILURE:F3_QA_CLEANUP_READBACK');};
@@ -395,6 +423,7 @@ async function runF3EndpointProbe(){
           item.event=event;item.delivery=delivery.exists?delivery.data():null;item.attempts=attempts.docs.map(x=>({id:x.id,...x.data()}));
         }
         save();
+        receipt.remoteRestoreCleanupGuard=f3RequireRemoteRestoredBeforeCleanup(receipt);save();
         // Establish lock/receipt ownership before deleting any QA document. A
         // partial or foreign lock keeps all Firestore evidence for recovery.
         const lockBeforeSnap=await db.doc(lockPath).get(),lockBefore=lockBeforeSnap.exists?lockBeforeSnap.data():null;
@@ -411,10 +440,13 @@ async function runF3EndpointProbe(){
         f3Need(!(await db.doc(projectPath).get()).exists&&(await db.doc(projectPath).listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_SUBTREE_CLEANUP');receipt.cleanup.firestore=true;
       }catch(error){cleanupErrors.push(f3Code(error));}
     }
-    if(authCreated)try{const user=await auth.getUser(adminUid);f3Need(user.uid===adminUid&&(user.customClaims?.qaOwner===owner||Object.keys(user.customClaims||{}).length===0&&user.displayName==='CXOrbia isolated QA operator'),'AUTH_FAILURE:F3_QA_CLEANUP_USER_OWNER');await auth.deleteUser(adminUid);try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_AUTH_CLEANUP_READBACK');}catch(error){if(error.code!=='auth/user-not-found')throw error;}receipt.cleanup.auth=true;}catch(error){cleanupErrors.push(f3Code(error));}
+    if(authCreated&&receipt.cleanup.firestore===true)try{const user=await auth.getUser(adminUid);f3Need(user.uid===adminUid&&(user.customClaims?.qaOwner===owner||Object.keys(user.customClaims||{}).length===0&&user.displayName==='CXOrbia isolated QA operator'),'AUTH_FAILURE:F3_QA_CLEANUP_USER_OWNER');await auth.deleteUser(adminUid);try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_AUTH_CLEANUP_READBACK');}catch(error){if(error.code!=='auth/user-not-found')throw error;}receipt.cleanup.auth=true;}catch(error){cleanupErrors.push(f3Code(error));}
+    if(authCreated&&receipt.cleanup.firestore!==true)receipt.cleanup.authPreservedForRecovery=true;
     receipt.remoteCleanup={required:true,scenarioId:10199316,dataStoreId:213856,eventKeys:receipt.events.map(e=>e.remoteEventKey),headKeys:[...new Set(receipt.events.map(e=>e.remoteHeadKey))],worksheetNames:F3_QA.countries.map(c=>manifest.countries[c].worksheetName),rule:'ROOT_VERIFIES_EXACT_KEYS_AND_CURRENT_OWNER_BEFORE_DELETE_THEN_READS_ABSENCE'};
     if(cleanupErrors.length){receipt.cleanupErrors=cleanupErrors;receipt.decision='HOLD_F3_QA_CLEANUP_UNVERIFIED';process.exitCode=1;}
-    receipt.state='HOLD';save();await appSdk.deleteApp(app);
+    receipt.recoveryRequired=(receipt.remoteCommandAttempts||[]).length>0&&receipt.remoteValuesRestored!==true;
+    if(receipt.recoveryRequired)receipt.recoveryScope={qaOwner:owner,adminUid,projectPath,lockPath,commandAttempts:receipt.remoteCommandAttempts.length,rule:'PRESERVE_FIRESTORE_AUTH_MAKE_AND_QA_WORKSHEETS_UNTIL_EXACT_OWNED_RECOVERY_AND_FRESH_BASELINE_READBACK'};
+    token='';receipt.state='HOLD';save();await appSdk.deleteApp(app);
     console.log('CXORBIA_F3_QA_ENDPOINT_RECEIPT='+JSON.stringify({decision:receipt.decision,applicationAckProven:receipt.applicationAckProven,cases:receipt.cases.length,events:receipt.events.length,cleanup:receipt.cleanup,productionWrites:0,operationalHrWrites:0,b14Closed:false}));
   }
 }

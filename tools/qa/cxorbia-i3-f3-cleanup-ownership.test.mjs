@@ -1,9 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {F3_QA,f3AssertCleanupLock,f3SafeEvidence} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
+import {F3_QA,f3AssertCleanupLock,f3SafeEvidence,f3RequireRemoteRestoredBeforeCleanup,f3VerifyRestoredBaseline} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
 const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
 const digest=v=>crypto.createHash('sha256').update(JSON.stringify(stable(v))).digest('hex');
+test('F3 preserves recovery evidence after uncertain or acknowledged remote writes until restoration',()=>{
+ for(const state of ['REMOTE_OUTCOME_UNCERTAIN','RESPONSE_RECORDED_RESTORE_STILL_REQUIRED']){
+  const receipt={remoteCommandAttempts:[{state}],remoteValuesRestored:false},before=structuredClone(receipt);
+  assert.throws(()=>f3RequireRemoteRestoredBeforeCleanup(receipt),/REMOTE_RESTORE_REQUIRED/);assert.deepEqual(receipt,before);
+  receipt.remoteValuesRestored=true;assert.equal(f3RequireRemoteRestoredBeforeCleanup(receipt),'REMOTE_VALUES_RESTORED');
+ }
+ assert.equal(f3RequireRemoteRestoredBeforeCleanup({}),'NO_REMOTE_COMMAND_ATTEMPTED');
+});
+test('F3 final independent read must restore all eight fields and both exact worksheet identities',()=>{
+ const rows=F3_QA.countries.map(c=>({id:F3_QA.visits[c],country:c,periodId:F3_QA.periodId,hrRowId:'QA_'+c+'!2',excelWorksheetFingerprint:digest(c),escenario:'baseline scenario',tipoCombo:'baseline combo',shopperId:null,agendada:null}));
+ const baseline={rows:rows.map(row=>({visitId:row.id,countryCode:row.country,periodId:row.periodId,hrRowId:row.hrRowId,worksheetFingerprint:row.excelWorksheetFingerprint,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]]))}))};
+ assert.equal(f3VerifyRestoredBaseline(baseline,{rows,revision:'a'.repeat(64)}).fields,8);
+ for(const country of F3_QA.countries)for(const key of F3_QA.fields){const bad=structuredClone(rows);bad.find(x=>x.country===country)[key]='unrestored';assert.throws(()=>f3VerifyRestoredBaseline(baseline,{rows:bad,revision:'a'.repeat(64)}),/REMOTE_BASELINE_NOT_RESTORED/);}
+ const foreign=structuredClone(rows);foreign[0].excelWorksheetFingerprint=digest('foreign');assert.throws(()=>f3VerifyRestoredBaseline(baseline,{rows:foreign,revision:'a'.repeat(64)}),/BASELINE_IDENTITY/);
+});
 function fixture(){
  const owner='f3-qa-45386193183-1',idempotencyKey=owner+'-reconcile-initial',sourceRevision='a'.repeat(64),actorUid=owner+'-admin',scope={tenantId:'tya',projectId:F3_QA.projectId};
  const path='tenants/tya/commandReceipts/hr-'+digest([F3_QA.projectId,idempotencyKey]),attemptId='11111111-1111-4111-8111-111111111111';

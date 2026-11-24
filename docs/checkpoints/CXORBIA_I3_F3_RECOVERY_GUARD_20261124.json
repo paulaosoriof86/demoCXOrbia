@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.f3-qa-recovery-guard.v1",
+  "iteration": "I3",
+  "classification": "PERSISTENCE_FAILURE",
+  "scope": "EXISTING_F3_QA_CONTROL_ONLY_NO_PRODUCT_CHANGE",
+  "decision": "PASS_64_FOCAL_TESTS_PENDING_ISOLATED_ENDPOINT_RUN",
+  "observedAt": "2026-11-24T21:24:18.684775+00:00",
+  "parentHead": "b940c88ef25f3cb41b996451ed86bcda0eb9e1c0",
+  "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedReceiptGitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+  "allowedFiles": [
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-f3-cleanup-ownership.test.mjs",
+    "docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json"
+  ],
+  "beforeBlobs": {
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs": "00c7ccb19398ac791a903a8c775d7ddb79af5e02",
+    "tools/qa/cxorbia-i3-f3-cleanup-ownership.test.mjs": "8891d127fa358a9e802bbb9359c6c314090458d2",
+    "docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json": "50ef0755d91046d0f48c8598b2c4f0c1b801f188"
+  },
+  "rootCause": "F3 finally could remove Firestore recovery evidence and Auth after a possible remote write without verified baseline restoration. An absent lease did not prove remote outcome resolved.",
+  "correction": [
+    "Persist exact QA command, receipt paths and baseline before remote POST.",
+    "Verify all eight values and both worksheet identities from a fresh final HR read.",
+    "Block all document cleanup until remote restoration is proven after any field command attempt.",
+    "Preserve Auth when Firestore cleanup is incomplete; preserve unknown outcomes without blind compensation.",
+    "Bind the one existing F3 runner to the consumed paired receipt for runtime00391."
+  ],
+  "tests": {
+    "pass": 64,
+    "fail": 0,
+    "sha256": "e44990d9af54f568e41a65e46d247d8d330a6b18361264e8cdc63896205b0f6f"
+  },
+  "remoteWritesThisCorrection": 0,
+  "operationalWrites": 0,
+  "productChanges": 0,
+  "production": false,
+  "domainPromotions": 0,
+  "newWorkflow": false,
+  "exactNextAction": "Execute existing [i3-f3-qa-endpoint] once, inspect full result and restore/clean only exactly owned QA resources; incorporate receipt before further action."
+}
