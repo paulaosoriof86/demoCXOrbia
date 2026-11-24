@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.run2757.control-harness-repair.v1",
+  "createdAt": "2026-11-24T08:47:29.392855+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "expectedParentSha": "3a3441bbf53b63e663a807f4f732c720815dc98e",
+  "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "sourceTree": "97b943e502a8ee30270ace1e2b1e32d1e3699727",
+  "productSourceUnchanged": true,
+  "failedRuns": [
+    45358683806,
+    45358683042
+  ],
+  "causes": [
+    {
+      "owner": "tools/qa/cxorbia-i3-project-hr-binding.test.mjs",
+      "before": "Extracted buildSnapshot fixture omits existing inFlight/inFlightBinding dependencies; ReferenceError in owner suite",
+      "after": "Bind null in-flight state explicitly; production concurrency tests remain unchanged"
+    },
+    {
+      "owner": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json#activePhaseAClosureLock20261110.sourceTree",
+      "before": "27a84d1d50dc1dd0ee701ac607543451ff7b6370",
+      "after": "97b943e502a8ee30270ace1e2b1e32d1e3699727"
+    }
+  ],
+  "allowedFiles": [
+    "tools/qa/cxorbia-i3-project-hr-binding.test.mjs",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json"
+  ],
+  "humanApprovalsChanged": false,
+  "gateRequirementsReduced": false,
+  "production": false,
+  "newDomainMatches": 0
+}
