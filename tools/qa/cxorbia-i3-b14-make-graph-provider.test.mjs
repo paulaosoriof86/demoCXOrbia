@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+import {readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap,withMakeGraphToolboxReader} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 const contract={contractId:'test-mapping',headerVariants:[{id:'full',required:['País','ID CINEMA','Shopping'],countrySource:'column'}],
  columns:{pais:{aliases:['País'],critical:true},idCinema:{aliases:['ID CINEMA'],critical:true},shopping:{aliases:['Shopping'],critical:true}}};
 const values=[['País','ID CINEMA','Shopping'],['GT','001','Cine Test']];
@@ -94,4 +94,41 @@ test('the original verification registry is project bound and cannot select the 
  await assert.rejects(resolveCountryHrPeriodBinding({db,...scope,countryCode:'HN',purpose:'original_readback'}),/COUNTRY_NOT_ASSIGNED/);
  docs['tenants/tenant/integrationSettings/original-gt'].projectId='foreign';
  await assert.rejects(resolveCountryHrPeriodBinding({db,...scope,purpose:'original_readback'}),/INTEGRATION_SCOPE/);
+});
+
+
+function toolboxFixture(){
+ const events=[],seen=[],tool={name:'authorized-reader',annotations:{readOnlyHint:true},inputSchema:{properties:Object.fromEntries(['bindingFingerprint','worksheetId','driveId','itemId','periodId'].map(k=>[k,{}]))}};
+ const client={connect:async()=>{events.push('connect');},listTools:async()=>{events.push('list');return {tools:[tool]};},
+  callTool:async request=>{seen.push(request.arguments);return {structuredContent:{outputs:{...output(),...request.arguments}}};},close:async()=>{events.push('close');}};
+ return {events,seen,tool,client};
+}
+test('38 live country-period reads share one authenticated toolbox session and keep all independent read proofs',async()=>{
+ const f=toolboxFixture(),scopes=Array.from({length:38},(_,i)=>({...binding,scope:{...binding.scope,countryCode:i%2?'HN':'GT',periodId:'period-'+i}}));
+ const result=await withMakeGraphToolboxReader({client:f.client,transport:{}},async runScenario=>{
+  const out=[];for(let i=0;i<scopes.length;i+=4)out.push(...await Promise.all(scopes.slice(i,i+4).map(b=>readExcelPeriodThroughMake({binding:b,columnMap:contract,runScenario}))));return out;
+ });
+ assert.deepEqual(f.events,['connect','list','close']);assert.equal(f.seen.length,38);assert.equal(new Set(f.seen.map(x=>x.periodId+'|'+x.countryCode)).size,38);
+ assert.equal(result.every(r=>r.proof.externalRevisionIndependentlyVerified===true&&r.proof.hrWrites===0),true);
+});
+test('a second refresh performs new remote reads and a new authenticated session',async()=>{
+ const f=toolboxFixture();for(let i=0;i<2;i++)await withMakeGraphToolboxReader({client:f.client,transport:{}},runScenario=>readExcelPeriodThroughMake({binding,columnMap:contract,runScenario}));
+ assert.deepEqual(f.events,['connect','list','close','connect','list','close']);assert.equal(f.seen.length,2);
+});
+test('shared reader refuses a write-capable tool and closes without calls',async()=>{
+ const f=toolboxFixture();f.tool.annotations.readOnlyHint=false;
+ await assert.rejects(withMakeGraphToolboxReader({client:f.client,transport:{}},run=>run({})),/B14_TOOLBOX_CONTRACT/);assert.equal(f.seen.length,0);assert.deepEqual(f.events,['connect','list','close']);
+});
+test('shared reader drains in-flight requests before closing after a failure',async()=>{
+ const f=toolboxFixture();let finish,started,closed=false;const slow=new Promise(r=>{finish=r;}),ready=new Promise(r=>{started=r;});
+ f.client.callTool=async({arguments:a})=>{if(a.slow){started();await slow;return {structuredContent:{ok:true}};}await ready;throw new Error('fixture transport failure');};
+ f.client.close=async()=>{closed=true;f.events.push('close');};
+ const run=withMakeGraphToolboxReader({client:f.client,transport:{}},call=>Promise.all([call({slow:true}),call({slow:false})]));
+ await ready;await Promise.resolve();assert.equal(closed,false);finish();await assert.rejects(run,/fixture transport failure/);assert.equal(closed,true);
+});
+test('runtime shares the toolbox at full snapshot scope without weakening freshness checks',()=>{
+ const src=readFileSync(new URL('../../backend/runtime/hr-live-service/server.mjs',import.meta.url),'utf8');
+ assert.match(src,/withOriginalToolboxReader\(runScenario=>readExcelOriginalProjectSnapshot/);
+ assert.match(src,/readBinding:countryPeriod=>readExcelPeriodThroughMake\(\{binding:countryPeriod,columnMap,runScenario\}\)/);
+ assert.match(src,/EXCEL_BINDING_CHANGED_DURING_READ/);assert.match(src,/EXCEL_OPERATIONAL_SCOPE_DRIFT/);
 });

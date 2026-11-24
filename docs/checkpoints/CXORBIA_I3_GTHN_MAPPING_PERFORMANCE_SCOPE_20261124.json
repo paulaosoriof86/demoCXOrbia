@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.gthn.mapping-performance-scope.v1",
+  "createdAt": "2026-11-24T07:08:10.077562+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "authorization": "Paula 2026-11-24: urgently correct mapping, release composition and test performance; proceed four existing steps toward I4 authorization.",
+  "recordingSemantics": "Scope/evidence recorded after local diagnosis and edits; module truth and authorities were read before edits. No remote product write at recording time.",
+  "controlParentSha": "3af140ba26a9f02af8e2b3ebf297e236e2ac592a",
+  "predecessorProductSourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+  "predecessorProductSourceTree": "0cccf405900acfdb8f60961c822c560ba2798db3",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261123-V383.json",
+  "moduleTruthExpectedGitBlob": "863c08ae0b750126fc969bf05e423eae338317c0",
+  "allowedProductFiles": [
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [],
+  "beforeOwnerBlobs": {
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "7b2c430814c93841c8392a16c029ce06d686e995",
+    "app/adapters/tya-cumulative-read-model-v2.js": "29b0f065280c1a7cfd163d7e6c24ffa934e57239",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "e39b79845219752e003e573da1aacf53fde287d1",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "8fe0bc655aa2865a5a282d759acfaf35870af836",
+    "backend/runtime/hr-live-service/server.mjs": "5226c0e454d28dc9e573977ce540986b00cee4ba"
+  },
+  "afterOwnerBlobs": {
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": "0989d68116df7bfe8d7d70eebc63eeb58c184a59",
+    "app/adapters/tya-cumulative-read-model-v2.js": "f5e752572f112cfbe7192d824ba0b4a1c87c319a",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "7d0938f878ee8ded78daae37169d2bd0ee48e31a",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "8eede7528f49345001716c137614c0ad1fb72dff",
+    "backend/runtime/hr-live-service/server.mjs": "bb49b46aa914fbd781c3a71361705ee21de1b53a"
+  },
+  "findings": [
+    {
+      "id": "VRM-360",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "ownerFiles": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "description": "Consumers used physical HR row as global identity after F2 had selected distinct canonical GT/HN visit IDs; coordinate collision contaminated enrichment and lifecycle matching.",
+      "evidence": "24 source-extracted focal tests: canonical IDs, scoped aliases, payment/postulation preservation, slow/stale prefetch, principal isolation; deterministic rejection previously performed 12 requests/10 sleeps, now one request."
+    },
+    {
+      "id": "VRM-361",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "description": "Per-binding MCP connect/list/close and re-fetch of slow in-flight HR multiplied bootstrap latency across 38 scopes.",
+      "evidence": "38 independent original Excel calls share one authenticated reader session with bounded concurrency; rejects write-capable tools; session closes only after in-flight readers settle; no cache/TTL or authentication weakening."
+    },
+    {
+      "id": "VRM-362",
+      "priority": "P0_PROVEN",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "ownerFiles": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "tools/qa/cxorbia-i3-shock-continuity-guard.mjs",
+        "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+        "tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.mjs"
+      ],
+      "description": "F2 immutable activation receipt and predecessor guard were compared to a new successor source; old row-first live check also rejected valid GT/HN source.",
+      "evidence": "Narrow validated pending-paired transition preserves immutable prior receipt; exact runtime/digest/Hosting predecessor check; same existing job; read-only Excel live observation; unchanged source gate moved into helper to retain parser headroom."
+    }
+  ],
+  "sourceVerification": {
+    "command": "node --test tools/qa/cxorbia-i3-{gthn-canonical-consumers,b14-make-graph-provider,f2-predeploy-proven-predecessor,current-authority-alias-guard,shock-continuity-guard,source-qa-evidence,terminal-hr-observation}.test.mjs",
+    "passed": 497,
+    "failed": 0,
+    "logSha256": "2f63d473a68de58c8b496fe8081e7b05b61f47a5c5411969124960d2df3bb74e"
+  },
+  "preserved": {
+    "matchDomains": 6,
+    "b4b5b6b7": true,
+    "priorF2ExcelReadProof": true,
+    "production": "DO_NOT_TOUCH",
+    "f3RemoteAckClaimed": false,
+    "newDomainClaimed": false
+  },
+  "devPublished": false,
+  "production": false,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0
+}

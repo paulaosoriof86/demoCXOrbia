@@ -117,7 +117,15 @@
     return {assigned,scheduled,realized,questionnaire,submitted,outOfRange,cancelled,available,liquidationCandidate,liquidationConfirmed,paymentConfirmed};
   }
   const sourceCoord=v=>{const t=str(v&&v.sourceTab),r=str(v&&v.sourceRow);return t&&r?`${t}::${r}`:'';};
-  const visitKey=v=>str(v&&v.hrRowId)||sourceCoord(v)||str(v&&(v.visitId||v.id));
+  const visitScope=v=>{const period=str(v&&(v.periodId||v.measurementPeriodId||v.measurementWindowProjectId||v.periodKey)),project=str(v&&(v.rootProjectId||(str(v.projectId)!==period?v.projectId:'')));return {tenant:str(v&&v.tenantId),project,period,country:canonicalCountry(v&&(v.pais||v.country||v.countryCode))};};
+  const visitKey=v=>{const row=str(v&&v.hrRowId)||sourceCoord(v);return str(v&&(v.visitId||v.id))||(row?JSON.stringify({...visitScope(v),row}):'');};
+  function compatibleVisitScope(a,b,coordinate=false){
+    const x=visitScope(a),y=visitScope(b);
+    if(Object.keys(x).some(k=>x[k]&&y[k]&&x[k]!==y[k]))return false;
+    if(coordinate&&[a,b].some(v=>/^[a-f0-9]{64}$/.test(str(v&&v.excelWorksheetFingerprint))))
+      return !!(x.country&&y.country&&x.country===y.country&&x.period&&y.period&&x.period===y.period);
+    return true;
+  }
   function uniqueIndex(rows,keyFn){const m=new Map();arr(rows).forEach(row=>{const k=str(keyFn(row));if(!k)return;if(!m.has(k))m.set(k,[]);m.get(k).push(row);});return m;}
   const onlyUnique=(m,k)=>{const rows=m.get(str(k))||[];return rows.length===1?rows[0]:null;};
   function findProtectedVisit(base,indexes){
@@ -126,11 +134,13 @@
     // whose Firestore docId equals the live HR visitId. That exact live identity
     // is authoritative over historical rows and over weaker coordinate matches.
     const exactDoc=onlyUnique(indexes.docId,liveId);
-    if(exactDoc)return {row:exactDoc,conflict:false,authority:'live_hr_visit_id_equals_firestore_doc_id'};
+    if(exactDoc)return compatibleVisitScope(base,exactDoc)?{row:exactDoc,conflict:false,authority:'live_hr_visit_id_equals_firestore_doc_id'}:{row:null,conflict:true,authority:'exact_identity_scope_conflict'};
+    const scopedUnique=(index,key,coordinate=false)=>{const rows=(index.get(str(key))||[]).filter(v=>compatibleVisitScope(base,v,coordinate));return rows.length===1?rows[0]:null;};
+    const exactId=scopedUnique(indexes.id,liveId);
+    if(exactId)return {row:exactId,conflict:false,authority:'exact_logical_identity'};
     const c=[];const add=v=>{if(v&&!c.includes(v))c.push(v);};
-    add(onlyUnique(indexes.hrRow,str(base&&base.hrRowId)));
-    add(onlyUnique(indexes.coord,sourceCoord(base)));
-    add(onlyUnique(indexes.id,liveId));
+    add(scopedUnique(indexes.hrRow,str(base&&base.hrRowId),true));
+    add(scopedUnique(indexes.coord,sourceCoord(base),true));
     if(c.length===1)return {row:c[0],conflict:false,authority:'exact_legacy_fallback'};
     if(c.length>1){
       const docMatches=c.filter(v=>str(v&&v.__docId)===liveId);
@@ -452,13 +462,13 @@
        The durable record remains in result.posts with an explicit lifecycle reason so historical
        review/audit can still render it when requested. */
     const currentPostPeriod=str(hr.currentPeriodId);
-    const liveVisitById=new Map(),liveVisitByRow=new Map();
-    for(const v of composedVisits){const id=str(v?.id||v?.visitId),row=str(v?.hrRowId);if(id)liveVisitById.set(id,v);if(row)liveVisitByRow.set(row,v);}
+    const liveVisitById=uniqueIndex(composedVisits,v=>v?.visitId||v?.id),liveVisitByRow=uniqueIndex(composedVisits,v=>v?.hrRowId);
+    const postVisit=(index,key,p,coordinate=false)=>{const rows=(index.get(str(key))||[]).filter(v=>compatibleVisitScope(p,v,coordinate));return rows.length===1?rows[0]:null;};
     let lifecycleArchivedPosts=0,lifecyclePendingSuperseded=0,lifecycleApprovedOwnerChanged=0;
     for(const p of postMap.values()){
       const pPeriod=str(p?.periodId||p?.projectId),state=str(p?.estado||p?.status).toLowerCase();
       if(p?._archived===true||!currentPostPeriod||pPeriod!==currentPostPeriod)continue;
-      const v=liveVisitById.get(str(p?.visitId||p?.visitaId))||liveVisitByRow.get(str(p?.hrRowId))||null;
+      const v=postVisit(liveVisitById,p?.visitId||p?.visitaId,p)||postVisit(liveVisitByRow,p?.hrRowId,p,true)||null;
       if(!v)continue;
       const vf=facets(v),appShopper=str(p?.shopperId),hrShopper=str(v?.shopperId);
       let reason='';

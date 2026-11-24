@@ -632,3 +632,24 @@ test('operational Excel receipt fails closed if committed receipt cannot be read
   const v=operationalReceiptFixture();v.gitRead=()=>{throw new Error('missing committed blob');};
   assert.ok(validateOperationalExcelReceipt(v).failures.includes('RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_UNREADABLE'));
 });
+
+function pendingOperationalReceiptFixture(){
+ const v=operationalReceiptFixture(),d=v.descriptor,source=d.productSourceSha,tree=d.productTreeAuthority;
+ d.postDeployRunSeal={...d.postDeployRunSeal,sourceSha:source,sourceTree:tree,mode:'PREDECESSOR_SERVING_PENDING_SOURCE'};
+ d.productSourceSha='b'.repeat(40);d.productTreeAuthority='c'.repeat(40);
+ d.pendingDevSuccessor={state:'P0_PROVEN_PENDING_DEV_MATERIALIZATION',scope:'RUNTIME_AND_HOSTING',sourceSha:d.productSourceSha,sourceTree:d.productTreeAuthority,predecessorProductSourceSha:source,devPublished:false,production:false};
+ v.pendingDev={present:true,pass:true};return v;
+}
+test('proven pending paired successor preserves the immutable served F2 activation receipt',()=>{
+ const v=pendingOperationalReceiptFixture();assert.equal(validateOperationalExcelReceipt(v).pass,true);assert.notEqual(v.receipt.productSourceSha,v.descriptor.productSourceSha);
+});
+for(const [label,mutate]of[
+ ['unproven',v=>v.pendingDev.pass=false],['missing proof',v=>delete v.pendingDev],
+ ['third source',v=>v.descriptor.pendingDevSuccessor.predecessorProductSourceSha='f'.repeat(40)],
+ ['candidate tree drift',v=>v.descriptor.pendingDevSuccessor.sourceTree='f'.repeat(40)],
+ ['current mode',v=>v.descriptor.postDeployRunSeal.mode='CURRENT_SOURCE_SERVING'],
+ ['already published',v=>v.descriptor.pendingDevSuccessor.devPublished=true],
+ ['production',v=>v.descriptor.pendingDevSuccessor.production=true],
+ ['unsupported scope',v=>v.descriptor.pendingDevSuccessor.scope='OTHER'],
+ ['relabelled old receipt',v=>v.descriptor.currentF2OperationalExcel.sourceSha=v.descriptor.productSourceSha]
+])test('pending F2 receipt rejects '+label,()=>{const v=pendingOperationalReceiptFixture();mutate(v);assert.ok(validateOperationalExcelReceipt(v).failures.includes('RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_SCOPE'));});

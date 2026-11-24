@@ -633,3 +633,25 @@ test('adopted F2 operational selector cannot retain predecessor runtime binding 
   p.currentRuntimeBinding=structuredClone(binding);l.currentExecutionReceipt.runId=99;
   assert.ok(validateCurrentAuthorityAliases(v).failures.includes('CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC'));
 });
+
+function operationalPendingPairedFixture(){
+ const v=pairedPendingHostingFixture(),d=v.descriptor,p=v.pointer,l=v.ledger;
+ for(const o of[d,p])o.pendingDevSuccessor.scope='RUNTIME_AND_HOSTING';
+ const prior=l.currentMaterialization,op={sourceSha:prior.sourceSha,sourceTree:prior.sourceTree,provider:'excel_online',materializationRunId:prior.runId,runtimeRevision:prior.runtimeRevision,hostingVersion:prior.hostingVersion,runId:111,hrRevision:'excel-predecessor-hr',configReadbackVerified:true,production:false,strictDomainPromotion:false,i4Authorized:false,receiptPath:'f2.json',receiptBlob:'f2-blob'};
+ const binding={sourceSha:op.sourceSha,sourceTree:op.sourceTree,runtimeRevision:op.runtimeRevision,hostingVersion:op.hostingVersion,materializationRunId:op.materializationRunId,observedRunId:op.runId,provider:op.provider,hrRevision:op.hrRevision,receiptPath:op.receiptPath,receiptBlob:op.receiptBlob};
+ const execution={runId:op.runId,sourceSha:op.sourceSha,hrRevision:op.hrRevision};
+ for(const o of[d,p,l]){o.currentF2OperationalExcel=structuredClone(op);o.currentRuntimeBinding=structuredClone(binding);o.currentExecutionReceipt=structuredClone(execution);}d.lastExecutionReceipt=structuredClone(execution);return v;
+}
+test('pending paired successor carries predecessor F2 evidence without claiming a new deployment',()=>{
+ const v=operationalPendingPairedFixture();assert.equal(validateCurrentAuthorityAliases(v).pass,true,JSON.stringify(validateCurrentAuthorityAliases(v)));
+});
+for(const [label,mutate]of[
+ ['missing pending',v=>{delete v.descriptor.pendingDevSuccessor;delete v.pointer.pendingDevSuccessor;}],
+ ['invalid scope',v=>{v.descriptor.pendingDevSuccessor.scope='OTHER';v.pointer.pendingDevSuccessor=structuredClone(v.descriptor.pendingDevSuccessor);}],
+ ['wrong predecessor',v=>{v.descriptor.pendingDevSuccessor.predecessorProductSourceSha='0'.repeat(40);v.pointer.pendingDevSuccessor=structuredClone(v.descriptor.pendingDevSuccessor);}],
+ ['already deployed',v=>{v.descriptor.pendingDevSuccessor.devPublished=true;v.pointer.pendingDevSuccessor=structuredClone(v.descriptor.pendingDevSuccessor);}],
+ ['relabelled receipt',v=>{for(const o of[v.descriptor,v.pointer,v.ledger])o.currentF2OperationalExcel.sourceSha=v.descriptor.productSourceSha;}],
+ ['new source runtime alias',v=>{for(const o of[v.descriptor,v.pointer,v.ledger])o.currentRuntimeBinding.sourceSha=v.descriptor.productSourceSha;}],
+ ['mixed runtime',v=>v.pointer.currentRuntimeBinding.runtimeRevision='other'],
+ ['mixed receipt',v=>v.ledger.currentExecutionReceipt.runId=999]
+])test('pending F2 aliases reject '+label,()=>{const v=operationalPendingPairedFixture();mutate(v);assert.equal(validateCurrentAuthorityAliases(v).pass,false);});

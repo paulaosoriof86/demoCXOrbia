@@ -471,7 +471,23 @@ async function runNotificationCycleQa(){
   console.log(JSON.stringify({decision:result.decision,sourceSha,cases:result.cases.length,cleanup:result.cleanup,error:result.error||null}));if(result.decision!=='PASS_VRM143_LIVE_PROVIDER_EXACT_CYCLE_AND_SERVED_CONSUMER')process.exitCode=2;
 }
 
-if(process.env.CXORBIA_I3_QA_SCOPE==='HR_DURABLE_REVISION_READONLY'){
+async function runExcelCanonicalReadOnly(){
+  const e=process.env,host=String(e.HOSTING_URL||'').replace(/\/$/,''),tenantId=String(e.TENANT_ID||''),projectId=String(e.PROJECT_ID||''),out=String(e.QA_OUT||'');
+  if(e.PROJECT!=='cxorbia-backend-dev'||host!=='https://cxorbia-backend-dev.web.app'||!tenantId||!projectId||!out||!/^[a-f0-9]{40}$/.test(e.FOCAL_SOURCE||''))throw new Error('SOURCE_FAILURE:EXCEL_CANONICAL_DEV_SCOPE');
+  fs.mkdirSync(out,{recursive:true});
+  const result={schemaVersion:'cxorbia.i3.excel-canonical-readonly.v1',decision:'HOLD',sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,runId:e.GITHUB_RUN_ID,runtimeRevision:e.DEV_REVISION,runtimeDigest:e.RUNTIME_DIGEST,hostingVersion:e.HOSTING_VERSION_NAME,production:false,fullDomain:false,firestoreWrites:0,authWrites:0,hrWrites:0,commandPosts:0};
+  const started=Date.now(),get=async format=>{const r=await fetch(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format='+format+'&canonical='+e.GITHUB_RUN_ID+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});if(!r.ok)throw new Error('PROVIDER_FAILURE:EXCEL_CANONICAL_HTTP_'+r.status);return r.json();};
+  try{
+    const {validateExcelCanonicalHrObservation}=await import('./cxorbia-i3-terminal-hr-observation.mjs');
+    const before=await get('meta'),response=await get('json'),after=await get('meta');
+    Object.assign(result,validateExcelCanonicalHrObservation({before,response,after,tenantId,projectId}));
+  }catch(error){result.error=String(error?.message||error);process.exitCode=2;}
+  result.durationMs=Date.now()-started;fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+}
+
+if(process.env.CXORBIA_I3_QA_SCOPE==='EXCEL_CANONICAL_ID_READONLY'){
+  await runExcelCanonicalReadOnly();
+}else if(process.env.CXORBIA_I3_QA_SCOPE==='HR_DURABLE_REVISION_READONLY'){
   await runHrDurableRevisionDiagnostic();
 }else if(process.env.CXORBIA_I3_QA_SCOPE==='VRM143_NOTIFICATION_CYCLE'){
   await runNotificationCycleQa();

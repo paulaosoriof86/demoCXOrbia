@@ -124,12 +124,18 @@ export function readDevProviderReceipts(proofDir = 'docs/checkpoints') {
     }) : [];
 }
 
-export function validateOperationalExcelReceipt({descriptor:d,gitBlob,
+export function validateOperationalExcelReceipt({descriptor:d,gitBlob,pendingDev,
   gitRead=args=>execFileSync('git',args,{encoding:'utf8'})}) {
   const op=d.currentF2OperationalExcel,failures=[];
   if(!op)return {present:false,pass:true,failures};
   const check=(ok,code)=>{if(!ok)failures.push(code);};
-  const seal=d.postDeployRunSeal||{};
+  const seal=d.postDeployRunSeal||{},pending=d.pendingDevSuccessor||{};
+  const predecessorReceipt=pendingDev?.present===true&&pendingDev.pass===true&&
+    pending.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING'&&
+    pending.devPublished===false&&pending.production===false&&seal.mode==='PREDECESSOR_SERVING_PENDING_SOURCE'&&
+    pending.sourceSha===d.productSourceSha&&pending.sourceTree===d.productTreeAuthority&&
+    pending.predecessorProductSourceSha===seal.sourceSha&&op.sourceSha===seal.sourceSha&&op.sourceTree===seal.sourceTree;
+  const expectedSource=predecessorReceipt?seal.sourceSha:d.productSourceSha,expectedTree=predecessorReceipt?seal.sourceTree:d.productTreeAuthority;
   let receipt;
   try {
     check(typeof op.receiptPath==='string'&&op.receiptPath.startsWith('docs/checkpoints/')&&
@@ -146,8 +152,8 @@ export function validateOperationalExcelReceipt({descriptor:d,gitBlob,
   }
   const materialization=receipt.devMaterialization||{},selector=receipt.devOperationalSelector||{};
   check(receipt.schemaVersion==='cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1'&&
-    receipt.iteration==='I3'&&receipt.state==='HOLD'&&receipt.productSourceSha===d.productSourceSha&&
-    receipt.productSourceTree===d.productTreeAuthority&&receipt.productSourceSha===op.sourceSha&&
+    receipt.iteration==='I3'&&receipt.state==='HOLD'&&receipt.productSourceSha===expectedSource&&
+    receipt.productSourceTree===expectedTree&&receipt.productSourceSha===op.sourceSha&&
     receipt.productSourceTree===op.sourceTree&&receipt.safety?.production==='DO_NOT_TOUCH'&&
     receipt.safety?.i4Authorized===false&&receipt.phaseA?.strictDomainPromotion===false,
     'RELEASE_COMPOSITION_FAILURE:OPERATIONAL_EXCEL_RECEIPT_SCOPE');
@@ -317,7 +323,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
     sourceSha: d.productSourceSha, sealedRunId: seal.runId, receipts: providerReceipts,
   });
   check(!newerServedWitness, 'MAPPING_FAILURE:PROVEN_DEV_RECEIPT_NEWER_THAN_SEAL');
-  const operationalReceipt=validateOperationalExcelReceipt({descriptor:d,gitBlob,gitRead});
+  const operationalReceipt=validateOperationalExcelReceipt({descriptor:d,gitBlob,gitRead,pendingDev});
   failures.push(...operationalReceipt.failures);
   check(!(seal.mode === 'CURRENT_SOURCE_SERVING' &&
     /^SOURCE_ONLY/.test(String(m.productSource?.authorityState || ''))),

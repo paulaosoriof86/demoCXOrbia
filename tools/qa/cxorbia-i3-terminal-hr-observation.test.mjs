@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import {providerUidFingerprint,stableShopperUid} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
-import {validateTerminalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
+import {validateTerminalHrObservation,validateExcelCanonicalHrObservation} from './cxorbia-i3-terminal-hr-observation.mjs';
 import {b14ReadJournalPage,b14SummarizeCurrentJournal,b14PredecessorReadOnly,b14PrincipalOf,b14DiagnosticError,b14RuntimeAuthority,b14WorkbookFromReaders,b14CapabilityVerdict,b14BindingProjection,b14ProjectSourceProjection,b14IntegrationCandidates,b14LeaseReceiptPath,hrCrosswalkUidDiagnosis,hrCrosswalkUidReadOnly,hrUidAuthorityProjection,validateHrUidDiagnosticBinding} from './cxorbia-i3-hr-ack-exact-same-revision.mjs';
 const valid=()=>({ok:true,revision:'a'.repeat(64),sourceSafe:true,refreshError:null,
   writes:false,hrWrites:false,production:false,shopperReconciliation:null,visitReconciliation:null});
@@ -396,3 +396,21 @@ test('current journal detects an unverified effect beyond the old 501 document b
  Object.assign(f.receipt.result,{firestoreWrites:502,providerWrites:502,confirmedProviderWrites:502,unverifiedEffects:1,applicationWritesThisAttempt:{auth:0,firestore:502}});
  const r=b14SummarizeCurrentJournal(f);assert.equal(r.complete,true);assert.equal(r.effectsObserved,502);assert.equal(r.unverifiedEffectsObserved,1);assert.equal(r.countsMatch,true);assert.equal(r.journalVerified,false);
 });
+
+function excelObservationFixture(){
+ const meta=valid(),tenantId='tenant',projectId='project',periodId='project-2026-11';
+ const response={tenantId,projectId,sourceSafe:true,imported:false,production:false,firestoreWrites:0,source:{providerType:'excel_online'},projectConfig:{countries:['GT','HN']},periods:[{id:periodId,key:'2026-11',projectId}],_runtime:{revision:meta.revision},
+ visits:['GT','HN'].map((country,i)=>({id:'canonical-'+country,visitId:'canonical-'+country,country,periodId,periodKey:'2026-11',tenantId,projectId,hrRowId:'NOV!2',excelWorksheetFingerprint:String(i+1).repeat(64)}))};
+ return {before:meta,after:structuredClone(meta),response,tenantId,projectId};
+}
+test('live Excel read-only proof accepts shared coordinates with distinct country canonical IDs',()=>{
+ const r=validateExcelCanonicalHrObservation(excelObservationFixture());assert.equal(r.decision,'PASS_EXCEL_CANONICAL_ID_READONLY');assert.equal(r.uniqueCanonicalIds,2);assert.equal(r.sharedCountryCoordinates,1);assert.equal(r.hrWrites,0);assert.equal(r.fullDomain,false);assert.equal(r.revisionStableAcrossReadbacks,true);assert.equal(r.independentRevisionUnchanged,undefined);
+});
+for(const [label,mutate]of[
+ ['revision changed',f=>f.after.revision='b'.repeat(64)],['wrong source',f=>f.response.source.providerType='google_sheets'],
+ ['duplicate ID',f=>{f.response.visits[1].id=f.response.visits[0].id;f.response.visits[1].visitId=f.response.visits[0].id;}],
+ ['wrong period',f=>f.response.visits[1].periodId='other'],['foreign tenant',f=>f.response.tenantId='other'],
+ ['foreign visit project',f=>f.response.visits[1].projectId='other'],['foreign period project',f=>f.response.periods[0].projectId='other'],
+ ['unknown country',f=>f.response.visits[1].country='OTHER'],['missing fingerprint',f=>delete f.response.visits[1].excelWorksheetFingerprint],
+ ['same country coordinate twice',f=>f.response.visits[1].country='GT'],['write claim',f=>f.response.firestoreWrites=1]
+])test('live canonical observation rejects '+label,()=>{const f=excelObservationFixture();mutate(f);assert.throws(()=>validateExcelCanonicalHrObservation(f));});

@@ -16,7 +16,7 @@ import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, c
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
-import { readExcelPeriodThroughMake } from '../cxorbia-make-graph-provider-v1.mjs';
+import { readExcelPeriodThroughMake, withMakeGraphToolboxReader } from '../cxorbia-make-graph-provider-v1.mjs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot} from '../cxorbia-excel-operational-snapshot-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
@@ -219,7 +219,7 @@ function canonicalProtectedAuthNamespace(role,value){
   return String(role||'').trim().toLowerCase()==='shopper'?'shopper':'';
 }
 
-async function readOriginalThroughToolbox(binding, columnMap) {
+async function withOriginalToolboxReader(consume) {
   const url = new URL(process.env.CXORBIA_B14_MAKE_TOOLBOX_URL || 'about:blank');
   const token = process.env.CXORBIA_B14_MAKE_TOOLBOX_TOKEN;
   if (url.origin !== 'https://eu2.make.com' || !/^\/mcp\/server\/[0-9a-f-]{36}$/.test(url.pathname) || url.search || url.hash || url.username || url.password)
@@ -229,24 +229,11 @@ async function readOriginalThroughToolbox(binding, columnMap) {
     import('@modelcontextprotocol/sdk/client/index.js'), import('@modelcontextprotocol/sdk/client/streamableHttp.js')
   ]);
   const client = new Client({name:'cxorbia-hr-readback',version:'1.0.0'});
-  try {
-    await client.connect(new StreamableHTTPClientTransport(url, {requestInit:{redirect:'error',headers:{Authorization:'Bearer '+token}}}));
-    const list = await client.listTools();
-    const tool = list.tools[0];
-    if (list.nextCursor || list.tools.length !== 1 || tool?.annotations?.readOnlyHint !== true ||
-        !['bindingFingerprint','worksheetId','driveId','itemId','periodId'].every(key=>Object.hasOwn(tool.inputSchema?.properties || {},key)))
-      throw Error('MAPPING_FAILURE:B14_TOOLBOX_CONTRACT');
-    const runScenario = async inputs => {
-      const reply = await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});
-      if (reply.isError) throw Error('PROVIDER_FAILURE:B14_TOOLBOX_EXECUTION');
-      if (reply.structuredContent) return reply.structuredContent.outputs ?? reply.structuredContent;
-      if (reply.content?.length !== 1 || reply.content[0].type !== 'text') throw Error('PROVIDER_FAILURE:B14_TOOLBOX_RESPONSE');
-      try { return JSON.parse(reply.content[0].text); } catch { throw Error('PROVIDER_FAILURE:B14_TOOLBOX_RESPONSE'); }
-    };
-    return await readExcelPeriodThroughMake({binding,columnMap,runScenario});
-  } finally {
-    await client.close().catch(()=>{});
-  }
+  const transport=new StreamableHTTPClientTransport(url,{requestInit:{redirect:'error',headers:{Authorization:'Bearer '+token}}});
+  return withMakeGraphToolboxReader({client,transport},consume);
+}
+async function readOriginalThroughToolbox(binding,columnMap){
+  return withOriginalToolboxReader(runScenario=>readExcelPeriodThroughMake({binding,columnMap,runScenario}));
 }
 
 async function verifiedProtectedPrincipal(req,scope){
@@ -460,8 +447,8 @@ async function refreshSnapshot(binding){
       const stagesMs={},stageStart=Date.now();
       const columnMap=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
       const cinemaRegistry=JSON.parse(fs.readFileSync(path.join(ROOT,'backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json'),'utf8'));
-      const source=await readExcelOriginalProjectSnapshot({db:ensureAdmin().db,plan:binding,columnMap,cinemaRegistry,
-        readBinding:countryPeriod=>readOriginalThroughToolbox(countryPeriod,columnMap)});
+      const source=await withOriginalToolboxReader(runScenario=>readExcelOriginalProjectSnapshot({db:ensureAdmin().db,plan:binding,columnMap,cinemaRegistry,
+        readBinding:countryPeriod=>readExcelPeriodThroughMake({binding:countryPeriod,columnMap,runScenario})}));
       stagesMs.readOriginalExcel=Date.now()-stageStart;
       const current=await withDurableProjectConfig(source.snapshot);
       const after=await resolveProjectHrReadBinding(binding.scope);

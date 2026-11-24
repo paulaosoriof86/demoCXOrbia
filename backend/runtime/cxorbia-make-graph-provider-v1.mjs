@@ -95,3 +95,31 @@ export async function readExcelPeriodThroughMake({binding,token,scenarioId,range
       worksheetCount:readings.length,worksheetProofs:readings.map(x=>x.proof),externalRevisionIndependentlyVerified:true,
       rawWorkbookExposed:false,rawContactDataExposed:false,providerAck:false,hrWrites:0,providerWriteRequests:0,production:false}};
 }
+
+
+// A refresh owns one authenticated connection; each scope still performs its
+// own two independently checked Graph reads. No HR response is cached here.
+export async function withMakeGraphToolboxReader({client,transport},consume){
+  const pending=new Set();let closing=false;
+  try{
+    await client.connect(transport);
+    const list=await client.listTools(),tool=list?.tools?.[0];
+    if(list?.nextCursor||list?.tools?.length!==1||tool?.annotations?.readOnlyHint!==true||
+       !['bindingFingerprint','worksheetId','driveId','itemId','periodId'].every(key=>Object.hasOwn(tool.inputSchema?.properties||{},key)))
+      fail('MAPPING_FAILURE','TOOLBOX_CONTRACT');
+    const runScenario=inputs=>{
+      if(closing)return Promise.reject(new Error('PROVIDER_FAILURE:B14_TOOLBOX_CLOSED'));
+      const task=(async()=>{
+        const reply=await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});
+        if(reply.isError)fail('PROVIDER_FAILURE','TOOLBOX_EXECUTION');
+        if(reply.structuredContent)return reply.structuredContent.outputs??reply.structuredContent;
+        if(reply.content?.length!==1||reply.content[0].type!=='text')fail('PROVIDER_FAILURE','TOOLBOX_RESPONSE');
+        try{return JSON.parse(reply.content[0].text);}catch{fail('PROVIDER_FAILURE','TOOLBOX_RESPONSE');}
+      })();
+      pending.add(task);task.then(()=>pending.delete(task),()=>pending.delete(task));return task;
+    };
+    return await consume(runScenario);
+  }finally{
+    closing=true;await Promise.allSettled([...pending]);await client.close().catch(()=>{});
+  }
+}
