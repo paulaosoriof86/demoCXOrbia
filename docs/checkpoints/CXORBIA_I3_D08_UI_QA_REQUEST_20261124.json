@@ -1,9 +1,9 @@
 {
-  "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
-  "sourceTree": "97b943e502a8ee30270ace1e2b1e32d1e3699727",
-  "runtimeRevision": "cxorbia-live-hr-dev-00386-82w",
-  "runtimeDigest": "sha256:f8102cc99879421ecd87adce3ad8e015d1b23b77d9350d9172c2ee424f00ed4f",
-  "hostingVersion": "sites/cxorbia-backend-dev/versions/5974006f029fb872",
+  "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+  "runtimeDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
   "schemaVersion": "cxorbia.i3.d08-ui-qa-request.v1",
   "createdAt": "2026-11-24T09:01:15.993049+00:00",
   "iteration": "I3",
@@ -14,9 +14,9 @@
   "projectId": "cinepolis",
   "country": "GT",
   "hrIndependent": true,
-  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2758_BINDING_SCOPE_PAIRED_DEV_PASS_20261124.json",
-  "pairedReceiptGitBlob": "46331b77b8ac052cf6bf637a2e25ce43b88f3e68",
-  "pairedRunId": 45359320300,
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2767_F3_SAME_ARTIFACT_ENV_PASS_20261124.json",
+  "pairedReceiptGitBlob": "89c67247a7d4df713e6f7aaffa4a7d8f389c1120",
+  "pairedRunId": 45384571856,
   "draftScope": {
     "tenantId": [
       "tya"
@@ -36,7 +36,8 @@
     "Progress of these QA learners only",
     "One tagged QA Admin draft course and one authorized edit",
     "Provider receipts and audits for these exact commands",
-    "Ownership-checked cleanup of this invocation only"
+    "Ownership-checked cleanup of this invocation only",
+    "Exact ownership-verified recovery cleanup of RUN2760: only 18 documents and four Auth UIDs derived from the pinned immutable journal; no prefix or collection-wide deletion."
   ],
   "forbidden": [
     "real learner progress",
@@ -53,7 +54,23 @@
     "Admin draft edit and negative learner roles",
     "Foreign learner read denial",
     "Current exact runtime and Hosting before/after",
-    "Owned QA cleanup with zero residuals"
+    "Owned QA cleanup with zero residuals",
+    "RUN2760 exact recovery cleanup readback: zero owned documents and zero owned Auth before starting the new D08 fixture."
   ],
-  "fullDomainPromotionAutomatic": false
+  "fullDomainPromotionAutomatic": false,
+  "recoveryRun2760": {
+    "runId": "45364936404",
+    "runAttempt": "1",
+    "artifactId": 14910495563,
+    "artifactName": "cxorbia-i3-run2382-academy-b7-synthetic-45364936404",
+    "artifactSha256": "4e6477931012962a8eaa14b661b3b51bee39f5eb0679f5ff255ab7e0af2f3909",
+    "journalEntry": "result.json",
+    "journalSha256": "84c5d252f4b8d633c1b8b5cc4e26e703fa5a94515b06e0ff4ef09167c17523eb",
+    "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+    "sourceTree": "97b943e502a8ee30270ace1e2b1e32d1e3699727",
+    "expectedDocuments": 18,
+    "expectedAuthUsers": 4,
+    "policy": "EXACT_PINNED_RUN2760_FIXTURE_CLEANUP_ONLY"
+  },
+  "updatedAt": "2026-11-24T11:37:20.629845+00:00"
 }

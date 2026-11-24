@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "cxorbia.f3.endpoint-qa-config.v1",
+  "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
+  "runtimeDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
+  "remoteManifestPath": "docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json",
+  "remoteManifestSha256": "9276e4b72e67a33ac74dc3342fb6c7ca9223a770f0adaec3f46294b5f96a694a",
+  "scope": "ISOLATED_QA_TABS_IN_ORIGINAL_BOOKS_NO_OPERATIONAL_ROWS",
+  "production": false,
+  "canonicalMaterializationRunId": 45384571856
+}
