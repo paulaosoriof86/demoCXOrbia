@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "cxorbia.i3.existing-dev-scenario-restoration-result.v1",
+  "iteration": "I3",
+  "decision": "HOLD",
+  "mode": "RESTORE_SCENARIO_DIMENSIONS",
+  "production": false,
+  "i4Authorized": false,
+  "builds": 0,
+  "runtimeDeploys": 0,
+  "hostingDeploys": 0,
+  "authWrites": 0,
+  "visitWrites": 0,
+  "hrOriginalWrites": 0,
+  "googleMirrorWrites": 0,
+  "commandPosts": 0,
+  "sourceSwitch": false,
+  "newDomainMatches": 0,
+  "repairProgress": [
+    {
+      "decision": "PENDING",
+      "fieldBeforeState": "ABSENT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795461632:702202000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 0,
+      "providerAck": false,
+      "configReadbackVerified": false,
+      "sourceSwitch": false,
+      "stage": "PREIMAGE_VERIFIED"
+    },
+    {
+      "decision": "PENDING",
+      "fieldBeforeState": "ABSENT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795461632:702202000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 0,
+      "providerAck": false,
+      "configReadbackVerified": false,
+      "sourceSwitch": false,
+      "stage": "CAS_DISPATCHED",
+      "commitOutcome": "PENDING"
+    },
+    {
+      "decision": "RESTORED_APPROVED_FIELD",
+      "fieldBeforeState": "ABSENT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795461632:702202000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 1,
+      "providerAck": true,
+      "configReadbackVerified": false,
+      "sourceSwitch": false,
+      "stage": "REMOTE_COMMIT_ACK"
+    },
+    {
+      "decision": "RESTORED_APPROVED_FIELD",
+      "fieldBeforeState": "ABSENT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795461632:702202000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 1,
+      "providerAck": true,
+      "configReadbackVerified": true,
+      "sourceSwitch": false,
+      "fieldAfterSha256": "d8d90d3afcee56739f4e864387b4555d56ab4453ad26fd14840321643481c32c",
+      "projectRestSha256After": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256After": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "projectUpdateTimeAfter": "1795507106:801413000",
+      "idempotentReplay": false,
+      "stage": "DURABLE_READBACK_VERIFIED"
+    },
+    {
+      "decision": "ALREADY_EXACT",
+      "fieldBeforeState": "EXACT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795507106:801413000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 0,
+      "providerAck": false,
+      "configReadbackVerified": false,
+      "sourceSwitch": false,
+      "stage": "PREIMAGE_VERIFIED"
+    },
+    {
+      "decision": "ALREADY_EXACT",
+      "fieldBeforeState": "EXACT",
+      "fieldMask": [
+        "scenarioDimensions"
+      ],
+      "projectPath": "tenants/tya/projects/cinepolis",
+      "projectUpdateTimeBefore": "1795507106:801413000",
+      "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "configWrites": 0,
+      "providerAck": false,
+      "configReadbackVerified": true,
+      "sourceSwitch": false,
+      "fieldAfterSha256": "d8d90d3afcee56739f4e864387b4555d56ab4453ad26fd14840321643481c32c",
+      "projectRestSha256After": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+      "operationalSourceSha256After": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+      "projectUpdateTimeAfter": "1795507106:801413000",
+      "idempotentReplay": true,
+      "stage": "DURABLE_READBACK_VERIFIED"
+    }
+  ],
+  "source": {
+    "sha": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+    "tree": "27a84d1d50dc1dd0ee701ac607543451ff7b6370"
+  },
+  "controlHead": "a5eae86a9c77082c1f45636a5ce9814f03b96cbb",
+  "requestPath": "docs/checkpoints/CXORBIA_I3_RUN2753_EXISTING_DEV_SCENARIO_REPAIR_SCOPE_20261124.json",
+  "requestBlob": "aeb42ba1e4d4bd676903a6bf083ff573248861e5",
+  "fixture": {
+    "path": "app/data/tya-hr-source-safe-periods.js",
+    "gitBlob": "19bf51061c0318ac0ae3a24c98c31ef26ccc23ab",
+    "sha256": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+    "definitions": [
+      {
+        "key": "escenario",
+        "label": "Medio de compra",
+        "icon": "🎟️",
+        "sourceField": "tipoCompra"
+      },
+      {
+        "key": "tipoCombo",
+        "label": "Combo",
+        "icon": "🍿",
+        "sourceField": "tipoCombo"
+      }
+    ],
+    "definitionsSha256": "688e35215ebae53533ad60968cfaf701210d5c4c2f536192c00ab918e9a522fa"
+  },
+  "scope": {
+    "environment": "cxorbia-backend-dev",
+    "region": "us-central1",
+    "service": "cxorbia-live-hr-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingUrl": "https://cxorbia-backend-dev.web.app",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "projectPath": "tenants/tya/projects/cinepolis",
+    "fieldMask": [
+      "scenarioDimensions"
+    ],
+    "allowedConfigWrites": 1,
+    "authWrites": 0,
+    "hrOriginalWrites": 0,
+    "googleMirrorWrites": 0,
+    "visitWrites": 0,
+    "sourceSwitch": false,
+    "production": false,
+    "i4Authorized": false
+  },
+  "readbackRunId": "45351980220",
+  "readbackRunNumber": "2754",
+  "deploymentEvidence": {
+    "runId": 45347664894,
+    "runNumber": 2753,
+    "jobId": 138286396192,
+    "jobConclusion": "failure",
+    "failure": "PROJECT_SCENARIO_DIMENSIONS_CATALOG_MISSING",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "artifactId": 14898443604,
+    "artifactDigest": "sha256:cf9c1710aaa94664fa60f34fb156d78ae6ceb7b9f1bd5f674880b1220a036c46",
+    "runtimeRevision": "cxorbia-live-hr-dev-00385-qvp",
+    "runtimeDigest": "sha256:039a4176f1a6ef41b0eb5d2aec52965ff87d55ceb0c68d18e32fe92c6de8e132",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/6080b0aa921dec76",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795505345449000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "hrRevisionBeforeMetadata": "b546f4c3e0959f9d41fadc944c5309c3c1b61264af3d6626d95be99d96310452"
+  },
+  "identityBefore": {
+    "sourceSha": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+    "sourceTree": "27a84d1d50dc1dd0ee701ac607543451ff7b6370",
+    "runtimeRevision": "cxorbia-live-hr-dev-00385-qvp",
+    "runtimeDigest": "sha256:039a4176f1a6ef41b0eb5d2aec52965ff87d55ceb0c68d18e32fe92c6de8e132",
+    "runtimeTrafficExact": true,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/6080b0aa921dec76",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795505345449000",
+    "hostingFinalized": true,
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e"
+  },
+  "repairEvidence": {
+    "decision": "RESTORED_APPROVED_FIELD",
+    "fieldBeforeState": "ABSENT",
+    "fieldMask": [
+      "scenarioDimensions"
+    ],
+    "projectPath": "tenants/tya/projects/cinepolis",
+    "projectUpdateTimeBefore": "1795461632:702202000",
+    "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+    "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+    "configWrites": 1,
+    "providerAck": true,
+    "configReadbackVerified": true,
+    "sourceSwitch": false,
+    "fieldAfterSha256": "d8d90d3afcee56739f4e864387b4555d56ab4453ad26fd14840321643481c32c",
+    "projectRestSha256After": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+    "operationalSourceSha256After": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+    "projectUpdateTimeAfter": "1795507106:801413000",
+    "idempotentReplay": false
+  },
+  "replayEvidence": {
+    "decision": "ALREADY_EXACT",
+    "fieldBeforeState": "EXACT",
+    "fieldMask": [
+      "scenarioDimensions"
+    ],
+    "projectPath": "tenants/tya/projects/cinepolis",
+    "projectUpdateTimeBefore": "1795507106:801413000",
+    "projectRestSha256Before": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+    "operationalSourceSha256Before": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+    "configWrites": 0,
+    "providerAck": false,
+    "configReadbackVerified": true,
+    "sourceSwitch": false,
+    "fieldAfterSha256": "d8d90d3afcee56739f4e864387b4555d56ab4453ad26fd14840321643481c32c",
+    "projectRestSha256After": "5faa5ed219ca7f6027d1b239831e0718be224cc6479a9365d641448bbda082a9",
+    "operationalSourceSha256After": "c76360691f33dc02a08bdc2db1d74ae0e588f531faab5095634905d34815d3bc",
+    "projectUpdateTimeAfter": "1795507106:801413000",
+    "idempotentReplay": true
+  },
+  "error": "PROVIDER_FAILURE:EXISTING_DEV_READ_HTTP_503",
+  "configWrites": 1,
+  "rollbackWrites": 0,
+  "workflowEvidence": {
+    "runId": 45351980220,
+    "runNumber": 2754,
+    "jobId": 138300408161,
+    "jobConclusion": "failure",
+    "artifactId": 14900208021,
+    "artifactDigest": "sha256:39d0e2253baae4d0e683fda27293e2fb8363d656f77c6e78a060ac1ba880d051",
+    "failureAfterMetadata": "PROVIDER_FAILURE:EXISTING_DEV_READ_HTTP_503",
+    "readbackComplete": false
+  },
+  "subsequentHttpDiagnosis": {
+    "observedVia": "Connected Chrome visible HTTP JSON",
+    "error": "live_hr_read_failed",
+    "message": "MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ",
+    "lastRefreshError": null,
+    "production": false,
+    "hrWrites": false,
+    "sourceCodeOwner": "backend/runtime/hr-live-service/server.mjs",
+    "diagnosis": "Different binding fingerprint while a previous read is in flight; route-flag fingerprint defect reproduced separately."
+  }
+}

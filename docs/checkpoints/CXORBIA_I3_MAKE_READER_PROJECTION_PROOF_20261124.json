@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.make-reader-response-projection-proof.v1",
+  "iteration": "I3",
+  "decision": "PASS_GT_HN_EXACT_VALUES_WITH_REDUCED_TRANSFER__FULL_RUNTIME_TIMING_PENDING",
+  "scenarioId": 10200465,
+  "readOnly": true,
+  "scopePath": "docs/checkpoints/CXORBIA_I3_MAKE_READER_PROJECTION_SCOPE_20261124.json",
+  "beforeLastEdit": "2026-11-23T01:34:05.425Z",
+  "afterLastEdit": "2026-11-24T08:07:19.291Z",
+  "changedModules": [
+    2,
+    3
+  ],
+  "change": "Append conditional ?$select=values,rowCount,columnCount only to range GET; inventory unchanged",
+  "connectionId": 9089470,
+  "countries": [
+    {
+      "country": "GT",
+      "beforeExecutionId": "0fd4e2ec3913495daeef350e1229b85d",
+      "afterExecutionId": "855f94086bac4238a08560c6dba460e6",
+      "beforeDurationMs": 3954,
+      "afterDurationMs": 2847,
+      "beforeBytes": 1270416,
+      "afterBytes": 195441,
+      "hashBefore": "d8c35be69aea880985291892728cc366e7ae5fb8735f9416dd722fc71a624327",
+      "hashAfter": "d8c35be69aea880985291892728cc366e7ae5fb8735f9416dd722fc71a624327",
+      "rowsBefore": 140,
+      "rowsAfter": 140,
+      "bothIndependentReadsExact": true,
+      "rawCellArraysEqual": true,
+      "providerWrites": 0
+    },
+    {
+      "country": "HN",
+      "beforeExecutionId": "54c019a0285e44cea664314031f7e4e0",
+      "afterExecutionId": "a491c7dc362240549bfe42adedf40db3",
+      "beforeDurationMs": 2235,
+      "afterDurationMs": 1976,
+      "beforeBytes": 731228,
+      "afterBytes": 136688,
+      "hashBefore": "682e8b35e8e616a759c37ec7b9d8d8cc811166ab13dae3418ce4fa1a8cf65e26",
+      "hashAfter": "682e8b35e8e616a759c37ec7b9d8d8cc811166ab13dae3418ce4fa1a8cf65e26",
+      "rowsBefore": 140,
+      "rowsAfter": 140,
+      "bothIndependentReadsExact": true,
+      "rawCellArraysEqual": true,
+      "providerWrites": 0
+    }
+  ],
+  "readerToolboxUnchanged": true,
+  "readerToolCount": 1,
+  "sameRanges": true,
+  "sameTwoReads": true,
+  "hrWrites": 0,
+  "production": false,
+  "domainPromotion": false
+}

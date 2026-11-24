@@ -6437,17 +6437,19 @@ jobs:
 
   i3-run2382-academy-b7-isolated-dev-qa:
    needs: canonical-candidate-authority
-   if: ${{github.event_name=='push'&&needs.canonical-candidate-authority.result=='success'&&((contains(github.event.head_commit.message,'[i3-run2382-academy-b7-qa-once]')&&needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E')||(contains(github.event.head_commit.message,'[i3-hr-uid-readonly]')&&needs.canonical-candidate-authority.outputs.status=='HOLD_I3_DEV_MATERIALIZED_HR349_SHOPPER_CONFLICT_PRE_QA_FIXED_PENDING_REPROOF'))}}
+   if: ${{github.event_name=='push'&&needs.canonical-candidate-authority.result=='success'&&((contains(github.event.head_commit.message,'[i3-run2382-academy-b7-qa-once]')&&needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B4_B7_COMPOSED_SOURCE_PENDING_CI_DEV_AND_ROLE_E2E')||(contains(github.event.head_commit.message,'[i3-hr-uid-readonly]')&&(needs.canonical-candidate-authority.outputs.status=='HOLD_I3_DEV_MATERIALIZED_HR349_SHOPPER_CONFLICT_PRE_QA_FIXED_PENDING_REPROOF'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_GTHN_PENDING_DEV')))}}
    runs-on: ubuntu-24.04
    timeout-minutes: 30
    permissions:
     contents: read
     id-token: write
    env:
+    ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
+    GH_TOKEN: ${{ github.token }}
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     QA_OUT: .tmp/i3-run2382-academy-b7-synthetic
-    QA_RO: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_DEV_MATERIALIZED_HR349_SHOPPER_CONFLICT_PRE_QA_FIXED_PENDING_REPROOF' }}
+    QA_RO: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_I3_DEV_MATERIALIZED_HR349_SHOPPER_CONFLICT_PRE_QA_FIXED_PENDING_REPROOF'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_GTHN_PENDING_DEV') }}
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -6495,6 +6497,12 @@ jobs:
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 > "$QA_OUT/npm-install.log" 2>&1
    - run: |
       set -Eeuo pipefail
+      if [[ "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV ]]; then
+        export CXORBIA_F2_DEV_OPERATION=READBACK_EXISTING_DEV
+        export CXORBIA_F2_SCENARIO_METADATA_GATE=PAULA_I3_EXISTING_DEV_READONLY_20261124
+        node tools/qa/cxorbia-i3-f2-activate-operational-excel-dev.mjs | tee "$QA_OUT/console.log"
+        exit 0
+      fi
       if [[ "$QA_RO" == true ]]; then export CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY; fi
       node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs | tee "$QA_OUT/console.log"
       if [[ "$QA_RO" == true ]]; then exit 0; fi

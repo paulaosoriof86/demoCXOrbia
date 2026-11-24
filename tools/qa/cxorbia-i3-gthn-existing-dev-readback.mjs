@@ -70,10 +70,24 @@ export async function restoreScenarioDimensions({db,ref,scope,definitions,onProg
   return proof;
 }
 
+export async function observeRestoredScenarioDimensions({ref,scope,definitions,authority}){
+  need(authority?.providerAck===true&&authority.configReadbackVerified===true&&authority.configWrites===1,
+    'SOURCE_FAILURE:SCENARIO_PRIOR_COMMIT_ACK_REQUIRED');
+  const snapshot=await ref.get(),row=exactProject(snapshot,scope);
+  need(same(row.scenarioDimensions,definitions)&&stamp(snapshot)===authority.projectUpdateTimeAfter&&
+    sha(rest(row))===authority.projectRestSha256After&&
+    sha(row.operationalSource)===authority.operationalSourceSha256After,
+    'PERSISTENCE_FAILURE:SCENARIO_READONLY_RESTORATION_DRIFT');
+  return {decision:'READ_ONLY_EXACT_RESTORATION_OBSERVED',configWrites:0,providerAck:false,
+    configReadbackVerified:true,projectUpdateTimeBefore:stamp(snapshot),projectUpdateTimeAfter:stamp(snapshot),
+    projectRestSha256Before:sha(rest(row)),projectRestSha256After:sha(rest(row)),sourceSwitch:false};
+}
+
 export async function runGthnExistingDevReadback(){
   const e=process.env,requestPath='docs/checkpoints/CXORBIA_I3_RUN2753_EXISTING_DEV_SCENARIO_REPAIR_SCOPE_20261124.json';
-  const out='.tmp/i3-f2-operational-dev',report={schemaVersion:'cxorbia.i3.existing-dev-scenario-restoration-result.v1',
-    iteration:'I3',decision:'HOLD',mode:'RESTORE_SCENARIO_DIMENSIONS',production:false,i4Authorized:false,
+  const readonly=e.CXORBIA_F2_DEV_OPERATION==='READBACK_EXISTING_DEV';
+  const out=e.QA_OUT||'.tmp/i3-f2-operational-dev',report={schemaVersion:'cxorbia.i3.existing-dev-scenario-restoration-result.v1',
+    iteration:'I3',decision:'HOLD',mode:readonly?'READBACK_EXISTING_DEV':'RESTORE_SCENARIO_DIMENSIONS',readOnly:readonly,production:false,i4Authorized:false,
     builds:0,runtimeDeploys:0,hostingDeploys:0,authWrites:0,visitWrites:0,hrOriginalWrites:0,
     googleMirrorWrites:0,commandPosts:0,sourceSwitch:false,newDomainMatches:0,repairProgress:[]};
   fs.mkdirSync(out,{recursive:true});
@@ -82,17 +96,25 @@ export async function runGthnExistingDevReadback(){
   const gcloud=(...args)=>execFileSync('gcloud',args,{encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:60000}).trim();
   const get=async(url,headers={})=>{
     const r=await fetch(url,{headers,signal:AbortSignal.timeout(210000)});
-    need(r.ok,'PROVIDER_FAILURE:EXISTING_DEV_READ_HTTP_'+r.status);
-    return Buffer.from(await r.arrayBuffer());
+    const bytes=Buffer.from(await r.arrayBuffer());
+    if(!r.ok){
+      let body;try{body=JSON.parse(bytes);}catch{}
+      const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_:. -]{1,500}$/.test(v)?v:null;
+      (report.httpErrors??=[]).push({status:r.status,error:safe(body?.error),
+        message:safe(body?.message),lastRefreshError:safe(body?.lastRefreshError)});
+      save();throw Error('PROVIDER_FAILURE:EXISTING_DEV_READ_HTTP_'+r.status);
+    }
+    return bytes;
   };
   const json=async(url,headers)=>JSON.parse((await get(url,headers)).toString('utf8'));
   save();
   try{
-    need(e.CXORBIA_F2_DEV_OPERATION==='RESTORE_SCENARIO_DIMENSIONS'&&
-      e.CXORBIA_F2_SCENARIO_METADATA_GATE==='PAULA_I3_APPROVED_PROJECT_SCENARIOS_DEV_20261124'&&
+    need((readonly?
+      e.CXORBIA_F2_SCENARIO_METADATA_GATE==='PAULA_I3_EXISTING_DEV_READONLY_20261124':
+      e.CXORBIA_F2_DEV_OPERATION==='RESTORE_SCENARIO_DIMENSIONS'&&e.CXORBIA_F2_SCENARIO_METADATA_GATE==='PAULA_I3_APPROVED_PROJECT_SCENARIOS_DEV_20261124')&&
       e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&
       e.GITHUB_REF==='refs/heads/recovery/cxorbia-phase-a-20260831'&&
-      git('log','-1','--format=%B').includes('[i3-f2-scenario-metadata-dev-once]'),
+      git('log','-1','--format=%B').includes(readonly?'[i3-hr-uid-readonly]':'[i3-f2-scenario-metadata-dev-once]'),
       'AUTH_FAILURE:SCENARIO_METADATA_DEV_GATE');
     const head=git('rev-parse','HEAD');
     need(head===e.GITHUB_SHA,'RELEASE_COMPOSITION_FAILURE:SCENARIO_CHECKOUT_DRIFT');
@@ -151,11 +173,23 @@ export async function runGthnExistingDevReadback(){
     const db=getFirestore(initializeApp({credential:applicationDefault(),projectId:scope.environment}));
     const ref=db.doc(scope.projectPath);
     const onProgress=event=>{report.repairProgress.push(event);save();};
-    report.repairEvidence=await restoreScenarioDimensions({db,ref,scope,definitions,onProgress});save();
-    report.replayEvidence=await restoreScenarioDimensions({db,ref,scope,definitions,onProgress});save();
-    need(report.replayEvidence.decision==='ALREADY_EXACT'&&report.replayEvidence.configWrites===0&&
-      report.repairEvidence.projectUpdateTimeAfter===report.replayEvidence.projectUpdateTimeBefore,
-      'PERSISTENCE_FAILURE:SCENARIO_REPLAY_NOT_EXACT');
+    if(readonly){
+      const ackPath='docs/checkpoints/CXORBIA_I3_RUN2754_APPROVED_SCENARIO_METADATA_ACK_20261124.json';
+      const ack=JSON.parse(fs.readFileSync(ackPath));
+      need(ack.source?.sha===r.sourceSha&&ack.source?.tree===r.sourceTree&&
+        ack.workflowEvidence?.runId===45351980220,'SOURCE_FAILURE:SCENARIO_ACK_SOURCE_SCOPE');
+      report.metadataRestorationEvidence={path:ackPath,gitBlob:git('rev-parse','HEAD:'+ackPath),runId:45351980220,
+        configWrites:1,providerAck:true,readbackVerified:true,replayWrites:0,jobConclusion:'failure',failureAfterCommit:ack.error};
+      report.repairEvidence=await observeRestoredScenarioDimensions({ref,scope,definitions,authority:ack.repairEvidence});
+      report.replayEvidence={decision:'HISTORICAL_REPLAY_ALREADY_PROVEN_RUN2754',configWrites:0};
+      save();
+    }else{
+      report.repairEvidence=await restoreScenarioDimensions({db,ref,scope,definitions,onProgress});save();
+      report.replayEvidence=await restoreScenarioDimensions({db,ref,scope,definitions,onProgress});save();
+      need(report.replayEvidence.decision==='ALREADY_EXACT'&&report.replayEvidence.configWrites===0&&
+        report.repairEvidence.projectUpdateTimeAfter===report.replayEvidence.projectUpdateTimeBefore,
+        'PERSISTENCE_FAILURE:SCENARIO_REPLAY_NOT_EXACT');
+    }
     const hrUrl=scope.hostingUrl+'/api/'+scope.tenantId+'/'+scope.projectId+'/hr-live';
     const headers={'cache-control':'no-cache, no-store'},started=Date.now();
     const before=await json(hrUrl+'?format=meta&fresh=1&scenarioRepair='+e.GITHUB_RUN_ID,headers);

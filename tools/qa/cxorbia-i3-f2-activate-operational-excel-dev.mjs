@@ -9,7 +9,7 @@ import {applicationDefault,initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {resolveExcelOriginalProjectPlan} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
 
-if(process.env.CXORBIA_F2_DEV_OPERATION==='RESTORE_SCENARIO_DIMENSIONS'){
+if(['RESTORE_SCENARIO_DIMENSIONS','READBACK_EXISTING_DEV'].includes(process.env.CXORBIA_F2_DEV_OPERATION)){
  const {runGthnExistingDevReadback}=await import('./cxorbia-i3-gthn-existing-dev-readback.mjs');
  await runGthnExistingDevReadback();
  process.exit(process.exitCode||0);

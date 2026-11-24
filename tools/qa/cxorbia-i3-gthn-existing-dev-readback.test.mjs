@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {approvedScenarioDefinitions,restoreScenarioDimensions} from './cxorbia-i3-gthn-existing-dev-readback.mjs';
+import {approvedScenarioDefinitions,restoreScenarioDimensions,observeRestoredScenarioDimensions} from './cxorbia-i3-gthn-existing-dev-readback.mjs';
 const definitions=[{key:'a',label:'Configured A',sourceField:'a'},{key:'b',label:'Configured B',sourceField:'b'}];
 const scope={tenantId:'t',projectId:'p'};
 const source={mode:'external',providerType:'excel_online',readPolicy:'external_live',
@@ -40,6 +40,14 @@ test('already exact metadata never opens a write transaction',async()=>{
  const f=fixture({scenarioDimensions:definitions});
  const r=await restoreScenarioDimensions({...f,scope,definitions});
  assert.equal(r.configWrites,0);assert.equal(r.providerAck,false);assert.equal(f.observe().transactions,0);
+});
+test('read-only continuation cannot restore an absent catalog and uses no writer dependency',async()=>{
+ const f=fixture(),authority=await restoreScenarioDimensions({...f,scope,definitions});
+ const observed=await observeRestoredScenarioDimensions({ref:f.ref,scope,definitions,authority});
+ assert.equal(observed.configWrites,0);assert.equal(observed.providerAck,false);assert.equal(f.observe().writes,1);
+ const absent=fixture();
+ await assert.rejects(observeRestoredScenarioDimensions({ref:absent.ref,scope,definitions,authority}),/READONLY_RESTORATION_DRIFT/);
+ assert.equal(absent.observe().writes,0);assert.equal(absent.observe().transactions,0);
 });
 test('different or explicitly empty catalog is a conflict, never interpreted as absent',async()=>{
  for(const scenarioDimensions of [[],[{key:'other'}],null]){

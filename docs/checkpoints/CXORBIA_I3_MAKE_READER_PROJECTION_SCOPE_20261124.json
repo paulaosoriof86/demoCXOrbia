@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.i3.make-reader-response-projection-scope.v1",
+  "iteration": "I3",
+  "classification": "FUNCTIONAL_DEFECT",
+  "purpose": "Reduce unused Graph Range response properties while preserving all cell values and both independent reads",
+  "scenarioId": 10200465,
+  "modules": [
+    2,
+    3
+  ],
+  "beforeLastEdit": "2026-11-23T01:34:05.425Z",
+  "sourceAuthority": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+  "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V384.json",
+  "allowedChange": "Append conditional OData $select=values,rowCount,columnCount for read; inventory URL unchanged",
+  "invariants": {
+    "methods": "GET",
+    "connectionId": 9089470,
+    "toolboxId": 4891,
+    "toolCount": 1,
+    "readOnlyHint": true,
+    "cellsUnchanged": true,
+    "readCountPerScope": 2,
+    "providerWrites": 0,
+    "production": false
+  },
+  "baselines": [
+    {
+      "country": "GT",
+      "executionId": "0fd4e2ec3913495daeef350e1229b85d",
+      "hash1": "d8c35be69aea880985291892728cc366e7ae5fb8735f9416dd722fc71a624327",
+      "hash2": "d8c35be69aea880985291892728cc366e7ae5fb8735f9416dd722fc71a624327",
+      "rows": 140,
+      "durationMs": 3954,
+      "dataTransfer": 1270416
+    },
+    {
+      "country": "HN",
+      "executionId": "54c019a0285e44cea664314031f7e4e0",
+      "hash1": "682e8b35e8e616a759c37ec7b9d8d8cc811166ab13dae3418ce4fa1a8cf65e26",
+      "hash2": "682e8b35e8e616a759c37ec7b9d8d8cc811166ab13dae3418ce4fa1a8cf65e26",
+      "rows": 140,
+      "durationMs": 2235,
+      "dataTransfer": 731228
+    }
+  ],
+  "verification": "Require exact values1/values2 arrays, hashes and row counts before/after in GT/HN; inspect real transfer/duration and full runtime refresh; restore only mappers if invalid"
+}
