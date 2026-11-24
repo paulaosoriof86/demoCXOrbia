@@ -31,7 +31,10 @@ test('configured private workbook and exact mapping feed readers without exposin
  assert.equal(r.proof.workbookSha256,hash(sheetId));assert.equal(r.proof.mappingSha256,hash(fs.readFileSync(r.readerEnv.CXORBIA_HR_COLUMN_MAP_FILE)));
  assert.ok(!JSON.stringify(r.proof).includes(sheetId));assert.ok(!JSON.stringify(r.proof).includes(id));assert.equal(f.writes.length,0);
 });
-test('unsupported project fails before database or provider',async()=>{const f=fake();await assert.rejects(resolve({...scope,projectId:'other'},{db:f.db}),/ADAPTER_SCOPE_UNSUPPORTED/);assert.equal(f.reads.length,0);});
+test('an unconfigured project fails after its exact project lookup without borrowing another binding',async()=>{
+ const f=fake();await assert.rejects(resolve({...scope,projectId:'other'},{db:f.db}),/HR_BINDING_PROJECT_MISSING/);
+ assert.deepEqual(f.reads,['tenants/tya/projects/other']);assert.equal(f.writes.length,0);
+});
 for(const [name,opts,code] of [
  ['missing project',{missingProject:true},'PROJECT_MISSING'],['missing private doc',{missingBinding:true},'INTEGRATION_MISSING'],
  ['foreign tenant',{b:{...binding(),tenantId:'foreign'}},'INTEGRATION_SCOPE'],
