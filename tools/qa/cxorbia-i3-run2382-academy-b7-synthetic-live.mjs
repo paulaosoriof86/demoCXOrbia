@@ -161,6 +161,53 @@ function d08DeadlineHarness(result,save,redact=String){
   };
 }
 
+// UI rerenders may replace a locator while Playwright captures its element box.
+// Capture the page, and independently prove the visible owner's text on both sides.
+// Missing/changed evidence never passes and retries do not repeat any command.
+async function d08CaptureFrame(page,selector,path,record=()=>{},expectedTexts=[]){
+  const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
+  for(let attempt=1;attempt<=3;attempt++){
+    const row={selector,path:path.split('/').at(-1),attempt,mode:'page-with-visible-owner',state:'WAITING'};
+    record(row);
+    try{
+      const owner=page.locator(selector).first();
+      await owner.waitFor({state:'visible',timeout:10000});
+      await owner.scrollIntoViewIfNeeded({timeout:10000});
+      const before=await owner.innerText({timeout:10000});
+      if(!before.trim())throw Error('VISUAL_DEFECT:D08_SCREENSHOT_EMPTY_OWNER');
+      if(expectedTexts.some(text=>!before.includes(text)))throw Error('VISUAL_DEFECT:D08_SCREENSHOT_EXPECTED_TEXT_MISSING');
+      const bytes=await page.screenshot({path,fullPage:true,animations:'disabled',timeout:10000});
+      const afterOwner=page.locator(selector).first();
+      await afterOwner.waitFor({state:'visible',timeout:10000});
+      const after=await afterOwner.innerText({timeout:10000});
+      if(before!==after)throw Error('ENVIRONMENT_FAILURE:D08_SCREENSHOT_OWNER_REPLACED');
+      row.state='FULFILLED';row.ownerTextSha256=hash(before);row.imageSha256=hash(bytes);record(row);return row;
+    }catch(error){
+      row.state='REJECTED';row.error=String(error?.message||error);record(row);
+      const retryable=/Element is not attached to the DOM|element was detached|D08_SCREENSHOT_OWNER_REPLACED/i.test(row.error);
+      if(!retryable||attempt===3)throw Error('ENVIRONMENT_FAILURE:D08_SCREENSHOT_CAPTURE:'+row.error);
+    }
+  }
+}
+
+async function d08CaptureFrameSelfTest(){
+  const assert=(ok,name)=>{if(!ok)throw Error('D08_CAPTURE_SELF_TEST:'+name);};let passed=0;
+  function fixture({detach=0,texts=['Completado'],captureError=null}={}){
+    let scrolls=0,reads=0,captures=0;
+    const page={locator:()=>({first(){return this;},async waitFor(){},async scrollIntoViewIfNeeded(){if(++scrolls<=detach)throw Error('Element is not attached to the DOM');},async innerText(){return texts[Math.min(reads++,texts.length-1)];}}),async screenshot(options){captures++;assert(options.fullPage&&options.timeout===10000,'bounded page capture');if(captureError)throw Error(captureError);return Buffer.from('frame-'+captures);}};
+    return {page,counts:()=>({scrolls,reads,captures})};
+  }
+  let f=fixture({detach:1}),journal=[];const result=await d08CaptureFrame(f.page,'[data-course="qa"]','/qa/frame.png',row=>journal.push({...row}));
+  assert(result.attempt===2&&result.state==='FULFILLED'&&f.counts().captures===1&&journal.some(x=>x.state==='REJECTED'),'detached owner reacquired without extra command');passed++;
+  f=fixture({texts:['Completado','Actualizando','Completado','Completado']});
+  assert((await d08CaptureFrame(f.page,'[data-course="qa"]','/qa/frame.png')).attempt===2&&f.counts().captures===2,'content replacement requires fresh frame');passed++;
+  f=fixture({detach:9});try{await d08CaptureFrame(f.page,'x','x.png');throw Error('missed');}catch(error){assert(error.message.startsWith('ENVIRONMENT_FAILURE:D08_SCREENSHOT_CAPTURE:')&&f.counts().scrolls===3,'persistent detach bounded fail');passed++;}
+  f=fixture({captureError:'Target page closed'});try{await d08CaptureFrame(f.page,'x','x.png');throw Error('missed');}catch(error){assert(error.message.includes('Target page closed')&&f.counts().captures===1,'unrelated error not swallowed');passed++;}
+  f=fixture({texts:['']});try{await d08CaptureFrame(f.page,'x','x.png');throw Error('missed');}catch(error){assert(error.message.includes('D08_SCREENSHOT_EMPTY_OWNER')&&f.counts().captures===0,'empty owner cannot pass');passed++;}
+  assert(/^[a-f0-9]{64}$/.test(result.ownerTextSha256)&&/^[a-f0-9]{64}$/.test(result.imageSha256),'frame and content hashes recorded');passed++;
+  return passed;
+}
+
 async function d08DeadlineSelfTest(){
   const assert=(ok,name)=>{if(!ok)throw Error('D08_DEADLINE_SELF_TEST:'+name);};
   const result={},snapshots=[],awaited=d08DeadlineHarness(result,()=>snapshots.push(JSON.parse(JSON.stringify(result))));let passed=0;
@@ -222,6 +269,7 @@ async function runAcademyUiQaSelfTest(){
   negative('unplanned draft field update',()=>describeCommand({...update,payload:{...update.payload,patch:{...update.payload.patch,createdByUserId:'real-user'}}},admin,{type:update.commandType,mode:'write'},draftSpec));
   positive('observed browser actor label remains non-authoritative',()=>describeCommand({...c,actor:{actorId:'authenticated-user',role:'shopper'}},identity,{...plan,actorId:'authenticated-user'},spec));
   passed+=await d08DeadlineSelfTest();
+  passed+=await d08CaptureFrameSelfTest();
   console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
 }
 
@@ -494,18 +542,19 @@ async function runAcademyUiQa(){
       const r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(c),signal:controller.signal});return {status:r.status};
     }finally{clearTimeout(tokenTimer);clearTimeout(httpTimer);delete window.__D08_REQUEST_ABORT;}
   },command);
+  const capture=async(ses,selector,name,expectedTexts=[])=>awaited(ses.label+':screenshot:'+name,()=>d08CaptureFrame(ses.page,selector,out+'/'+name+'.png',row=>{result.visualCaptureJournal??=[];const old=result.visualCaptureJournal.find(x=>x.path===row.path&&x.attempt===row.attempt);if(old)Object.assign(old,row);else result.visualCaptureJournal.push({...row});save();},expectedTexts),45000);
   async function resource(ses){
     const before=ses.postCount,role=ses.identity.role,page=ses.page;
     const manual=await page.evaluate(role=>{const m=(CX.manualesData?.MANUALES||[]).find(x=>x.rol===role&&x.secciones?.length>1);return m?{id:m.id,title:m.titulo,count:m.secciones.length}:null;},role);check(manual,'SOURCE_FAILURE:D08_REAL_ROLE_MANUAL_MISSING');
     await page.locator('#acadManuales').click();await page.locator('.manualPick[data-mid="'+manual.id+'"]').click();
     const body=page.locator('.acad-content');await body.waitFor({state:'visible'});const first=await body.innerText();check(first.trim().length>80,'FUNCTIONAL_DEFECT:D08_RESOURCE_EMPTY');
-    await body.screenshot({path:out+'/'+ses.label+'-resource.png'});await page.locator('#mNext').click();const second=await body.innerText();check(second.trim().length>80&&first!==second,'FUNCTIONAL_DEFECT:D08_RESOURCE_NAVIGATION');
+    await capture(ses,'.acad-content',ses.label+'-resource');await page.locator('#mNext').click();const second=await body.innerText();check(second.trim().length>80&&first!==second,'FUNCTIONAL_DEFECT:D08_RESOURCE_NAVIGATION');
     check(ses.postCount===before,'PERSISTENCE_FAILURE:D08_RESOURCE_READ_WROTE');result.resources.push({role,id:manual.id,title:manual.title,sections:manual.count,firstSectionSha256:hash(first),secondSectionSha256:hash(second),realSourceOwned:true,readOnly:true});
     await page.evaluate(()=>CX.router.nav('aprendizaje'));await page.locator('#acadManuales').waitFor({state:'visible'});save();
   }
   async function progressUi(ses){
     const identity=ses.identity,course=courses.find(c=>c.courseId===identity.courseId),page=ses.page,card=page.locator('[data-course="'+course.courseId+'"]');
-    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Comenzar'),'PERSISTENCE_FAILURE:D08_FRESH_LEARNER_NOT_EMPTY');await card.screenshot({path:out+'/'+identity.label+'-course-before.png'});await card.click();
+    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Comenzar'),'PERSISTENCE_FAILURE:D08_FRESH_LEARNER_NOT_EMPTY');await capture(ses,'[data-course="'+course.courseId+'"]',identity.label+'-course-before',['Comenzar']);await card.click();
     for(const lesson of course.lessons){
       await page.locator('[data-li="'+lesson.id+'"]').click();
       const plan={type:'academy.progress.lesson.complete',mode:'write',courseId:course.courseId,lessonId:lesson.id};
@@ -513,21 +562,21 @@ async function runAcademyUiQa(){
         const count=ses.postCount;check(await page.locator('.acad-question').count()===lesson.quiz.length&&await page.locator('#finQuiz').isDisabled(),'FUNCTIONAL_DEFECT:D08_QUIZ_REVIEW_GATE');
         await page.locator('.acad-verify[data-qi="0"]').click();check(await page.locator('#finQuiz').isDisabled()&&ses.postCount===count,'PERSISTENCE_FAILURE:D08_INCOMPLETE_QUIZ_WRITE');
         for(let qi=0;qi<lesson.quiz.length;qi++){await page.locator('input[name="q'+qi+'"][value="'+lesson.quiz[qi].answer+'"]').check();await page.locator('.acad-verify[data-qi="'+qi+'"]').click();await page.locator('#fb'+qi).waitFor({state:'visible'});check((await page.locator('#fb'+qi).innerText()).includes('Correcto'),'FUNCTIONAL_DEFECT:D08_QUIZ_FEEDBACK');}
-        check(await page.locator('#finQuiz').isEnabled(),'FUNCTIONAL_DEFECT:D08_REVIEWED_QUIZ_DISABLED');await page.locator('.acad-question').first().screenshot({path:out+'/'+identity.label+'-evaluation.png'});
+        check(await page.locator('#finQuiz').isEnabled(),'FUNCTIONAL_DEFECT:D08_REVIEWED_QUIZ_DISABLED');await capture(ses,'.acad-question',identity.label+'-evaluation');
         await perform(ses,plan,()=>page.locator('#finQuiz').click());
       }else{
         const body=page.locator('.acad-content');check(await body.isVisible()&&(await body.innerText()).trim().length>80,'FUNCTIONAL_DEFECT:D08_LESSON_BODY');
-        if(lesson===course.lessons[0])await body.screenshot({path:out+'/'+identity.label+'-lesson.png'});
+        if(lesson===course.lessons[0])await capture(ses,'.acad-content',identity.label+'-lesson');
         await perform(ses,plan,()=>page.locator('#nextL').click());
       }
       await page.waitForFunction(({id,lessonId,audience})=>{const c=CX.acadData.COURSES[audience].find(x=>x.id===id);return CX.acadData.courseProgress(c,audience).lessons?.[lessonId]===100;},{id:course.courseId,lessonId:lesson.id,audience:course.audience},{timeout:30000});
     }
-    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Completado'),'FUNCTIONAL_DEFECT:D08_COMPLETION_NOT_VISIBLE');await card.screenshot({path:out+'/'+identity.label+'-course-complete.png'});
+    await card.waitFor({state:'visible'});check((await card.innerText()).includes('Completado'),'FUNCTIONAL_DEFECT:D08_COMPLETION_NOT_VISIBLE');await capture(ses,'[data-course="'+course.courseId+'"]',identity.label+'-course-complete',['Completado']);
     result.roles[identity.role]={courseId:course.courseId,courseRevision:course.revision,lessons:course.lessons.length,evaluationQuestions:course.lessons.reduce((n,l)=>n+l.quiz.length,0),uiCourse:true,uiContent:true,uiEvaluation:true,uiProgress:true,providerAck:true,durableReadback:true};save();
   }
   async function newSessionProof(identity){
     const ses=await session(identity,identity.label+'-new-session'),page=ses.page,card=page.locator('[data-course="'+identity.courseId+'"]');await card.waitFor({state:'visible'});
-    check((await card.innerText()).includes('Completado'),'PERSISTENCE_FAILURE:D08_NEW_SESSION_PROGRESS_MISSING');await card.screenshot({path:out+'/'+identity.label+'-new-session.png'});
+    check((await card.innerText()).includes('Completado'),'PERSISTENCE_FAILURE:D08_NEW_SESSION_PROGRESS_MISSING');await capture(ses,'[data-course="'+identity.courseId+'"]',identity.label+'-new-session',['Completado']);
     const original=[...records.values()].filter(r=>r.uid===identity.uid&&r.kind==='progress'&&r.bundle).at(-1),before=await proveState();
     await perform(ses,{type:original.command.commandType,mode:'replay',courseId:identity.courseId,lessonId:original.command.payload.lessonId},()=>rawPost(ses,original.command));
     check(same(before,await proveState()),'PERSISTENCE_FAILURE:D08_REPLAY_CHANGED_STATE');result.roles[identity.role].independentNewSession=true;result.roles[identity.role].replayNoDuplicate=true;save();return ses;
@@ -563,7 +612,7 @@ async function runAcademyUiQa(){
         for(const id of ['#ecScPais','#ecScNivel','#ecScModulo','#ecScPaquete'])await fresh.page.locator(id).selectOption([]);
         check(await fresh.page.evaluate(({tenantId,projectIds})=>CX.BRAND.id===tenantId&&JSON.stringify([...document.querySelector('#ecScProj').selectedOptions].map(x=>x.value))===JSON.stringify(projectIds),{tenantId,projectIds:draftScope.projectId}),'SOURCE_FAILURE:D08_DRAFT_SCOPE_SELECTOR');
         const edited=await perform(fresh,{type:'academy.course.update',mode:'write'},()=>fresh.page.locator('#ecSave').click());await fresh.page.locator('#ecSave').waitFor({state:'hidden'});check(edited.ack.entityReadback?.version===2&&edited.ack.entityReadback?.contentVersion===2,'PERSISTENCE_FAILURE:D08_EDIT_VERSION');
-        await fresh.context.close();const adminAgain=await session(identity,'admin-edit-new-session');const card=adminAgain.page.locator('[data-course="'+customId+'"]');await card.waitFor({state:'visible'});check((await card.innerText()).includes(spec.updatedName)&&(await card.innerText()).includes(spec.updatedDescription),'PERSISTENCE_FAILURE:D08_EDIT_NEW_SESSION');await card.screenshot({path:out+'/admin-edit-new-session.png'});
+        await fresh.context.close();const adminAgain=await session(identity,'admin-edit-new-session');const card=adminAgain.page.locator('[data-course="'+customId+'"]');await card.waitFor({state:'visible'});check((await card.innerText()).includes(spec.updatedName)&&(await card.innerText()).includes(spec.updatedDescription),'PERSISTENCE_FAILURE:D08_EDIT_NEW_SESSION');await capture(adminAgain,'[data-course="'+customId+'"]','admin-edit-new-session',[spec.updatedName,spec.updatedDescription]);
         const stale={...edited.record.command,idempotencyKey:tag+'_stale_edit',expectedVersion:1};await perform(adminAgain,{type:'academy.course.update',mode:'negative',negative:'stale_version',expectedCode:'ACADEMY_EXPECTED_VERSION_CONFLICT'},()=>rawPost(adminAgain,stale));
         const before=await proveState();await perform(adminAgain,{type:'academy.course.update',mode:'replay'},()=>rawPost(adminAgain,edited.record.command));check(same(before,await proveState()),'PERSISTENCE_FAILURE:D08_EDIT_REPLAY_CHANGED');result.authorizedAdminEdit={providerAck:true,durableReadback:true,independentNewSession:true,replayNoDuplicate:true,version:2,contentVersion:2,state:'borrador',courseId:customId};await adminAgain.context.close();
       }else{

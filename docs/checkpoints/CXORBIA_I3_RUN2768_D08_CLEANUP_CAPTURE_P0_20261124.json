@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-ui-capture-qa-p0.v1",
+  "state": "HOLD",
+  "iteration": "I3",
+  "expectedParentSha": "571e325cb79137445e84fbdbd787b2b40310c227",
+  "expectedParentTree": "a96c4a2c71b8c93af1af6ffeab4ad2f94e0777a4",
+  "classification": "ENVIRONMENT_FAILURE",
+  "rawRunnerClassification": "FUNCTIONAL_DEFECT",
+  "provenOwner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs::newSessionProof screenshot",
+  "failure": "locator.screenshot: Element is not attached to the DOM\nCall log:\n  - taking element screenshot\n  - waiting for fonts to load...\n  - fonts loaded\n  - attempting scroll into view action\n    - waiting for element to be stable\n    - element is not stable\n  - retrying scroll into view action\n    - waiting for element to be stable\n",
+  "runId": 45386193183,
+  "artifactId": 14915354789,
+  "artifactSha256": "24d1aabb2cc8f890d836e03a021bdbd0c03a19ed06b0d1df0d505ebe87a448f1",
+  "resultSha256": "d53599f7ef26a3cc87cabefc2c09c74dd7b794dce33016e9c588572cb7c10c39",
+  "completedScope": {
+    "adminCourseProgress": {
+      "courseId": "a_fin_op",
+      "courseRevision": "ef7a65c588a992812ac946a05cadab38bd3fa356018297ac002af52cacd8f479",
+      "lessons": 4,
+      "evaluationQuestions": 3,
+      "uiCourse": true,
+      "uiContent": true,
+      "uiEvaluation": true,
+      "uiProgress": true,
+      "providerAck": true,
+      "durableReadback": true
+    },
+    "newSessionVisibleCompletedAssertionReached": true,
+    "independentSessionReplayNotReached": true
+  },
+  "cleanupRun2760": {
+    "ok": true,
+    "exactKnownPathsOnly": true,
+    "deletedDocuments": 18,
+    "deletedAuth": 4,
+    "remainingOwnedDocuments": 0,
+    "remainingOwnedAuth": 0,
+    "ownershipTransaction": true
+  },
+  "cleanupRun2768": {
+    "ok": true,
+    "exactKnownPathsOnly": true,
+    "deletedDocuments": 18,
+    "deletedAuth": 4,
+    "remainingOwnedDocuments": 0,
+    "remainingOwnedAuth": 0,
+    "ownershipTransaction": true
+  },
+  "productSourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "productSourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "currentModuleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V391.json",
+  "productSourceDelta": false,
+  "modulePromotion": false,
+  "fullDomain": false,
+  "production": false,
+  "phaseAComplete": false,
+  "authorization": "EXISTING_PAULA_D08_DEV_QA_NO_NEW_APPROVAL",
+  "allowlist": [
+    "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+    "docs/checkpoints/CXORBIA_I3_RUN2768_D08_CLEANUP_CAPTURE_P0_20261124.json"
+  ],
+  "correction": "Capture page with current visible owner before and after, three bounded attempts for DOM detach/content replacement; preserve all provider, role, progress, replay and cleanup gates. Store selector and text/image hashes. No missing frame can pass.",
+  "validation": {
+    "qaHelperSelfTest": {
+      "pass": 35,
+      "fail": 0,
+      "providerWrites": 0
+    },
+    "canonicalCandidateAuthority": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "functionalGate": "PENDING_RETRY_ON_EXACT_SAME_DEV"
+  }
+}
