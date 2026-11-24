@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.i3.source-qa-harness-reconciliation.v1",
+  "observedAt": "2026-11-24T21:10:20.116Z",
+  "iteration": "I3",
+  "findingId": "VRM-375",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "decision": "PASS_FOCAL_OWNER_SUITES_PENDING_SAME_RUN_CI",
+  "failedRunId": 45486955118,
+  "failedRunNumber": 2779,
+  "failedJobId": 138774772461,
+  "failedControlHead": "7be3701d3da86f0f125b9239b28d7db977668224",
+  "journalIncorporation": {
+    "jobId": 138774772461,
+    "name": "canonical-candidate-authority",
+    "conclusion": "failure",
+    "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
+    "runId": 45486955118,
+    "runAttempt": 1,
+    "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45486955118_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "journalBlob": "2bf8cdddd4042711b8f7103e854e4d3b7a9ab05f",
+    "controlHead": "7be3701d3da86f0f125b9239b28d7db977668224"
+  },
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "rootCause": [
+    "Three extracted-server tests expected pre-VRM375 command scope without contextual HR period.",
+    "The binding cache harness did not inject the new scopedHrCache declared by the real server."
+  ],
+  "allowedFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "tools/qa/cxorbia-i3-project-hr-binding.test.mjs"
+  ],
+  "correction": [
+    "Expect hrPeriodId only for HR commands; Client NPS/note/meeting preserve tenant/project scope.",
+    "Inject isolated Map in extracted buildSnapshot harness; preserve private scope validation and no-cache-on-error assertions."
+  ],
+  "suites": [
+    {
+      "id": "shopper-keeper-authority",
+      "pass": 142,
+      "fail": 0,
+      "tapSha256": "4ebde31a49b24ca111ac8c22e33a4c3b6784da7b01489e14e0576311e4eac1b8"
+    },
+    {
+      "id": "human-project-scope",
+      "pass": 25,
+      "fail": 0,
+      "tapSha256": "fc1b7c4698ad531308ffb1a010d429d45579ea81b861c6c50d75f859565b7030"
+    },
+    {
+      "id": "frontend-behavior",
+      "pass": 353,
+      "fail": 0,
+      "tapSha256": "bcbc6c6a11c8d981ee4a04de1f3affc67d5d0163c6a75196800b6b0855042962"
+    },
+    {
+      "id": "finance-ack-boundary",
+      "pass": 104,
+      "fail": 0,
+      "tapSha256": "6f5176c612d8cbb908b98bd1b1a920cdf585388dbbcf91d8c418316d4c0b1f65"
+    },
+    {
+      "id": "external-hr-source",
+      "pass": 100,
+      "fail": 0,
+      "tapSha256": "d488f43dae37cb6d422fa90dc28b7d9644ed7236604328427f55d8e31646bab9"
+    }
+  ],
+  "testsPass": 724,
+  "testsFail": 0,
+  "productChanges": 0,
+  "devDeploys": 0,
+  "productionDeploys": 0,
+  "domainPromotions": 0,
+  "production": false,
+  "exactNextAction": "Repeat existing [i3-paired-dev-once] lane; publish only after same-run source QA passes; preserve six MATCH and B4/B5/B6/B7."
+}

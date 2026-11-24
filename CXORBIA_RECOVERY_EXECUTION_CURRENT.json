@@ -27082,19 +27082,7 @@
     "materializationReceiptPath": null,
     "production": false
   },
-  "currentResultIncorporationQueue": [
-    {
-      "jobId": 138774772461,
-      "name": "canonical-candidate-authority",
-      "conclusion": "failure",
-      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
-      "runId": 45486955118,
-      "runAttempt": 1,
-      "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45486955118_ATTEMPT1_EXECUTION_JOURNAL.json",
-      "journalBlob": "2bf8cdddd4042711b8f7103e854e4d3b7a9ab05f",
-      "controlHead": "7be3701d3da86f0f125b9239b28d7db977668224"
-    }
-  ],
+  "currentResultIncorporationQueue": [],
   "pendingDevSuccessor": {
     "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
     "scope": "RUNTIME_AND_HOSTING",
@@ -27226,5 +27214,15 @@
     "path": "docs/checkpoints/CXORBIA_I3_INTERRUPTED_VRM375_RECOVERED_AND_CONTROL_REPAIR_20261124.json",
     "gitBlob": "232299aa7c18a54954e6469d6bb3ec216dc8ed2c",
     "scope": "EXACT_RECOVERY_AND_CONTROL_CORRECTION_NO_PRODUCT_OR_DOMAIN_PROMOTION"
+  },
+  "currentSourceQaHarnessReconciliation": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2779_SOURCE_QA_HARNESS_RECONCILIATION_20261124.json",
+    "gitBlob": "a6054ce5cdec27f3dd3b202377b19535fafb700a",
+    "runId": 45486955118,
+    "jobId": 138774772461,
+    "state": "CLASSIFIED_AND_HARNESS_CORRECTED_CI_RETRY_PENDING",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "sourceChanged": false,
+    "production": false
   }
 }

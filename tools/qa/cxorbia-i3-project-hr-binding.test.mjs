@@ -51,7 +51,7 @@ test('binding fingerprint observes submillisecond changes and rejects missing ti
 test('cache is never used before private scope validation and changed binding forces read',async()=>{
  const source=extract('async function buildSnapshot','async function resolveHrAndProtectedPrincipal');
  const cached={origin:'runtime_refresh',loadedAt:Date.now(),bindingProof:{bindingFingerprint:'old'}};let reads=0;
- const build=new Function('resolveProjectHrReadBinding','refreshSnapshot','cache','CACHE_MS','inFlight','inFlightBinding',source+';return buildSnapshot;')(async s=>{if(s.projectId==='other')throw Error('INVALID_SCOPE');return {proof:{bindingFingerprint:'new'}};},async b=>{reads++;return b;},cached,1e9,null,null);
+ const build=new Function('resolveProjectHrReadBinding','refreshSnapshot','cache','CACHE_MS','inFlight','inFlightBinding','scopedHrCache',source+';return buildSnapshot;')(async s=>{if(s.projectId==='other')throw Error('INVALID_SCOPE');return {proof:{bindingFingerprint:'new'}};},async b=>{reads++;return b;},cached,1e9,null,null,new Map());
  await assert.rejects(build({scope:{...scope,projectId:'other'}}),/INVALID_SCOPE/);assert.equal(reads,0);await build({scope});assert.equal(reads,1);
 });
 test('both readers consume exact env and a mid-read configuration change prevents publishing cache',async()=>{
