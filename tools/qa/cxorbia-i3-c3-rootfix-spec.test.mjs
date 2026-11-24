@@ -24,7 +24,7 @@ test('A08 immutable-DEV read-only role proof does not inherit HEAD release-compo
   assert.match(job,/contains\(github\.event\.head_commit\.message,\s*'\[i3-keeper-role-e2e-readonly\]'\)\s*&&\s*needs\.canonical-candidate-authority\.result\s*==\s*'success'/);
   assert.ok(job.includes('bash tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'));
   const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
-  for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = 41'])
+  for(const required of ['CXORBIA_PRODUCT_SOURCE_SHA','runtimeDigest','hostingVersion','firestoreRuleset','git show "$S:app/$A"','servedSha256','test "$N" = "$EXPECTED_COUNT"','loadA08Pin','assertA08ServedInventory','assertA08AssetSeal'])
     assert.ok(preflight.includes(required),`missing immutable DEV guard: ${required}`);
   assert.ok(!/\b(gcloud run deploy|firebase deploy|PATCH|POST|PUT|DELETE)\b/.test(preflight));
 });
@@ -344,7 +344,7 @@ test('proved Excel successors bypass only the legacy Google preflight in the exi
   assert.ok(job.includes('FIREBASE_HOSTING_TARGET'));
 });
 
-test('A08 browser read-only job must use the canonical current DEV receipt with 41 owner assets',()=>{
+test('A08 browser read-only job must use the canonical current DEV receipt with its entire exact owner inventory',()=>{
   const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
   const job=workflow.split('  i3-keeper-role-e2e-readonly:')[1]?.split('\n  i3-run2382-')[0]||'';
   assert.ok(job.includes('node tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs'));
@@ -356,9 +356,10 @@ test('A08 browser read-only job must use the canonical current DEV receipt with 
   assert.ok(pin.includes("readTracked(receiptPath)"));
   assert.ok(pin.includes("['firestoreRulesDeploys','storageRulesDeploys','hrWrites']"));
   assert.ok(pin.includes('CURRENT_SOURCE_NOT_MATERIALIZED'));
-  assert.ok(pin.includes('EXACT_41_ASSETS_REQUIRED'));
+  assert.ok(pin.includes('EXACT_CURRENT_ASSET_INVENTORY_REQUIRED'));
+  for(const required of ['SERVED_ASSET_SET_MISMATCH','SERVED_ASSET_HASH_MISMATCH','PIN_INVENTORY_DESYNC','servedInventorySha256'])assert.ok(pin.includes(required));
   const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
-  assert.ok(preflight.includes('test "$N" = 41'));
+  assert.ok(preflight.includes('test "$N" = "$EXPECTED_COUNT"'));
   assert.ok(preflight.includes('test "$(git rev-parse "HEAD:$(jq -er .receiptPath "$P")")" = "$(jq -er .receiptGitBlob "$P")"'));
   assert.ok(!/\b(firebase deploy|gcloud run (deploy|services update)|PATCH|POST|PUT|DELETE)\b/.test(preflight));
 });

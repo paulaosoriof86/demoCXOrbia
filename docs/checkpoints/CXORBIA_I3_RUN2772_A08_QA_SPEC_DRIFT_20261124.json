@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.run2772.qa-contract-drift.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "SOURCE_FAILURE",
+  "runId": 45393034658,
+  "runNumber": 2772,
+  "jobId": 138441454448,
+  "controlHead": "50a8873fab48812f6f010999ba6b532975caae38",
+  "productSourceSha": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+  "owner": "tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs",
+  "failingAssertions": [
+    "historical literal test \"$N\" = 41",
+    "historical EXACT_41_ASSETS_REQUIRED token"
+  ],
+  "observedTests": {
+    "tests": 513,
+    "pass": 511,
+    "fail": 2
+  },
+  "cause": "Two source-spec assertions still required historical41 despite the canonical receipt full47 inventory. Behavioral inventory tests already passed and the current candidate adds a48th path for its future paired DEV.",
+  "correction": "Require canonical EXPECTED_COUNT and exact path/hash/inventory seal guards, without a fixed historical count or reduced coverage",
+  "productCodeChanged": false,
+  "rulesChanged": false,
+  "devDeploys": 0,
+  "production": false,
+  "newDomainMatches": 0,
+  "nextAction": "Rerun the same canonical CI on unchanged product source; no provider or functional retries while Make quota exhausted",
+  "recordedAt": "2026-11-24T12:25:20.201991+00:00",
+  "localVerification": {
+    "pass": 58,
+    "fail": 0,
+    "logSha256": "2433500fdb7f191d730d2b0a60b3e47b2db1830df25e27e6784828855c2ba51a"
+  }
+}
