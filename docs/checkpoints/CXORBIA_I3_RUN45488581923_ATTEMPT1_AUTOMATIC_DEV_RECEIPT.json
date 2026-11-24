@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "cxorbia.i3.current-source-dev-materialization.v1",
+  "kind": "EXACT_PAIRED_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE",
+  "iteration": "I3",
+  "state": "HOLD",
+  "source": {
+    "sha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "tree": "3725071a72014d6b891648ab5d2eeef9638276ac"
+  },
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "workflowRunId": 45488581923,
+  "runId": 45488581923,
+  "runNumber": 2780,
+  "runAttempt": 1,
+  "jobId": 138781222254,
+  "jobConclusion": "success",
+  "artifactId": 14964649911,
+  "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+  "archiveDigestVerified": true,
+  "observedAt": "2026-11-24T21:19:25Z",
+  "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "storageRulesDeploys": 0,
+    "hrPeriodWindowRequired": true,
+    "verifiedServedAssetCount": 48,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 45488581923,
+    "runNumber": 2780,
+    "runAttempt": 1,
+    "jobId": 138781222254,
+    "jobConclusion": "success",
+    "controlHeadAtDeploy": "109a6263cf16bce195573a7d9ed702e6fef09477",
+    "artifactId": 14964649911,
+    "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+    "artifactDigestType": "GITHUB_ACTIONS_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "hrLiveVerified": true,
+    "state": "PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+    "fullTaskClosed": false
+  },
+  "servedSha256": {
+    "core/data.js": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+    "core/router.js": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+    "core/tya-phase-a-source-safe-preview.js": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+    "adapters/tya-live-source-inplace-apply.js": "708a9a44da97b28e23dd3c5d9ddf806cc9f1066c3a5b216e4c9aee28d91cdf45",
+    "adapters/tya-cumulative-read-model-v2.js": "a2eb856f4510bc58ca9d4cca20a688655de091c12f94e7be2328160a266e00c3",
+    "adapters/tya-canonical-finance-read-model-v2.js": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+    "adapters/tya-canonical-shopper-portal-v2.js": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+    "adapters/tya-protected-auth-hr-authority-bridge-v2.js": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+    "data/tya-hr-source-safe-periods.js": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+    "modules/midia.js": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+    "modules/misvisitas.js": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+    "modules/visita-detalle.js": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+    "modules/shoppers.js": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+    "modules/postulaciones.js": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+    "modules/beneficios.js": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+    "modules/cert.js": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+    "modules/academia.js": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+    "styles/layout.css": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+    "adapters/tya-c6-unified-human-runtime-v1.js": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+    "adapters/cxorbia-cxdata-command-boundary-v1.js": "5aa353b5b7c568d6aff07c1a6898d488e408d018cda0bc7d6ae91c83520f1b28",
+    "index-backend-dev.html": "abca0b5d21fbdc1949047b71f43c0ac0298f19b652c63305a1cd3d946e17b93e",
+    "core/backend-firebase.js": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+    "adapters/tya-live-source-refresh-watch-v2.js": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+    "modules/hr-source.js": "4c32d7e647c58fec4e747278961d863dbc35ba401e8769b6343aafef98284d44",
+    "modules/clientes.js": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+    "modules/historico.js": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+    "modules/visitas.js": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+    "modules/cuestionario-shopper.js": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+    "core/backend-certifications.js": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+    "core/finanzas-core.js": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+    "modules/marca.js": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+    "modules/administrabilidad.js": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+    "modules/configuracion.js": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+    "modules/cliente-insights.js": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+    "adapters/cxorbia-command-adapter-v1.js": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+    "core/backend-bulletins.js": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+    "sw.js": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+    "core/notif.js": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+    "modules/dashboard.js": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d",
+    "modules/proyectos.js": "a89dbe6a8c1b8305c3f7644d500bbcc6bfbc99db0b6420f2a7a5a226827f6db9",
+    "modules/proyecto-wizard.js": "e3697ab6edb72bfe8c4da67114e8fab3ab72cbcb9274a0bccf57ade8fa1df7c1",
+    "core/backend-finance-benefits.js": "17c77d8678bd18a3dd76099832a2d57eff5da6650830ae1e3a22f6b63b60cb07",
+    "core/hr.js": "091c06ec7b2e8b4e24acd3655ba52abee861e193089efabab426cd751e325da6",
+    "modules/correo.js": "f394803f461b37485f7e2b00760ce9ab6cdb5852e646f7e93e4d7e6d49d012b3",
+    "modules/finanzas.js": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+    "modules/integraciones.js": "c4eb245dd515978e1f86e7d03271b26884f0029c3de0b80e04ea20eac64beaa8",
+    "modules/revision-admin.js": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd",
+    "core/data-source.js": "d07e1642269327ea76ef8d765f0a5e3e3278ab87c43ddc966ea7aef8732486dc"
+  },
+  "verifiedServedAssetCount": 48,
+  "sourceHostedExact": true,
+  "productionUnchanged": true,
+  "production": false,
+  "i4Authorized": false,
+  "phaseAComplete": false,
+  "terminalCertified": false,
+  "newDomainMatches": 0,
+  "hrReadback": {
+    "schemaVersion": "cxorbia.i3.excel-canonical-readonly.v1",
+    "decision": "PASS_EXCEL_CANONICAL_ID_READONLY",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "runId": "45488581923",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "production": false,
+    "fullDomain": false,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "visits": 88,
+    "uniqueCanonicalIds": 88,
+    "byCountry": {
+      "GT": 68,
+      "HN": 20
+    },
+    "byPeriod": {
+      "cinepolis-2026-10": 44,
+      "cinepolis-2026-11": 44
+    },
+    "sharedCountryCoordinates": 20,
+    "sourceSafe": true,
+    "revisionStableAcrossReadbacks": true,
+    "durationMs": 942
+  },
+  "hrPeriodWindow": {
+    "schemaVersion": "cxorbia.i3.hr-period-window-dev.v1",
+    "decision": "PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ",
+    "findingId": "VRM-375",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "runId": "45488581923",
+    "runAttempt": 1,
+    "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "rolling": {
+      "mode": "rolling_window",
+      "periodIds": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11"
+        }
+      ],
+      "periodBindings": 4,
+      "visits": 88,
+      "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+      "sourceReadAt": "2026-11-24T21:18:39.199Z",
+      "externalReadCurrent": true
+    },
+    "history": {
+      "available": true,
+      "externalReadCurrent": false,
+      "visits": 836,
+      "periods": 19,
+      "countryPeriods": 38,
+      "originalSeedVisits": 836,
+      "seedBankVisits": 836,
+      "originalObservation": "2026-11-24T15:28:33.482Z",
+      "seedArtifactId": 14934489092,
+      "seedSnapshotSha256": "437426fb7e95fd2a7d9dfaa7d6740a7aa24e34a20a8ef54f61dfc63167589032"
+    },
+    "explicit": {
+      "mode": "explicit_period",
+      "periodIds": [
+        "cinepolis-2026-09"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-09"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-09"
+        }
+      ],
+      "periodBindings": 2,
+      "visits": 44,
+      "revision": "d0409c48d4913428081bfce9d5c998d49ed1446110935bcd13ae581eedb886d2",
+      "sourceReadAt": "2026-11-24T21:19:06.621Z",
+      "externalReadCurrent": true
+    },
+    "returned": {
+      "mode": "rolling_window",
+      "periodIds": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11"
+        }
+      ],
+      "periodBindings": 4,
+      "visits": 88,
+      "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+      "sourceReadAt": "2026-11-24T21:19:16.741Z",
+      "externalReadCurrent": true
+    },
+    "additionalHttpReads": 2,
+    "inventoryPolicy": {
+      "automaticMaxAgeMs": 86400000,
+      "manualDiscoverySourceTested": true,
+      "liveManualDiscoveryCertified": false
+    },
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "operationalImports": 0,
+    "production": false,
+    "fullDomain": false,
+    "authenticatedUiCertified": false
+  },
+  "mailboxEnvironment": {
+    "decision": "HOLD_E08_MAILBOX_UNCONFIGURED",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "predecessorRuntime": "cxorbia-live-hr-dev-00390-bpc",
+    "failedRunId": 45420999212,
+    "secretMetadataOutcome": "PERMISSION_DENIED",
+    "keyMounted": false,
+    "mailboxEnabled": false,
+    "sendEnabled": false,
+    "secretWrites": 0,
+    "iamWrites": 0,
+    "credentialReads": 0,
+    "smtpSends": 0,
+    "production": false
+  },
+  "scope": "DEV_MATERIALIZATION_ONLY_NO_DOMAIN_OR_HUMAN_PROMOTION"
+}
