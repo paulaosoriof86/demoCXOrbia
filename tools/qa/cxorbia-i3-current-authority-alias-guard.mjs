@@ -1,3 +1,4 @@
+import {validateProjectionRegistry} from './cxorbia-i3-current-control-projection.mjs';
 /* Current control-plane compatibility aliases must not contradict the canonical
    descriptor-selected ledger and DEV seal. Historical nested evidence is immutable;
    only explicitly current top-level fields are compared here. */
@@ -212,7 +213,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
   }
   check(Boolean(d?.currentExecutionReceipt)&&JSON.stringify(d.currentExecutionReceipt)===JSON.stringify(p?.currentExecutionReceipt),'CURRENT_EXECUTION_RECEIPT_DESYNC');
   check(Boolean(d?.currentExecutionReceiptSemantics)&&d.currentExecutionReceiptSemantics===p?.currentExecutionReceiptSemantics,'CURRENT_EXECUTION_RECEIPT_SEMANTICS_DESYNC');
-  check(d?.phaseAHumanAcceptanceCurrent20261111?.technicalDomainMatches===phaseLock.strictDomainMatches && phaseLock.strictDomainMatches===current.moduleMatch && current.moduleMatch===c3.matchModules,'CURRENT_TECHNICAL_DOMAIN_COUNT_DESYNC');
+  check(d?.phaseAHumanAcceptanceCurrent20261111?.technicalDomainMatches===phaseLock.strictDomainMatches && phaseLock.strictDomainMatches===current.moduleMatch && current.moduleMatch===(m?(m.modules||[]).filter(x=>x.classification==='MATCH').length:c3.matchModules),'CURRENT_TECHNICAL_DOMAIN_COUNT_DESYNC');
   check(Boolean(d?.moduleTruthExpectedGitBlob)&&current.moduleTruthGitBlob===d.moduleTruthExpectedGitBlob,'CURRENT_TRUTH_MATRIX_BLOB_DESYNC');
   for(const control of [d,p])check(control?.currentCanonicalControl?.matrix?.path===d.moduleTruthPath && control?.currentCanonicalControl?.matrix?.gitBlob===d.moduleTruthExpectedGitBlob && control?.currentCanonicalControl?.ledger?.path===d.findingsLedgerPath && control?.currentCanonicalControl?.ledger?.gitBlob===d.findingsLedgerExpectedGitBlob,'CURRENT_CANONICAL_CONTROL_POINTER_DESYNC');
   if(m){
@@ -278,9 +279,11 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
       binding.hrRevision===operational.hrRevision&&binding.receiptPath===operational.receiptPath&&
       binding.receiptBlob===operational.receiptBlob,'CURRENT_RUNTIME_OPERATIONAL_BINDING_DESYNC');
     check(all.every(o=>JSON.stringify(o.currentExecutionReceipt)===JSON.stringify(d.currentExecutionReceipt))&&
-      d.currentExecutionReceipt?.runId===operational.runId&&d.currentExecutionReceipt?.sourceSha===operationalSource&&
-      d.currentExecutionReceipt?.hrRevision===operational.hrRevision,'CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC');
+      (d.currentExecutionReceipt?.runId===operational.runId
+        ?d.currentExecutionReceipt?.sourceSha===operationalSource&&d.currentExecutionReceipt?.hrRevision===operational.hrRevision
+        :Boolean(d.currentExecutionReceipt?.receiptPath&&d.currentExecutionReceipt?.receiptBlob&&d.currentExecutionReceipt?.sourceSha===source&&d.currentExecutionReceipt?.production===false&&d.currentExecutionReceipt?.kind)),'CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC');
   }
+  failures.push(...validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matrix:m}).failures);
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }
 
@@ -315,7 +318,7 @@ export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,re
       let pairedReceipt={};try{pairedReceipt=readJson(seal.receiptPath);}catch{check(false,'LATEST_C3_PAIRED_RECEIPT_UNREADABLE');}
       check(pairedReceipt.schemaVersion==='cxorbia.i3.current-source-dev-materialization.v1'&&pairedReceipt.production===false&&pairedReceipt.i4Authorized===false&&pairedReceipt.productionUnchanged===true,'LATEST_C3_PAIRED_RECEIPT_SCOPE');
       for(const k of ['sourceSha','sourceTree','runId','runNumber','runtimeRevision','runtimeDigest','hostingVersion','artifactDigest'])check(Boolean(h[k])&&pairedReceipt.materialization?.[k]===h[k],'LATEST_C3_PAIRED_RECEIPT_'+k);
-      check(pairedReceipt.sourceSha===h.sourceSha&&pairedReceipt.sourceTree===h.sourceTree&&pairedReceipt.materialization?.builds===1&&pairedReceipt.materialization?.runtimeDeploys===1&&pairedReceipt.materialization?.hostingDeploys===1,'LATEST_C3_PAIRED_RECEIPT_IDENTITY');
+      check(pairedReceipt.sourceSha===h.sourceSha&&pairedReceipt.sourceTree===h.sourceTree&&(pairedReceipt.materialization?.builds===1||validResumedBuild(pairedReceipt.materialization))&&pairedReceipt.materialization?.runtimeDeploys===1&&pairedReceipt.materialization?.hostingDeploys===1,'LATEST_C3_PAIRED_RECEIPT_IDENTITY');
     }
     check(JSON.stringify(audit)===JSON.stringify(p.currentC3PreterminalAudit||null)&&audit.sourceSha===h.sourceSha&&audit.sourceTree===h.sourceTree&&audit.hostingVersion===h.hostingVersion&&audit.runtimeRevision===seal.runtimeRevision,'LATEST_C3_AUDIT_IDENTITY');
     check(JSON.stringify(latest)===JSON.stringify(d.currentExecutionReceipt||null)&&JSON.stringify(latest)===JSON.stringify(p.currentExecutionReceipt||null),'LATEST_C3_EXECUTION_POINTER');
@@ -356,4 +359,10 @@ export function validateLatestExecutionSource({descriptor:d,pointer:p,gitBlob,re
   for(const k of ['sourceSha','sourceTree','artifactId','artifactDigest'])check(Boolean(r[k])&&latest[k]===r[k],'LATEST_HOSTING_EXECUTION_'+k);
   check(latest.production===false,'LATEST_HOSTING_EXECUTION_PRODUCTION');
   return {pass:failures.length===0,failures,sourceSha:h.sourceSha,hostingOnly:true};
+}
+
+
+export function validResumedBuild(m){
+ const p=m?.buildProvenance;
+ return m?.builds===0&&p?.decision==='PASS_EXACT_SUCCESSFUL_BUILD_REUSED'&&p.builds===0&&p.sourceSha===m.sourceSha&&p.sourceTree===m.sourceTree&&p.runtimeDigest===m.runtimeDigest&&p.imageUri?.endsWith('@'+m.runtimeDigest)&&Number(p.originalBuildRunId)>0&&/^[a-z0-9-]{36}$/.test(p.originalBuildId||'')&&Number(p.originalArtifactId)>0&&/^sha256:[a-f0-9]{64}$/.test(p.originalArtifactDigest||'')&&p.production===false;
 }

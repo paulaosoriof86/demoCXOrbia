@@ -135,3 +135,16 @@ Las decisiones del 16-10 permiten normalización y fusión nominal corroborada c
 **Siguiente owner, no nuevo diagnóstico general:** F3 sobre contrato y fixture aislado Graph/Make por país/proyecto/período/visita; confirmar ACK remoto e idempotencia y recién después ejecutar las cláusulas Admin/Shopper E2E no cubiertas para acreditar módulos de la matriz de 21. No exigir a Paula que repita decisiones. Si un checkpoint posterior trae evidencia válida de un source distinto, resolver nuevamente la autoridad viva y conservar la monotonicidad de módulos.
 
 **Control contra escritores simultáneos:** antes de todo write usar HEAD/tree remotos y `expected_sha` (CAS/lease); si cambia, abortar ese write sin un segundo candidato. Esta regla aplica también al control documental. Los problemas de longitud/interrupción de una conversación ChatGPT no deben alterar el estado persistente ni justificar reauditar todo.
+
+
+## 11. Incorporación automática de ejecuciones — corrección VRM-374, 2026-11-24
+
+El finalizador `continuity-result-consumer` del workflow Recovery existente es el único escritor de resultados de Actions. No crea otro producto, workflow, rama ni candidata. Opera después de todos los productores, con compare-and-swap y readback. No construir, desplegar, leer HR ni ejecutar comandos desde ese consumidor. La sesión técnica espera su término antes de un nuevo write sobre la rama.
+
+Al retomar, leer HEAD, descriptor y `CXORBIA_RECOVERY_EXECUTION_CURRENT.json`, resolver sus blobs actuales de matriz y ledger, y comprobar `currentAutomationReceipt`, `currentControlProjection`, `postDeployRunSeal` y `lastHrObservation`. Distinguir último despliegue, última ejecución, última observación HR y último C3 histórico. No confundir SUCCESS del workflow con MATCH funcional.
+
+Antes de repetir una publicación, revisar los runs/attempts posteriores al sello incorporado y sus journals. El preflight del carril existente bloquea un despliegue repetido si hay resultados no incorporados; su finalizador recupera esos resultados con el mismo consumidor. Un intento previo no puede sustituir a uno posterior. Un artefacto no tipado, parcial o fallido se registra con su resultado y queda pendiente de la cláusula exacta; nunca se transforma en PASS por inferencia.
+
+Los campos activos enumerados en `tools/qa/cxorbia-i3-current-control-projection.mjs` se derivan del recibo verificado. Los valores retirados se conservan en `ACTIVE_ALIAS_HISTORY`; no son instrucciones de ejecución. Toda nueva compatibilidad activa debe añadirse al registry, al projector y a su prueba negativa en el mismo cambio. No añadir aliases manuales que vuelvan a multiplicar autoridades.
+
+La corrección conserva la lectura histórica de HR ya confirmada. La regla operativa solicitada por Paula el 24/11 es leer rutinariamente el mes anterior, el actual y el próximo cuando exista; los demás se consultan sólo por solicitud explícita. Esta decisión de alcance no certifica por sí misma su implementación ni autoriza producción.

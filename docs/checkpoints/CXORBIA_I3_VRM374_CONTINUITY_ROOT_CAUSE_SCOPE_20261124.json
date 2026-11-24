@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "VRM-374",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "expectedParentSha": "07d799b172e7437c9a9a880bf9d92cd095f073d8",
+  "expectedParentTree": "f777971e4bbbb4621cacf7e419a0b88e75ba8e5b",
+  "productSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+  "productSourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+  "rootCause": [
+    "The canonical DEV producer uploads evidence but no terminal consumer persists the result in the canonical continuation controls. An interrupted chat leaves a completed deployment pending forever.",
+    "The compatibility guard ignores active aliases, demonstrated by four isolated corruptions which still pass.",
+    "Historical C3 counts and latest HR observation were coupled to current module count and latest execution, forcing unrelated replay."
+  ],
+  "moduleTruth": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V394.json",
+    "gitBlob": "f27dae871ea2299b3254190844ed64edb28e38c1",
+    "classification": "TRUE_FUNCTIONAL_DEFECT",
+    "scope": "CONTROL_CONTINUITY_NOT_PRODUCT_CERTIFICATION",
+    "preservedMatchDomains": [
+      "benefits",
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "preservedHumanBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ]
+  },
+  "allowedControlFiles": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.mjs",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs",
+    "tools/qa/cxorbia-i3-current-control-projection.mjs",
+    "tools/qa/cxorbia-i3-paired-dev-seal.sh",
+    "AGENTS.md"
+  ],
+  "ownerBlobsBefore": {
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "c6bb91289bb232984dc800600f2de0224d7a8f00",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.mjs": "685b713e77b2593e48d82b46e0235b6212d1ed60",
+    "tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs": "ec6ce2394f4d51c2a563dfaa51e715b0d7412878",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.mjs": null,
+    "tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs": null,
+    "tools/qa/cxorbia-i3-current-control-projection.mjs": null,
+    "tools/qa/cxorbia-i3-paired-dev-seal.sh": null,
+    "AGENTS.md": "f6a718b3648c081d651dcc5918fd676772e617ff"
+  },
+  "allowedProductFiles": [],
+  "evidenceRunId": 45425168217,
+  "evidenceArtifactId": 14934489092,
+  "evidenceArtifactDigest": "sha256:e20cacd0b7f3fb4b959fffc472201579208143effea5a372a4fdf5a64bbac909",
+  "mechanism": "One finalizer in existing workflow; exact run/attempt/artifact checks; atomic compare-and-swap commit; typed receipt projection; startup recovery before a repeated deployment. No new workflow or candidate.",
+  "production": false,
+  "i4Authorized": false,
+  "providerWrites": 0,
+  "hrReads": 0,
+  "sourceTests": {
+    "pass": 233,
+    "fail": 0,
+    "scope": "ALIAS_AND_AUTOMATIC_RESULT_CONSUMER_LOCAL_NO_PROVIDER_WRITES"
+  }
+}

@@ -84,6 +84,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
+      node --test tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs
       node --test tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs
       node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
@@ -4557,6 +4558,9 @@ jobs:
      with: {fetch-depth: 0}
    - uses: actions/setup-node@v4
      with: {node-version: '24'}
+   - name: Recover pending execution before another deployment
+     env: {GH_TOKEN: '${{ github.token }}'}
+     run: node tools/qa/cxorbia-i3-automatic-result-consumer.mjs --preflight
    - run: bash tools/qa/cxorbia-i3-paired-source-checks.sh
    - run: |
       set -Eeuo pipefail
@@ -4665,69 +4669,12 @@ jobs:
       jq -e '.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
       jq -e '[.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length>0' "$FOCAL_OUT/hr-live.json" >/dev/null
       echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-   - run: |
-      set -Eeuo pipefail
-      DECISION="PASS_VRM154_156_EXACT_DEV_MATERIALIZATION"
-      case "$ACTIVE_STATUS" in
-        HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED) DECISION=PASS_I3_F3_SAME_ARTIFACT_ENV_REPAIR ;;
-        HOLD_I3_F09_DEV_MATERIALIZED_C3_REPROOF_PENDING) DECISION=PASS_I3_F09_SAME_ARTIFACT_ENV_REPAIR ;;
-        HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM134_A05_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_V190_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_V190_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM216_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM217_219_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM306_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM306_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM307_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM307_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM308_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM308_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM249_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM256_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM257_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM258_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM259_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION) DECISION=PASS_HUMAN_VISUAL_CHECKPOINT_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_VRM309_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM309_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_B11_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_B11_HR_DATE_SEMANTICS_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_CERT_CARRYOVER_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM316_CERT_CARRYOVER_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM317_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM317_D06_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM318_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM318_D06_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM319_D06_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM319_D06_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM320_B3_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_VRM320_B3_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_F09_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM143_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM350_EXACT_DEV_MATERIALIZATION ;;
-        HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED) DECISION=PASS_I3_VRM358_EXACT_DEV_MATERIALIZATION ;;
-         HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21) DECISION=PASS_I3_F2_READER_SOURCE_DEV_MATERIALIZATION ;;
-        HOLD_I3_GTHN_PENDING_DEV) DECISION=PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION ;;
-      esac
-      jq -n -S --arg d "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" --argjson reuse "$PAIR_ENV_ONLY" --argjson b "$(jq -er .builds "$FOCAL_OUT/build.json")" '{decision:$d,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:$b,runtimeDeploys:1,hostingDeploys:(if $reuse then 0 else 1 end),storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
-      if test -f "$FOCAL_OUT/build-resume.json"; then jq --slurpfile resume "$FOCAL_OUT/build-resume.json" '.+{buildProvenance:$resume[0]}' "$FOCAL_OUT/result.json" > "$FOCAL_OUT/next.json"; mv "$FOCAL_OUT/next.json" "$FOCAL_OUT/result.json"; fi
+   - run: bash tools/qa/cxorbia-i3-paired-dev-seal.sh receipt
    - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_GTHN_PENDING_DEV"]'),env.ACTIVE_STATUS)||env.PAIR_ENV_ONLY=='true'||env.ACTIVE_STATUS=='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21'
-     run: |
-      set -Eeuo pipefail
-      TOKEN="$(gcloud auth print-access-token)"
-      curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-after.json"
-      test "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-after.json")"
-      curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-after.html"
-      cmp -s "$FOCAL_OUT/production-before.html" "$FOCAL_OUT/production-after.html"
-      CXORBIA_I3_QA_SCOPE=PAIRED_DEV_RECEIPT node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs
-      cat "$FOCAL_OUT/result.json"
-      if [[ "$ACTIVE_STATUS" == HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED ]]; then
-        CXORBIA_I3_QA_SCOPE=B14_BINDING_READBACK_DEV node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$FOCAL_OUT/hr-meta.json" "$FOCAL_OUT/b14-binding/b14-binding-repair.json" "$FOCAL_OUT/b14-binding/runtime-binding-readback.json"
-        QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-      elif [[ "$ACTIVE_STATUS" == HOLD_I3_GTHN_PENDING_DEV || "$ACTIVE_STATUS" == HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED ]]; then
-        QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=EXCEL_CANONICAL_ID_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-       elif [[ "$ACTIVE_STATUS" == HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21 ]]; then
-         QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-      elif [[ "$ACTIVE_STATUS" == HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED || "$ACTIVE_STATUS" == HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED ]]; then
-        QA_OUT="$FOCAL_OUT/hr-after" CXORBIA_I3_QA_SCOPE=HR_DURABLE_REVISION_READONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-        EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/notifications" CXORBIA_I3_QA_SCOPE=VRM143_NOTIFICATION_CYCLE CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_VRM143_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-      else
-      EXPECTED_HR_REVISION="$HR_REVISION" QA_OUT="$FOCAL_OUT/f09" CXORBIA_I3_QA_SCOPE=F09_CLIENT_COLLABORATION CXORBIA_I3_QA_ISOLATED_WRITE_GATE=PAULA_AUTHORIZED_F09_DEV_ONLY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
-      fi
+     run: bash tools/qa/cxorbia-i3-paired-dev-seal.sh verify
    - if: always()
      uses: actions/upload-artifact@v4
-     with: {name: 'cxorbia-vrm154-156-dev-materialization-${{ github.run_id }}',path: .tmp/vrm154-156-dev-materialization,if-no-files-found: error,retention-days: 30,compression-level: 6}
+     with: {name: 'cxorbia-vrm154-156-dev-materialization-${{ github.run_id }}-${{ github.run_attempt }}',path: .tmp/vrm154-156-dev-materialization,if-no-files-found: error,retention-days: 30,compression-level: 6}
   vrm185-admin-live-adjudication:
    needs: canonical-candidate-authority
    if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED'}}
@@ -6573,3 +6520,20 @@ jobs:
    - uses: actions/upload-artifact@v4
      if: always()
      with: {name: 'cxorbia-i3-b14-qa-provider-${{ github.run_id }}',path: .tmp/i3-b14-provider-qa/,if-no-files-found: warn,retention-days: 30}
+
+  continuity-result-consumer:
+   needs: [vrm153-proof, canonical-candidate-authority, vrm143-151-source-reproof, i3-b3-schedule-two-shopper-dev-qa, i3-b7-reservation-to-visit-two-role-dev-qa, i3-b7-shopper-notice-unread-route-dev-qa, vrm143-151-dev-materialization, vrm151-historical-dry-run, vrm151-historical-amount-diagnostic, vrm151-canonical-owner-diagnostic, vrm151-seven-exceptions-diagnostic, vrm151-payment-eligibility-diagnostic, vrm151-provider-source-reproof, vrm151-runtime-only-dev-materialization, vrm151-final-canonical-dry-run, prei4-admin-008-mapping-reproof, prei4-admin-008-runtime-materialization, prei4-admin-002-postulation-semantic-diagnostic, prei4-admin-002-source-reproof, prei4-admin-002-hosting-live-reproof, prei4-admin-003-identity-diagnostic, prei4-admin-003-owner-diagnostic, prei4-admin-003-source-reproof, prei4-cumulative-regression-source-guard, prei4-admin-004-hosting-materialization-live, prei4-admin-004-cumulative-dev-materialization, prei4-admin-003-cumulative-live-reproof, i3-finance-focal-reproof, vrm085-postulation-sync-diagnostic, vrm085-control-reproof, vrm086-exact-alias-control-reproof, vrm088-live-fixture-availability-reproof, gate21-same-certified-artifact-after-vrm088, vrm083-hr-browser-revision-diagnostic, vrm083-runtime-materialization, vrm083-runtime-readback, vrm084-benefits-human-label-hosting, vrm076-terminal-module-truth-finalizer, vrm077-postulation-hr-conflict-live, vrm078-external-project-live, vrm079-documents-resources-live, vrm080-connected-admin-config-live, vrm081-population-credential-diagnostic, v70-vrm069-operational-visit-key-runtime, c3-preterminal-module-truth, vrm043-name-diagnostic, vrm043-control-proof, certify, live-fixtures, gate21, pre-i4-vrm039-config-diagnostic, pre-i4-vrm037-042-source-proof, pre-i4-vrm037-diagnostic, vrm044-focal-reproof, vrm044-dev-materialization, v21-paula-remediation-dev, v21-paula-remediation-readback, v25-second-visual-forensic, v26-identity-assignment-reconcile, v27-duplicate-visit-owner-proof, v28-second-review-remediation, v28-second-review-resume, v33-profile-boundary-hosting-reproof, v41-second-review-cumulative-live-reproof, v42-milton-durable-diagnostic, v43-milton-durable-repair, c3-terminal-dev-identity-readback, pre-i4-cert-res-capability-diagnostic, pre-i4-cert-res-credential-route-diagnostic, pre-i4-cert-res-provider-activate, pre-i4-cert-res-runtime-readiness, pre-i4-cert-res-source-contract, pre-i4-cert-res-dev-materialization, pre-i4-cert-res-live-resume, pre-i4-cert-res-runtime-only-rematerialize, vrm151-durable-historical-reconciliation, vrm153-reconciliation-readback-diagnostic, vrm154-156-frontend-source-reproof, vrm154-156-dev-materialization, vrm185-admin-live-adjudication, vrm157-dev-readback-only, vrm153-durable-repair, vrm185-paula-identity-topology-readonly, vrm185-global-identity-consolidation-plan, vrm185-admin-provider-source-test, phasea-rejected-checkpoint-source-proof, b1-canonical-visible-identity-source-proof, b1-canonical-visible-identity-dev-materialization, phasea-representative-same-artifact-live-reproof, vrm267-support-focal-live, julissa-identity-topology-readonly, julissa-identity-adjudication-write, vrm215-shopper-population-reproof, vrm217-durable-credential-sweep, vrm219-exact-alias-remap, vrm226-human-identity-topology, admin-cluster-a-postulations-lifecycle, vrm249-reservations-read-model-source-reproof, b1-oct07-authenticated-readonly-visual, i3-a09b11-backend-only-dev-materialization, i3-a09b11-post-deploy-readback-only, i3-d04e03-hosting-only-dev, vrm287-dev-two-visit, vrm290-dev-hosting, i3-current-source-hosting-dev, i3-dev-storage-cors-alias-focal, i3-b4-bank-flags-readonly, i3-keeper-role-e2e-readonly, i3-run2382-academy-b7-isolated-dev-qa, i3-b14-qa-provider-proof]
+   if: ${{ always() && github.ref == 'refs/heads/recovery/cxorbia-phase-a-20260831' }}
+   runs-on: ubuntu-24.04
+   timeout-minutes: 10
+   permissions: {contents: write, actions: read}
+   steps:
+   - uses: actions/checkout@v4
+     with: {fetch-depth: 0, persist-credentials: false}
+   - uses: actions/setup-node@v4
+     with: {node-version: '24'}
+   - name: Persist exact completed outcomes
+     env:
+      GH_TOKEN: ${{ github.token }}
+      CXORBIA_I3_NEEDS_JSON: ${{ toJSON(needs) }}
+     run: node tools/qa/cxorbia-i3-automatic-result-consumer.mjs --consume-current-run
