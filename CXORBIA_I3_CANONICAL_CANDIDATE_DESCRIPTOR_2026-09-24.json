@@ -35655,14 +35655,14 @@
   },
   "currentAutomationReceipt": {
     "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
-    "path": "docs/checkpoints/CXORBIA_I3_RUN45490821782_ATTEMPT1_EXECUTION_JOURNAL.json",
-    "gitBlob": "80946b7958ab62be12869e29c166d6bc90452da2",
-    "runId": 45490821782,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45493719666_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "gitBlob": "54c6a244863ac0111462df607e08296d38261b4c",
+    "runId": 45493719666,
     "runAttempt": 1,
     "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
     "pendingTypedResults": [
       {
-        "jobId": 138789009117,
+        "jobId": 138799051105,
         "name": "i3-b14-qa-provider-proof",
         "conclusion": "failure",
         "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
@@ -35682,6 +35682,17 @@
       "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45490821782_ATTEMPT1_EXECUTION_JOURNAL.json",
       "journalBlob": "80946b7958ab62be12869e29c166d6bc90452da2",
       "controlHead": "b14d0cf868ce6307c36d4c4d3c28d60c33e53472"
+    },
+    {
+      "jobId": 138799051105,
+      "name": "i3-b14-qa-provider-proof",
+      "conclusion": "failure",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
+      "runId": 45493719666,
+      "runAttempt": 1,
+      "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45493719666_ATTEMPT1_EXECUTION_JOURNAL.json",
+      "journalBlob": "54c6a244863ac0111462df607e08296d38261b4c",
+      "controlHead": "900641387029eec22e2dbfd5b9bc9109ae32dce0"
     }
   ],
   "vrm375ContinuityReconciliation": {
