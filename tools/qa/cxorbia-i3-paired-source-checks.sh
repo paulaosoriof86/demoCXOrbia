@@ -6,6 +6,17 @@ test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
 test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
 git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
 git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+if [[ -n "${GITHUB_EVENT_PATH:-}" ]] && jq -e '.head_commit.message | contains("[i3-mail-tls-readonly]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+  # Read-only provider diagnosis: no credentials, mailbox reads, sends or deletes.
+  # A mail-provider failure is recorded without blocking this unrelated DEV release.
+  if CXORBIA_MAIL_TLS_PROBE_OUT="$FOCAL_OUT/mail-tls-readonly.json" node tools/qa/cxorbia-i3-p0367-mail-tls-readonly.mjs; then
+    echo 'Mail TLS greeting verified; authenticated mailbox remains unproven.'
+  else
+    mail_probe_status=$?
+    test -s "$FOCAL_OUT/mail-tls-readonly.json"
+    echo "Mail TLS diagnosis recorded exit $mail_probe_status; mailbox remains disabled."
+  fi
+fi
 if [[ "$ACTIVE_STATUS" == "HOLD_VRM134_A05_DEV_MATERIALIZATION_REQUIRED" ]]; then
   node --check backend/runtime/hr-live-service/server.mjs
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs | tee "$FOCAL_OUT/vrm134-a05-source-tests.log"

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.control-focal-repair.v1",
+  "createdAt": "2026-11-24T10:46:35.420929+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "expectedParentSha": "a56399b8b5aabab6293c58fea606306e1f061382",
+  "productSourceUnchanged": "cbe7bb9d79805782d256fa432a406c1843beee85",
+  "productTreeUnchanged": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "failedRunId": 45376148424,
+  "failedRunNumber": 2762,
+  "failedJobId": 138382865456,
+  "owner": "currentExecutionReceipt and lastExecutionReceipt in descriptor/current pointer",
+  "before": {
+    "receiptRun": 2758,
+    "pairedSealRun": 2761,
+    "reproduction": {
+      "pass": false,
+      "failures": [
+        "LATEST_EXECUTION_KIND",
+        "LATEST_HOSTING_POINTER",
+        "LATEST_HOSTING_SOURCE",
+        "LATEST_HOSTING_RUNTIME_SEAL",
+        "LATEST_HOSTING_RECEIPT_BLOB",
+        "LATEST_HOSTING_RECEIPT_UNREADABLE",
+        "LATEST_HOSTING_RECEIPT_DECISION",
+        "LATEST_HOSTING_EXACT_ASSETS",
+        "LATEST_HOSTING_ZERO_cloudRunBuilds",
+        "LATEST_HOSTING_ZERO_cloudRunDeploys",
+        "LATEST_HOSTING_ZERO_rulesDeploys",
+        "LATEST_HOSTING_ZERO_hrWrites",
+        "LATEST_HOSTING_ZERO_productionDeploys",
+        "LATEST_HOSTING_ZERO_firestoreDirectWrites",
+        "LATEST_HOSTING_NONTERMINAL",
+        "LATEST_HOSTING_EXECUTION_IDENTITY",
+        "LATEST_HOSTING_EXECUTION_sourceSha",
+        "LATEST_HOSTING_EXECUTION_sourceTree",
+        "LATEST_HOSTING_EXECUTION_artifactId",
+        "LATEST_HOSTING_EXECUTION_artifactDigest"
+      ],
+      "hostingOnly": true
+    }
+  },
+  "after": {
+    "receiptRun": 2761,
+    "pairedSealRun": 2761,
+    "reproduction": {
+      "pass": true,
+      "failures": [],
+      "sourceSha": "3206918d84ed45d33851bff266de42ad59e546cb",
+      "hostingOnly": false
+    },
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2761_HR_FIELDS_REFRESH_PAIRED_DEV_PASS_20261124.json"
+  },
+  "secondaryQaRepair": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "assertF3EndpointScope",
+    "cause": "Graph raw numeric cinema IDs rejected against textual fixture identity",
+    "after": "Only exact cinema identifier accepts string or safe integer; provider raw manifest unchanged; other identity components remain exact strings"
+  },
+  "mailTlsScheduling": {
+    "before": "Commit marker existed but no workflow script consumed it",
+    "after": "Existing paired source-check step runs strict TLS greeting-only probe when explicit marker is present",
+    "credentialsUsed": false,
+    "authenticatedMailboxProven": false,
+    "smtpSendingImplemented": false
+  },
+  "allowedFiles": [
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs",
+    "tools/qa/cxorbia-i3-paired-source-checks.sh",
+    "docs/checkpoints/CXORBIA_I3_RUN2762_CONTROL_ALIAS_F3_QA_REPAIR_20261124.json"
+  ],
+  "sourceProof": {
+    "tests": 224,
+    "pass": 224,
+    "fail": 0,
+    "authorityGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "bashSyntax": "PASS"
+  },
+  "newDomainMatches": 0,
+  "strictMatchModules": 6,
+  "production": false,
+  "i4Authorized": false,
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "nextExactAction": "One paired DEV publication of existing cbe7bb9d source, strict TLS probe and exact bytes readback; consume new paired receipt into all current aliases before D08 and F3 endpoint QA."
+}

@@ -157,7 +157,14 @@ export function assertF3EndpointScope(env,manifest){
     f3Need(row.driveId===F3_QA.driveId&&row.itemId===F3_QA.items[country]&&row.worksheetName==='CXR_B14_QA_'+country+'_20261119','MAPPING_FAILURE:F3_QA_PROVIDER_SCOPE');
     f3Need(/^[A-Za-z0-9{][A-Za-z0-9{}!._:-]{0,239}$/.test(row.worksheetId||'')&&row.worksheetFingerprint===sha(row.worksheetId),'MAPPING_FAILURE:F3_QA_WORKSHEET_PROOF');
     f3Need(row.providerReadStatus===200&&/^[a-f0-9]{32}$/i.test(row.providerExecutionId||'')&&Number.isFinite(Date.parse(row.observedAt)),'PROVIDER_FAILURE:F3_QA_OBSERVATION_PROOF');
-    f3Need(Array.isArray(row.headerValues)&&row.headerValues.length===26&&f3Same(row.headerValues.slice(0,4),['fixtureId','fieldValue','eventId','eventDigest'])&&f3Same(row.rowIdentityValues,identity),'MAPPING_FAILURE:F3_QA_HEADER_IDENTITY');
+    // Graph returns numeric cinema IDs as numbers; preserve the raw provider
+    // evidence and compare only that identifier's supported scalar forms.
+    const rawIdentity=row.rowIdentityValues;
+    const exactIdentity=Array.isArray(rawIdentity)&&rawIdentity.length===3&&
+      rawIdentity[0]===identity[0]&&rawIdentity[2]===identity[2]&&
+      (typeof rawIdentity[1]==='string'||Number.isSafeInteger(rawIdentity[1]))&&
+      String(rawIdentity[1])===identity[1];
+    f3Need(Array.isArray(row.headerValues)&&row.headerValues.length===26&&f3Same(row.headerValues.slice(0,4),['fixtureId','fieldValue','eventId','eventDigest'])&&exactIdentity,'MAPPING_FAILURE:F3_QA_HEADER_IDENTITY');
     f3Need(row.headerValues[10]==='Tipo de Combo'&&row.headerValues[11]==='Tipo de Compra'&&row.headerValues[14]==='Shopper Asignado'&&row.headerValues[18]==='Fecha programada','MAPPING_FAILURE:F3_QA_FIELD_COLUMNS');
   }
   return {runId:String(env.GITHUB_RUN_ID),runAttempt:String(env.GITHUB_RUN_ATTEMPT||'1'),owner:f3Owner(env.GITHUB_RUN_ID,env.GITHUB_RUN_ATTEMPT||'1')};

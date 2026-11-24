@@ -13,6 +13,13 @@ function fixture(){
  return {env,manifest:{schemaVersion:'cxorbia.f3.remote-fixture.v1',tenantId:'tya',projectId:F3_QA.projectId,periodId:F3_QA.periodId,countries}};
 }
 test('F3 exact QA scope yields deterministic run ownership without initializing any provider',()=>{const h=fixture();assert.deepEqual(assertF3EndpointScope(h.env,h.manifest),{runId:'45247111111',runAttempt:'1',owner:'f3-qa-45247111111-1'});});
+test('F3 accepts Graph numeric cinema IDs in both countries without changing raw evidence',()=>{
+ const h=fixture();for(const country of F3_QA.countries)h.manifest.countries[country].rowIdentityValues[1]=Number(h.manifest.countries[country].rowIdentityValues[1]);
+ const before=JSON.stringify(h.manifest);assert.equal(assertF3EndpointScope(h.env,h.manifest).owner,'f3-qa-45247111111-1');assert.equal(JSON.stringify(h.manifest),before);
+});
+for(const value of [2022003,['2022002'],{toString:()=> '2022002'},null,true,2022002.5])test('F3 rejects foreign or nonscalar cinema identity '+JSON.stringify(value),()=>{
+ const h=fixture();h.manifest.countries.GT.rowIdentityValues[1]=value;assert.throws(()=>assertF3EndpointScope(h.env,h.manifest),/F3_QA_HEADER_IDENTITY/);
+});
 for(const [key,value]of [['CXORBIA_F3_QA_ENDPOINT_GATE',''],['GITHUB_REF','refs/heads/main'],['GITHUB_REPOSITORY','another/repo'],['CXORBIA_F3_QA_BASE_URL','https://tya-plataforma.web.app'],['GOOGLE_CLOUD_PROJECT','tya-plataforma'],['CXORBIA_F3_QA_RUNTIME_DIGEST','tag-latest'],['CXORBIA_F3_QA_SOURCE_SHA','latest']])test('F3 rejects unauthorized or unpinned '+key,()=>{const h=fixture();h.env[key]=value;assert.throws(()=>assertF3EndpointScope(h.env,h.manifest));});
 for(const mutate of [h=>h.manifest.projectId='cinepolis',h=>h.manifest.countries.GT.worksheetName='NOVIEMBRE 26',h=>h.manifest.countries.GT.worksheetFingerprint='f'.repeat(64),h=>h.manifest.countries.GT.providerReadStatus=201,h=>h.manifest.countries.GT.rowIdentityValues[1]='foreign',h=>h.manifest.countries.GT.headerValues.push('drift')])test('F3 remote manifest drift stops all setup writes',()=>{const h=fixture();mutate(h);assert.throws(()=>assertF3EndpointScope(h.env,h.manifest));});
 test('F3 generated private bindings satisfy real project contract and exact 26-column range',()=>{
