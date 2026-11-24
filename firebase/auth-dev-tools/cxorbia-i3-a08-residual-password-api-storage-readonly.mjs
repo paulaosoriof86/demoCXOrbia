@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync,execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {A08_USER_ADMIN_PATH} from '../../tools/qa/cxorbia-i3-a08-exact-password-proof.mjs';
 
 export const EXCEPTION_IDS=Object.freeze(['shopper_gt_a092a0647f','shopper_hn_3b3c2f5cc1','shp-3669abbb015a']);
 const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
@@ -54,7 +55,9 @@ export function finalDecision(result,before,after){
   const passwords=result.passwordProofs?.length===3&&EXCEPTION_IDS.every(id=>result.passwordProofs.some(x=>x.shopperId===id&&x.pass===true));
   const apis=result.apiProofs?.length===4&&result.apiProofs.every(x=>x.pass===true);
   const storage=result.storageProof?.pass===true&&result.storageProof?.objectStable===true;
-  return {seal,passwords,apis,storage,pass:Boolean(seal&&passwords&&apis&&storage&&result.errors?.length===0)};
+  const errorFree=result.errors?.length===0;
+  const requestedScopePass=Boolean(seal&&passwords&&apis&&errorFree&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage));
+  return {seal,passwords,apis,storage,requestedScopePass,pass:Boolean(seal&&passwords&&apis&&storage&&errorFree)};
 }
 
 async function boundedBytes(response,max){
@@ -77,7 +80,7 @@ async function run(){
     need(process.env.CXORBIA_A08_RESIDUAL_READONLY==='PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY','SOURCE_FAILURE:A08_READONLY_GATE_REQUIRED');
     fs.rmSync(OUT+'/same-artifact-after.json',{force:true});
     const self=fileURLToPath(import.meta.url);
-    const proof=spawnSync(process.execPath,[self],{env:process.env,stdio:'ignore',timeout:30*60*1000});
+    const proof=spawnSync(process.execPath,[self,...(process.argv.includes('--password-api-only')?['--password-api-only']:[])],{env:process.env,stdio:'ignore',timeout:30*60*1000});
     const after=spawnSync('bash',['tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'],{
       env:{...process.env,CXORBIA_A08_PREFLIGHT_PHASE:'after'},stdio:'ignore',timeout:5*60*1000});
     const final=spawnSync(process.execPath,[self,'--finalize'],{env:process.env,stdio:'ignore',timeout:30000});
@@ -85,7 +88,7 @@ async function run(){
     console.log(JSON.stringify({decision:summary?.decision||'HOLD_I3_A08_RESIDUAL_READONLY',
       passwordPassCount:summary?.passwordProofs?.filter(x=>x.pass).length||0,
       apiDenialPassCount:summary?.apiProofs?.filter(x=>x.pass).length||0,
-      storagePass:summary?.storageProof?.pass===true,artifactAfterPass:summary?.sameArtifactAfter===true,
+      storagePass:summary?.storageProof?.pass===true,artifactAfterPass:summary?.sameArtifactAfter===true,scopeDecision:summary?.scopeDecision||null,
       failureCodes:summary?.errors?.map(x=>x.code)||[],
       executionExitCodes:{proof:proof.status,after:after.status,final:final.status},fullA08Certified:false,newDomainMatches:0}));
     if(proof.status!==0||after.status!==0||final.status!==0)process.exitCode=1;
@@ -98,10 +101,11 @@ async function run(){
       const before=read(OUT+'/same-artifact-preflight.json'),after=read(OUT+'/same-artifact-after.json');
       result.finalChecks=finalDecision(result,before,after);
       result.sameArtifactAfter=result.finalChecks.seal;
-      result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':'HOLD_I3_A08_RESIDUAL_READONLY';
+      result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':result.finalChecks.requestedScopePass?'HOLD_I3_A08_STORAGE_PENDING':'HOLD_I3_A08_RESIDUAL_READONLY';
+      result.scopeDecision=result.finalChecks.requestedScopePass?(result.scope.executionMode==='PASSWORD_API_ONLY'?'PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY':'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY'):'HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN';
       result.gate='HOLD';result.fullA08Certified=false;result.newDomainMatches=0;
       save(result);console.log(JSON.stringify({decision:result.decision,checks:result.finalChecks,fullA08Certified:false,newDomainMatches:0}));
-      if(!result.finalChecks.pass)process.exitCode=1;
+      if(!result.finalChecks.requestedScopePass)process.exitCode=1;
     }catch(error){
       if(result){result.errors??=[];result.errors.push({stage:'artifact-after',code:safeFailure(error)});result.decision='HOLD_I3_A08_RESIDUAL_READONLY';save(result);}
       console.error('RELEASE_COMPOSITION_FAILURE:A08_FINAL_ARTIFACT_READBACK_MISSING');process.exitCode=1;
@@ -111,8 +115,8 @@ async function run(){
   const result={schemaVersion:'cxorbia.i3.a08.password3-api-storage.residual.readonly.v1',iteration:'I3',gate:'HOLD',
     decision:'HOLD_I3_A08_RESIDUAL_READONLY',environment:PROJECT,fullA08Certified:false,newDomainMatches:0,
     sourceSha:null,sourceTree:null,runtimeRevision:null,runtimeDigest:null,hostingVersion:null,
-    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,
-      apiOperation:'GET /api/v1/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
+    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,executionMode:process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
+      apiOperation:'GET /api/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
       rolesRequiredForIntegralA08:['super','admin','ops','coordinador','shopper','cliente'],
       rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false},
     passwordProofs:[],apiProofs:[],storageProof:null,preservedEvidence:[],errors:[],
@@ -186,29 +190,34 @@ async function run(){
           R20_HOSTING_URL:ROOT,R20_SAFE_OUT:output},encoding:'utf8',timeout:345000,maxBuffer:2*1024*1024,stdio:['ignore','pipe','pipe']});
       let proof=null;try{proof=read(output+'/result.json');}catch{}
       const pass=proc.status===0&&proof?.sourceSha===pin.sourceSha&&proof?.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&
-        proof.credentialProvenance==='EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS'&&proof.attemptedAccounts===1&&
+        ['EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS','EXACT_SEALED_HASH_EXISTING_LOGIN_ALIAS_AND_AUTH_CLAIMS'].includes(proof.credentialProvenance)&&proof.attemptedAccounts===1&&
         proof.selection?.boundedShopperIdQuery===true&&proof.selection?.requestedShopperId===id&&proof.selection?.selectedShopperMatchesRequested===true&&
         proof.sessionLifecycle?.restore===true&&proof.sessionLifecycle?.logout===true&&proof.sessionLifecycle?.relogin===true&&
         proof.authWrites===0&&proof.passwordChanges===0&&proof.passwordResets===0&&proof.firestoreWrites===0&&proof.production===false;
       result.passwordProofs.push({shopperId:id,pass,decision:str(proof?.decision)||'HOLD_R20_RESULT_UNAVAILABLE',
         credentialProvenance:str(proof?.credentialProvenance)||'NOT_PROVEN',loginAttempts:Number(proof?.loginAttempts)||0,
         evidencePath:output+'/result.json',evidenceSha256:proof?sha(fs.readFileSync(output+'/result.json')):null,
-        customTokenCountsAsPasswordProof:false});
+        customTokenCountsAsPasswordProof:false,exactExistingAliasProven:proof?.selection?.exactExistingAliasProven===true,
+        usernameCanonizationProven:false});
       need(pass,'AUTH_FAILURE:A08_EXACT_ORDINARY_PASSWORD_UNPROVEN');
     });
     for(const id of [null,...EXCEPTION_IDS])await capture('api-'+(id||'anonymous'),async()=>{
       const token=id?await tokenFor(id):null;
-      const response=await fetch(ROOT+'/api/v1/tenants/'+TENANT+'/users',{
+      const response=await fetch(ROOT+A08_USER_ADMIN_PATH,{
         method:'GET',redirect:'error',headers:token?{authorization:'Bearer '+token,'cache-control':'no-store'}:{'cache-control':'no-store'},signal:AbortSignal.timeout(45000)});
       let body=null;
       if([401,403].includes(response.status))body=await safeJson(response);
       else await response.body?.cancel().catch(()=>{});
       const pass=apiDenial(response.status,body,id===null);
       result.apiProofs.push({caseId:id||'anonymous',role:id?'shopper':'anonymous',httpStatus:response.status,
-        pass,denialResponseHasOnlyExpectedErrorFields:pass,principalVerified:id!==null,customTokenCountsAsPasswordProof:false});
-      need(pass,'AUTH_FAILURE:A08_API_ACCESS_NOT_EXACTLY_DENIED');
+        pass,denialResponseHasOnlyExpectedErrorFields:pass,principalVerified:id!==null,customTokenCountsAsPasswordProof:false,
+        hostingHtmlFallback:response.status===200&&/text\/html/i.test(response.headers.get('content-type')||'')});
+      need(pass,response.status===200&&/text\/html/i.test(response.headers.get('content-type')||'')?'ENVIRONMENT_FAILURE:A08_API_PROBE_ROUTE_NOT_REWRITTEN':'AUTH_FAILURE:A08_API_ACCESS_NOT_EXACTLY_DENIED');
     });
-    await capture('storage-existing-object',async()=>{
+    if(result.scope.executionMode==='PASSWORD_API_ONLY'){
+      result.storageDiscovery={executed:false,reason:'RUN2759_EMPTY_DISCOVERY_PRESERVED_NOT_REPEATED',priorRunId:45362203267,priorArtifactId:14904544042,priorArtifactSha256:'3fcedce58418ad9132a87be9fc0514ef41b87194cbff3c448662cc2e244cf1ac',priorDocumentsObserved:0,historicalDiscoveryOnly:true,notCurrentStorageDenial:true};
+      result.storageProof={pass:false,skipped:true,reason:'ISOLATED_EXISTING_OBJECT_FIXTURE_REQUIRED_BEFORE_ACL_PROOF'};
+    }else await capture('storage-existing-object',async()=>{
       const snap=await project.collection('visitEvidence').limit(30).get();
       result.storageDiscovery={boundedMetadataQuery:30,documentsObserved:snap.size,objectsCreated:0,object404CountsAsDenial:false};
       let chosen=null;

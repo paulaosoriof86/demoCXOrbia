@@ -6388,7 +6388,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      node --test tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs
+      node --test tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs
       node tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
@@ -6408,9 +6408,9 @@ jobs:
       R=.tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json
       if [[ "$MESSAGE" == *'[i3-a08-exceptions-negative-readonly]'* ]]; then
         export CXORBIA_A08_RESIDUAL_READONLY=PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY
-        node firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs --execute-and-seal
-        D=PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY
-        jq -e '.gate=="HOLD" and .fullA08Certified==false and .newDomainMatches==0 and (.passwordProofs|length)==3 and (.apiProofs|length)==4 and .storageProof.pass==true' "$R" >/dev/null
+        node firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs --execute-and-seal --password-api-only
+        D=HOLD_I3_A08_STORAGE_PENDING
+        jq -e '.gate=="HOLD" and .fullA08Certified==false and .newDomainMatches==0 and (.passwordProofs|length)==3 and (.apiProofs|length)==4 and .scopeDecision=="PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY" and .finalChecks.requestedScopePass==true and .storageDiscovery.executed==false' "$R" >/dev/null
       else
         node firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
         D=PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E

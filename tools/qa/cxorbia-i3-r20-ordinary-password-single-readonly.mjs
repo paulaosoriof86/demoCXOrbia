@@ -13,6 +13,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {decryptCredentialBundle,internalEmail} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 import '../../app/core/shopper-credential-rule.js';
+import {assessExactPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
 const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
@@ -61,7 +62,7 @@ try{
   if(!/^[A-Za-z0-9_-]{1,120}$/.test(targetShopperId))throw Error('EXACT_SHOPPER_ID_REQUIRED');
   const [ms,ps]=await Promise.all([tenant.collection('users').where('shopperId','==',targetShopperId).limit(9).get(),tenant.collection('shoppers').doc(targetShopperId).get()]);
   if(ms.size===9)throw Error('EXACT_MEMBERSHIP_QUERY_TRUNCATED');
-  members=ms.docs.map(d=>({uid:d.id,...d.data()}));
+  members=ms.docs.map(d=>({...d.data(),uid:d.id}));
   profiles=new Map(ps.exists?[[ps.id,{id:ps.id,...ps.data()}]]:[]);
  }else{
   const [ms,ps]=await Promise.all([tenant.collection('users').get(),tenant.collection('shoppers').get()]);
@@ -80,7 +81,7 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
  const a=sealed.get(login)||[];a.push(h);sealed.set(login,a);
 }
 const targetLogin=word(process.env.R20_AUTHORIZED_TEST_LOGIN).toLowerCase();
-const stats={activeShopperMembers:0,exactProfiles:0,ruleMatch:0,sealedProofMatch:0,authClaimMatch:0,ambiguousPrincipal:0};
+const stats={activeShopperMembers:0,exactProfiles:0,ruleMatch:0,sealedProofMatch:0,authClaimMatch:0,ambiguousPrincipal:0,canonicalLoginMismatch:0,credentialReasonCounts:{}};
 let selected=null;
 const sorted=members.filter(m=>m.active===true&&word(m.role).toLowerCase()==='shopper'&&word(m.authNamespace).toLowerCase()==='shopper')
  .sort((a,b)=>hash(word(a.uid)).localeCompare(hash(word(b.uid))));
@@ -91,31 +92,38 @@ for(const m of sorted){
  stats.exactProfiles++;
  const expected=rule(profile);
  const visible=word(m.visibleLogin||m.username||profile.visibleLogin||profile.username).toLowerCase();
- if(!expected?.ok||expected.login!==visible||(targetLogin&&visible!==targetLogin))continue;
- stats.ruleMatch++;
- const proof=sealed.get(visible)||[];
- if(proof.length!==1||hash(expected.password)!==proof[0])continue;
+ if(targetLogin&&visible!==targetLogin)continue;
+ const proof=assessExactPasswordProof({shopperId:targetShopperId===id?id:'',expected,visibleLogin:visible,sealedHashes:sealed.get(visible)||[]});
+ stats.credentialReasonCounts[proof.reason]=(stats.credentialReasonCounts[proof.reason]||0)+1;
+ if(proof.ruleAvailable)stats.ruleMatch++;
+ if(proof.ruleAvailable&&!proof.canonicalLoginMatches)stats.canonicalLoginMismatch++;
+ if(!proof.allowed)continue;
  stats.sealedProofMatch++;
  const same=sorted.filter(x=>word(x.shopperId)===id);
  if(same.length!==1){stats.ambiguousPrincipal++;continue;}
  try{
   const principal=await getAuth().getUser(word(m.uid||m.id||m.authUid));
   const c=principal.customClaims||{};
-  if(principal.disabled||c.role!=='shopper'||c.authNamespace!=='shopper'||c.tenantId!==TENANT||
-    c.shopperId!==id||!Array.isArray(c.projectIds)||!c.projectIds.includes(SCOPE)||
-    word(principal.email).toLowerCase()!==internalEmail(visible,'shopper',TENANT))continue;
+  const checks={AUTH_DISABLED:principal.disabled!==true,AUTH_ROLE:c.role==='shopper',AUTH_NAMESPACE:c.authNamespace==='shopper',
+    AUTH_TENANT:c.tenantId===TENANT,AUTH_SHOPPER:c.shopperId===id,AUTH_PROJECT:Array.isArray(c.projectIds)&&c.projectIds.includes(SCOPE),
+    AUTH_LOGIN_EMAIL:word(principal.email).toLowerCase()===internalEmail(visible,'shopper',TENANT)};
+  const failed=Object.entries(checks).filter(([,ok])=>!ok).map(([code])=>code);
+  for(const code of failed)stats.credentialReasonCounts[code]=(stats.credentialReasonCounts[code]||0)+1;
+  if(failed.length)continue;
   stats.authClaimMatch++;
- }catch{continue;}
- selected={login:visible,password:expected.password,shopperId:id};
+ }catch{stats.credentialReasonCounts.AUTH_LOOKUP_FAILED=(stats.credentialReasonCounts.AUTH_LOOKUP_FAILED||0)+1;continue;}
+ selected={login:visible,password:expected.password,shopperId:id,credentialProvenance:proof.provenance,canonicalLoginMatches:proof.canonicalLoginMatches,exactAliasAllowed:proof.exactAliasAllowed};
  break;
 }
 receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(targetLogin||targetShopperId),
  boundedShopperIdQuery:Boolean(targetShopperId),requestedShopperId:targetShopperId||null,
- selectedShopperMatchesRequested:targetShopperId?selected?.shopperId===targetShopperId:null};
+ selectedShopperMatchesRequested:targetShopperId?selected?.shopperId===targetShopperId:null,
+ canonicalLoginMatches:selected?.canonicalLoginMatches??null,exactExistingAliasProven:selected?.exactAliasAllowed===true,
+ usernameCanonizationProven:false};
 if(!selected){
  emit('HOLD_R20_NO_SINGLE_EXISTING_PASSWORD_PROOF','AUTH_FAILURE');process.exit(0);
 }
-receipt.credentialProvenance='EXACT_SEALED_HASH_CANONICAL_RULE_AND_AUTH_CLAIMS';
+receipt.credentialProvenance=selected.credentialProvenance;
 receipt.loginAttempts=1;
 receipt.attemptedAccounts=1;
 const runner=new URL('./cxorbia-p0-shopper-real-auth-e2e.mjs',import.meta.url);

@@ -10,7 +10,7 @@ function pinFixture(){
     runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/cxorbia-backend-dev/versions/5974006f029fb872',
     firestoreRuleset:'projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057',
     materializationReceiptPath:'docs/checkpoints/QA_CURRENT.json',sourceHostedExact:true,runtimeTrafficExact:true,
-    productionUnchanged:true,verifiedServedAssetCount:41,hrRevision:'d'.repeat(64)};
+    productionUnchanged:true,verifiedServedAssetCount:41,hrRevision:'d'.repeat(64),firestoreRulesDeploys:0,storageRulesDeploys:0,hrWrites:0};
   const current={production:'DO_NOT_TOUCH',authorizationI4:false,productSourceSha:source,productTree:tree,productTreeAuthority:tree,currentMaterialization:{...m}};
   const descriptor={productSourceSha:source,productTreeAuthority:tree,currentMaterialization:{...m}};
   const receipt={source:{sha:source,tree},decision:'PASS_CURRENT_DEV',production:false,i4Authorized:false,
@@ -28,6 +28,14 @@ test('canonical current materialization is accepted without a RUN2640 or jobConc
 test('candidate source ahead of served materialization fails before any provider operation',()=>{
   const f=pinFixture();f.current.currentMaterialization.sourceSha='f'.repeat(40);
   assert.throws(()=>normalizeA08Pin(f.current,f.descriptor,f.receipt),/CURRENT_SOURCE_NOT_MATERIALIZED/);
+});
+test('same artifact pin preserves explicit zero-rule-deploy and zero-HR-write evidence',()=>{
+  for(const field of ['firestoreRulesDeploys','storageRulesDeploys','hrWrites']){
+    const f=pinFixture();f.receipt.materialization[field]=1;
+    assert.throws(()=>normalizeA08Pin(f.current,f.descriptor,f.receipt),/RECEIPT_UNEXPECTED_WRITE/);
+    delete f.receipt.materialization[field];
+    assert.throws(()=>normalizeA08Pin(f.current,f.descriptor,f.receipt),/RECEIPT_UNEXPECTED_WRITE/);
+  }
 });
 test('contradictory source aliases and partial asset evidence cannot seal',()=>{
   const f=pinFixture();f.receipt.sourceSha='f'.repeat(40);

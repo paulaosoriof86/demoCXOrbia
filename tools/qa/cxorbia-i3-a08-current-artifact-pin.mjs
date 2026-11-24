@@ -33,6 +33,8 @@ export function normalizeA08Pin(current,descriptor,receipt){
   need(receipt.i4Authorized!==true&&receipt.phaseAComplete!==true&&receipt.terminalCertified!==true,'NONTERMINAL_RECEIPT_REQUIRED');
   const material=receipt.materialization||receipt.identityAfter;
   need(material&&typeof material==='object','RECEIPT_MATERIALIZATION_REQUIRED');
+  for(const key of ['firestoreRulesDeploys','storageRulesDeploys','hrWrites'])
+    need((receipt[key]??material[key])===0&&c[key]===0,'RECEIPT_UNEXPECTED_WRITE_'+key.toUpperCase());
   for(const key of materialKeys){
     if(material[key]!==undefined)need(material[key]===c[key],'RECEIPT_MATERIALIZATION_DESYNC_'+key.toUpperCase());
     if(['runtimeRevision','runtimeDigest','hostingVersion','firestoreRuleset'].includes(key))

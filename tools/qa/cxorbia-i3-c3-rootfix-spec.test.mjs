@@ -344,15 +344,21 @@ test('proved Excel successors bypass only the legacy Google preflight in the exi
   assert.ok(job.includes('FIREBASE_HOSTING_TARGET'));
 });
 
-test('A08 browser read-only job must use the current exact B14 DEV receipt with 41 owner assets',()=>{
+test('A08 browser read-only job must use the canonical current DEV receipt with 41 owner assets',()=>{
   const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
   const job=workflow.split('  i3-keeper-role-e2e-readonly:')[1]?.split('\n  i3-run2382-')[0]||'';
-  assert.ok(job.includes('b14Run2640VerifiedDevReadback20261119.proofPath'));
-  assert.ok(job.includes('git rev-parse "HEAD:$P"'));
-  assert.ok(job.includes('CXORBIA_ROLE_E2E_RECEIPT_PATH=$P'));
+  assert.ok(job.includes('node tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs'));
+  assert.ok(job.includes('node --test tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs'));
+  assert.ok(!job.includes('b14Run2640VerifiedDevReadback20261119.proofPath'));
   assert.ok(!job.includes('P=docs/checkpoints/CXORBIA_I3_RUN2587'));
+  const pin=fs.readFileSync('tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs','utf8');
+  assert.ok(pin.includes('current.currentMaterialization?.materializationReceiptPath'));
+  assert.ok(pin.includes("readTracked(receiptPath)"));
+  assert.ok(pin.includes("['firestoreRulesDeploys','storageRulesDeploys','hrWrites']"));
+  assert.ok(pin.includes('CURRENT_SOURCE_NOT_MATERIALIZED'));
+  assert.ok(pin.includes('EXACT_41_ASSETS_REQUIRED'));
   const preflight=fs.readFileSync('tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh','utf8');
   assert.ok(preflight.includes('test "$N" = 41'));
-  assert.ok(preflight.includes('test "$(jq -r .materialization.firestoreRulesDeploys "$P")" = 0'));
+  assert.ok(preflight.includes('test "$(git rev-parse "HEAD:$(jq -er .receiptPath "$P")")" = "$(jq -er .receiptGitBlob "$P")"'));
   assert.ok(!/\b(firebase deploy|gcloud run (deploy|services update)|PATCH|POST|PUT|DELETE)\b/.test(preflight));
 });

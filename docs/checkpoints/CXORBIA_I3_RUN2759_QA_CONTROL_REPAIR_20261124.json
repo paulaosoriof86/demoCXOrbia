@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.qa-control-repair.v1",
+  "iteration": "I3",
+  "decision": "PASS_SOURCE_QA_REPAIR_PENDING_PROVIDER_RERUN",
+  "run": {
+    "id": 45362203267,
+    "number": 2759,
+    "canonicalJobId": 138334798554,
+    "authJobId": 138335093246
+  },
+  "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "sourceTree": "97b943e502a8ee30270ace1e2b1e32d1e3699727",
+  "evidence": {
+    "authArtifactId": 14904544042,
+    "authArtifactSha256": "3fcedce58418ad9132a87be9fc0514ef41b87194cbff3c448662cc2e244cf1ac",
+    "materializationBeforeAfterExact": true,
+    "passwordAttempts": 0,
+    "storageMetadataDocuments": 0
+  },
+  "failures": [
+    {
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs",
+      "cause": "Test required stale RUN2640 literal receipt although job now pins canonical current materialization",
+      "fix": "Check canonical tracked receipt, exact 41 source assets, unchanged runtime/rules/Hosting and explicit zero write/deploy counts"
+    },
+    {
+      "classification": "MAPPING_FAILURE",
+      "owner": "firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs",
+      "cause": "API probe /api/v1/tenants route fell through Hosting HTML catch-all",
+      "fix": "Use existing /api/tenants route and detect HTML fallback explicitly"
+    },
+    {
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
+      "cause": "Canonical username gate discarded three authorized existing aliases before sealed credential verification",
+      "fix": "Only exact three requested exceptions; one sealed hash, one active principal, exact Auth email/claims/UID; no alternate password or reset"
+    },
+    {
+      "classification": "PROVIDER_FAILURE",
+      "owner": "A08 Storage isolated fixture",
+      "cause": "Bounded existing private visitEvidence query found zero objects",
+      "fix": "Do not repeat empty discovery; keep Storage unproven and execute only password/API residual clauses"
+    }
+  ],
+  "validation": {
+    "fullCanonicalFirstStepAssertionExecutions": 1951,
+    "fullCanonicalFirstStepFailures": 0,
+    "focalAuthControlTests": 46,
+    "focalAuthControlFailures": 0,
+    "workflowBytes": 507322,
+    "workflowLimitBytes": 510000
+  },
+  "nextExactAction": "Run existing D08 UI synthetic job and corrected A08 password/API scoped job against unchanged RUN2758 source; consume real evidence; no domain promotion until complete contract",
+  "productCodeChanged": false,
+  "builds": 0,
+  "deploys": 0,
+  "hrWrites": 0,
+  "production": false,
+  "newDomainMatches": 0
+}

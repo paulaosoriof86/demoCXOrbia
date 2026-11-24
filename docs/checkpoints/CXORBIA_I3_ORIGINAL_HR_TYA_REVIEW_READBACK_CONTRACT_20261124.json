@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "cxorbia.i3.original-hr-review-requirement.v1",
+  "iteration": "I3",
+  "decision": "HOLD_REVIEW_FIELD_NOT_YET_MAPPED",
+  "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+  "readerScenarioId": 10200465,
+  "origin": "ORIGINAL_EXCEL_GRAPH_DELEGATED",
+  "purpose": "Live header and bounded review-state inspection; independent diagnostic reads, not module certification",
+  "twoOriginalHeaderRuns": [
+    {
+      "country": "GT",
+      "executionId": "d3eb71e5c0084635b2e535a3998b138f"
+    },
+    {
+      "country": "HN",
+      "executionId": "1bd54b5bc20d49cc83ce69e8cbea16e7"
+    }
+  ],
+  "reads": [
+    {
+      "country": "GT",
+      "periodId": "cinepolis-2026-10",
+      "executionId": "22f22a6b4d1a4feba1f53ab79f3a1483",
+      "status": "success",
+      "status1": 200,
+      "status2": 200,
+      "twoReadsExact": true,
+      "headerIndex": 3,
+      "reviewObservationColumn": 27,
+      "submissionColumn": 28,
+      "submissionControlColumn": 29,
+      "sourceRows": 38,
+      "withObservation": 33,
+      "withObservationWithoutSubmission": 0,
+      "withObservationWithSubmission": 33,
+      "submissionControlValues": {
+        "": 38
+      }
+    },
+    {
+      "country": "GT",
+      "periodId": "cinepolis-2026-11",
+      "executionId": "04c2a5621e4641fcbd2c376bdb7e8b4e",
+      "status": "success",
+      "status1": 200,
+      "status2": 200,
+      "twoReadsExact": true,
+      "headerIndex": 3,
+      "reviewObservationColumn": 27,
+      "submissionColumn": 28,
+      "submissionControlColumn": 29,
+      "sourceRows": 38,
+      "withObservation": 20,
+      "withObservationWithoutSubmission": 3,
+      "withObservationWithSubmission": 17,
+      "submissionControlValues": {
+        "": 38
+      }
+    },
+    {
+      "country": "HN",
+      "periodId": "cinepolis-2026-10",
+      "executionId": "3a7557a0da3740618696961660d47196",
+      "status": "success",
+      "status1": 200,
+      "status2": 200,
+      "twoReadsExact": true,
+      "headerIndex": 3,
+      "reviewObservationColumn": 27,
+      "submissionColumn": 28,
+      "submissionControlColumn": 29,
+      "sourceRows": 14,
+      "withObservation": 10,
+      "withObservationWithoutSubmission": 0,
+      "withObservationWithSubmission": 10,
+      "submissionControlValues": {
+        "": 14
+      }
+    },
+    {
+      "country": "HN",
+      "periodId": "cinepolis-2026-11",
+      "executionId": "39981eca43744b1e8997465e38f2f1ef",
+      "status": "success",
+      "status1": 200,
+      "status2": 200,
+      "twoReadsExact": true,
+      "headerIndex": 3,
+      "reviewObservationColumn": 27,
+      "submissionColumn": 28,
+      "submissionControlColumn": 29,
+      "sourceRows": 14,
+      "withObservation": 5,
+      "withObservationWithoutSubmission": 0,
+      "withObservationWithSubmission": 5,
+      "submissionControlValues": {
+        "": 14
+      }
+    }
+  ],
+  "exactProviderFields": {
+    "reviewObservation": "Observaciones\nde revisión",
+    "submissionDate": "Fecha  submitido",
+    "submissionControl": "Control Submitida",
+    "reviewerVariants": [
+      "Revisor",
+      "Revisor HN"
+    ]
+  },
+  "verifiedGap": {
+    "mappingOwner": "backend/contracts/tya-hr-column-map-r20-v1.json",
+    "parserOwner": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+    "reviewObservationNotMapped": true,
+    "currentSubmissionOnlyUsesDateOrTrustedState": true
+  },
+  "requiredBehavior": [
+    "One common original-HR revision for Dashboard, visits, profiles, review, history, reports and portal HR-derived fields",
+    "Expose pending T&A correction separately from ordinary pending submission",
+    "Preserve notes on submitted history without false alerts",
+    "Observe changes in current and historical periods; no static values",
+    "Durable in-app notice keyed by exact visit and review cycle; repeated same observation does not duplicate",
+    "Read acknowledgement does not resolve provider review; no fabricated submission",
+    "Private observation detail only for authorized staff and exact owner shopper; no public HR snapshot disclosure",
+    "Per-user T&A mailbox connection with exact owner/provider authorization; connection is distinct from automated sending"
+  ],
+  "scope": {
+    "existingProduct": true,
+    "existingIteration": true,
+    "newWorkflow": false,
+    "newCandidate": false,
+    "hrWrites": 0,
+    "emailsSent": 0,
+    "production": false
+  },
+  "implementationAndLiveProof": "PENDING_EXACT_OWNER_DELTA"
+}
