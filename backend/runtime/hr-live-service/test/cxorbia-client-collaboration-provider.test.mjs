@@ -44,7 +44,7 @@ test('command runtime passes the parsed command to server configuration before p
 const actualServerConfigure=readFileSync(new URL('../server.mjs',import.meta.url),'utf8').split('configure:async command=>{')[1]?.split('},\n      hrSnapshotReconcile:')[0];
 test('VRM350 actual server confirmation and replay force fresh HR before provider selection',async()=>{
  const seen=[],cache={snapshot:'old'},configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
- async options=>{seen.push(options);cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);
+ async options=>{seen.push(options);return {snapshot:'fresh'};},snapshot=>seen.push(snapshot),cache);
  await configure({commandType:'visit.sync.confirm',...scope});await configure({commandType:'visit.sync.confirm',...scope});assert.deepEqual(seen,[{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}},'fresh',{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}},'fresh']);
 });
 test('VRM350 actual server confirmation never reuses cache on fresh HR failure',async()=>{
@@ -52,9 +52,10 @@ test('VRM350 actual server confirmation never reuses cache on fresh HR failure',
  async options=>{assert.deepEqual(options,{forceFresh:true,scope:{tenantId:scope.tenantId,projectId:scope.projectId}});throw Error('FRESH_HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});
  await assert.rejects(configure({commandType:'visit.sync.confirm',...scope}),/FRESH_HR_DOWN/);assert.deepEqual(seen,[]);
 });
-test('actual server callback refreshes HR before each Client flow and retains other command behavior',async()=>{
+test('actual server callback configures each Client flow and assignment from its returned scoped snapshot',async()=>{
  assert.ok(actualServerConfigure);for(const commandType of [...Object.values(types).map(x=>x[0]),'visit.assign']){const seen=[],cache={snapshot:'old'};const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
- async()=>{seen.push('refresh');cache.snapshot='fresh';},snapshot=>seen.push(snapshot),cache);await configure({commandType});assert.deepEqual(seen,commandType.startsWith('client.')?['refresh','fresh']:['old']);}
+ async options=>{seen.push(options);return {snapshot:'fresh',scopeProof:scope.projectId};},(snapshot,current)=>seen.push({snapshot,scopeProof:current.scopeProof}),cache);
+ await configure({commandType,...scope});assert.deepEqual(seen,[{forceFresh:commandType==='visit.assign',scope:{tenantId:scope.tenantId,projectId:scope.projectId}},{snapshot:'fresh',scopeProof:scope.projectId}]);assert.equal(cache.snapshot,'old');}
 });
 test('actual server callback never reuses old HR when the Client refresh fails',async()=>{const seen=[];const configure=Function('buildSnapshot','configureCommandRuntime','cache','return async command=>{'+actualServerConfigure+'}')(
  async()=>{throw Error('HR_DOWN');},snapshot=>seen.push(snapshot),{snapshot:'old'});await assert.rejects(configure({commandType:'client.note.create'}),/HR_DOWN/);assert.deepEqual(seen,[]);});
