@@ -62,6 +62,15 @@ const validByteProof=(p,expected)=>p?.gitBlob===expected && p.byteParity===true 
   SHA256.test(String(p.sourceSha256||'')) && p.sourceSha256===p.servedSha256;
 const unchangedByteProof=(p,expected)=>p?.gitBlob===expected &&
   SHA256.test(String(p.sourceSha256||'')) && p.sourceSha256===p.servedSha256;
+// The frozen matrix declares owners both on the module and on its authoritative
+// source-file inventory. Use the same scope for required and accepted evidence:
+// a required file must not be rejected solely because it is listed only there.
+// Historical non-authority files and other domains never expand this scope.
+const canonicalDomainPaths=(mod,sourceFiles)=>[...new Set([
+  ...(mod.owners||[]),
+  ...sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.domain===mod.domain)
+    .map(x=>String(x.path||'')).filter(Boolean)
+])];
 const currentBlobFor=(path,mod,sourceFiles)=>mod?.currentOwnerBlobs?.[path]||sourceFiles.find(x=>x.path===path)?.currentBlob;
 const scopeErrors=(r,mod,sourceFiles,paths)=>{
   const errors=[],need=(ok,key)=>{if(!ok)errors.push(key);};
@@ -118,8 +127,7 @@ const approvedCarryForward=(r,mod,sourceFiles,identity)=>{
 };
 const moduleEvidenceRequirements=(mod,sourceFiles,candidate)=>{
   const cls=String(mod.classification||''),domain=mod.domain,pending=(mod.pendingTerminalFiles||[]).map(String);
-  const moduleFiles=sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.domain===domain).map(x=>String(x.path||'')).filter(Boolean);
-  const required=cls==='MATCH'?pending:[...new Set([...(mod.owners||[]),...moduleFiles])];
+  const required=cls==='MATCH'?pending:canonicalDomainPaths(mod,sourceFiles);
   const covered=new Set(candidate.flatMap(x=>x.receipt.ownerPaths||[]));
   const uncovered=required.filter(p=>!covered.has(p));
   const reasons=[];
@@ -242,7 +250,7 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
     // Contract evidence may be attached to a module even without a historical
     // defect. It can never silently resolve any unrelated ledger finding.
     if(ids.length)need(ids.every(fid=>f[fid] && paths.every(p=>ownerPaths(f[fid]).includes(p))),'OWNER_MISMATCH');
-    else need(row.additional && paths.every(p=>(mod.owners||[]).includes(p)),'OWNER_DOMAIN_SCOPE');
+    else need(row.additional && paths.every(p=>canonicalDomainPaths(mod,sourceFiles).includes(p)),'OWNER_DOMAIN_SCOPE');
     const hardenedReadOnly=r.operationKind==='READ_ONLY'&&['benefits','tenant-admin-config-branding'].includes(domain);
     if(hardenedReadOnly){
       const benefits=domain==='benefits';

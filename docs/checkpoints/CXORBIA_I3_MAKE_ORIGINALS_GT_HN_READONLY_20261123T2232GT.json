@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "cxorbia.i3.make-originals-read-only.v1",
+  "observedAtUTC": "2026-11-24T04:33:15.545Z",
+  "scenarioId": 10200465,
+  "scenarioUrl": "https://eu2.make.com/1975919/scenarios/10200465",
+  "source": "Original Microsoft Excel GT/HN workbooks",
+  "conditions": [
+    "Existing scenario remained active on-demand; no config edits.",
+    "Modules verified GET-only before execution.",
+    "Real binding fingerprints reused from prior successful outputs.",
+    "Each country supplied exactly tenant tya, project cinepolis, period cinepolis-2026-11, exact worksheet and A1:AI140.",
+    "No provider write, F3 command, Excel mutation, or certification claim."
+  ],
+  "receipts": [
+    {
+      "country": "GT",
+      "execution": {
+        "id": "4838d8f3804e4e64b72ac59f0fe7f05b",
+        "status": "success",
+        "startedAt": "2026-11-24T04:32:37.307Z",
+        "duration": 5436,
+        "operations": 2,
+        "credits": 2,
+        "dataTransfer": 1272951
+      },
+      "startedAtGuatemala": "2026-11-23 22:32:37 America/Guatemala",
+      "scenarioUrl": "https://eu2.make.com/1975919/scenarios/10200465",
+      "outputs": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-11",
+        "bindingFingerprint": "e0f878ce9440746fcbd935491ddd9c95b111ed4fc6aae552a6b78f5162b8e6fb",
+        "worksheetId": "{7FBC45CE-951F-41D7-8BF9-6690E2EC951F}",
+        "rangeAddress": "A1:AI140",
+        "status1": 200,
+        "status2": 200,
+        "rowCount1": 140,
+        "rowCount2": 140,
+        "hash1": "af9e0ebfd0598e7f2bec8eb1748a6dfe1715177e2619b3ab93fbac3d2be68a60",
+        "hash2": "af9e0ebfd0598e7f2bec8eb1748a6dfe1715177e2619b3ab93fbac3d2be68a60",
+        "operation": "read"
+      },
+      "checks": {
+        "executionSuccess": true,
+        "httpBoth200": true,
+        "stableHash": true,
+        "stableRowCount": true,
+        "scopeExact": true,
+        "valuesEqual": true
+      },
+      "pass": true
+    },
+    {
+      "country": "HN",
+      "execution": {
+        "id": "7356cb3e42eb4a689dd77a8f41828c0b",
+        "status": "success",
+        "startedAt": "2026-11-24T04:32:46.153Z",
+        "duration": 2889,
+        "operations": 2,
+        "credits": 2,
+        "dataTransfer": 731127
+      },
+      "startedAtGuatemala": "2026-11-23 22:32:46 America/Guatemala",
+      "scenarioUrl": "https://eu2.make.com/1975919/scenarios/10200465",
+      "outputs": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-11",
+        "bindingFingerprint": "be5068c472a95ae4aca55a1f7d032f22c0a9cc4b23d075892fac4906a6432066",
+        "worksheetId": "{5899E379-9B56-4FF7-87ED-78194D0EA544}",
+        "rangeAddress": "A1:AI140",
+        "status1": 200,
+        "status2": 200,
+        "rowCount1": 140,
+        "rowCount2": 140,
+        "hash1": "9cc25e6a00847116f1c63a77117c05fd23dbbfe581b474b3792af81a9671e669",
+        "hash2": "9cc25e6a00847116f1c63a77117c05fd23dbbfe581b474b3792af81a9671e669",
+        "operation": "read"
+      },
+      "checks": {
+        "executionSuccess": true,
+        "httpBoth200": true,
+        "stableHash": true,
+        "stableRowCount": true,
+        "scopeExact": true,
+        "valuesEqual": true
+      },
+      "pass": true
+    }
+  ],
+  "countsMeaning": "140 refers to requested range rows, not eligible visits",
+  "mutations": {
+    "excelWrites": 0,
+    "scenarioEdits": 0,
+    "productWrites": 0
+  },
+  "f3RemoteAckProven": false,
+  "newDomainMatches": 0
+}

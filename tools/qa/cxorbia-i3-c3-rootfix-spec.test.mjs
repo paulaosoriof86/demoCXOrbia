@@ -231,6 +231,69 @@ test('module-only proof needs exact frozen owners but not a fabricated defect ID
   r.ownerPaths=['app/core/not-approved.js'];
   assert.equal(decision(f).matchModules,20);
 });
+
+function moduleSourceFileFixture(){
+  const f=fixture('read'),r=receipt('read'),p='app/core/declared-historical-dependency.js';
+  r.findingIds=[];
+  f.pre.sourceFiles.push({path:p,domain:TYPES.read,phaseAAuthority:true,
+    classification:'SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN',currentBlob:'6'.repeat(40)});
+  r.ownerPaths.push(p);
+  r.ownerEvidence.push({path:p,gitBlob:'6'.repeat(40),sourceSha256:HASH,servedSha256:HASH,byteParity:true});
+  f.additionalReceipts=[r];
+  return {f,r,p};
+}
+test('module-only proof accepts the authoritative source files its domain contract requires',()=>{
+  const {f}=moduleSourceFileFixture();
+  const out=decision(f);
+  assert.equal(out.matchModules,21);
+  assert.equal(out.rejectedReceipts.length,0);
+});
+test('a required domain source file remains blocking when its receipt coverage is absent',()=>{
+  const {f,r,p}=moduleSourceFileFixture();
+  r.ownerPaths=r.ownerPaths.filter(x=>x!==p);
+  r.ownerEvidence=r.ownerEvidence.filter(x=>x.path!==p);
+  const out=decision(f);
+  assert.equal(out.matchModules,20);
+  assert.ok(out.failures.some(x=>x.includes('C3_OWNER_RECEIPT_PENDING_FILE_UNCOVERED:'+TYPES.read)));
+});
+test('source files mapped to a different domain cannot broaden module-only proof scope',()=>{
+  const {f,p}=moduleSourceFileFixture();
+  f.pre.sourceFiles.find(x=>x.path===p).domain=TYPES.write;
+  const out=decision(f);
+  assert.equal(out.matchModules,20);
+  assert.ok(out.rejectedReceipts.some(x=>x.reasons.includes('OWNER_DOMAIN_SCOPE')));
+});
+test('preserved non-authority source files cannot certify a domain',()=>{
+  const {f,p}=moduleSourceFileFixture();
+  f.pre.sourceFiles.find(x=>x.path===p).phaseAAuthority=false;
+  const out=decision(f);
+  assert.equal(out.matchModules,20);
+  assert.ok(out.rejectedReceipts.some(x=>x.reasons.includes('OWNER_DOMAIN_SCOPE')));
+});
+test('declared domain source files still require exact current served bytes',()=>{
+  const {f,r,p}=moduleSourceFileFixture();
+  r.ownerEvidence.find(x=>x.path===p).gitBlob='0'.repeat(40);
+  const out=decision(f);
+  assert.equal(out.matchModules,20);
+  assert.ok(out.rejectedReceipts.some(x=>x.reasons.includes('EXACT_CURRENT_OWNER_BYTE_PARITY')));
+});
+test('module source-file scope does not widen an individual finding owner scope',()=>{
+  const {f,r}=moduleSourceFileFixture();
+  r.findingIds=['VRM-900'];
+  f.ledger.findings['VRM-900']={state:'PENDING',severity:'P0',owners:[OWNERS.read]};
+  const out=decision(f);
+  assert.equal(out.matchModules,20);
+  assert.ok(out.rejectedReceipts.some(x=>x.reasons.includes('OWNER_MISMATCH')));
+  assert.ok(out.unresolvedP0.some(x=>x.id==='VRM-900'));
+});
+test('canonical certifications coverage includes backend-ai without altering frozen owner lists',()=>{
+  const mod=currentMatrix.modules.find(x=>x.domain==='certifications');
+  const source=currentMatrix.sourceFiles.find(x=>x.path==='app/core/backend-ai.js');
+  assert.ok(mod&&!mod.owners.includes(source.path));
+  assert.equal(source.domain,mod.domain);
+  assert.notEqual(source.phaseAAuthority,false);
+  assert.match(source.currentBlob,/^[a-f0-9]{40}$/);
+});
 test('a partial financial read cannot close a P0 finding before the write contract is complete',()=>{
   const f=append(fixture('write'),receipt('write'));
   f.ledger.findings['VRM-900'].state='PENDING';f.ledger.findings['VRM-900'].severity='P0';
