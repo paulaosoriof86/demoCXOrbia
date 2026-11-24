@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-combined-existing-scopes.v1",
+  "iteration": "I3",
+  "state": "EXACT_PRECODE_P0_SCOPES",
+  "precodeReceipts": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM370_EXCEL_RUNTIME_REVISION_PRE_EDIT_TRUTH_20261124.json",
+      "gitBlob": "406895bdbebe36199d52d642c9f4dd7e0dd89c25"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_READ_MODEL_PRE_EDIT_TRUTH_20261124.json",
+      "gitBlob": "1ed919404e1eee215dc150efbd8abd9cd2dee825"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_P0367_SMTP_SEND_REPLY_PRE_EDIT_TRUTH_20261124.json",
+      "gitBlob": "7b737ad4fc0cfc46fd01da918a7a5b00f6971738"
+    }
+  ],
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/data-source.js",
+    "app/modules/correo.js",
+    "backend/config/mailbox-provider-policy.source-safe.json",
+    "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/mailbox-outbound.mjs",
+    "backend/runtime/hr-live-service/mailbox-runtime.mjs",
+    "backend/runtime/hr-live-service/mailbox-smtp.mjs",
+    "backend/runtime/hr-live-service/server.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "backend/runtime/hr-live-service/test/mailbox-user-mail-ui.test.mjs",
+    "backend/runtime/hr-live-service/test/mailbox-user-smtp.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-editor.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-hr-review-observations.test.mjs",
+    "backend/runtime/hr-live-service/test/mailbox-user-pop3.test.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs",
+    "tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs",
+    "tools/qa/cxorbia-i3-hr-review-ui.test.mjs",
+    "tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+    "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs",
+    "tools/qa/cxorbia-i3-vrm369-finance-metadata.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs",
+    "tools/qa/cxorbia-i3-vrm370-excel-runtime-revision.test.mjs",
+    "tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs",
+    "tools/qa/cxorbia-i3-finance-advance-metadata.test.mjs",
+    "tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs",
+    "tools/qa/cxorbia-i3-mailbox-dev-key-setup.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-370",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM370_EXCEL_RUNTIME_REVISION_PRE_EDIT_TRUTH_20261124.json",
+        "gitBlob": "406895bdbebe36199d52d642c9f4dd7e0dd89c25"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-371",
+      "priority": "P0_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "ownerFiles": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/core/data-source.js",
+        "backend/runtime/hr-live-service/Dockerfile",
+        "backend/runtime/hr-live-service/hr-read-model.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_READ_MODEL_PRE_EDIT_TRUTH_20261124.json",
+        "gitBlob": "1ed919404e1eee215dc150efbd8abd9cd2dee825"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    },
+    {
+      "id": "VRM-367",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerFiles": [
+        "backend/runtime/hr-live-service/Dockerfile",
+        "backend/runtime/hr-live-service/mailbox-runtime.mjs",
+        "backend/runtime/hr-live-service/mailbox-smtp.mjs",
+        "backend/runtime/hr-live-service/mailbox-outbound.mjs",
+        "app/modules/correo.js",
+        "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+        "backend/config/mailbox-provider-policy.source-safe.json"
+      ],
+      "precodeScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_P0367_SMTP_SEND_REPLY_PRE_EDIT_TRUTH_20261124.json",
+        "gitBlob": "7b737ad4fc0cfc46fd01da918a7a5b00f6971738"
+      },
+      "state": "SOURCE_FIXED_PROVEN_PENDING_DEV"
+    }
+  ],
+  "sameCandidate": true,
+  "newWorkflows": 0,
+  "newOverlay": false,
+  "newDependencies": false
+}
