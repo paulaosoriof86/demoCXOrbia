@@ -1,5 +1,7 @@
 # Publicación mientras se regulariza GitHub Actions — 25 de noviembre de 2026
 
+> **Actualización posterior de autoridad:** Paula autorizó proceder directamente mediante Google Cloud y que el asistente gestione las pestañas en su Chrome conectado. Consultar `CXORBIA_I3_WORK_GOOGLE_CONTINUATION_20261125.md`. La revisión que sigue conserva sus requisitos técnicos; ya no se espera una nueva aprobación DEV para intentarla. El acceso Google sigue sin comprobarse porque el conector Chrome de esta sesión falla antes de abrir pestañas. No se ejecutó un nuevo despliegue.
+
 ## Solicitud y resultado de la revisión
 
 Paula pregunta qué se puede hacer para publicar mientras soluciona la facturación de GitHub. La revisión es de viabilidad: **no se ha ejecutado otro build, despliegue, prueba remota ni cambio IAM** por esta consulta. I3 permanece `HOLD` y producción `DO_NOT_TOUCH` hasta I4 y autorización del artefacto certificado.
@@ -50,4 +52,4 @@ La salida productiva conserva los contratos y la autorización I4. Su verificado
 - Autorización temporal de Cloud Shell: https://docs.cloud.google.com/shell/docs/auth.
 - Publicación Cloud Run desde código: https://docs.cloud.google.com/run/docs/deploying-source-code.
 
-Intervención mínima de Paula, si la conexión vuelve a estar disponible: abrir el proyecto Google existente y autorizar la sesión de Cloud Shell cuando Google lo pida. El trabajo técnico continúa con la autorización DEV ya vigente. No solicitar contraseñas, tokens o archivos de cuenta de servicio en el chat.
+El asistente debe abrir y gestionar las pestañas del proyecto Google existente en el Chrome solicitado. Paula solo interviene ante un inicio de sesión o autorización de cuenta que técnicamente deba conceder la titular. Si el entorno de conversación no permite control del navegador ni traslado automático, entregar el prompt Work ya preparado, sin encargarle las operaciones técnicas. El trabajo continúa con la autorización DEV vigente. No solicitar contraseñas, tokens o archivos de cuenta de servicio en el chat.
