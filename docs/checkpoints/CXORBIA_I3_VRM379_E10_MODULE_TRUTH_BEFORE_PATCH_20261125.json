@@ -1,0 +1,421 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.focal-module-truth-before-patch.v1",
+  "preparedAt": "2026-11-25T19:09:57.946388+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "E10_AUTOMAP_SHORT_ALIAS_COLLISION",
+  "classification": "MAPPING_FAILURE",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "severity": "ROOT_ADJUDICATION_PENDING",
+  "baseHead": "266f764ae585d654300ff6fbfb618512a644437a",
+  "baseTree": "4ce97e2a7bffb9c0235c583d1119a42c60fbde8e",
+  "productSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "productSourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "originalContract": {
+    "path": "docs/checkpoints/CXORBIA_I3_FROZEN_FUNCTIONAL_TASK_CONTRACTS_20261125.json",
+    "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+    "gitBlob": "ca2bec67f3b55cf1da1438d3422a825137f0f2b6",
+    "sha256": "a8908d4879473ae3d0afe8d6dd4462788bc3f42409781db7ed766deee208e832",
+    "bytes": 55550,
+    "jsonPointer": "/tasks/50"
+  },
+  "originalTask": {
+    "taskId": "E10",
+    "taskSet": "frontendPublishedRolesAndCapabilities",
+    "frozenAuthority": {
+      "id": "E10",
+      "stage": "I3",
+      "module": "Importador y mapeos",
+      "owner_files": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": "G03,A08",
+      "action": "Validar permisos, mapeo, dry-run, errores por fila e idempotencia con fixtures. No usar importador como arreglo de identidad, dinero o HR existente.",
+      "acceptance": "Replay de fixture no duplica, source/mapping trazables y 0 datos reales reimportados.",
+      "blocks_go": "Sí"
+    },
+    "acceptanceBindingSha256": "b74b83a1ebd1afeca4c420e64d476e811bf8d90d982abe4a1060a557b4bffa4f",
+    "ownerPaths": [
+      "app/modules/importador.js",
+      "firestore.rules"
+    ],
+    "roleRoutes": [
+      {
+        "role": "admin",
+        "route": "importador"
+      }
+    ]
+  },
+  "existingScopeMap": {
+    "path": "docs/checkpoints/CXORBIA_I3_A_E_CUMULATIVE_CLAUSE_MAP_20261125.json",
+    "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+    "gitBlob": "29b5ff5936476083df32006f6ac4ac0e974ebfef",
+    "sha256": "0c1ced51f2fd25a87e99deec95e2d0312ba60ac9e887276f2f6211e8cc079f37",
+    "bytes": 232955,
+    "jsonPointer": "/tasks/18"
+  },
+  "matrixAuthority": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V414.json",
+    "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+    "gitBlob": "e74546b5b403e804e3262bdd39348f7446e70230",
+    "sha256": "5c436f33ba0e1f52ffee39d2db3d29d396adf0f9ce17e5b112b4bd77677eff0e",
+    "bytes": 3457399
+  },
+  "f9Baseline": {
+    "release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "tree": "3e37f076e78dc0fe4a9d6d85bf6e9d7c2a65f9bf",
+    "manifest": {
+      "path": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+      "gitReadAt": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "gitBlob": "74195357d4d915dad9aeb5c3a0d0fb21f773eca5",
+      "sha256": "5a127fea6f3869284c15749134cdcd781e7d2a1a7e08f8651c7a6991751bd4d3",
+      "bytes": 11847
+    },
+    "note": "Historical manifest criticalFiles does not enumerate these three importer owners; F9 per-owner blobs come from exact Git tree, as matrix baseline policy requires."
+  },
+  "currentMaterializationAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+    "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+    "gitBlob": "09b9dab404e4dd5c76ed64e8c8a930e15c0f68bf",
+    "sha256": "a511e6f4ebb33bbb998ab6029b6cac9d442a5b05821d51dbe112b375e0c00ac5",
+    "bytes": 18809
+  },
+  "owners": [
+    {
+      "ownerPath": "app/core/importador.js",
+      "domainInventory": "base-router-shell-cache",
+      "matrixJsonPointer": "/sourceFiles/17",
+      "existingMatrixClassification": "MATCH",
+      "existingByteAuthority": {
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf"
+      },
+      "f9": {
+        "path": "app/core/importador.js",
+        "gitReadAt": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+        "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+        "bytes": 10418
+      },
+      "latestApproved": {
+        "path": "app/core/importador.js",
+        "gitReadAt": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+        "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+        "bytes": 10418
+      },
+      "successor": {
+        "path": "app/core/importador.js",
+        "gitReadAt": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+        "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+        "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+        "bytes": 10418
+      },
+      "head": {
+        "path": "app/core/importador.js",
+        "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+        "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+        "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+        "bytes": 10418
+      },
+      "headMatchesApproved": true,
+      "headMatchesSuccessor": true,
+      "native49InventoryContainsOwner": false,
+      "live": {
+        "readback": {
+          "path": "/workspace/scratch/77c63eb013cc/closure-review/e10-source-fixture/live-owner-readback.json",
+          "sha256": "ec1419d5c184a34c5c6d3902affb8f9858f52d0f29ec4ca30b152b564dede7b3",
+          "bytes": 458
+        },
+        "sourceFileReadback": {
+          "path": "/workspace/scratch/77c63eb013cc/closure-review/e10-source-fixture/live-importador.js",
+          "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+          "bytes": 10418
+        },
+        "observations": {
+          "url": "https://cxorbia-backend-dev.web.app/core/importador.js",
+          "status": 200,
+          "contentType": "application/javascript; charset=utf-8",
+          "bytes": 10418,
+          "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+          "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+          "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+          "sourceMatches": true,
+          "scope": "PUBLIC_OWNER_BYTES_READ_ONLY_NOT_UI_OR_IMPORT_CERTIFICATION"
+        },
+        "certificationScope": "PUBLIC_BYTES_ONLY_NOT_IMPORT_UI_OR_PROVIDER"
+      },
+      "scopeRole": "PROVEN_DEFECT_OWNER",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "classificationBasis": "Exact current source behavior fails original E10 mapping expectations; bytes are identical to independently fetched served owner",
+      "allowedCodeChange": "autoMap matching only; retain public methods, existing FIELDS and editable mapping contract"
+    },
+    {
+      "ownerPath": "app/core/dedupe.js",
+      "domainInventory": "base-router-shell-cache",
+      "matrixJsonPointer": "/sourceFiles/7",
+      "existingMatrixClassification": "MATCH",
+      "existingByteAuthority": {
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5"
+      },
+      "f9": {
+        "path": "app/core/dedupe.js",
+        "gitReadAt": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "gitBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+        "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "bytes": 1607
+      },
+      "latestApproved": {
+        "path": "app/core/dedupe.js",
+        "gitReadAt": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "gitBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+        "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "bytes": 1607
+      },
+      "successor": {
+        "path": "app/core/dedupe.js",
+        "gitReadAt": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+        "gitBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+        "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "bytes": 1607
+      },
+      "head": {
+        "path": "app/core/dedupe.js",
+        "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+        "gitBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+        "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "bytes": 1607
+      },
+      "headMatchesApproved": true,
+      "headMatchesSuccessor": true,
+      "native49InventoryContainsOwner": false,
+      "live": {
+        "state": "NOT_INDEPENDENTLY_MEASURED_IN_THIS_SCOPE",
+        "nativeInventoryKeys": [],
+        "materializationReceiptIsNotPerFilePublicHash": true
+      },
+      "scopeRole": "UNCHANGED_DEPENDENCY_OR_UI_PERMISSION_OWNER",
+      "classification": "MATCH",
+      "classificationBasis": "Existing source byte match retained; no new functional acceptance asserted",
+      "allowedCodeChange": "NONE"
+    },
+    {
+      "ownerPath": "app/modules/importador.js",
+      "domainInventory": "base-router-shell-cache",
+      "matrixJsonPointer": "/sourceFiles/102",
+      "existingMatrixClassification": "MATCH",
+      "existingByteAuthority": {
+        "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+        "latestApprovedBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+        "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN",
+        "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "approvedBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2"
+      },
+      "f9": {
+        "path": "app/modules/importador.js",
+        "gitReadAt": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "gitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+        "bytes": 46363
+      },
+      "latestApproved": {
+        "path": "app/modules/importador.js",
+        "gitReadAt": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+        "gitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+        "bytes": 46363
+      },
+      "successor": {
+        "path": "app/modules/importador.js",
+        "gitReadAt": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+        "gitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+        "bytes": 46363
+      },
+      "head": {
+        "path": "app/modules/importador.js",
+        "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+        "gitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+        "bytes": 46363
+      },
+      "headMatchesApproved": true,
+      "headMatchesSuccessor": true,
+      "native49InventoryContainsOwner": false,
+      "live": {
+        "state": "NOT_INDEPENDENTLY_MEASURED_IN_THIS_SCOPE",
+        "nativeInventoryKeys": [],
+        "materializationReceiptIsNotPerFilePublicHash": true
+      },
+      "scopeRole": "UNCHANGED_DEPENDENCY_OR_UI_PERMISSION_OWNER",
+      "classification": "MATCH",
+      "classificationBasis": "Existing source byte match retained; no new functional acceptance asserted",
+      "allowedCodeChange": "NONE"
+    },
+    {
+      "ownerPath": "firestore.rules",
+      "domainInventory": "visits-review-postulations-reservations",
+      "matrixJsonPointer": "/sourceFiles/149",
+      "existingMatrixClassification": "MATCH",
+      "existingByteAuthority": {
+        "latestApprovedSource": null,
+        "latestApprovedBlob": null,
+        "approvalAuthority": null,
+        "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN",
+        "approvedSourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+        "approvedBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109"
+      },
+      "f9": {
+        "path": "firestore.rules",
+        "gitReadAt": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+        "gitBlob": "bf62d8b0e32c571aaae457dd9128b0c82b0ea073",
+        "sha256": "fc9fd7330e82e2bfda727b03cf25dfc2aa6a92798d9086cdb014a7c49cb0083f",
+        "bytes": 11714
+      },
+      "latestApproved": {
+        "path": "firestore.rules",
+        "gitReadAt": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+        "gitBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+        "sha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+        "bytes": 25661
+      },
+      "successor": {
+        "path": "firestore.rules",
+        "gitReadAt": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+        "gitBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+        "sha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+        "bytes": 25661
+      },
+      "head": {
+        "path": "firestore.rules",
+        "gitReadAt": "266f764ae585d654300ff6fbfb618512a644437a",
+        "gitBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+        "sha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+        "bytes": 25661
+      },
+      "headMatchesApproved": true,
+      "headMatchesSuccessor": true,
+      "native49InventoryContainsOwner": false,
+      "live": {
+        "state": "NOT_INDEPENDENTLY_MEASURED_IN_THIS_SCOPE",
+        "nativeInventoryKeys": [],
+        "materializationReceiptIsNotPerFilePublicHash": true
+      },
+      "scopeRole": "UNCHANGED_DEPENDENCY_OR_UI_PERMISSION_OWNER",
+      "classification": "MATCH",
+      "classificationBasis": "Existing source byte match retained; no new functional acceptance asserted",
+      "allowedCodeChange": "NONE"
+    }
+  ],
+  "beforeEvidence": {
+    "path": "/workspace/scratch/77c63eb013cc/closure-review/e10-source-fixture/observed.json",
+    "sha256": "b528633077a0be80f7eae79c729426cfaa7442e0f9810e406ead635eabf3503d",
+    "bytes": 20085
+  },
+  "beforeResult": {
+    "passed": 7,
+    "failed": 2,
+    "failedCaseIds": [
+      "auto_map_csv",
+      "auto_map_tsv_reordered"
+    ],
+    "autoMapConsequences": {
+      "csv": {
+        "mapping": {
+          "0": "ref",
+          "1": "fecha",
+          "2": "sucursal",
+          "3": "ciudad",
+          "4": "shopper",
+          "5": "escenario",
+          "7": "estado"
+        },
+        "refs": [
+          "QA-E10-N1",
+          "QA-E10-D1",
+          "QA-E10-C1",
+          "QA-E10-X1"
+        ],
+        "honorarios": [
+          99,
+          99,
+          99,
+          99
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [],
+          "conflicts": [
+            "QA-E10-D1",
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        }
+      },
+      "tsv": {
+        "mapping": {
+          "0": "ref",
+          "1": "sucursal",
+          "2": "fecha",
+          "3": "estado",
+          "5": "escenario",
+          "6": "shopper",
+          "7": "ciudad"
+        },
+        "refs": [
+          "11",
+          "22",
+          "33",
+          "44"
+        ],
+        "honorarios": [
+          99,
+          99,
+          99,
+          99
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "11",
+            "22",
+            "33"
+          ],
+          "dups": [],
+          "conflicts": [],
+          "discarded": [
+            "44"
+          ]
+        }
+      }
+    },
+    "effects": {
+      "commitCalls": 0,
+      "networkCalls": 0,
+      "storageCalls": 0,
+      "eventCalls": 0,
+      "dataMutationCalls": 0
+    }
+  },
+  "minimalRepairScope": "Prefer exact normalized canonical field / label / alias, then legacy keyword matching with token boundaries for ambiguous short aliases. No change to parse/build/diff/commit/manual mapping.",
+  "sourceDefectOnly": true,
+  "operationalPass": false,
+  "fullE10Pass": false,
+  "domainMatchCountChanged": false,
+  "production": false,
+  "repositoryMutated": false,
+  "newCandidateCreated": false,
+  "realDataImported": false
+}

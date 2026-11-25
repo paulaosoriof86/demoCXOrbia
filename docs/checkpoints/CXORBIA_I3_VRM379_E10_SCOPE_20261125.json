@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-proven-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "VRM-379",
+  "priority": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "production": false,
+  "allowedProductFiles": [
+    "app/core/importador.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs"
+  ],
+  "allowedFunction": "CX.importador.autoMap",
+  "originalAcceptanceBindingSha256": "b74b83a1ebd1afeca4c420e64d476e811bf8d90d982abe4a1060a557b4bffa4f",
+  "currentModuleTruthBefore": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V419.json",
+    "gitBlob": "ab613947a84c766a16fa62fd003c38657875edbf",
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79"
+  },
+  "components": [
+    {
+      "finding": "VRM-379",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_MODULE_TRUTH_BEFORE_PATCH_20261125.json",
+      "gitBlob": "70e6a0cd47fe30320ddf0f8aad7992e8ab4a8709",
+      "sha256": "f26894c8d96bca8768a4f2d39a12761573baa48b746372f06765dcbb489b9d97"
+    },
+    {
+      "finding": "VRM-379",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_ROOT_ADJUDICATION_20261125.json",
+      "gitBlob": "bee43c974c5235080f16308b253c97bb101a53df",
+      "sha256": "b2abb8eb48849be0ab9c10e2cf20f77ddee4c87b326a12829ca3e4428534c0d8"
+    }
+  ],
+  "beforeOwner": {
+    "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+    "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505"
+  },
+  "afterOwner": {
+    "gitBlob": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+    "sha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77"
+  },
+  "outsideAutoMapByteIdentical": true,
+  "fullE10Pass": false,
+  "realDataImports": 0
+}

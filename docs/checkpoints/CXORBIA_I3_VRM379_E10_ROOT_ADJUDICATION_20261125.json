@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.root-p0-adjudication.v1",
+  "controlHeadRead": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+  "referenceProductSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "iteration": "I3",
+  "state": "HOLD",
+  "severity": "P0_PROVEN",
+  "classification": "MAPPING_FAILURE",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "owner": "app/core/importador.js",
+  "allowedFunction": "CX.importador.autoMap",
+  "reason": "Original E10 blocks GO. Reproduced collision of short alias no inside Honorario silently loses monetary column or substitutes fee values for reference identities. Current served owner equals tested baseline.",
+  "authority": [
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-10 sections7.1.10 and7.2.4",
+    "docs/checkpoints/ADDENDUM_CXORBIA_I3_CIERRE_POR_PROCESOS_20261125.md rule3",
+    "docs/checkpoints/CXORBIA_I3_FROZEN_FUNCTIONAL_TASK_CONTRACTS_20261125.json /tasks/50"
+  ],
+  "originalAcceptanceBindingSha256": "b74b83a1ebd1afeca4c420e64d476e811bf8d90d982abe4a1060a557b4bffa4f",
+  "moduleTruthBeforePatchSha256": "f26894c8d96bca8768a4f2d39a12761573baa48b746372f06765dcbb489b9d97",
+  "exactBeforeBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+  "proposedAfterBlob": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+  "allowedProductFiles": [
+    "app/core/importador.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs"
+  ],
+  "preserve": [
+    "all code outside autoMap",
+    "FIELDS and manual mapping",
+    "parse/build/diff/commit",
+    "six MATCH domains",
+    "B4/B5/B6/B7 and D06/B4",
+    "Work current serving and in-flight QA"
+  ],
+  "fullE10Pass": false,
+  "phaseAComplete": false,
+  "production": false,
+  "realDataImports": 0,
+  "proposedAfterSha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+  "reviewedBeforeCases": 17,
+  "reviewedAfterCases": 17,
+  "reviewRegressionPrevented": {
+    "observedInUnpublishedProposal": "Fee alias plural Fees would drop the monetary field and use synthetic default99 instead of22.",
+    "finalRestriction": "Only reference-field short aliases use token matching; aliases of all other fields retain their existing includes behavior.",
+    "cases": [
+      "Fee",
+      "Fees",
+      "Fees (TST)"
+    ],
+    "amountBeforeAndAfter": 22,
+    "syntheticDefault": 99,
+    "operationalEffects": 0
+  }
+}

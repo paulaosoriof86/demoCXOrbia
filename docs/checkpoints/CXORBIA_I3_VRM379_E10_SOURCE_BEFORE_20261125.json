@@ -1,0 +1,1125 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.focal-auto-map-proof.v1",
+  "observedAt": "2026-11-25T19:32:26.702Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "LOCAL_SOURCE_ONLY_NO_COMMIT_NO_PROVIDER_NO_RUNTIME_CERTIFICATION",
+  "referenceControlHead": "266f764ae585d654300ff6fbfb618512a644437a",
+  "referenceProductSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "referenceProductSourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "sourceBindingScope": "Exact owner hashes below identify the code executed; reference source is the unmodified comparison baseline, not a commit identity for the patched copy",
+  "nodeVersion": "v24.22.3",
+  "owners": [
+    {
+      "path": "app/core/dedupe.js",
+      "localPath": "/workspace/scratch/77c63eb013cc/cxorbia/app/core/dedupe.js",
+      "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+      "bytes": 1607
+    },
+    {
+      "path": "app/core/importador.js",
+      "localPath": "/workspace/scratch/77c63eb013cc/cxorbia/app/core/importador.js",
+      "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+      "bytes": 10418
+    }
+  ],
+  "cases": [
+    {
+      "id": "parse_csv",
+      "clause": "Existing E10 source/mapping traceability",
+      "expected": {
+        "headers": [
+          "Ref",
+          "Fecha",
+          "Sucursal",
+          "Ciudad",
+          "Shopper",
+          "Escenario",
+          "Honorario",
+          "Estado"
+        ],
+        "rows": [
+          [
+            "QA-E10-N1",
+            "01/04/2030",
+            "QA New Branch",
+            "QA City New",
+            "QA Shopper New",
+            "QA Scenario",
+            "11",
+            "disponible"
+          ],
+          [
+            "QA-E10-D1",
+            "02/04/2030",
+            "QA Duplicate Branch",
+            "QA City",
+            "QA Shopper Existing",
+            "QA Scenario",
+            "22",
+            "disponible"
+          ],
+          [
+            "QA-E10-C1",
+            "03/04/2030",
+            "QA Conflict Branch",
+            "QA City",
+            "QA Shopper Changed",
+            "QA Scenario",
+            "33",
+            "disponible"
+          ],
+          [
+            "QA-E10-X1",
+            "",
+            "QA Invalid Branch",
+            "QA City",
+            "",
+            "QA Scenario",
+            "44",
+            "disponible"
+          ]
+        ],
+        "delim": ","
+      },
+      "observed": {
+        "headers": [
+          "Ref",
+          "Fecha",
+          "Sucursal",
+          "Ciudad",
+          "Shopper",
+          "Escenario",
+          "Honorario",
+          "Estado"
+        ],
+        "rows": [
+          [
+            "QA-E10-N1",
+            "01/04/2030",
+            "QA New Branch",
+            "QA City New",
+            "QA Shopper New",
+            "QA Scenario",
+            "11",
+            "disponible"
+          ],
+          [
+            "QA-E10-D1",
+            "02/04/2030",
+            "QA Duplicate Branch",
+            "QA City",
+            "QA Shopper Existing",
+            "QA Scenario",
+            "22",
+            "disponible"
+          ],
+          [
+            "QA-E10-C1",
+            "03/04/2030",
+            "QA Conflict Branch",
+            "QA City",
+            "QA Shopper Changed",
+            "QA Scenario",
+            "33",
+            "disponible"
+          ],
+          [
+            "QA-E10-X1",
+            "",
+            "QA Invalid Branch",
+            "QA City",
+            "",
+            "QA Scenario",
+            "44",
+            "disponible"
+          ]
+        ],
+        "delim": ","
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "parse_tsv_reordered",
+      "clause": "Existing E10 source/mapping traceability",
+      "expected": {
+        "headers": [
+          "Honorario",
+          "Sucursal",
+          "Fecha",
+          "Estado",
+          "Ref",
+          "Escenario",
+          "Shopper",
+          "Ciudad"
+        ],
+        "rows": [
+          [
+            "11",
+            "QA New Branch",
+            "01/04/2030",
+            "disponible",
+            "QA-E10-N1",
+            "QA Scenario",
+            "QA Shopper New",
+            "QA City New"
+          ],
+          [
+            "22",
+            "QA Duplicate Branch",
+            "02/04/2030",
+            "disponible",
+            "QA-E10-D1",
+            "QA Scenario",
+            "QA Shopper Existing",
+            "QA City"
+          ],
+          [
+            "33",
+            "QA Conflict Branch",
+            "03/04/2030",
+            "disponible",
+            "QA-E10-C1",
+            "QA Scenario",
+            "QA Shopper Changed",
+            "QA City"
+          ],
+          [
+            "44",
+            "QA Invalid Branch",
+            "",
+            "disponible",
+            "QA-E10-X1",
+            "QA Scenario",
+            "",
+            "QA City"
+          ]
+        ],
+        "delim": "\t"
+      },
+      "observed": {
+        "headers": [
+          "Honorario",
+          "Sucursal",
+          "Fecha",
+          "Estado",
+          "Ref",
+          "Escenario",
+          "Shopper",
+          "Ciudad"
+        ],
+        "rows": [
+          [
+            "11",
+            "QA New Branch",
+            "01/04/2030",
+            "disponible",
+            "QA-E10-N1",
+            "QA Scenario",
+            "QA Shopper New",
+            "QA City New"
+          ],
+          [
+            "22",
+            "QA Duplicate Branch",
+            "02/04/2030",
+            "disponible",
+            "QA-E10-D1",
+            "QA Scenario",
+            "QA Shopper Existing",
+            "QA City"
+          ],
+          [
+            "33",
+            "QA Conflict Branch",
+            "03/04/2030",
+            "disponible",
+            "QA-E10-C1",
+            "QA Scenario",
+            "QA Shopper Changed",
+            "QA City"
+          ],
+          [
+            "44",
+            "QA Invalid Branch",
+            "",
+            "disponible",
+            "QA-E10-X1",
+            "QA Scenario",
+            "",
+            "QA City"
+          ]
+        ],
+        "delim": "\t"
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "auto_map_csv",
+      "clause": "Existing named-field autodetection; suggestions remain editable",
+      "expected": {
+        "0": "ref",
+        "1": "fecha",
+        "2": "sucursal",
+        "3": "ciudad",
+        "4": "shopper",
+        "5": "escenario",
+        "6": "honorario",
+        "7": "estado"
+      },
+      "observed": {
+        "0": "ref",
+        "1": "fecha",
+        "2": "sucursal",
+        "3": "ciudad",
+        "4": "shopper",
+        "5": "escenario",
+        "7": "estado"
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    '0': 'ref',\n    '1': 'fecha',\n    '2': 'sucursal',\n    '3': 'ciudad',\n    '4': 'shopper',\n    '5': 'escenario',\n-   '6': 'honorario',\n    '7': 'estado'\n  }\n"
+      }
+    },
+    {
+      "id": "auto_map_tsv_reordered",
+      "clause": "Existing named-field autodetection after reordering",
+      "expected": {
+        "0": "honorario",
+        "1": "sucursal",
+        "2": "fecha",
+        "3": "estado",
+        "4": "ref",
+        "5": "escenario",
+        "6": "shopper",
+        "7": "ciudad"
+      },
+      "observed": {
+        "0": "ref",
+        "1": "sucursal",
+        "2": "fecha",
+        "3": "estado",
+        "5": "escenario",
+        "6": "shopper",
+        "7": "ciudad"
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   '0': 'ref',\n-   '0': 'honorario',\n    '1': 'sucursal',\n    '2': 'fecha',\n    '3': 'estado',\n-   '4': 'ref',\n    '5': 'escenario',\n    '6': 'shopper',\n    '7': 'ciudad'\n  }\n"
+      }
+    },
+    {
+      "id": "build_with_explicit_csv_mapping",
+      "clause": "Existing supported manual column mapping",
+      "expected": [
+        {
+          "_row": 0,
+          "ref": "QA-E10-N1",
+          "sucursal": "QA New Branch",
+          "ciudad": "QA City New",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-01",
+          "shopper": "QA Shopper New",
+          "escenario": "QA Scenario",
+          "honorario": 11,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 1,
+          "ref": "QA-E10-D1",
+          "sucursal": "QA Duplicate Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-02",
+          "shopper": "QA Shopper Existing",
+          "escenario": "QA Scenario",
+          "honorario": 22,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 2,
+          "ref": "QA-E10-C1",
+          "sucursal": "QA Conflict Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-03",
+          "shopper": "QA Shopper Changed",
+          "escenario": "QA Scenario",
+          "honorario": 33,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 3,
+          "ref": "QA-E10-X1",
+          "sucursal": "QA Invalid Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "",
+          "shopper": "",
+          "escenario": "QA Scenario",
+          "honorario": 44,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        }
+      ],
+      "observed": [
+        {
+          "_row": 0,
+          "ref": "QA-E10-N1",
+          "sucursal": "QA New Branch",
+          "ciudad": "QA City New",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-01",
+          "shopper": "QA Shopper New",
+          "escenario": "QA Scenario",
+          "honorario": 11,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 1,
+          "ref": "QA-E10-D1",
+          "sucursal": "QA Duplicate Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-02",
+          "shopper": "QA Shopper Existing",
+          "escenario": "QA Scenario",
+          "honorario": 22,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 2,
+          "ref": "QA-E10-C1",
+          "sucursal": "QA Conflict Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-03",
+          "shopper": "QA Shopper Changed",
+          "escenario": "QA Scenario",
+          "honorario": 33,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 3,
+          "ref": "QA-E10-X1",
+          "sucursal": "QA Invalid Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "",
+          "shopper": "",
+          "escenario": "QA Scenario",
+          "honorario": 44,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "build_with_explicit_reordered_mapping",
+      "clause": "Same existing fields under reordered columns",
+      "expected": [
+        {
+          "_row": 0,
+          "ref": "QA-E10-N1",
+          "sucursal": "QA New Branch",
+          "ciudad": "QA City New",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-01",
+          "shopper": "QA Shopper New",
+          "escenario": "QA Scenario",
+          "honorario": 11,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 1,
+          "ref": "QA-E10-D1",
+          "sucursal": "QA Duplicate Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-02",
+          "shopper": "QA Shopper Existing",
+          "escenario": "QA Scenario",
+          "honorario": 22,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 2,
+          "ref": "QA-E10-C1",
+          "sucursal": "QA Conflict Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-03",
+          "shopper": "QA Shopper Changed",
+          "escenario": "QA Scenario",
+          "honorario": 33,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 3,
+          "ref": "QA-E10-X1",
+          "sucursal": "QA Invalid Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "",
+          "shopper": "",
+          "escenario": "QA Scenario",
+          "honorario": 44,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        }
+      ],
+      "observed": [
+        {
+          "_row": 0,
+          "ref": "QA-E10-N1",
+          "sucursal": "QA New Branch",
+          "ciudad": "QA City New",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-01",
+          "shopper": "QA Shopper New",
+          "escenario": "QA Scenario",
+          "honorario": 11,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 1,
+          "ref": "QA-E10-D1",
+          "sucursal": "QA Duplicate Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-02",
+          "shopper": "QA Shopper Existing",
+          "escenario": "QA Scenario",
+          "honorario": 22,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 2,
+          "ref": "QA-E10-C1",
+          "sucursal": "QA Conflict Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "2030-04-03",
+          "shopper": "QA Shopper Changed",
+          "escenario": "QA Scenario",
+          "honorario": 33,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        },
+        {
+          "_row": 3,
+          "ref": "QA-E10-X1",
+          "sucursal": "QA Invalid Branch",
+          "ciudad": "QA City",
+          "pais": "ZZ",
+          "franja": "",
+          "fecha": "",
+          "shopper": "",
+          "escenario": "QA Scenario",
+          "honorario": 44,
+          "reembolso": 0,
+          "estado": "disponible",
+          "obs": ""
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "dry_run_categories",
+      "clause": "Existing new/exact-duplicate/conflict/discarded categories",
+      "expected": {
+        "nuevos": [
+          "QA-E10-N1"
+        ],
+        "dups": [
+          "QA-E10-D1"
+        ],
+        "conflicts": [
+          "QA-E10-C1"
+        ],
+        "discarded": [
+          "QA-E10-X1"
+        ]
+      },
+      "observed": {
+        "nuevos": [
+          "QA-E10-N1"
+        ],
+        "dups": [
+          "QA-E10-D1"
+        ],
+        "conflicts": [
+          "QA-E10-C1"
+        ],
+        "discarded": [
+          "QA-E10-X1"
+        ]
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "repeat_dry_run_without_mutation",
+      "clause": "Repeated preview only; durable post-import replay is not claimed",
+      "expected": {
+        "diff": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [
+            "QA-E10-D1"
+          ],
+          "conflicts": [
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        },
+        "inputHash": "5c587d96ab896a2fb888b6ea4d83d5d5671d020d124581db91fefb15cea45fa4"
+      },
+      "observed": {
+        "diff": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [
+            "QA-E10-D1"
+          ],
+          "conflicts": [
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        },
+        "inputHash": "5c587d96ab896a2fb888b6ea4d83d5d5671d020d124581db91fefb15cea45fa4"
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "exact_normalized_fields",
+      "clause": "Existing field labels and accents retain canonical meaning",
+      "expected": {
+        "0": "ref",
+        "1": "sucursal",
+        "2": "ciudad",
+        "3": "franja",
+        "4": "fecha",
+        "5": "shopper",
+        "6": "escenario",
+        "7": "honorario",
+        "8": "reembolso",
+        "9": "estado",
+        "10": "obs"
+      },
+      "observed": {
+        "0": "ref",
+        "1": "sucursal",
+        "2": "ciudad",
+        "3": "franja",
+        "4": "fecha",
+        "5": "shopper",
+        "6": "escenario",
+        "8": "reembolso",
+        "9": "estado",
+        "10": "obs"
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  {\n    '0': 'ref',\n    '1': 'sucursal',\n    '10': 'obs',\n    '2': 'ciudad',\n...\n    '6': 'escenario',\n-   '7': 'honorario',\n    '8': 'reembolso',\n    '9': 'estado'\n  }\n"
+      }
+    },
+    {
+      "id": "legacy_ui_sample_headers",
+      "clause": "Preserve exact sample already in app/modules/importador.js",
+      "expected": {
+        "0": "ref",
+        "1": "fecha",
+        "2": "sucursal",
+        "3": "ciudad",
+        "4": "shopper",
+        "5": "escenario",
+        "6": "reembolso",
+        "7": "estado"
+      },
+      "observed": {
+        "0": "ref",
+        "1": "fecha",
+        "2": "sucursal",
+        "3": "ciudad",
+        "4": "shopper",
+        "5": "escenario",
+        "6": "reembolso",
+        "7": "estado"
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "existing_alias_priority",
+      "clause": "An exact existing alias wins over another field substring",
+      "expected": {
+        "0": "ciudad",
+        "1": "ref",
+        "2": "honorario",
+        "3": "fecha",
+        "4": "obs"
+      },
+      "observed": {
+        "0": "ref",
+        "3": "fecha",
+        "4": "obs"
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   '0': 'ref',\n-   '0': 'ciudad',\n-   '1': 'ref',\n-   '2': 'honorario',\n    '3': 'fecha',\n    '4': 'obs'\n  }\n"
+      }
+    },
+    {
+      "id": "short_alias_tokens_and_legacy_full_forms",
+      "clause": "Keep existing abbreviations and full forms while preventing embedded short aliases",
+      "expected": {
+        "positive": [
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "fecha",
+          "franja",
+          "honorario",
+          "obs",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref"
+        ],
+        "negative": [
+          null,
+          null,
+          null
+        ]
+      },
+      "observed": {
+        "positive": [
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "fecha",
+          "franja",
+          "honorario",
+          "obs",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref",
+          "ref"
+        ],
+        "negative": [
+          "ref",
+          "ref",
+          "ref"
+        ]
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    negative: [\n+     'ref',\n+     'ref',\n+     'ref'\n-     null,\n-     null,\n-     null\n    ],\n    positive: [\n      'ref',\n      'ref',\n      'ref',\n"
+      }
+    },
+    {
+      "id": "one_column_per_field",
+      "clause": "Keep first-column ownership when two headers mean the same field",
+      "expected": {
+        "0": "honorario",
+        "2": "ref"
+      },
+      "observed": {
+        "0": "ref",
+        "1": "honorario"
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   '0': 'ref',\n+   '1': 'honorario'\n-   '0': 'honorario',\n-   '2': 'ref'\n  }\n"
+      }
+    },
+    {
+      "id": "legacy_fee_headers_preserve_amount",
+      "clause": "Preserve existing non-reference fee aliases and constructed amount",
+      "expected": [
+        {
+          "header": "Fee",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        },
+        {
+          "header": "Fees",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        },
+        {
+          "header": "Fees (TST)",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        }
+      ],
+      "observed": [
+        {
+          "header": "Fee",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        },
+        {
+          "header": "Fees",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        },
+        {
+          "header": "Fees (TST)",
+          "mapping": {
+            "0": "ref",
+            "1": "honorario",
+            "2": "sucursal",
+            "3": "fecha",
+            "4": "estado"
+          },
+          "ref": "QA-E10-FEE",
+          "honorario": 22
+        }
+      ],
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "zero_effects",
+      "clause": "No import commit,network,storage,event or data mutation",
+      "expected": {
+        "commitCalls": 0,
+        "networkCalls": 0,
+        "storageCalls": 0,
+        "eventCalls": 0,
+        "dataMutationCalls": 0
+      },
+      "observed": {
+        "commitCalls": 0,
+        "networkCalls": 0,
+        "storageCalls": 0,
+        "eventCalls": 0,
+        "dataMutationCalls": 0
+      },
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "auto_mapping_identity_money_csv",
+      "clause": "Original E10 identity,amount and dry-run category expectations",
+      "expected": {
+        "refs": [
+          "QA-E10-N1",
+          "QA-E10-D1",
+          "QA-E10-C1",
+          "QA-E10-X1"
+        ],
+        "honorarios": [
+          11,
+          22,
+          33,
+          44
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [
+            "QA-E10-D1"
+          ],
+          "conflicts": [
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        }
+      },
+      "observed": {
+        "refs": [
+          "QA-E10-N1",
+          "QA-E10-D1",
+          "QA-E10-C1",
+          "QA-E10-X1"
+        ],
+        "honorarios": [
+          99,
+          99,
+          99,
+          99
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [],
+          "conflicts": [
+            "QA-E10-D1",
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        }
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    diffRefs: {\n      conflicts: [\n+       'QA-E10-D1',\n        'QA-E10-C1'\n      ],\n      discarded: [\n        'QA-E10-X1'\n      ],\n+     dups: [],\n-     dups: [\n-       'QA-E10-D1'\n-     ],\n      nuevos: [\n        'QA-E10-N1'\n      ]\n    },\n    honorarios: [\n+     99,\n+     99,\n+     99,\n+     99\n-     11,\n-     22,\n-     33,\n-     44\n    ],\n    refs: [\n      'QA-E10-N1',\n      'QA-E10-D1',\n      'QA-E10-C1',\n"
+      }
+    },
+    {
+      "id": "auto_mapping_identity_money_tsv",
+      "clause": "Original E10 identity,amount and dry-run category expectations",
+      "expected": {
+        "refs": [
+          "QA-E10-N1",
+          "QA-E10-D1",
+          "QA-E10-C1",
+          "QA-E10-X1"
+        ],
+        "honorarios": [
+          11,
+          22,
+          33,
+          44
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "QA-E10-N1"
+          ],
+          "dups": [
+            "QA-E10-D1"
+          ],
+          "conflicts": [
+            "QA-E10-C1"
+          ],
+          "discarded": [
+            "QA-E10-X1"
+          ]
+        }
+      },
+      "observed": {
+        "refs": [
+          "11",
+          "22",
+          "33",
+          "44"
+        ],
+        "honorarios": [
+          99,
+          99,
+          99,
+          99
+        ],
+        "diffRefs": {
+          "nuevos": [
+            "11",
+            "22",
+            "33"
+          ],
+          "dups": [],
+          "conflicts": [],
+          "discarded": [
+            "44"
+          ]
+        }
+      },
+      "pass": false,
+      "error": {
+        "name": "AssertionError",
+        "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    diffRefs: {\n+     conflicts: [],\n-     conflicts: [\n-       'QA-E10-C1'\n-     ],\n      discarded: [\n+       '44'\n-       'QA-E10-X1'\n      ],\n+     dups: [],\n-     dups: [\n-       'QA-E10-D1'\n-     ],\n      nuevos: [\n+       '11',\n+       '22',\n+       '33'\n-       'QA-E10-N1'\n      ]\n    },\n    honorarios: [\n+     99,\n+     99,\n+     99,\n+     99\n-     11,\n-     22,\n-     33,\n-     44\n    ],\n    refs: [\n+     '11',\n+     '22',\n+     '33',\n+     '44'\n-     'QA-E10-N1',\n-     'QA-E10-D1',\n-     'QA-E10-C1',\n-     'QA-E10-X1'\n    ]\n  }\n"
+      }
+    }
+  ],
+  "passed": 9,
+  "failed": 8,
+  "autoMapConsequences": {
+    "csv": {
+      "mapping": {
+        "0": "ref",
+        "1": "fecha",
+        "2": "sucursal",
+        "3": "ciudad",
+        "4": "shopper",
+        "5": "escenario",
+        "7": "estado"
+      },
+      "refs": [
+        "QA-E10-N1",
+        "QA-E10-D1",
+        "QA-E10-C1",
+        "QA-E10-X1"
+      ],
+      "honorarios": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "diffRefs": {
+        "nuevos": [
+          "QA-E10-N1"
+        ],
+        "dups": [],
+        "conflicts": [
+          "QA-E10-D1",
+          "QA-E10-C1"
+        ],
+        "discarded": [
+          "QA-E10-X1"
+        ]
+      }
+    },
+    "tsv": {
+      "mapping": {
+        "0": "ref",
+        "1": "sucursal",
+        "2": "fecha",
+        "3": "estado",
+        "5": "escenario",
+        "6": "shopper",
+        "7": "ciudad"
+      },
+      "refs": [
+        "11",
+        "22",
+        "33",
+        "44"
+      ],
+      "honorarios": [
+        99,
+        99,
+        99,
+        99
+      ],
+      "diffRefs": {
+        "nuevos": [
+          "11",
+          "22",
+          "33"
+        ],
+        "dups": [],
+        "conflicts": [],
+        "discarded": [
+          "44"
+        ]
+      }
+    }
+  },
+  "effects": {
+    "commitCalls": 0,
+    "networkCalls": 0,
+    "storageCalls": 0,
+    "eventCalls": 0,
+    "dataMutationCalls": 0
+  },
+  "originalTaskAcceptanceBindingSha256": "b74b83a1ebd1afeca4c420e64d476e811bf8d90d982abe4a1060a557b4bffa4f",
+  "classification": "MAPPING_FAILURE",
+  "severity": "NOT_ASSIGNED_SOURCE_OBSERVATION_REQUIRES_OWNER_REVIEW",
+  "operationalPass": false,
+  "durableImportReplayProven": false,
+  "permissionsProven": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "production": false
+}

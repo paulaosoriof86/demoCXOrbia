@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "cxorbia.i3.e10-importer-source-proof.v1",
+  "findingId": "VRM-379",
+  "iteration": "I3",
+  "state": "SOURCE_PROVEN_PENDING_PAIRED_DEV",
+  "observedAt": "2026-11-25T19:38:45.825Z",
+  "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "predecessorProductSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "expectedParentSha": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+  "sourceCommitParent": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+  "servedSource": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "approvedProductFiles": [
+    "app/core/importador.js"
+  ],
+  "approvedSourceBlobs": {
+    "app/core/importador.js": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa"
+  },
+  "allowedProductFiles": [
+    "app/core/importador.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM379_E10_SCOPE_20261125.json",
+  "scopeReceiptBlob": "dd2f811057ada05a00f56e48ff3801c3cb130480",
+  "sourceTestsPass": 17,
+  "sourceTestsFail": 0,
+  "sourceTests": {
+    "command": "node tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs --owner app/core/importador.js --dedupe app/core/dedupe.js",
+    "testGitBlob": "3eab3a295c6c010926efc04e5a83e072e662f267",
+    "testSha256": "7640db2a3d6af8825ae02c74520a16edb6140ba694658a453e14a2a72e4cb90c",
+    "before": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_SOURCE_BEFORE_20261125.json",
+      "gitBlob": "e264da53c7b4ff08b0b6929994e7ba5001a952b9",
+      "sha256": "4e0f3f73467f0c9052a4ad1b67ed3674d7577aed1ab5623171034033046bbc11"
+    },
+    "after": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_SOURCE_AFTER_20261125.json",
+      "gitBlob": "eb0ff7d3280459f9f6b6874dc7950f02fdb2bb0f",
+      "sha256": "c2fd0e48404e28068cd9b85e5d936b322c0bb3a17a1e2bb4bcce844c8c21fbdd"
+    },
+    "beforePassed": 9,
+    "beforeFailed": 8,
+    "afterPassed": 17,
+    "afterFailed": 0
+  },
+  "moduleTruthBeforePatch": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_MODULE_TRUTH_BEFORE_PATCH_20261125.json",
+    "gitBlob": "70e6a0cd47fe30320ddf0f8aad7992e8ab4a8709",
+    "sha256": "f26894c8d96bca8768a4f2d39a12761573baa48b746372f06765dcbb489b9d97"
+  },
+  "currentModuleTruthBefore": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V419.json",
+    "gitBlob": "ab613947a84c766a16fa62fd003c38657875edbf",
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79"
+  },
+  "rootAdjudication": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM379_E10_ROOT_ADJUDICATION_20261125.json",
+    "gitBlob": "bee43c974c5235080f16308b253c97bb101a53df",
+    "sha256": "b2abb8eb48849be0ab9c10e2cf20f77ddee4c87b326a12829ca3e4428534c0d8"
+  },
+  "ownerBefore": {
+    "path": "app/core/importador.js",
+    "gitBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+    "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505"
+  },
+  "ownerAfter": {
+    "path": "app/core/importador.js",
+    "gitBlob": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+    "sha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77"
+  },
+  "sourceDelta": [
+    "app/core/importador.js",
+    "tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs"
+  ],
+  "outsideAutoMapByteIdentical": true,
+  "findings": [
+    {
+      "id": "VRM-379",
+      "priority": "P0_PROVEN",
+      "classification": "MAPPING_FAILURE"
+    }
+  ],
+  "preservedServedAuthority": {
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptBlob": "09b9dab404e4dd5c76ed64e8c8a930e15c0f68bf",
+    "runId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+    "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529"
+  },
+  "preservedDomainMatches": [
+    "benefits",
+    "historical",
+    "identity-membership-roll-forward",
+    "phase-a-supporting-core",
+    "reports-admin-shopper",
+    "tenant-admin-config-branding"
+  ],
+  "preservedHumanBlocks": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "remainingOriginalE10": [
+    "Authenticated scoped import permissions",
+    "Rendered mapping flow on the new served owner bytes",
+    "Isolated provider-backed commit and durable ACK",
+    "Durable replay without duplicates"
+  ],
+  "existingWorkNextAction": "I3: Retain the first-session Movimientos PDF and two advances. Compare the same country-label PDF with and without the supported Chromium fonts. Use that result to locate the owner before repeating the two read-only sessions and remaining permissions on the paired DEV revision. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+  "operationalImportCertified": false,
+  "fullE10Pass": false,
+  "phaseAComplete": false,
+  "devPublished": false,
+  "newDomainMatches": 0,
+  "realDataImports": 0,
+  "production": false
+}
