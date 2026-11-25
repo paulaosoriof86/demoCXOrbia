@@ -109,7 +109,8 @@
     },
     "academyResults": [
       "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795627423976545_TYPED_RESULT.json"
     ],
     "currentAcademy": {
       "decision": "HOLD",
@@ -192,6 +193,63 @@
       "classification": "ENVIRONMENT_FAILURE",
       "productDefectEstablished": false,
       "priorAdminEvidence": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json"
+    },
+    "currentAcademyThird": {
+      "state": "HOLD",
+      "source": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "resultSha256": "983cbd9a52296cb328601ce38c2133fb10cf5eae1e1da2b4bcd2d1aa5cc4606e",
+      "archive": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/2e74e1f3-db40-4965-a956-555bc5e4bb6b/evidence.zip#1795627417918056",
+      "failedStage": "admin initial protected HR context after one exact-scope reload",
+      "gate": "protected_auth_hr_authority_blocked",
+      "commandsDispatched": 0,
+      "learnerRolesReached": 0,
+      "deletedDocuments": 6,
+      "deletedAuthUsers": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "classification": "ENVIRONMENT_FAILURE",
+      "specificProductOwnerUnproven": true
+    },
+    "pairedSourceStaging": {
+      "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "name": "cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/3f8a29a4a85bf0de80c466540b139d944a4a0a2b76e9d7473c7d8951de0a81f8.tgz",
+      "generation": "1795627191120479",
+      "size": 5887467,
+      "sha256": "3f8a29a4a85bf0de80c466540b139d944a4a0a2b76e9d7473c7d8951de0a81f8",
+      "sourceSelection": [
+        "app",
+        "backend",
+        ".firebaserc",
+        "firebase.json",
+        "firestore.rules",
+        "storage.rules"
+      ],
+      "independentGenerationAndBytesVerified": true,
+      "productImageBuilt": false,
+      "devPublished": false
+    },
+    "cloudBuildPermissionProbe": {
+      "buildId": "691bd4dd-25d9-4cd9-b90f-6635a6769f88",
+      "location": "global",
+      "status": "SUCCESS",
+      "purpose": "READ_ONLY_CHECK_NO_PRODUCT_BUILD_OR_DEPLOY",
+      "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+      "grantedProject": [
+        "cloudbuild.builds.create",
+        "firebase.projects.get",
+        "firebasehosting.sites.get",
+        "firebasehosting.sites.update",
+        "logging.logEntries.list",
+        "run.services.update"
+      ],
+      "grantedServiceAccounts": [
+        "actAs on the existing build identity",
+        "actAs on the existing runtime identity"
+      ],
+      "storageObjectCreateAtProject": false,
+      "bucketAccess": "must be checked on the actual bucket"
     }
   },
   "lastChromeConnection": {
@@ -203,7 +261,7 @@
   },
   "next": {
     "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
-    "academy": "Retain the verified Admin course and edit, the learner role coverage still outstanding, and both cleanup readbacks. A fresh Admin context on 1691 timed out waiting for protected HR readiness before it reached the Shopper. The runner permits one normal reload only before commands and only for the exact authenticated scope. Run the same D08 request, incorporate it, then deploy paired 235d6c28 and verify the PDF and F3 with the same native receipt.",
+    "academy": "Publish paired DEV source 235d6c28, including the real PDF repair and F3, from the verified immutable Google source object. Do not repeat the D08 request on 1691. Two subsequent attempts stalled on protected HR in distinct Admin contexts; the last attempted one normal authenticated reload, posted zero commands and verified exact cleanup. Preserve the earlier Admin progress and edit; use the new pair and provider-derived HR diagnosis before further learner fixtures.",
     "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },
