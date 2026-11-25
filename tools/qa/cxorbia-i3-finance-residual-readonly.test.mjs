@@ -104,3 +104,12 @@ test('dependency helper belongs only to the finance job',()=>{
  const src=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');const target='bash tools/qa/cxorbia-i3-finance-dependencies.sh';
  assert.equal(src.split(target).length-1,1);assert(src.slice(src.indexOf('  i3-finance-focal-reproof:'),src.indexOf('  vrm085-postulation-sync-diagnostic:')).includes(target));
 });
+
+import {pdfContentDiagnostic} from './cxorbia-i3-finance-ui-export-readonly.mjs';
+const sample={pages:1,title:'Movimientos & Tesorería',periodLabel:'Octubre 2026',rows:[['2026-10-31','Remesa de anticipo Noviembre',7300]]};
+const exact='Movimientos & Tesorería Octubre 2026 2026-10-31 Remesa de anticipo Noviembre 7300';
+test('exact PDF text passes all predicates',()=>{const r=pdfContentDiagnostic({...sample,text:exact});assert.equal(r.matches,true);assert.equal(r.missingCellCount,0);});
+test('wrapped date remains failed and is identified without exposing its value',()=>{const r=pdfContentDiagnostic({...sample,text:exact.replace('2026-10-31','2026-10- 31')});assert.equal(r.matches,false);assert.deepEqual(r.missingCells.map(x=>[x.row,x.column,x.matchesIgnoringWhitespace]),[[0,0,true]]);assert.equal(JSON.stringify(r).includes('2026-10-31'),false);});
+test('changed amount remains failed with no whitespace-equivalence false credit',()=>{const r=pdfContentDiagnostic({...sample,text:exact.replace('7300','7301')});assert.equal(r.matches,false);assert.deepEqual(r.missingCells.map(x=>[x.row,x.column,x.matchesIgnoringWhitespace]),[[0,2,false]]);});
+test('missing title or period remains failed with explicit scope',()=>{assert.equal(pdfContentDiagnostic({...sample,text:exact.replace(sample.title,'Otro')}).titleMatches,false);const r=pdfContentDiagnostic({...sample,text:exact.replace(sample.periodLabel,'Noviembre 2026')});assert.equal(r.matches,false);assert.equal(r.periodMatches,false);});
+test('zero pages cannot pass even if text matches',()=>{assert.equal(pdfContentDiagnostic({...sample,pages:0,text:exact}).matches,false);});

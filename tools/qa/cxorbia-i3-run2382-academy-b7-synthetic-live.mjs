@@ -654,6 +654,10 @@ async function runAcademyUiQa(){
       if(identity.role==='admin'){
         const payload={id:customId,n:spec.draftName,desc:spec.draftDescription,cat:'Operación',ic:'🧪',color:'#475569',cert:false,lessons:[],scope:draftScope,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};
         await perform(fresh,{type:'academy.course.create',mode:'write'},()=>fresh.page.evaluate(p=>CX.acadData.addCourse('admin',p,CX.permissions.ctx()),payload));
+        // Direct fixture creation has no UI handler to call Academia's draw().
+        // Re-enter the real route after provider ACK/readback before editing it.
+        await fresh.page.evaluate(()=>CX.router.nav('aprendizaje'));
+        await fresh.page.locator('.acad-edit[data-cid="'+customId+'"]').waitFor({state:'visible',timeout:30000});
         await fresh.page.locator('.acad-edit[data-cid="'+customId+'"]').click();await fresh.page.locator('#ecN').fill(spec.updatedName);await fresh.page.locator('#ecD').fill(spec.updatedDescription);await fresh.page.locator('#ecC').selectOption({label:'Operación'});
         await fresh.page.locator('#ecScProj').selectOption(draftScope.projectId);await fresh.page.locator('#ecScRol').selectOption(['admin']);
         for(const id of ['#ecScPais','#ecScNivel','#ecScModulo','#ecScPaquete'])await fresh.page.locator(id).selectOption([]);

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "cxorbia.i3.runner-continuity-correction.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "createdAt": "2026-11-25T06:52:11.316Z",
+  "controlParent": "8fed6ac0b22b0f30570946ffc919bf4821dee9d6",
+  "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "productTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "materialization": {
+    "builds": 1,
+    "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+    "hostingDeploys": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "production": false,
+    "runtimeDeploys": 1,
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "scenarioDimensionsProven": true,
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "storageRulesDeploys": 0,
+    "hrPeriodWindowRequired": true,
+    "verifiedServedAssetCount": 48,
+    "sourceHostedExact": true,
+    "runtimeTrafficExact": true,
+    "productionUnchanged": true,
+    "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "firestoreRulesDeploys": 0,
+    "hrWrites": 0,
+    "runId": 45488581923,
+    "runNumber": 2780,
+    "runAttempt": 1,
+    "jobId": 138781222254,
+    "jobConclusion": "success",
+    "controlHeadAtDeploy": "109a6263cf16bce195573a7d9ed702e6fef09477",
+    "artifactId": 14964649911,
+    "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+    "artifactDigestType": "GITHUB_ACTIONS_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "hrLiveVerified": true,
+    "state": "PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING",
+    "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+    "fullTaskClosed": false
+  },
+  "policyPath": "docs/checkpoints/ADDENDUM_CXORBIA_I3_CIERRE_POR_PROCESOS_20261125.md",
+  "sourceRunId": 45522159779,
+  "incorporatedReceipts": [
+    {
+      "key": "45522159779/1/138896921773",
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896921773_TYPED_RESULT.json",
+      "gitBlob": "78bb8c07e7c37fffa06f9a07c445436977a3bb55",
+      "sha256": "0e6079e1c06c7b7ff844bf8e245e810255546c83f35b87c39d1e6b4f9dc27cb3",
+      "runId": 45522159779,
+      "runAttempt": 1,
+      "jobId": 138896921773,
+      "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+      "artifactId": 14981330624,
+      "artifactDigest": "sha256:c1b83e1aa72aeb3a9041291fa69938498e119c530a42b8c13d3da1e0c840011a",
+      "decision": "RECORDED_TYPED_RESULT_HOLD",
+      "ownerReceiptCount": 0,
+      "observedAt": "2026-11-25T01:02:53.809Z"
+    },
+    {
+      "key": "45522159779/1/138896924837",
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896924837_TYPED_RESULT.json",
+      "gitBlob": "e359ae0506680ab3d339c77e3b4a416c8315792b",
+      "sha256": "eb1f1415a1875b1c2f710d350082a75e68863aa5c8f4ed1c52486a4b7a7f1eba",
+      "runId": 45522159779,
+      "runAttempt": 1,
+      "jobId": 138896924837,
+      "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+      "artifactId": 14979869919,
+      "artifactDigest": "sha256:265d895196b74b68bc043ff2f865eafe53f73c1ef2cee35682542d92742ffdff",
+      "decision": "RECORDED_D08_INCOMPLETE",
+      "ownerReceiptCount": 0,
+      "observedAt": "2026-11-25T01:02:53.809Z"
+    }
+  ],
+  "priorLiveAutomationReceipt": {
+    "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "gitBlob": "611caa955d1fa72175da7ace57c8dba328853e47",
+    "runId": 45522159779,
+    "runAttempt": 1,
+    "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
+    "pendingTypedResults": [
+      {
+        "jobId": 138896921773,
+        "name": "i3-finance-focal-reproof",
+        "conclusion": "failure",
+        "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+      },
+      {
+        "jobId": 138896924837,
+        "name": "i3-run2382-academy-b7-isolated-dev-qa",
+        "conclusion": "failure",
+        "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+      }
+    ],
+    "materializationReceiptPath": null,
+    "production": false
+  },
+  "correctedLivePending": [],
+  "findings": [
+    {
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-automatic-result-consumer.mjs",
+      "cause": "Immutable journal pending set was copied into live receipt after exact results had been incorporated.",
+      "repair": "Project live pending from exact effective run/attempt/job queue; preserve immutable journal and newer current receipt."
+    },
+    {
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+      "cause": "API fixture create ACK was followed by edit lookup without redrawing Academia route.",
+      "repair": "Re-enter route after ACK/readback and wait for exact created course card."
+    },
+    {
+      "classification": "MAPPING_FAILURE",
+      "owner": "tools/qa/cxorbia-i3-finance-ui-readonly.mjs",
+      "cause": "Network denials replaced the primary PDF_CONTENT error in failure classification.",
+      "repair": "Preserve primary error, record sanitized network diagnostic independently; no new Finance PASS."
+    }
+  ],
+  "pdfRemaining": "Actual PDF text/content cause must be resolved by exact browser execution; preview/XLSX/print-DOM control flow completed before failure. No PDF or domain credit granted here.",
+  "preserved": {
+    "matchDomains": 6,
+    "productOwnerFiles": 170,
+    "productionChanged": false,
+    "realFinancialWrites": 0
+  },
+  "sourceOnlyF3Work": "Six recovered exact approved files remain pending serial source publication; no remote ACK claimed.",
+  "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+  "production": false,
+  "phaseAComplete": false
+}

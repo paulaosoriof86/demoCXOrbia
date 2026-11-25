@@ -495,11 +495,13 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  try{scoped=await reconcileCurrentScopedClauses({api,token,controls,files,index:typed.index,now});}
  catch(error){typed.failures.push({key:`${run.id}/${run.run_attempt}/scoped-clauses`,runId:run.id,runAttempt:run.run_attempt,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED',observedAt:now});}
  typed.index=scoped.index;
- if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&!scoped.changed&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
+ const automation=new Map([[DESCRIPTOR,'descriptor'],[POINTER,'pointer']].map(([file,key])=>[file,projectCurrentAutomationReceipt({current:(files.has(file)?JSON.parse(files.get(file)):controls[key]).currentAutomationReceipt,event,queue:typed.queue,journalExists})]));
+ const automationChanged=[...automation.values()].some(x=>x.changed);
+ if(journalExists&&!automationChanged&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&!scoped.changed&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
   const value=files.has(file)?JSON.parse(files.get(file)):controls[key];
-  if(!journalExists)value.currentAutomationReceipt=event;
+  value.currentAutomationReceipt=automation.get(file).receipt;
   value.currentResultIncorporationQueue=[...typed.queue.values()];value.currentFunctionalEvidenceIndex=typed.index;
   value.currentTypedResultFailures=[...new Map([...(value.currentTypedResultFailures||[]).filter(x=>typed.queue.has(x.key)),...typed.failures].map(x=>[x.key,x])).values()];
   if(typed.incorporated.length)value.lastTypedResultIncorporation={observedAt:now,runId:run.id,runAttempt:run.run_attempt,receipts:typed.incorporated,production:false,newDomainMatches:0};
@@ -508,6 +510,18 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  if(!journalExists)files.set(journalPath,jsonBytes(journal));
  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
  return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,recordedControlQueueRetired:controlQueue.retired,scopedReceiptsNormalized:scoped.upgraded,scopedResidualDomainsUpdated:scoped.changedDomains,typedFailures:typed.failures,productActions:0};
+}
+
+// The immutable journal records what needed incorporation when a run ended.
+// The live receipt records only the work still in the effective queue. Draining
+// an older journal must not replace a newer live receipt or change history.
+export function projectCurrentAutomationReceipt({current,event,queue,journalExists}){
+ const sameAttempt=current&&String(current.runId)===String(event.runId)&&String(current.runAttempt)===String(event.runAttempt);
+ if(sameAttempt)must(current.path===event.path&&current.gitBlob===event.gitBlob,'SOURCE_FAILURE:CURRENT_AUTOMATION_JOURNAL_BINDING');
+ const newer=current&&(Number(current.runId)>Number(event.runId)||(String(current.runId)===String(event.runId)&&Number(current.runAttempt)>Number(event.runAttempt)));
+ if(current&&(newer||(journalExists&&!sameAttempt)))return {receipt:structuredClone(current),changed:false};
+ const receipt={...(sameAttempt?current:{}),...event,pendingTypedResults:(event.pendingTypedResults||[]).filter(x=>queue.has(typedResultKey({runId:event.runId,runAttempt:event.runAttempt,jobId:x.jobId})))};
+ return {receipt,changed:JSON.stringify(receipt)!==JSON.stringify(current)};
 }
 
 export function validateConsumedJournal(journal,run,attempt){

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {makeMaterializationReceipt,projectMaterialization,bindControlPaths,validateProjectionRegistry,DESCRIPTOR,POINTER,gitBlob,jsonBytes} from './cxorbia-i3-current-control-projection.mjs';
-import {validateZipListing,selectPairedArtifact,runJournal,commitFiles,requiredPairedAssets,validateConsumedJournal,pendingRuns} from './cxorbia-i3-automatic-result-consumer.mjs';
+import {validateZipListing,selectPairedArtifact,runJournal,commitFiles,requiredPairedAssets,validateConsumedJournal,pendingRuns,projectCurrentAutomationReceipt} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {validateCurrentAuthorityAliases,validResumedBuild} from './cxorbia-i3-current-authority-alias-guard.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
@@ -204,4 +204,35 @@ test('typed window proof removes only its completed action and preserves all dom
 test('requested HR window result cannot be silently omitted',()=>{const f=fixture();f.requireHrWindow=true;assert.throws(()=>makeMaterializationReceipt(f),/HR_WINDOW_REQUIRED/);});
 for(const key of ['runId','runAttempt','revision','sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','production','hrWrites','fullDomain'])test('typed window proof rejects wrong '+key,()=>{
  const f=fixture();f.hrWindow=windowFixture(f);f.hrWindow[key]=typeof f.hrWindow[key]==='number'?99:typeof f.hrWindow[key]==='boolean'?true:'wrong';assert.throws(()=>makeMaterializationReceipt(f),/HR_WINDOW_/);
+});
+
+function automationFixture(){
+ const event={schemaVersion:'cxorbia.i3.automatic-execution-journal.v1',path:'docs/checkpoints/CXORBIA_I3_RUN50_ATTEMPT1_EXECUTION_JOURNAL.json',gitBlob:'b'.repeat(40),runId:50,runAttempt:1,outcome:'RECORDED_EXECUTION_NO_PRODUCT_PROMOTION',pendingTypedResults:[{jobId:60,name:'i3-finance-focal-reproof',conclusion:'failure',state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'},{jobId:70,name:'i3-run2382-academy-b7-isolated-dev-qa',conclusion:'success',state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}],materializationReceiptPath:null,production:false};
+ return {event,current:structuredClone(event),queue:new Map(),journalExists:true};
+}
+test('incorporated failed and successful jobs both leave the live pending list while the journal remains unchanged',()=>{
+ const f=automationFixture(),original=structuredClone(f.event),out=projectCurrentAutomationReceipt(f);
+ assert.equal(out.changed,true);assert.deepEqual(out.receipt.pendingTypedResults,[]);assert.deepEqual(f.event,original);
+ assert.deepEqual(f.current.pendingTypedResults,original.pendingTypedResults);assert.equal(out.receipt.outcome,original.outcome);
+});
+test('only the exact effective run/attempt/job queue keeps a live pending item',()=>{
+ const f=automationFixture();f.queue.set('50/1/60',{runId:50,runAttempt:1,jobId:60});f.queue.set('50/2/70',{runId:50,runAttempt:2,jobId:70});
+ const out=projectCurrentAutomationReceipt(f);assert.deepEqual(out.receipt.pendingTypedResults.map(x=>x.jobId),[60]);
+});
+test('a repaired live pending projection is idempotent and has no product or domain credit',()=>{
+ const f=automationFixture(),first=projectCurrentAutomationReceipt(f),again=projectCurrentAutomationReceipt({...f,current:first.receipt});
+ assert.equal(again.changed,false);assert.deepEqual(again.receipt,first.receipt);assert.equal(again.receipt.production,false);assert.ok(!Object.hasOwn(again.receipt,'newDomainMatches'));
+});
+test('draining an old journal cannot supersede a newer current run or attempt',()=>{
+ for(const current of [{runId:51,runAttempt:1},{runId:50,runAttempt:2}]){
+  const f=automationFixture();f.current={...f.current,...current,path:'newer-journal.json',gitBlob:'c'.repeat(40)};
+  const before=structuredClone(f.current),out=projectCurrentAutomationReceipt(f);assert.equal(out.changed,false);assert.deepEqual(out.receipt,before);
+ }
+});
+test('the current attempt pending projection requires the original journal binding',()=>{
+ for(const field of ['path','gitBlob']){const f=automationFixture();f.current[field]='wrong';assert.throws(()=>projectCurrentAutomationReceipt(f),/CURRENT_AUTOMATION_JOURNAL_BINDING/);}
+});
+test('a new current run publishes its effective pending set immediately',()=>{
+ const f=automationFixture();f.current={...f.current,runId:49,path:'old-journal.json'};f.journalExists=false;
+ const out=projectCurrentAutomationReceipt(f);assert.equal(out.changed,true);assert.equal(out.receipt.runId,50);assert.deepEqual(out.receipt.pendingTypedResults,[]);
 });

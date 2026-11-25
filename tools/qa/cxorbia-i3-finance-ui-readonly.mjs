@@ -15,7 +15,12 @@ async function installNetworkGuard(context,scope,project,host,stats){
     const request=route.request();let body=null;try{body=request.postDataJSON();}catch{}
     const action=classifyUiRequest({url:request.url(),method:request.method(),body,devOrigin:host,firebaseProject:project,tenantId:scope.tenantId,projectId:scope.projectId});
     if(action==='BLOCK_AUTOMATIC_HR'){stats.automaticHrSuppressed++;await route.abort('blockedbyclient');return;}
-    if(action.startsWith('DENY_')){stats.unexpectedDenied++;stats.denialKinds[action]=(stats.denialKinds[action]||0)+1;await route.abort('blockedbyclient');return;}
+    if(action.startsWith('DENY_')){
+      stats.unexpectedDenied++;stats.denialKinds[action]=(stats.denialKinds[action]||0)+1;
+      // Never log tokens, queries, bodies, or raw finance data. Bind an asset by path hash.
+      if(stats.deniedRequests.length<32){const url=new URL(request.url());stats.deniedRequests.push({kind:action,method:request.method(),resourceType:request.resourceType(),origin:url.origin,pathnameSha256:hashBytes(Buffer.from(url.pathname))});}
+      await route.abort('blockedbyclient');return;
+    }
     if(action==='ALLOW_AUTH')stats.allowedAuthRequests++;
     await route.continue();
     }catch(_){if(!closed)stats.routeControlFailures++;try{await route.abort('blockedbyclient');}catch{}}
@@ -73,7 +78,7 @@ async function readMovementPage(page,scope){
     return {projectId:data.currentProjectId,periodId:data.currentPeriodId,remote,projection:data.__financialMovements,rows,currency:period.currency,incomeLabels:window.CX.finStore.TIPOS_INGRESO,expenseLabels:window.CX.finStore.TIPOS_EGRESO,periodLabel:period.periodo||period.ronda||period.periodLabel||period.name||String(data.currentPeriodId),hrRevision:data.previewMeta?.sourceRevision};
   },{projectId:scope.projectId,periodId:scope.cashPeriodId});
 }
-async function dashboardProof(page,scope,privateDir,label){
+async function dashboardProof(page,scope,privateDir,label,failureArchive){
   await page.evaluate(()=>window.CX.router.nav('financiero'));
   await page.waitForFunction(()=>window.CX?.session?.view==='financiero'&&!!document.querySelector('#finExport'),null,{timeout:90000});
   const observed=await page.evaluate(()=>{
@@ -93,7 +98,7 @@ async function dashboardProof(page,scope,privateDir,label){
     need(await page.locator('#rkBody').count()===0,'FUNCTIONAL_DEFECT:C09_C10_EMPTY_DASHBOARD_EXPORT');
     return {decision:'NOT_APPLICABLE_NO_ELIGIBLE_ROWS',realRows:false,emptyStateObserved:true,independentHrKpisCertified:false};
   }
-  const result=await proveReport({page,exportButton:'#finExport',headers:DASHBOARD_HEADERS,rows:observed.rows,periodLabel:observed.periodLabel,title:'Dashboard Financiero',privateDir,label});
+  const result=await proveReport({page,exportButton:'#finExport',headers:DASHBOARD_HEADERS,rows:observed.rows,periodLabel:observed.periodLabel,title:'Dashboard Financiero',privateDir,label,failureArchive});
   return {...result,realRows:true,reference:'CURRENT_FINANCE_READ_MODEL_SAME_PERIOD',independentHrKpisCertified:false};
 }
 
@@ -105,13 +110,15 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
     production:false,i4Authorized:false,fullDomain:false,newDomainMatches:0,phaseAComplete:false,privateDataExposed:false,
     independentAdminSessions:0,authIdentityOrClaimsWrites:0,directFirestoreWrites:0,providerCommandsExecuted:0,financialMutationRequestsDispatched:0,
     paymentsTested:false,benefitsRetested:false,dashboardIndependentHrKpisCertified:false,automaticHrReconciliationProven:false,
-    rawExports:'PRIVATE_TEMP_PARSED_HASHED_REMOVED',stage:'PREFLIGHT',sessionAttempted:0,sessions:[],network:{automaticHrSuppressed:0,unexpectedDenied:0,allowedAuthRequests:0,routeControlFailures:0,denialKinds:{}},customTokenMints:0};
+    rawExports:'PRIVATE_TEMP_PARSED_HASHED_REMOVED_FAILED_PDF_ENCRYPTED_ONLY',stage:'PREFLIGHT',sessionAttempted:0,sessions:[],network:{automaticHrSuppressed:0,unexpectedDenied:0,allowedAuthRequests:0,routeControlFailures:0,denialKinds:{},deniedRequests:[]},customTokenMints:0};
   const stage=value=>{evidence.lastCompletedStage=evidence.stage;evidence.stage=value;};
   let app,browser,deleteApp,failure;
   try{
     const scope=readJson(UI_SCOPE_PATH),plan=readJson(scope.metadataScopePath);
     const descriptor=readJson(env.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),current=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
     validateUiEnvironment({scope,plan,descriptor,current,project,host,source,tree:env.FOCAL_TREE,branch:env.GITHUB_REF_NAME,mode:env.CXORBIA_I3_FINANCE_MODE,period:env.FINAL_FOCAL_PERIOD_ID,emulator:env.FIRESTORE_EMULATOR_HOST});
+    const failureArchive={destination,publicKey:readJson('docs/checkpoints/CXORBIA_I3_FINANCE_CURRENT_READONLY_SCOPE_20261117.json').encryptionPublicKey,
+      identity:{runId:evidence.runId,runAttempt:evidence.runAttempt,controlSha:evidence.controlSha,sourceSha:source,sourceTree:env.FOCAL_TREE}};
     const identity=descriptor.currentMaterialization;
     Object.assign(evidence,{scopeSha256:digest(scope),metadataScopeSha256:digest(plan),runtimeRevision:identity.runtimeRevision,runtimeDigest:identity.runtimeDigest,hostingVersion:identity.hostingVersion,prerequisiteArtifactDigest:scope.prerequisite.artifactDigest});
     need(/^[1-9][0-9]*$/.test(evidence.runId)&&/^[1-9][0-9]*$/.test(evidence.runAttempt)&&/^[a-f0-9]{40}$/.test(evidence.controlSha),'SOURCE_FAILURE:C09_C10_RUN_IDENTITY');
@@ -158,9 +165,9 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
         const browserPair=prepareMetadataCommand({movements:observed.remote.items.map(row=>({...row,docId:row.id}))},plan);
         need(browserPair.first.id===exact.first.id&&browserPair.second.id===exact.second.id&&digest({cat:browserPair.second.cat,fecha:browserPair.second.fecha})===digest(plan.patch),'PERSISTENCE_FAILURE:C09_C10_UI_ADVANCE_PAIR');
         evidence.activeSessionProgress.advancePair=true;sessionStage('MOVEMENT_EXPORT');
-        const movementExport=await proveReport({page,exportButton:'#movExport',headers:MOVEMENT_HEADERS,rows:expectedRows.map(x=>x.cells),periodLabel:observed.periodLabel,title:'Movimientos & Tesorería',privateDir,label:'session-'+index+'-movements'});
+        const movementExport=await proveReport({page,exportButton:'#movExport',headers:MOVEMENT_HEADERS,rows:expectedRows.map(x=>x.cells),periodLabel:observed.periodLabel,title:'Movimientos & Tesorería',privateDir,label:'session-'+index+'-movements',failureArchive});
         evidence.activeSessionProgress.movementExport=true;sessionStage('DASHBOARD');
-        const dashboard=await dashboardProof(page,scope,privateDir,'session-'+index+'-dashboard');
+        const dashboard=await dashboardProof(page,scope,privateDir,'session-'+index+'-dashboard',failureArchive);
         evidence.activeSessionProgress.dashboard=true;sessionStage('FINAL_READ');
         const afterUi=await page.evaluate(async({projectId,periodId})=>window.CX.data.getFinancialMovements({projectId,periodId,requireServerRead:true}),{projectId:scope.projectId,periodId:scope.cashPeriodId});
         assertExactMovementProjection({adcRows:before.ledger.movements,remote:afterUi,projection:observed.projection,projectId:scope.projectId,periodId:scope.cashPeriodId,tenantId:scope.tenantId});
@@ -181,7 +188,11 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
     Object.assign(evidence,{decision:'PASS_C09_C10_ADVANCE_UI_AND_EXPORT_SCOPE',currentAdminClaimsVerified:true,browserServerReadVerified:true,committedMetadataReceiptVerified:true,firstAdvanceUnchanged:true,secondMetadataExact:true,advanceCount:2,sameCashPeriod:true,newSessionParity:true,financialDocumentsStable:true,financeBeforeSha256:digest(before),financeAfterSha256:digest(after),atomicSnapshotClaimed:false});
   }catch(error){
     evidence.failureStage=evidence.stage;
-    evidence.error=evidence.network.unexpectedDenied||evidence.network.routeControlFailures?'ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST':publicError(error);
+    // Report the failing operation; a prior blocked asset must not hide it.
+    evidence.error=publicError(error);
+    if(evidence.network.unexpectedDenied||evidence.network.routeControlFailures)evidence.networkFailure='ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST';
+    if(error?.financePdfDiagnostic)evidence.failurePdf=error.financePdfDiagnostic;
+    if(error?.financeExportPartial)evidence.partialExportProof=error.financeExportPartial;
     evidence.errorSha256=hashBytes(Buffer.from(String(error?.message||error)));evidence.classification=evidence.error.split(':')[0];failure=Error(evidence.error);
   }finally{
     if(browser)await browser.close().catch(()=>{});if(app&&deleteApp)await deleteApp(app).catch(()=>{});
