@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "F3_ENDPOINT",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.f3.qa-endpoint.v1",
+    "decision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+    "jobName": "i3-b14-qa-provider-proof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "runId": "45493719666",
+    "runAttempt": "1",
+    "jobId": "138799051105",
+    "controlHead": "900641387029eec22e2dbfd5b9bc9109ae32dce0",
+    "artifactId": "14967637551",
+    "artifactDigest": "sha256:12521d78b84f076f8b7a27c9664cd40b942dc435d119212380d866522c799df0",
+    "entry": "receipt.json",
+    "resultSha256": "8acedd5453ecdc67f9cbb72806e207507d2ff50af38129ce3a99bf35f77740de"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": "PERSISTENCE_FAILURE",
+  "failureCodes": [
+    "PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED",
+    "PERSISTENCE_FAILURE:F3_QA_REMOTE_RESTORE_REQUIRED"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "applicationAckProven": false,
+    "remoteValuesRestored": false,
+    "recoveryRequired": true,
+    "notesPrivacyProven": false,
+    "ordinaryPasswordAuthenticationProven": false,
+    "caseCount": 1,
+    "eventCount": 1,
+    "remoteCommandAttemptCount": 3,
+    "cleanup": {
+      "firestore": false,
+      "auth": false,
+      "remoteMake": false,
+      "authPreservedForRecovery": true,
+      "errorCount": 1
+    },
+    "safety": {
+      "productionWrites": 0,
+      "operationalHrWrites": 0
+    },
+    "guarantees": {
+      "atomicHumanExcelCas": false,
+      "observedBaseGuard": true,
+      "remoteReceiptAndIndependentRead": true,
+      "uncertainWriteRetry": false
+    },
+    "remoteCleanupRequired": true,
+    "unproven": [
+      "provider_response_loss_live_fault_injection",
+      "external_human_concurrent_edit_atomicity",
+      "historical_period_live_fixture",
+      "T&A_private_notes_live_fixture"
+    ]
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}
