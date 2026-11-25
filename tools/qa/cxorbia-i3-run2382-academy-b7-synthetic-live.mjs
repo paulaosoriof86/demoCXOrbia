@@ -1255,8 +1255,11 @@ async function runExcelCanonicalReadOnly(){
   const e=process.env,host=String(e.HOSTING_URL||'').replace(/\/$/,''),tenantId=String(e.TENANT_ID||''),projectId=String(e.PROJECT_ID||''),out=String(e.QA_OUT||'');
   if(e.PROJECT!=='cxorbia-backend-dev'||host!=='https://cxorbia-backend-dev.web.app'||!tenantId||!projectId||!out||!/^[a-f0-9]{40}$/.test(e.FOCAL_SOURCE||''))throw new Error('SOURCE_FAILURE:EXCEL_CANONICAL_DEV_SCOPE');
   fs.mkdirSync(out,{recursive:true});
-  const result={schemaVersion:'cxorbia.i3.excel-canonical-readonly.v1',decision:'HOLD',sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,runId:e.GITHUB_RUN_ID,runtimeRevision:e.DEV_REVISION,runtimeDigest:e.RUNTIME_DIGEST,hostingVersion:e.HOSTING_VERSION_NAME,production:false,fullDomain:false,firestoreWrites:0,authWrites:0,hrWrites:0,commandPosts:0};
-  const started=Date.now(),get=async format=>{const r=await fetch(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format='+format+'&canonical='+e.GITHUB_RUN_ID+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});if(!r.ok)throw new Error('PROVIDER_FAILURE:EXCEL_CANONICAL_HTTP_'+r.status);return r.json();};
+  const native=e.CXORBIA_PAIRED_BUILD_ID;
+  if(native&&(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(native)||e.GITHUB_RUN_ID||e.GITHUB_ACTIONS))throw new Error('SOURCE_FAILURE:AMBIGUOUS_PAIRED_HR_EXECUTOR');
+  const runId=native||e.GITHUB_RUN_ID;
+  const result={schemaVersion:'cxorbia.i3.excel-canonical-readonly.v1',decision:'HOLD',sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,runId,...(native?{executionProvider:'GOOGLE_CLOUD_BUILD',runAttempt:1}:{}),runtimeRevision:e.DEV_REVISION,runtimeDigest:e.RUNTIME_DIGEST,hostingVersion:e.HOSTING_VERSION_NAME,production:false,fullDomain:false,firestoreWrites:0,authWrites:0,hrWrites:0,commandPosts:0};
+  const started=Date.now(),get=async format=>{const r=await fetch(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format='+format+'&canonical='+runId+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});if(!r.ok)throw new Error('PROVIDER_FAILURE:EXCEL_CANONICAL_HTTP_'+r.status);return r.json();};
   try{
     const {validateExcelCanonicalHrObservation}=await import('./cxorbia-i3-terminal-hr-observation.mjs');
     const before=await get('meta'),response=await get('json'),after=await get('meta');

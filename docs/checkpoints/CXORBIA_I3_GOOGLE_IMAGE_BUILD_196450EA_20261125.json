@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.google-native-product-image.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_EXACT_IMAGE_BUILD_AND_REGISTRY_READBACK",
+  "project": "cxorbia-backend-dev",
+  "location": "global",
+  "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "sourceObject": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89.tgz",
+    "generation": "1795627936767064",
+    "size": 5959940,
+    "sha256": "867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89"
+  },
+  "productInputFilesVerifiedAgainstGit": 3523,
+  "dockerCopyInputsVerified": 28,
+  "imageBuild": {
+    "id": "196450ea-342f-4a31-bf8d-a2620a31f155",
+    "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-235d6c28e722-google-1795627936767064",
+    "digest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55"
+  },
+  "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+  "nativeBuildStatus": "SUCCESS",
+  "nativeStepStatus": "SUCCESS",
+  "nativeDescribeFileSha256": "208dd0eab6fa09739d81597a62f5d5f72a452cea75b1dc92a56e532d72a05eb0",
+  "startedAt": "2026-11-25T17:32:43.110622642Z",
+  "completedAt": "2026-11-25T17:33:50.300879Z",
+  "independentRegistryDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+  "originalConfig": "backend/runtime/hr-live-service/cloudbuild.yaml",
+  "configBlob": "e9ec8e7c9b4fabe4d1f26d68bea284d56f2bde57",
+  "verifiedPredecessorControl": "56cf8f8c41301ca8acad2eb0340742d21a062486",
+  "sourceChecks": "PASS existing paired source checks and no unconsumed GitHub or external job",
+  "originalStagingDisposition": "The earlier input of 5887467 bytes omitted required Docker inputs tools/hr-source and tools/qa/tya-live-hr-read-probe-gate.mjs. The prebuild guard rejected it before a build was submitted. The final source archive includes both.",
+  "newProductImageBuilds": 1,
+  "trafficChanged": false,
+  "hostingChanged": false,
+  "devPublished": false,
+  "production": false,
+  "certifiedArtifact": false
+}

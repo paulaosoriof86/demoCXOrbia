@@ -1,0 +1,180 @@
+"""Run the existing paired DEV job with its verified Google image and native build identity."""
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+import zipfile
+
+import yaml
+
+descriptor_path = "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json"
+workflow_path = ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+job_name = "vrm154-156-dev-materialization"
+project = "cxorbia-backend-dev"
+branch = "recovery/cxorbia-phase-a-20260831"
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def output(*args):
+    return subprocess.check_output(args, text=True).strip()
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def write(path, value):
+    Path(path).write_text(json.dumps(value, indent=2) + "\n")
+
+
+def describe(build_id):
+    return json.loads(output("gcloud", "builds", "describe", build_id, "--region=global",
+                             "--project=" + project, "--format=json"))
+
+
+def verified_image(build, config, source, tree):
+    image = config["imageBuild"]
+    pin = config["sourceObject"]
+    expected = {"bucket": pin["bucket"], "object": pin["name"], "generation": str(pin["generation"])}
+    source_object = build.get("sourceProvenance", {}).get("resolvedStorageSource", {})
+    require(all(str(source_object.get(k)) == v for k, v in expected.items()), "IMAGE_STORAGE_SOURCE_CHANGED")
+    require(build.get("id") == image["id"] and build.get("projectId") == project and build.get("status") == "SUCCESS"
+            and build.get("serviceAccount") == config["serviceAccount"], "IMAGE_BUILD_IDENTITY")
+    original = yaml.safe_load(output("git", "show", source + ":backend/runtime/hr-live-service/cloudbuild.yaml"))
+    steps = build.get("steps", [])
+    require(len(steps) == len(original["steps"]) == 1 and steps[0].get("status") == "SUCCESS"
+            and steps[0]["name"] == original["steps"][0]["name"], "IMAGE_BUILD_STEP")
+    tag = image["tag"]
+    args = original["steps"][0]["args"]
+    require(build["substitutions"].get("_IMAGE") == tag and steps[0]["args"] in
+            (args, [arg.replace("${_IMAGE}", tag) for arg in args]), "IMAGE_BUILD_COMMAND")
+    matches = [row for row in build.get("results", {}).get("images", []) if row.get("name") == tag]
+    require(len(matches) == 1 and matches[0].get("digest") == image["digest"]
+            and re.fullmatch(r"sha256:[a-f0-9]{64}", image["digest"]), "IMAGE_BUILD_DIGEST")
+    require(output("git", "rev-parse", source + "^{tree}") == tree, "IMAGE_PRODUCT_TREE")
+    return {"id": image["id"], "status": "SUCCESS", "project": project, "location": "global",
+            "serviceAccount": build["serviceAccount"], "sourceObject": pin, "productSource": source,
+            "productTree": tree, "tag": tag, "digest": image["digest"], "startedAt": build["startTime"],
+            "completedAt": build["finishTime"]}
+
+
+def preflight(git_head):
+    require(output("git", "ls-remote", "origin", "refs/heads/" + branch).split()[0] == git_head,
+            "SOURCE_FAILURE:CURRENT_CONTROL_CHANGED")
+    # The repository is public. Use the same consumer and immutable journals for the GET-only preflight.
+    script = """
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {pendingRuns,pendingExternalTypedResults} from './tools/qa/cxorbia-i3-automatic-result-consumer.mjs';
+const read=p=>JSON.parse(fs.readFileSync(p));
+const api=async p=>{assert(p.startsWith('/repos/paulaosoriof86/demoCXOrbia/'));const r=await fetch('https://api.github.com'+p);assert(r.ok,'GITHUB_HTTP_'+r.status);return r.json()};
+const paths=execFileSync('git',['ls-tree','--name-only','-r','HEAD'],{encoding:'utf8',maxBuffer:16*1024*1024}).trim().split('\\n');
+const pending=await pendingRuns({api,currentRunId:null,currentRunAttempt:1,descriptor:read(process.env.CANDIDATE_DESCRIPTOR),knownPaths:new Set(paths),readJournal:async p=>read(p)});
+assert.equal(pending.length,0);assert.equal(pendingExternalTypedResults(read('CXORBIA_RECOVERY_EXECUTION_CURRENT.json').currentResultIncorporationQueue).length,0);
+"""
+    subprocess.run(["node", "--input-type=module", "-e", script], check=True)
+
+
+def main():
+    require(not os.environ.get("GITHUB_ACTIONS") and not os.environ.get("GITHUB_RUN_ID"), "AMBIGUOUS_EXECUTOR")
+    head = output("git", "rev-parse", "HEAD")
+    d = read(descriptor_path)
+    q = d["pendingDevSuccessor"]
+    config = q["pairedCloudBuild"]
+    source, tree = d["productSourceSha"], d["productTreeAuthority"]
+    require(q["sourceSha"] == source and q["sourceTree"] == tree and q["production"] is False
+            and not q["devPublished"] and q["scope"] == "RUNTIME_AND_HOSTING"
+            and d["status"] == "HOLD_I3_GTHN_PENDING_DEV" and q.get("hrPeriodWindowRequired") is not True,
+            "SOURCE_FAILURE:GOOGLE_PAIRED_SCOPE")
+    build_id = os.environ["CXORBIA_PAIRED_BUILD_ID"]
+    native = describe(build_id)
+    require(native["status"] == "WORKING" and native["projectId"] == project
+            and native["serviceAccount"] == config["serviceAccount"] and native["substitutions"]["_CXORBIA_CONTROL_SHA"] == head
+            and native["substitutions"]["_CXORBIA_REQUEST_BLOB"] == output("git","rev-parse","HEAD:"+descriptor_path)
+            and native["substitutions"]["_CXORBIA_PREDECESSOR_BLOB"] == d["postDeployRunSeal"]["receiptBlob"]
+            and native["substitutions"]["_CXORBIA_SOURCE_SHA"] == source and native["substitutions"]["_CXORBIA_SOURCE_TREE"] == tree,
+            "SOURCE_FAILURE:NATIVE_WORKER_BINDING")
+    workflow = yaml.safe_load(Path(workflow_path).read_text())
+    job = workflow["jobs"][job_name]
+    steps = job["steps"]
+    environment = os.environ
+    work = str(Path.cwd())
+    temp = tempfile.mkdtemp(prefix="cxorbia-i3-pair-")
+    env_file = Path(temp) / "job-env"
+    env_file.touch()
+    environment.update({k:str(v) for k,v in workflow["env"].items()})
+    environment.update({"FOCAL_SOURCE":source,"FOCAL_TREE":tree,"ACTIVE_STATUS":d["status"],
+                        "PAIR_ENV_ONLY":"false","FOCAL_OUT":job["env"]["FOCAL_OUT"],"RUNNER_TEMP":temp,
+                        "GITHUB_ENV":str(env_file),"GITHUB_WORKSPACE":work,
+                        "GITHUB_REPOSITORY":"paulaosoriof86/demoCXOrbia"})
+    out = Path(environment["FOCAL_OUT"])
+    out.mkdir(parents=True, exist_ok=True)
+    def run_step(index):
+        script = steps[index]["run"]
+        if index in (13,14):
+            require(script.count("$GITHUB_RUN_ID") == (1 if index == 13 else 2),"SOURCE_FAILURE:CACHE_BUSTER")
+            script = script.replace("$GITHUB_RUN_ID","$CXORBIA_PAIRED_BUILD_ID")
+        subprocess.run(["bash","-c",script],check=True)
+        for line in env_file.read_text().splitlines():
+            k,v = line.split("=",1)
+            require(k in {"PAIR_ASSET_FILES","SOURCE_DIR","DEV_REVISION","RUNTIME_DIGEST",
+                          "HOSTING_RELEASE_NAME","HOSTING_VERSION_NAME","HR_REVISION"},"UNKNOWN_JOB_OUTPUT")
+            environment[k] = v
+    preflight(head)
+    subprocess.run(["node","tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"],check=True)
+    image = verified_image(describe(config["imageBuild"]["id"]),config,source,tree)
+    def checkpoint(stage, details):
+        record={"stage":stage,"executionProvider":"GOOGLE_CLOUD_BUILD","executionId":build_id,
+                "sourceSha":source,"sourceTree":tree,"imageBuildId":image["id"],"digest":image["digest"],**details}
+        file=out/(stage+".json")
+        write(file,record)
+        uri="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/"+build_id+"/"+file.name
+        subprocess.run(["gcloud","storage","cp","--if-generation-match=0",str(file),uri],check=True)
+    checkpoint("start",{"predecessorReceipt":d["postDeployRunSeal"]["receiptBlob"]})
+    for index in (3,4,7,8,9):
+        run_step(index)
+    require("modules/cliente-extra.js" in environment["PAIR_ASSET_FILES"].split(),"PDF_OWNER_NOT_IN_SERVED_INVENTORY")
+    source_dir = Path(environment["SOURCE_DIR"])
+    require((source_dir/"backend/runtime/hr-live-service/cloudbuild.yaml").read_bytes() ==
+            Path("/workspace/backend/runtime/hr-live-service/cloudbuild.yaml").read_bytes(),"NATIVE_IMAGE_SOURCE_CHANGED")
+    sites=json.loads(output(str(Path(work)/"node_modules/.bin/firebase"), "hosting:sites:list",
+                            "--project",project,"--json","--non-interactive"))
+    require(sites.get("status")=="success" and "sites/"+project in json.dumps(sites.get("result")),"HOSTING_TARGET_UNAVAILABLE")
+    preflight(head)
+    digest_uri = "gcr.io/"+project+"/cxorbia-live-hr-dev@"+image["digest"]
+    (out/"image-uri.txt").write_text(digest_uri+"\n")
+    write(out/"build.json",{"sourceSha":source,"sourceTree":tree,"imageTag":digest_uri,
+                           "requestedTag":image["tag"],"builds":1,"production":False,"imageBuildId":image["id"]})
+    write(out/"build-resume.json",image)
+    run_step(12)
+    require(environment["RUNTIME_DIGEST"] == image["digest"],"RELEASE_COMPOSITION_FAILURE:RUNTIME_BUILD_MISMATCH")
+    checkpoint("runtime",{"revision":environment["DEV_REVISION"],"trafficPercent":100})
+    run_step(13)
+    checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
+    for index in (14,15):
+        run_step(index)
+    identity={"executionProvider":"GOOGLE_CLOUD_BUILD","runId":build_id,"runAttempt":1}
+    result=read(out/"result.json")
+    result.update(identity)
+    write(out/"result.json",result)
+    run_step(16)
+    hr=read(out/"hr-after/result.json")
+    require(all(hr.get(k)==v for k,v in identity.items()),"SOURCE_FAILURE:GOOGLE_HR_IDENTITY")
+    files=["result.json","hr-after/result.json","build-resume.json"]
+    if (out/"mailbox-environment-readback.json").is_file():
+        files.append("mailbox-environment-readback.json")
+    with zipfile.ZipFile("/workspace/paired-evidence.zip","w",zipfile.ZIP_DEFLATED) as archive:
+        for name in files:
+            archive.write(out/name,name)
+    print("CXORBIA_PAIRED_DEV_VERIFIED",build_id,source,image["digest"],flush=True)
+
+
+if __name__ == "__main__":
+    main()

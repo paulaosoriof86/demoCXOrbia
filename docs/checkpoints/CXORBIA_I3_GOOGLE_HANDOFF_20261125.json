@@ -228,7 +228,8 @@
       ],
       "independentGenerationAndBytesVerified": true,
       "productImageBuilt": false,
-      "devPublished": false
+      "devPublished": false,
+      "disposition": "Superseded before image submission when the Docker input parity check found two omitted paths."
     },
     "cloudBuildPermissionProbe": {
       "buildId": "691bd4dd-25d9-4cd9-b90f-6635a6769f88",
@@ -250,6 +251,23 @@
       ],
       "storageObjectCreateAtProject": false,
       "bucketAccess": "must be checked on the actual bucket"
+    },
+    "currentProductImage": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_196450EA_20261125.json",
+      "gitBlob": "cecd132b3f55fe09d41bcadea6877a8f61c9b421",
+      "sha256": "9a1f704745a817ed6cd3739d8179533ae53c2795bf85c19ca587311c3358a659",
+      "imageBuildId": "196450ea-342f-4a31-bf8d-a2620a31f155",
+      "imageDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+      "nextAction": "Publish the verified image digest and exact Hosting source through the paired DEV job. Independently consume its Google receipt before any functional write. Rebind F3, Finance and authenticated HR; retain all D08 cleanup and the proved Admin cycles.",
+      "sourceObject": {
+        "bucket": "cxorbia-backend-dev_cloudbuild",
+        "name": "cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89.tgz",
+        "generation": "1795627936767064",
+        "size": 5959940,
+        "sha256": "867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89"
+      },
+      "registryVerified": true,
+      "served": false
     }
   },
   "lastChromeConnection": {
@@ -262,7 +280,7 @@
   "next": {
     "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
     "academy": "Publish paired DEV source 235d6c28, including the real PDF repair and F3, from the verified immutable Google source object. Do not repeat the D08 request on 1691. Two subsequent attempts stalled on protected HR in distinct Admin contexts; the last attempted one normal authenticated reload, posted zero commands and verified exact cleanup. Preserve the earlier Admin progress and edit; use the new pair and provider-derived HR diagnosis before further learner fixtures.",
-    "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
+    "deployment": "Publish the verified image digest and exact Hosting source through the paired DEV job. Independently consume its Google receipt before any functional write. Rebind F3, Finance and authenticated HR; retain all D08 cleanup and the proved Admin cycles.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },
   "newDevDeploys": 0,

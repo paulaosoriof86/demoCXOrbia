@@ -388,8 +388,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V411.json",
-          "gitBlob": "06d149162a68cd219c8e2d8f11a09ffe48461f44",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V412.json",
+          "gitBlob": "81bf90a39ea11911ac80587ac036805a8150adbb",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -2515,8 +2515,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V411.json",
-    "gitBlob": "06d149162a68cd219c8e2d8f11a09ffe48461f44"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V412.json",
+    "gitBlob": "81bf90a39ea11911ac80587ac036805a8150adbb"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4516,8 +4516,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V411.json",
-    "matrixBlob": "06d149162a68cd219c8e2d8f11a09ffe48461f44",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V412.json",
+    "matrixBlob": "81bf90a39ea11911ac80587ac036805a8150adbb",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -6415,12 +6415,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V411.json",
-      "gitBlob": "06d149162a68cd219c8e2d8f11a09ffe48461f44"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V412.json",
+      "gitBlob": "81bf90a39ea11911ac80587ac036805a8150adbb"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V738_2026-11-25.json",
-      "gitBlob": "3375f06104e8bd786fdc28b71b273f288c6da46d"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V739_2026-11-25.json",
+      "gitBlob": "041704182c3c99ccf46fe4623dc5576fafba1da9"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7236,8 +7236,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V738_2026-11-25.json",
-  "findingsLedgerExpectedGitBlob": "3375f06104e8bd786fdc28b71b273f288c6da46d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V739_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "041704182c3c99ccf46fe4623dc5576fafba1da9",
   "nextFindingId": "VRM-379",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8257,7 +8257,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V411.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V412.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10832,7 +10832,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "06d149162a68cd219c8e2d8f11a09ffe48461f44",
+  "moduleTruthExpectedGitBlob": "81bf90a39ea11911ac80587ac036805a8150adbb",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -27582,7 +27582,39 @@
     "storageRulesDeploys": 0,
     "devPublished": false,
     "production": false,
-    "previousPendingProductSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749"
+    "previousPendingProductSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+    "pairedCloudBuild": {
+      "location": "global",
+      "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+      "workflow": {
+        "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "job": "vrm154-156-dev-materialization",
+        "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+        "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+      },
+      "sourceObject": {
+        "bucket": "cxorbia-backend-dev_cloudbuild",
+        "name": "cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89.tgz",
+        "generation": "1795627936767064",
+        "size": 5959940,
+        "sha256": "867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89"
+      },
+      "imageBuild": {
+        "id": "196450ea-342f-4a31-bf8d-a2620a31f155",
+        "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-235d6c28e722-google-1795627936767064",
+        "digest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55"
+      },
+      "launchTag": "cxorbia-vrm378-pair-8277d2a4-a1",
+      "step": {
+        "id": "vrm154-156-dev-materialization",
+        "name": "gcr.io/cloud-builders/gcloud@sha256:9c2b896ca8d587726aaaad99c83ba8bcf3f7495d82ae574906ede11d87dc31d0",
+        "entrypoint": "python3",
+        "args": [
+          "-c",
+          "import base64\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport shutil\nimport subprocess\nimport sys\nimport tempfile\nimport urllib.request\n\ndef run(*args):\n    subprocess.run(args,check=True)\n\ndef val(*args):\n    return subprocess.check_output(args,text=True).strip()\n\nproject=\"cxorbia-backend-dev\"\nlabel=\"cxorbia-vrm378-pair-8277d2a4-a1\"\nrows=json.loads(val(\"gcloud\",\"builds\",\"list\",\"--project=\"+project,\"--region=global\",\"--filter=tags=\"+label,\"--limit=3\",\"--format=json\"))\nactive=[r for r in rows if r[\"status\"]==\"WORKING\" and label in r.get(\"tags\",[])]\nif len(active)!=1:\n    raise RuntimeError(\"SOURCE_FAILURE:AMBIGUOUS_ACTIVE_PAIRED_BUILD\")\ncurrent=active[0]\nos.environ[\"CXORBIA_PAIRED_BUILD_ID\"]=current[\"id\"]\nhead=current[\"substitutions\"][\"_CXORBIA_CONTROL_SHA\"]\nif len(head)!=40 or any(c not in \"0123456789abcdef\" for c in head):\n    raise RuntimeError(\"SOURCE_FAILURE:CONTROL_SHA\")\ntmp=Path(tempfile.mkdtemp(prefix=\"cxorbia-control-\"))\nif not shutil.which(\"git\") or not shutil.which(\"jq\") or subprocess.run([\"/usr/bin/python3\",\"-c\",\"import yaml\"]).returncode:\n    os.environ[\"DEBIAN_FRONTEND\"]=\"noninteractive\"\n    run(\"apt-get\",\"-qq\",\"update\")\n    run(\"apt-get\",\"-qq\",\"install\",\"-y\",\"--no-install-recommends\",\"git\",\"jq\",\"python3-yaml\",\"curl\",\"xz-utils\")\nfor pkg,ver,digest in [\n    (\"node-linux-x64\",\"24.22.3\",\"KHsob+Fv9YerATvYujMbiyJqnRCvLtrcr/eTNqRqiOSGp97EOiRP1yP47+knGgQ/xnc3XY8xzkW587dlZzNqRA==\"),\n    (\"npm\",\"11.6.0\",\"d/P7DbvYgYNde9Ehfeq99+13/E7E82PfZPw8uYZASr9sQ3ZhBBCA9cXSJRA1COfJ6jDLJ0K36UJnXQWhCvLXuQ==\")]:\n    url=\"https://registry.npmjs.org/\"+pkg+\"/-/\"+pkg+\"-\"+ver+\".tgz\"\n    folder=tmp/pkg\n    folder.mkdir()\n    tar=tmp/(pkg+\".tgz\")\n    run(\"curl\",\"-fsSL\",\"--retry\",\"3\",\"-o\",str(tar),url)\n    if hashlib.sha512(tar.read_bytes()).digest()!=base64.b64decode(digest):\n        raise RuntimeError(\"SOURCE_FAILURE:NODE_PACKAGE_BYTES\")\n    run(\"tar\",\"xzf\",str(tar),\"-C\",str(folder),\"--strip-components=1\")\nbinpath=tmp/\"node-linux-x64/bin\"\nfor name in (\"npm\",\"npx\"):\n    (binpath/name).symlink_to(tmp/\"npm/bin\"/(name+\"-cli.js\"))\nos.environ[\"PATH\"]=str(binpath)+\":\"+os.environ[\"PATH\"]\nif val(\"node\",\"-v\")!=\"v24.22.3\" or val(\"npm\",\"-v\")!=\"11.6.0\":\n    raise RuntimeError(\"ENVIRONMENT_FAILURE:NODE_RUNTIME\")\nos.chdir(tmp)\nrun(\"git\",\"init\",\"-q\",\"control\")\nos.chdir(\"control\")\nrun(\"git\",\"remote\",\"add\",\"origin\",\"https://github.com/paulaosoriof86/demoCXOrbia.git\")\nrun(\"git\",\"fetch\",\"--no-tags\",\"--depth=95\",\"-q\",\"origin\",head)\nrun(\"git\",\"checkout\",\"--detach\",\"-q\",head)\nrun(\"/usr/bin/python3\",\"tools/qa/cxorbia-i3-paired-google.py\")\n"
+        ]
+      }
+    }
   },
   "currentEnvironmentBlocker": {
     "path": "docs/checkpoints/CXORBIA_I3_RUN2787_ENVIRONMENT_NOT_STARTED_20261125.json",
@@ -27715,5 +27747,13 @@
     "resultKey": "GOOGLE_CLOUD_SHELL/1795627229281376",
     "receiptSha256": "983cbd9a52296cb328601ce38c2133fb10cf5eae1e1da2b4bcd2d1aa5cc4606e",
     "nextAction": "Publish paired DEV source 235d6c28, including the real PDF repair and F3, from the verified immutable Google source object. Do not repeat the D08 request on 1691. Two subsequent attempts stalled on protected HR in distinct Admin contexts; the last attempted one normal authenticated reload, posted zero commands and verified exact cleanup. Preserve the earlier Admin progress and edit; use the new pair and provider-derived HR diagnosis before further learner fixtures."
+  },
+  "currentGoogleImageBuild": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_196450EA_20261125.json",
+    "gitBlob": "cecd132b3f55fe09d41bcadea6877a8f61c9b421",
+    "sha256": "9a1f704745a817ed6cd3739d8179533ae53c2795bf85c19ca587311c3358a659",
+    "imageBuildId": "196450ea-342f-4a31-bf8d-a2620a31f155",
+    "imageDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+    "nextAction": "Publish the verified image digest and exact Hosting source through the paired DEV job. Independently consume its Google receipt before any functional write. Rebind F3, Finance and authenticated HR; retain all D08 cleanup and the proved Admin cycles."
   }
 }
