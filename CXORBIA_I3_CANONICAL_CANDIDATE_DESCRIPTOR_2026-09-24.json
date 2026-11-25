@@ -35648,22 +35648,22 @@
   },
   "currentAutomationReceipt": {
     "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
-    "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_EXECUTION_JOURNAL.json",
-    "gitBlob": "9504eb7eef497a91bb0cfd6d987550e508348fa4",
-    "runId": 45520112416,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "gitBlob": "611caa955d1fa72175da7ace57c8dba328853e47",
+    "runId": 45522159779,
     "runAttempt": 1,
     "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
     "pendingTypedResults": [
       {
-        "jobId": 138889994810,
+        "jobId": 138896921773,
         "name": "i3-finance-focal-reproof",
         "conclusion": "failure",
         "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
       },
       {
-        "jobId": 138889998069,
+        "jobId": 138896924837,
         "name": "i3-run2382-academy-b7-isolated-dev-qa",
-        "conclusion": "success",
+        "conclusion": "failure",
         "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
       }
     ],
@@ -35992,32 +35992,76 @@
         "decision": "RECORDED_FINANCE_NOT_EXECUTED_ENVIRONMENT_FAILURE",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T01:02:40.872Z"
+      },
+      {
+        "key": "45522159779/1/138896921773",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896921773_TYPED_RESULT.json",
+        "gitBlob": "78bb8c07e7c37fffa06f9a07c445436977a3bb55",
+        "sha256": "0e6079e1c06c7b7ff844bf8e245e810255546c83f35b87c39d1e6b4f9dc27cb3",
+        "runId": 45522159779,
+        "runAttempt": 1,
+        "jobId": 138896921773,
+        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+        "artifactId": 14981330624,
+        "artifactDigest": "sha256:c1b83e1aa72aeb3a9041291fa69938498e119c530a42b8c13d3da1e0c840011a",
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T01:02:53.809Z"
+      },
+      {
+        "key": "45522159779/1/138896924837",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896924837_TYPED_RESULT.json",
+        "gitBlob": "e359ae0506680ab3d339c77e3b4a416c8315792b",
+        "sha256": "eb1f1415a1875b1c2f710d350082a75e68863aa5c8f4ed1c52486a4b7a7f1eba",
+        "runId": 45522159779,
+        "runAttempt": 1,
+        "jobId": 138896924837,
+        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+        "artifactId": 14979869919,
+        "artifactDigest": "sha256:265d895196b74b68bc043ff2f865eafe53f73c1ef2cee35682542d92742ffdff",
+        "decision": "RECORDED_D08_INCOMPLETE",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T01:02:53.809Z"
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T01:02:40.872Z"
+    "updatedAt": "2026-11-25T01:02:53.809Z"
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
-    "observedAt": "2026-11-25T01:02:40.872Z",
-    "runId": 45520112416,
+    "observedAt": "2026-11-25T01:02:53.809Z",
+    "runId": 45522159779,
     "runAttempt": 1,
     "receipts": [
       {
-        "key": "45520112416/1/138889994810",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889994810_TYPED_RESULT.json",
-        "gitBlob": "4fdc14e7ed31641162b249f241b69a0f73e8f47c",
-        "sha256": "a78d8b653be4358c59d77490b4aaaa12607f630eecb845a6ba9d061d3e1b4490",
-        "runId": 45520112416,
+        "key": "45522159779/1/138896921773",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896921773_TYPED_RESULT.json",
+        "gitBlob": "78bb8c07e7c37fffa06f9a07c445436977a3bb55",
+        "sha256": "0e6079e1c06c7b7ff844bf8e245e810255546c83f35b87c39d1e6b4f9dc27cb3",
+        "runId": 45522159779,
         "runAttempt": 1,
-        "jobId": 138889994810,
-        "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
-        "artifactId": null,
-        "artifactDigest": null,
-        "kind": "FINANCE_NOT_EXECUTED",
-        "decision": "RECORDED_FINANCE_NOT_EXECUTED_ENVIRONMENT_FAILURE",
+        "jobId": 138896921773,
+        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+        "artifactId": 14981330624,
+        "artifactDigest": "sha256:c1b83e1aa72aeb3a9041291fa69938498e119c530a42b8c13d3da1e0c840011a",
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
         "ownerReceiptCount": 0,
-        "observedAt": "2026-11-25T01:02:40.872Z"
+        "observedAt": "2026-11-25T01:02:53.809Z"
+      },
+      {
+        "key": "45522159779/1/138896924837",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896924837_TYPED_RESULT.json",
+        "gitBlob": "e359ae0506680ab3d339c77e3b4a416c8315792b",
+        "sha256": "eb1f1415a1875b1c2f710d350082a75e68863aa5c8f4ed1c52486a4b7a7f1eba",
+        "runId": 45522159779,
+        "runAttempt": 1,
+        "jobId": 138896924837,
+        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+        "artifactId": 14979869919,
+        "artifactDigest": "sha256:265d895196b74b68bc043ff2f865eafe53f73c1ef2cee35682542d92742ffdff",
+        "decision": "RECORDED_D08_INCOMPLETE",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T01:02:53.809Z"
       }
     ],
     "production": false,

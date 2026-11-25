@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_UI_READONLY",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-core-ui-readonly.v1",
+    "decision": "HOLD_C09_C10_UI_READONLY",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "runId": "45522159779",
+    "runAttempt": "1",
+    "jobId": "138896921773",
+    "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
+    "artifactId": "14981330624",
+    "artifactDigest": "sha256:c1b83e1aa72aeb3a9041291fa69938498e119c530a42b8c13d3da1e0c840011a",
+    "entry": "finance-ui-readonly.json",
+    "resultSha256": "c83666f6a2a452e66ccbb62e30b738bd99afc21d650a01f798acf1710eecf1c8"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": "ENVIRONMENT_FAILURE",
+  "failureCodes": [
+    "ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "sameArtifactReadback": {
+      "entry": "identity-live-readback.json",
+      "present": false,
+      "bindingExact": false,
+      "parseable": false,
+      "jobSuccessful": false,
+      "fieldsExact": false,
+      "noDeployment": false,
+      "readbackExact": false,
+      "sha256": null,
+      "verified": false
+    },
+    "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
+    "stage": "SESSION_1_MOVEMENT_EXPORT",
+    "failureStage": "SESSION_1_MOVEMENT_EXPORT",
+    "sessionAttempted": 1,
+    "activeSessionProgress": {
+      "auth": true,
+      "period": true,
+      "serverRows": true,
+      "dom": true,
+      "advancePair": true,
+      "movementExport": false,
+      "dashboard": false,
+      "finalRead": false
+    },
+    "failureUi": {
+      "available": true,
+      "firebaseUserPresent": true,
+      "contextAuthenticated": true,
+      "authorityApplied": true,
+      "expectedProjectSelected": true,
+      "expectedPeriodSelected": true,
+      "projectionLoaded": true,
+      "projectionKeyMatches": true,
+      "movExportPresent": true,
+      "finExportPresent": false,
+      "reportPreviewPresent": true,
+      "printTablePresent": true,
+      "route": "movimientos",
+      "role": "admin",
+      "movementRowCount": 3,
+      "reportRowCount": 3
+    },
+    "currentAdminClaimsVerified": null,
+    "browserServerReadVerified": null,
+    "committedMetadataReceiptVerified": null,
+    "firstAdvanceUnchanged": null,
+    "secondMetadataExact": null,
+    "sameCashPeriod": null,
+    "newSessionParity": null,
+    "financialDocumentsStable": null,
+    "independentAdminSessions": 0,
+    "advanceCount": null,
+    "customTokenMints": 1,
+    "network": {
+      "automaticHrSuppressed": 0,
+      "unexpectedDenied": 13,
+      "allowedAuthRequests": 6,
+      "routeControlFailures": 0
+    },
+    "sessions": [],
+    "safety": {
+      "authIdentityOrClaimsWrites": 0,
+      "directFirestoreWrites": 0,
+      "providerCommandsExecuted": 0,
+      "financialMutationRequestsDispatched": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}
