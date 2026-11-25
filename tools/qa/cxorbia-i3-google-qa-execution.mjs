@@ -152,7 +152,7 @@ export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readComm
   need(!env.GITHUB_RUN_ID&&!env.GITHUB_ACTIONS,'AMBIGUOUS_GOOGLE_QA_EXECUTION');
   const control=read('git',['rev-parse','HEAD']).trim();
   const start=verifyStart(env.CXORBIA_GOOGLE_QA_START,job,sourceSha,sourceTree,control,read);
-  const files=job===academyJob?['tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs',runnerFiles[1],academyAbsenceScope]:runnerFiles;
+  const files=job===academyJob?['tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs',runnerFiles[0],runnerFiles[1],academyAbsenceScope]:runnerFiles;
   need(job===academyJob||job==='i3-finance-focal-reproof','GOOGLE_QA_UNREGISTERED_JOB');
   for(const file of files){
     need(read('git',['hash-object',file]).trim()===read('git',['rev-parse',start.transportSha+':'+file]).trim(),'GOOGLE_QA_TRANSPORT_BLOB');

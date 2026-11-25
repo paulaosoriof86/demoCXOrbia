@@ -451,7 +451,38 @@
       "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
       "newBusinessProcessPasses": 0,
       "providerWrites": 0,
-      "observedAt": "2026-11-25T23:53:11.883840Z"
+      "observedAt": "2026-11-25T23:53:11.883840Z",
+      "runnerCorrection": {
+        "owner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+        "scope": "Capture first protected context before reload and second failing context before teardown. The existing Finance bootstrap probe permits server queries only under the exact authorized Admin actor, tenant, project and Firebase project. No change to product or write authorization.",
+        "verifiedFileSha256": {
+          "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs": "e5dc5b02d44c884a5961195c3d68d79c51ec3a34c19149c99c5cb3168954fdba",
+          "tools/qa/cxorbia-i3-finance-ui-readonly.mjs": "26c5aa8f4bb0863f07f01282f8c1e966325d41c6ae7195800f4f0b7411cfbd68",
+          "tools/qa/cxorbia-i3-d08-google-transport.sh": "9385229ec6cd04b31c54b116937f5d46d8bcfefdc685f36236a97a153e6b183d",
+          "tools/qa/cxorbia-i3-google-qa-execution.mjs": "c25ad27c0571e01f8de4bec4baa191dbe3b7695d666980a3cd460c131a22bd59"
+        },
+        "ownershipSelfTest": {
+          "pass": 44,
+          "fail": 0,
+          "writes": 0
+        },
+        "financeTypedAndGoogleExecutionAndD08NormalizerTests": {
+          "pass": 141,
+          "fail": 0
+        },
+        "syntheticTimeoutSequences": {
+          "pass": 5,
+          "fail": 0,
+          "cases": [
+            "first context ready",
+            "reload recovers",
+            "both contexts timeout",
+            "wrong identity blocks retry",
+            "command already posted blocks retry"
+          ]
+        },
+        "authenticatedLiveOutcome": "PENDING"
+      }
     },
     "financeDashboardOnSealedDev": {
       "iteration": "I3",
@@ -589,6 +620,12 @@
       "fail": 0,
       "fixOwner": "tools/qa/cxorbia-i3-google-materialization.test.mjs",
       "scope": "Synthetic predecessor now uses the referenced actual executor, with exact provider mismatch and GCP project metadata checks. No runtime change."
+    },
+    "currentChromeDevEntry": {
+      "observedAt": "2026-11-25T23:56:59.786895Z",
+      "path": "/index-backend-dev.html",
+      "visible": "Normal sign-in form with Administration, Cliente and Shopper choices",
+      "authenticatedSessionObserved": false
     }
   },
   "lastChromeConnection": {

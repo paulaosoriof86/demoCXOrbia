@@ -18,7 +18,7 @@ fi
 runner=tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
 [[ "$(git rev-parse HEAD)" == "$producer" && -z "${GITHUB_ACTIONS:-}${GITHUB_RUN_ID:-}" ]]
 [[ "$(gcloud config get-value project)" == "$PROJECT" && "$(node -p 'process.versions.node.split(".")[0]')" == 24 ]]
-for file in "$runner" tools/qa/cxorbia-i3-{google-qa-execution.mjs,finance-google-transport.sh,d08-google-transport.sh} docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json; do
+for file in "$runner" tools/qa/cxorbia-i3-{google-qa-execution.mjs,finance-ui-readonly.mjs,finance-google-transport.sh,d08-google-transport.sh} docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json; do
   [[ "$(git hash-object "$file")" == "$(git rev-parse "$CXORBIA_TRANSPORT_SHA:$file")" ]]
 done
 request=$(jq -er '.currentD08UiQaRequest.path' CXORBIA_RECOVERY_EXECUTION_CURRENT.json)

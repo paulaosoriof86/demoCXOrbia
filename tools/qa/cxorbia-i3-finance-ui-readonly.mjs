@@ -104,7 +104,7 @@ export async function financeBootstrapProbe({uid,tenantId,projectId,firebaseProj
   }
   return info;
 }
-async function captureHrOwner(page,identity){
+export async function captureHrOwner(page,identity){
   try{
     const state=await page.evaluate(()=>{
       const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY,src=window.CX?.dataSource;

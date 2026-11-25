@@ -592,8 +592,17 @@ async function runAcademyUiQa(){
     const nativeEvaluate=page.evaluate.bind(page);page.__d08NativeEvaluate=nativeEvaluate;
     page.evaluate=(fn,arg)=>{const caller=String(new Error().stack||'').split('\n').slice(2).find(x=>x.includes('synthetic-live.mjs:'))||'page.evaluate';return awaited(label+':page.evaluate:'+caller.trim(),()=>nativeEvaluate(fn,arg),95000);};
     const diagnostic={label,role:identity.role,initialStorageEmpty:true,stage:'OPENING',network:[],pageErrors:[]};result.sessionDiagnostics.push(diagnostic);save();
+    async function recordBootstrap(stage){
+      const {captureHrOwner}=await import('./cxorbia-i3-finance-ui-readonly.mjs');
+      const capturedAt=new Date().toISOString();
+      const state=await awaited(label+':bootstrap.'+stage,()=>captureHrOwner(page,{
+        uid:identity.uid,tenantId,projectId,firebaseProject:projectName
+      }),35000).catch(()=>({available:false}));
+      (diagnostic.bootstrapSnapshots??=[]).push({stage,capturedAt,state});
+      save();
+    }
     page.on('pageerror',err=>{if(diagnostic.pageErrors.length<10)diagnostic.pageErrors.push(redact(err.message));});
-    page.on('requestfailed',r=>{if(diagnostic.network.length<35)diagnostic.network.push({path:new URL(r.url()).pathname,error:redact(r.failure()?.errorText)});});
+    page.on('requestfailed',r=>{if(diagnostic.network.length<35)diagnostic.network.push({at:new Date().toISOString(),path:new URL(r.url()).pathname,error:redact(r.failure()?.errorText)});});
     await page.route('**/v1/cxorbia/commands',async route=>{
       try{check(ses.expected,'AUTH_FAILURE:D08_UNPLANNED_BROWSER_COMMAND');const command=route.request().postDataJSON();ses.lastRecord=await track(command,identity,ses.expected);check(ses.expected&&ses.activeRequest&&!ses.activeRequest.closed,'ENVIRONMENT_FAILURE:D08_LATE_REQUEST_ABORTED');ses.postCount++;ses.activeRequest.recordPath=ses.lastRecord.receiptPath;ses.activeRequest.dispatched=true;ses.activeRequest.dispatchedAt=new Date().toISOString();save();await awaited(label+':request.continue',()=>route.continue(),10000);}
       catch(error){diagnostic.interceptionError=redact(error.message);result.interceptionError=diagnostic.interceptionError;save();await route.abort('failed').catch(()=>{});}
@@ -617,16 +626,23 @@ async function runAcademyUiQa(){
       try{await page.waitForFunction(ready,scope,{timeout:75000});}
       catch(error){
         if(error.name!=='TimeoutError'||ses.postCount!==0)throw error;
+        await recordBootstrap('first-context-timeout');
         const bound=await page.evaluate(({uid,role,namespace,tenantId,projectId})=>{
           const ctx=window.CX?.backendAuth?.context?.()||{};
           return firebase.auth().currentUser?.uid===uid&&ctx.authenticated===true&&ctx.role===role&&ctx.authNamespace===namespace&&ctx.tenantId===tenantId&&ctx.projectIds?.includes(projectId);
         },scope);
-        if(!bound)throw error;
+        if(!bound)throw new Error('AUTH_FAILURE:D08_EXPECTED_SESSION_SCOPE_UNVERIFIED',{cause:error});
         diagnostic.contextReload='EXACT_AUTHENTICATED_SCOPE_NO_COMMANDS';save();
         await page.reload({waitUntil:'domcontentloaded',timeout:90000});
         await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
         await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());
-        await page.waitForFunction(ready,scope,{timeout:75000});
+        try{
+          await page.waitForFunction(ready,scope,{timeout:75000});
+        }catch(retryError){
+          if(retryError.name!=='TimeoutError')throw retryError;
+          await recordBootstrap('reloaded-context-timeout');
+          throw new Error('ENVIRONMENT_FAILURE:D08_PROTECTED_CONTEXT_TIMEOUT',{cause:retryError});
+        }
       }
       diagnostic.observed=await page.evaluate(()=>{const a=CX.backendAuth.context(),h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};return {authenticated:a.authenticated,role:a.role,namespace:a.authNamespace,tenantId:a.tenantId,projectId:CX.data.currentProjectId,periodId:CX.data.currentPeriodId,sourceRevision:CX.data.previewMeta?.sourceRevision||null,shopperCountry:h.shopperCountry||null,shopperReady:h.exactSessionShopperReady===true,ownVisits:h.ownVisits??null,boundaryActorId:CX.cxDataCommandBoundary.context().actorId};});
       ses.boundaryActorId=diagnostic.observed.boundaryActorId;check(ses.boundaryActorId,'AUTH_FAILURE:D08_BOUNDARY_ACTOR_MISSING');
