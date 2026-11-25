@@ -128,11 +128,20 @@ def main():
                           "HOSTING_RELEASE_NAME","HOSTING_VERSION_NAME","HR_REVISION"},"UNKNOWN_JOB_OUTPUT")
             environment[k] = v
     preflight(head)
-    c3=d["currentC3PreterminalAudit"]["sourceSha"]
-    require(re.fullmatch(r"[a-f0-9]{40}",c3),"SOURCE_FAILURE:C3_AUTHORITY_SHA")
-    if subprocess.run(["git","cat-file","-e",c3+"^{commit}"],stderr=subprocess.DEVNULL).returncode:
-        subprocess.run(["git","fetch","--no-tags","--depth=1","-q","origin",c3],check=True)
-    require(output("git","rev-parse",c3+"^{commit}")==c3,"SOURCE_FAILURE:C3_AUTHORITY_OBJECT")
+    # C3 proves both the historical source tree and ancestry of its audit control.
+    # A depth-one download supplies the object but cannot alone establish ancestry.
+    c3=d["currentC3PreterminalAudit"]
+    pins=[c3["sourceSha"],c3["controlHeadAtAudit"]]
+    for pin in pins:
+        require(re.fullmatch(r"[a-f0-9]{40}",pin),"SOURCE_FAILURE:C3_AUTHORITY_SHA")
+        if subprocess.run(["git","cat-file","-e",pin+"^{commit}"],stderr=subprocess.DEVNULL).returncode:
+            subprocess.run(["git","fetch","--no-tags","--depth=1","-q","origin",pin],check=True)
+    if subprocess.run(["git","merge-base","--is-ancestor",pins[1],head],stderr=subprocess.DEVNULL).returncode:
+        import datetime
+        earliest=min(int(output("git","show","-s","--format=%ct",pin)) for pin in pins)-86400
+        since=datetime.datetime.fromtimestamp(earliest,datetime.timezone.utc).isoformat()
+        subprocess.run(["git","fetch","--no-tags","--shallow-since="+since,"-q","origin",head],check=True)
+    subprocess.run(["git","merge-base","--is-ancestor",pins[1],head],check=True)
     subprocess.run(["node","tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"],check=True)
     image = verified_image(describe(config["imageBuild"]["id"]),config,source,tree)
     def checkpoint(stage, details):
