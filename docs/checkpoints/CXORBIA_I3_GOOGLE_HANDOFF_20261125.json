@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.i3.google-work-handoff.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "integrity": {
+    "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "ownerPaths": 111,
+    "sourceInventory": 170,
+    "ownerMismatches": [],
+    "sourceFileMismatches": [],
+    "matchesPreserved": 6,
+    "controlProjectionAndAliasTests": 198,
+    "f3AndCollaborationTests": 165,
+    "financeTransportAndUiTests": 132,
+    "integratedControlAndFinanceTests": 399,
+    "integratedControlAndFinanceFailures": 0,
+    "integratedTestLogSha256": "a0d7aa8d8b44958163d6130e707afd792d4fdbc1f3e52740bd9231c2e36e1f31"
+  },
+  "confirmed": {
+    "cloudAccess": "docs/checkpoints/CXORBIA_I3_GOOGLE_DEV_PREFLIGHT_20261125.json",
+    "sdkSignature": {
+      "method": "Firebase Admin SDK createCustomToken with application default credentials and explicit serviceAccountId",
+      "sha256OfTestToken": "b1540025ff32810e6a29a8b5325c30efebc52e829daa39e22da92c3f7c133b01",
+      "testTokenExchanged": false,
+      "separateLiveQaSignIn": "confirmed in both Finance readbacks"
+    },
+    "financeResults": [
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json"
+    ],
+    "printProof": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json",
+    "productProof": "docs/checkpoints/CXORBIA_I3_VRM378_PDF_SOURCE_20261125.json",
+    "financeFirstDenials": {
+      "unexpectedDenied": 4,
+      "kind": "DENY_OTHER",
+      "resourceType": "image",
+      "method": "GET",
+      "observations": [
+        {
+          "origin": "https://tyaconsultores.com",
+          "pathSha256": "fac3fa033fa4905c3769fd2232bbf8ffae2c1f9ec33964435b1ede9927550ded",
+          "count": 2
+        },
+        {
+          "origin": "https://flagcdn.com",
+          "pathSha256": "b5d2a8bfcd58d61dbccc64340a29bbcb2706e0ce2ae84b05164e972ce8660ac3",
+          "count": 1
+        },
+        {
+          "origin": "https://flagcdn.com",
+          "pathSha256": "3fa2b5c808c78e5e7ea14d1f0acb5f90eb550bcaa291b9b6f81c665e76693cfc",
+          "count": 1
+        }
+      ],
+      "causedProtectedBackendFailure": "NOT_ESTABLISHED"
+    }
+  },
+  "lastChromeConnection": {
+    "googleConsolesOpened": true,
+    "cloudShellUsed": true,
+    "subsequentOriginLookup": "No connected browser was found for the originating browser instance.",
+    "causeAtDevice": "UNKNOWN",
+    "holderActionEstablished": false
+  },
+  "next": {
+    "finance": "On the served 1691 predecessor use the 12f9 producer, Node 24 and pinned Google transport. Inspect CX_BACKEND_LAST_STATE and the protected Firestore read that blocks backendReady() before HR publication. Read only bounded diagnostic codes/counts and correlate the failed read with its owning module. Preserve the mutation guards. The Admin session and the HTTP 200 alone did not satisfy the flow.",
+    "academy": "Resume the clean D08 role and course-view request on the same predecessor, after establishing its evidence ingestion and owned-fixture cleanup. Retain the prior accepted cycles and cleanups.",
+    "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
+    "production": "Require I3 GO and Paula approval of the exact I4 artifact."
+  },
+  "newDevDeploys": 0,
+  "newFinancialMovements": 0,
+  "newI3BusinessProcessPasses": 0,
+  "phaseAComplete": false,
+  "terminalReleaseEligible": false,
+  "production": false,
+  "concurrentControl": {
+    "sha": "d45f9b80bc18422f1492cefa00bc5f612e4ab941",
+    "retainedFinding": "VRM-377",
+    "pdfFinding": "VRM-378",
+    "matrixVersion": "V406",
+    "ledgerVersion": "V733"
+  }
+}

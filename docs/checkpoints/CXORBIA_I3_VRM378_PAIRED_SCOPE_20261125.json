@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-proven-scope.v1",
+  "production": false,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/modules/cliente-extra.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ],
+  "components": [
+    {
+      "finding": "VRM-376",
+      "path": "docs/checkpoints/CXORBIA_I3_VRM376_F3_WRITER_PRE_EDIT_TRUTH_20261124.json",
+      "gitBlob": "092293b051de7e62d6b96b608ded0fc981430db7"
+    },
+    {
+      "finding": "VRM-378",
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json",
+      "gitBlob": "6bd86a61955c647f0f5e16311860c38a0a159e26"
+    }
+  ]
+}

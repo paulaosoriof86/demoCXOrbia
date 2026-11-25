@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "findingId": "VRM-378",
+  "iteration": "I3",
+  "state": "SOURCE_PROVEN_PENDING_PAIRED_DEV",
+  "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "predecessorProductSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "expectedParentSha": "f56d895fa8ae9be1181c77abfba34a8f217d0c31",
+  "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "approvedProductFiles": [
+    "app/modules/cliente-extra.js"
+  ],
+  "approvedSourceBlobs": {
+    "app/modules/cliente-extra.js": "b87de5036fab23c8f3f0633b0fd03f663ea4c755"
+  },
+  "preservedF3SourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_VRM376_PUBLISHED_SOURCE_20261125.json",
+    "gitBlob": "01dd01d7fcbddc528472b7c083361f043948f599",
+    "sourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+    "sourceTree": "5be93b3151578bc15f9cbe2f8d686e2ec663c72f",
+    "sourceTestsPass": 105,
+    "sourceTestsFail": 0,
+    "production": false
+  },
+  "preservedF3Files": [
+    {
+      "path": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "approvedBlob": "7f638cc27347fdea658446ab88fc45c2a764372f",
+      "successorBlob": "7f638cc27347fdea658446ab88fc45c2a764372f"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "approvedBlob": "d9d82a6ce33187dc5ecf3a1320940cf57b293646",
+      "successorBlob": "d9d82a6ce33187dc5ecf3a1320940cf57b293646"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+      "approvedBlob": "2e0cf87c27af9deb24a857ae6f82333f71fe9767",
+      "successorBlob": "2e0cf87c27af9deb24a857ae6f82333f71fe9767"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "approvedBlob": "298882cf4f1fbb89c3c723ae519eec4a7a4063ea",
+      "successorBlob": "bbdfb0d9d45bd0349357c7ab99c6a22285da45c2"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "approvedBlob": "8797340f96494047f61c76ba163d5ea231eae7b2",
+      "successorBlob": "8797340f96494047f61c76ba163d5ea231eae7b2"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs",
+      "approvedBlob": "7b6f0d50c9002fa6c1c727941ef2899b2840e061",
+      "successorBlob": "7b6f0d50c9002fa6c1c727941ef2899b2840e061"
+    }
+  ],
+  "preservedF3QaControl": "The retained B14 QA runner includes the subsequent control-only correction on the recovery branch.",
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM378_PAIRED_SCOPE_20261125.json",
+  "scopeReceiptBlob": "a599663abf232063a910027b762280e0968cddef",
+  "sourceTestsPass": 167,
+  "sourceTestsFail": 0,
+  "sourceTests": {
+    "f3AndClientCollaboration": 165,
+    "syntheticChromiumPrint": 2,
+    "nodeTestLogSha256": "a5ecf18e780021350b49ea682787c6625f06e29f92940315c38abebf1d5b24e7"
+  },
+  "syntheticBefore": {
+    "reportSha256": "f9b8cc04ff0f2bb47c066710f108305ff9e36329a5e8ab7d69fd828638d4199d",
+    "chromium": "141.0.7390.37",
+    "pdfjs": "3.11.174",
+    "shortRows": {
+      "dom": true,
+      "pdf": true
+    },
+    "longRows": {
+      "dom": true,
+      "pdf": false,
+      "missingCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "dateDigitsRetainedAcrossWhitespace": true
+    }
+  },
+  "syntheticAfter": {
+    "reportSha256": "dbb0d3a1281cd12fc85ae3c61e66c8120af77065d00c38cb08d00103e478c41d",
+    "ownerGitBlob": "b87de5036fab23c8f3f0633b0fd03f663ea4c755",
+    "ownerSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+    "shortRows": {
+      "dom": true,
+      "pdf": true,
+      "missingCells": []
+    },
+    "longRows": {
+      "dom": true,
+      "pdf": true,
+      "missingCells": []
+    },
+    "deployed": false
+  },
+  "operationalFinanceCertified": false,
+  "production": false,
+  "devPublished": false,
+  "newDomainMatches": 0,
+  "findings": [
+    {
+      "id": "VRM-376",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT"
+    },
+    {
+      "id": "VRM-378",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT"
+    }
+  ],
+  "previousPendingProductSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "app/modules/cliente-extra.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ]
+}
