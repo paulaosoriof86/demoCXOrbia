@@ -125,11 +125,15 @@ test('pending approved source produces a publication step before new candidate f
  out.descriptor.activeBlocker='VRM376_SOURCE_PROVEN_SINGLE_PAIRED_DEV_PENDING';
  const got=projectCurrentResidualNextAction(out);assert.match(got.nextAction,/First verify and publish the approved pending source/);assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
 });
-test('an observed account lock precedes execution without losing pending source or business obligations',()=>{
+test('an Actions account lock preserves the Google DEV path, producer order and business obligations',()=>{
  const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix};
  out.descriptor.activeBlocker='ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED';out.descriptor.productSourceSha='1'.repeat(40);
  const got=projectCurrentResidualNextAction(out);
- assert.match(got.nextAction,/^I3: Resolve the observed GitHub Actions account lock first/);assert.match(got.nextAction,/zero steps/);
+ assert.match(got.nextAction,/^I3: GitHub Actions recorded zero steps/);
+ assert.match(got.nextAction,/Google Cloud DEV lane when QA signing and external evidence incorporation are verified/);
+ assert.match(got.nextAction,/Finance and Academy requests on their producer-bound served source before paired publication/);
+ for(const control of Object.values(out))assert.equal(control.nextExactAction,got.nextAction);
+ assert.equal(projectCurrentResidualNextAction(out).changed,false);
  assert.match(got.nextAction,/FINANCE_RESIDUAL:/);assert.match(got.nextAction,/E08:/);assert.equal(out.descriptor.productSourceSha,'1'.repeat(40));assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
  assert.equal(out.descriptor.activeBlocker,'ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED');
 });

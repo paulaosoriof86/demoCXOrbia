@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.i3.google-dev-executor-preflight.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-25T10:37:30.807977+00:00",
+  "kind": "PROVIDER_ACCESS_AND_EXISTING_DEV_IDENTITY_READBACK",
+  "controlParent": "bc0551d77652728e59ea92e3acca9ca404980f21",
+  "controlTree": "8efe4a0d7b8386229f96a8253c5b579da03de37e",
+  "producerControl": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+  "producerTree": "3b2e41440118c6bf3371a1ee1f451abce008799e",
+  "frozenPlanZipSha256": "4ef4124040ba8a81f71f4291b5ddefbc2183ffffb24b52079b5137664e9cc44c",
+  "frozenPlanCheckedManifestEntries": 73,
+  "f9HistoricalControl": "0a4c617c8af0f1c58394e78a28494ca044480d82",
+  "f9ReleaseManifestSha256": "29399792e75729c4d5db28865dd793a74f2d79b73f78704d03d5c27094ed68ab",
+  "google": {
+    "browser": "Chrome extension",
+    "project": "cxorbia-backend-dev",
+    "region": "us-central1",
+    "cloudShellActiveAccountVerified": true,
+    "permissionsVerified": [
+      "cloudbuild.builds.create",
+      "cloudbuild.builds.get",
+      "datastore.entities.get",
+      "firebaseauth.users.create",
+      "firebaseauth.users.delete",
+      "firebaseauth.users.get",
+      "firebaseauth.users.update",
+      "firebasehosting.sites.get",
+      "firebasehosting.sites.update",
+      "run.revisions.get",
+      "run.services.get",
+      "run.services.update"
+    ],
+    "runtimeServiceAccountActAs": true,
+    "cloudBuildLatestObserved": {
+      "id": "4aef2a53-fa02-4f38-9529-904415e31b02",
+      "status": "SUCCESS",
+      "belongsToThisExecution": false
+    },
+    "firebaseAuthLookup": {
+      "projectQuotaHeader": "cxorbia-backend-dev",
+      "http": 200,
+      "syntheticAbsentUidCount": 0,
+      "userSessionTested": false
+    },
+    "qaSigner": {
+      "serviceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "permissions": [
+        "iam.serviceAccounts.signBlob"
+      ],
+      "role": "projects/cxorbia-backend-dev/roles/cxorbiaI3QaBlobSigner",
+      "scope": "ONE_SERVICE_ACCOUNT_ONE_AUTHORIZED_CLOUD_SHELL_USER",
+      "conditionExpiresAt": "2026-11-25T12:33:59Z",
+      "initialChallengeHttp": 403,
+      "policyReadBack": true,
+      "effectivePermissionReadBack": true,
+      "postPropagationChallengeHttp": 200,
+      "signatureSha256": "cf9a1a9e900e21906c7088b93db1319a1b99504c39ca3fbdf9a4cd589c21581f",
+      "newPermanentKey": false,
+      "notFirebaseLogin": true
+    }
+  },
+  "servingReadback": {
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "sourceBinding": "prior paired receipt and current 48-file SHA-256 comparison",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "trafficPercent": 100,
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "servedFileChecks": {
+      "observedAt": "2026-11-25T10:26:05.802119+00:00",
+      "matches": 48,
+      "count": 48,
+      "errors": []
+    },
+    "referenceReceiptSha256": "540141fa8451733d09bff2b40df5b5a1de2497bb998dc909821c886ddb548110"
+  },
+  "pendingApprovedSource": {
+    "sha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+    "tree": "5be93b3151578bc15f9cbe2f8d686e2ec663c72f"
+  },
+  "historicalArchive": {
+    "artifactId": 14934489092,
+    "runId": 45425168217,
+    "artifactDigest": "sha256:e20cacd0b7f3fb4b959fffc472201579208143effea5a372a4fdf5a64bbac909",
+    "snapshotSha256": "437426fb7e95fd2a7d9dfaa7d6740a7aa24e34a20a8ef54f61dfc63167589032",
+    "visits": 836,
+    "periods": 19,
+    "githubMetadataVerified": true,
+    "archiveAndSnapshotVerified": true,
+    "countryPeriods": 38,
+    "validator": "validateHistorySeed",
+    "operationalImports": 0
+  },
+  "localChecks": {
+    "financeUiAndTypedTests": 114,
+    "academyRunnerSelfTests": 40,
+    "continuityProjectionTests": 32
+  },
+  "externalMaterializationReceiptSupport": "PENDING_IMPLEMENTATION_AND_REAL_EXECUTION",
+  "actionsAccountLock": "RUN2787_RECORDED_ZERO_STEPS",
+  "cumulativeFunctionalEvidenceUnchanged": true,
+  "newBuilds": 0,
+  "newDeploys": 0,
+  "newFunctionalPass": 0,
+  "operationalWrites": 0,
+  "production": false,
+  "authorizationI4": false
+}
