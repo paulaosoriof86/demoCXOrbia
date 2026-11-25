@@ -252,69 +252,27 @@
     "academyResults": [
       "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
       "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json",
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795627423976545_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795627423976545_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795639660815985_TYPED_RESULT.json"
     ],
     "currentAcademy": {
-      "decision": "HOLD",
-      "observedAt": "2026-11-25T16:55:02.230000+00:00",
-      "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
-      "served": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
-      "observations": {
-        "admin": {
-          "courseId": "a_fin_op",
-          "courseRevision": "ef7a65c588a992812ac946a05cadab38bd3fa356018297ac002af52cacd8f479",
-          "lessons": 4,
-          "evaluationQuestions": 3,
-          "uiCourse": true,
-          "uiContent": true,
-          "uiEvaluation": true,
-          "uiProgress": true,
-          "providerAck": true,
-          "durableReadback": true,
-          "independentNewSession": true,
-          "replayNoDuplicate": true
-        },
-        "authorizedAdminEdit": {
-          "providerAck": true,
-          "durableReadback": true,
-          "independentNewSession": true,
-          "replayNoDuplicate": true
-        },
-        "observedRoles": [
-          "admin"
-        ],
-        "requestsJournaled": 9,
-        "priorFixtureAbsent": true,
-        "cleanup": {
-          "ok": true,
-          "exactKnownPathsOnly": true,
-          "deletedDocuments": 25,
-          "deletedAuth": 4,
-          "remainingOwnedDocuments": 0,
-          "remainingOwnedAuth": 0,
-          "ownershipTransaction": true
-        },
-        "postflightExact": true,
-        "productionIndexUnchanged": true,
-        "safety": {
-          "hrWrites": 0,
-          "realLearnerWrites": 0,
-          "realCourseWrites": 0,
-          "realVisitsWritten": 0,
-          "paymentWrites": 0,
-          "emailCalls": 0,
-          "calendarCalls": 0,
-          "productionDeploys": 0
-        }
-      },
-      "archiveVerified": true,
-      "archiveSha256": "f65e945f3edb0c7c1fa9ace5a4d627a241b3aa91d3fb34fa5e309af0e42e0c96",
-      "verifiedScreenshots": 7,
-      "transportConclusion": "Original streaming archive read failed with IncompleteRead. Downloaded the same sealed generation to file, matched every byte and verified the screenshot hashes. The worker result is recorded directly from that archive.",
-      "classification": "MAPPING_FAILURE",
-      "failureCode": "SHOPPER_MEMBERSHIP_UID_MISMATCH",
-      "fixtureOwner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
-      "enforcingProduct": "app/adapters/cxorbia-shopper-membership-wiring-v1.js"
+      "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "decision": "RECORDED_D08_INCOMPLETE",
+      "result": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795639660815985_TYPED_RESULT.json",
+      "sha256": "f1c8860770abdc1611aa3890448cfd105f8206f1e15ecbdaf0a18d55cc53d508",
+      "archiveSha256": "162722cf3169b1416152c88ecc5e8f2bda57c5bc018c2ba80d8b8b7970463e9a",
+      "rolesObserved": [
+        "admin"
+      ],
+      "commandsObserved": 6,
+      "deletedDocuments": 25,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "exactKnownPathsOnly": true,
+      "ownershipTransaction": true,
+      "observedError": "page.waitForFunction: Timeout 75000ms exceeded.",
+      "newDomainMatches": 0
     },
     "currentAcademyRetry": {
       "decision": "HOLD",
@@ -580,8 +538,8 @@
   },
   "next": {
     "finance": "Two independent Admin Finance sessions passed C09/C10 Movimientos and Dashboard preview, XLSX and native PDF on sealed235d. Preserve the two advances, scope and role boundaries. Execute the existing Academy residual on its served request, then publish E10 through the paired job using the independently verified image without rebuilding. Rebind outstanding Finance roles, HR KPIs, E10, F3 and other source-bound residuals to the new native receipt.",
-    "academy": "Use the new D08 request bound to Google 18d8d2fd and the tested Chromium HTTP/1 transport. Preserve the earlier Admin cycles, clean fixture evidence, and the original 25-clause contract.",
-    "deployment": "Use the verified immutable E10 image in the existing paired job after the active predecessor QA.",
+    "academy": "Publish the verified E10 image and Hosting through the existing paired DEV job, using its exact source and receipt. Preserve the six Admin commands, captures and exact D08 cleanup on 235d. Diagnose the timed wait against its journal and rebind only remaining learner/role clauses to the new native receipt.",
+    "deployment": "Dispatch the original paired DEV job for the verified E10 image using launch tag cxorbia-vrm379-pair-5fa6ff90-a1. Incorporate the Google receipt before the next functional write.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Rebind the existing isolated GT/HN endpoint fixture to this receipt. Use genuine QA producer identity and verify provider ACK, independent remote readback, replay and exact cleanup.",
     "googleExecution": {
