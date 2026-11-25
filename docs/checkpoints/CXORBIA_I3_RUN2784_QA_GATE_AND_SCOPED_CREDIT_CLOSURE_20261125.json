@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.control-closure.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-25T00:40:53.580195+00:00",
+  "sourceParent": "3fcdf963cb2d31d6f4275b4ab363774d41966e54",
+  "failure": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "runId": 45518873588,
+    "runNumber": 2784,
+    "runAttempt": 1,
+    "authorityJobId": 138885330821,
+    "owner": "tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs",
+    "cause": "First no-browser dependency branch parser stopped only at else and incorrectly included the newly authorized UI elif branch.",
+    "correction": "Stop at elif or else while retaining all original no-browser/logging assertions.",
+    "financeExecuted": false,
+    "d08Executed": false
+  },
+  "a08": {
+    "jobId": 138885588333,
+    "jobConclusion": "success",
+    "artifactId": 14978969186,
+    "artifactSha256": "cfcff1fdfaa7fa1c57420d47c7eab10a0026d1ee14ffb6b5803c53f42af5956d",
+    "typedReceipt": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_JOB138885588333_TYPED_RESULT.json",
+    "mode": "PROVENANCE_ONLY",
+    "GTFailedChecks": [
+      "LINK_PROVIDER_ACK"
+    ],
+    "legacyFailedChecks": [
+      "FIRST_NAME_AUTHORITY_MATCH"
+    ],
+    "loginAttempts": 0,
+    "providerWrites": 0
+  },
+  "methodClosure": {
+    "existingConsumerOnly": true,
+    "exactIndexedA08ArtifactRenormalization": true,
+    "originalReceiptsImmutable": true,
+    "oneIndexEntryPerRunAttemptJob": true,
+    "scopedCreditOnly": [
+      "RUN2783_HN_ORDINARY_PASSWORD_LIFECYCLE",
+      "RUN2760_FOUR_USERS_API_DENIALS",
+      "RUN2783_SECOND_NOVEMBER_ADVANCE_METADATA"
+    ],
+    "matrixResidualsProjectedFromVerifiedReceipts": true,
+    "c3OwnerReceiptRulesUnchanged": true,
+    "newDomainMatches": 0
+  },
+  "validation": {
+    "requiredCanonicalTestAndSyntaxCommandsPassed": 59,
+    "financeCompatibilityAndUiTestsPassed": 147,
+    "historySourceObjectFetchedReadOnly": "e2458f449ee76d965ee39effdb5790d2e6d45d8c",
+    "productionTouched": false,
+    "integratedScopedProjectionTestsPassed": 188
+  },
+  "nextAction": {
+    "triggers": [
+      "i3-finance-ui-readonly",
+      "i3-d08-academy-ui-once"
+    ],
+    "financeMode": "READONLY_C09_C10_CURRENT_UI",
+    "d08Mode": "RECOVERY_ONLY",
+    "d08Request": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+    "a08Rerun": false,
+    "advanceProductSource": false,
+    "waitForConsumerBeforeNextPublication": true
+  },
+  "production": false,
+  "authorizationI4": false,
+  "phaseAComplete": false
+}

@@ -97,7 +97,7 @@ test('canonical workflow stays below its existing 510000-byte guard',()=>{
 test('read-only branch resolves no browser and dependency failures are observable',()=>{
  const src=fs.readFileSync('tools/qa/cxorbia-prei4-final-focal-finance-live.mjs','utf8');
  assert(!src.includes("import {chromium} from 'playwright'"));assert(src.indexOf("await import('playwright')")>src.indexOf('process.exit(0)'));
- const deps=fs.readFileSync('tools/qa/cxorbia-i3-finance-dependencies.sh','utf8'),branch=deps.split('\nelse\n')[0];
+ const deps=fs.readFileSync('tools/qa/cxorbia-i3-finance-dependencies.sh','utf8'),branch=deps.split(/\n(?:elif\b|else\b)/)[0];
  assert(!branch.includes('playwright'));assert(branch.includes('tee'));assert(branch.includes('set -Eeuo pipefail'));assert(!branch.includes('>/dev/null'));
 });
 test('dependency helper belongs only to the finance job',()=>{

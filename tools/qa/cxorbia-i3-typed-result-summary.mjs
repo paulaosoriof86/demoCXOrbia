@@ -2,6 +2,7 @@
 // Consumer verifies the archive, exact producer attempt/job/window, and pins first.
 import crypto from 'node:crypto';
 import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {publicA08ClauseRefs} from './cxorbia-i3-scoped-clause-projection.mjs';
 
 const HASH=/^[a-f0-9]{64}$/, SHA=/^[a-f0-9]{40}$/;
 const hash=text=>crypto.createHash('sha256').update(text).digest('hex');
@@ -158,6 +159,7 @@ export function summarizeTypedResult({resultText,transport,expectedIdentity={},i
       finalChecks:{...booleans(raw.finalChecks,['seal','passwords','apis','storage','requestedScopePass','pass']),...counts(raw.finalChecks,['expectedAssetCount','servedAssetCount'])},
       sameArtifactAfter:bool(raw.sameArtifactAfter),storageProof:booleans(raw.storageProof,['pass','objectStable']),
       storageDiscoveryExecuted:bool(raw.storageDiscovery?.executed),preservedEvidenceCount:length(raw.preservedEvidence),
+      acceptedClauseRefs:publicA08ClauseRefs(raw,t),
       ...(provenanceOnly?{diagnosticComplete:bool(raw.diagnosticComplete),provenanceDiagnostics:diagnostics}:{}),
       safety:{...counts(raw.safety,['providerCommands','directAuthWrites','directFirestoreWrites','storageWrites','hrWrites','passwordChanges','passwordResets','fixtureCreates','builds','deploys']),
         ...(provenanceOnly?counts(raw.safety,['loginAttempts','browserLaunches','customTokensUsed']):{}),

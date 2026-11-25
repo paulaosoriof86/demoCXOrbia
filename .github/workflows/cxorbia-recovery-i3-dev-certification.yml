@@ -85,7 +85,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs
-      node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring}.test.mjs
+      node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring,scoped-clause-projection}.test.mjs
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs
       node --test tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs
       node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs

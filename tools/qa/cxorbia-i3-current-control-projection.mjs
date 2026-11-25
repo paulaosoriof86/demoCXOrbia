@@ -220,7 +220,10 @@ export function bindControlPaths(out,{matrixPath,ledgerPath}){
  Object.assign(acc.evidence,{path:matrixPath,gitBlob:matrixBlob});
  // The same business lock can occur in descriptor. Its accounting evidence is a pointer, not historical C3 data.
  if(d.activePhaseAClosureLock20261110)d.activePhaseAClosureLock20261110=clone(p.activePhaseAClosureLock20261110);
- return new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)],[matrixPath,jsonBytes(m)],[ledgerPath,jsonBytes(l)],[out.receiptPath,jsonBytes(out.receipt)],[out.archivePath,jsonBytes(out.archived)]]);
+ const files=new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)],[matrixPath,jsonBytes(m)],[ledgerPath,jsonBytes(l)]]);
+ if(out.receiptPath)files.set(out.receiptPath,jsonBytes(out.receipt));
+ if(out.archivePath)files.set(out.archivePath,jsonBytes(out.archived));
+ return files;
 }
 
 export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matrix:m}){

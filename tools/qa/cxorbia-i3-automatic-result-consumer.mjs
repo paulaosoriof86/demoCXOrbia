@@ -3,10 +3,11 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
 import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
+import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses} from './cxorbia-i3-scoped-clause-projection.mjs';
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
@@ -266,6 +267,70 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
  return {queue,incorporated,failures,requestsReconciled,index:{...index,results:[...entries.values()],updatedAt:now}};
 }
 
+// Reconcile only already indexed A08/metadata evidence. Older lossy A08
+// summaries are normalized from the exact existing artifact, never re-executed.
+// The original typed receipt remains immutable and the index keeps one key.
+export async function readScopedIndexResults({api,token,index,controls,files,download=downloadArtifact}){
+ const next=structuredClone(index),verified=[];let upgraded=0;
+ for(const entry of next.results){
+  const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
+  const savedBytes=await read(entry.path),kind=JSON.parse(savedBytes)?.kind;
+  if(!['A08_RESIDUAL','FINANCE_METADATA'].includes(kind))continue;
+  let item=verifiedTypedReceipt(entry,savedBytes,{gitBlob,sha256});
+  if(item.result.kind==='A08_RESIDUAL'&&!Object.hasOwn(item.result.observations||{},'acceptedClauseRefs')){
+   const old={path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},saved=item.result,proof=saved.provenance;
+   must(entry.ownerReceiptCount===0&&/^docs\/checkpoints\/CXORBIA_I3_RUN\d+_ATTEMPT\d+_JOB\d+_TYPED_RESULT\.json$/.test(old.path),'SOURCE_FAILURE:A08_NORMALIZATION_ORIGIN');
+   const artifact=await api(`/repos/${REPO}/actions/artifacts/${entry.artifactId}`);
+   must(String(artifact.id)===String(entry.artifactId)&&artifact.digest===entry.artifactDigest&&!artifact.expired&&String(artifact.workflow_run?.id)===String(entry.runId)&&artifact.workflow_run?.head_sha===entry.controlHead,'SOURCE_FAILURE:A08_NORMALIZATION_ARTIFACT');
+   const archive=await download(api,artifact,token);
+   try{
+    must(archive.digest===entry.artifactDigest,'SOURCE_FAILURE:A08_NORMALIZATION_ARCHIVE_DIGEST');
+    const text=fs.readFileSync(path.join(archive.folder,'result.json'),'utf8');
+    must(sha256(text)===proof.resultSha256,'SOURCE_FAILURE:A08_NORMALIZATION_RAW_HASH');
+    const result=summarizeTypedResult({resultText:text,transport:{...proof,jobName:saved.producer.jobName,jobConclusion:saved.producer.jobConclusion,verifiedArchiveDigest:archive.digest},expectedIdentity:saved.identity.observed});
+    must(result.kind==='A08_RESIDUAL'&&result.ownerSpecificReceipts.length===0,'MAPPING_FAILURE:A08_NORMALIZATION_BOUNDARY');
+    result.normalizationOrigin=old;
+    const normalizedPath=old.path.replace('_TYPED_RESULT.json','_TYPED_RESULT_SCOPED_V1.json'),bytes=jsonBytes(result);
+    if(controls.blobs?.has(normalizedPath))must(controls.blobs.get(normalizedPath)===gitBlob(bytes),'SOURCE_FAILURE:A08_NORMALIZED_RECEIPT_CHANGED');
+    files.set(normalizedPath,bytes);
+    Object.assign(entry,{path:normalizedPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes)});
+    item={entry,result};upgraded++;
+   }finally{archive.cleanup();}
+  }
+  verified.push(item);
+ }
+ return {index:next,verified,upgraded};
+}
+
+// Current residual text is a projection of verified partial evidence. C3 keeps
+// its existing strict owner/contract gates, and all classifications stay fixed.
+export async function reconcileCurrentScopedClauses({api,token,controls,files:destination,index,now,download=downloadArtifact}){
+ const files=new Map(destination);
+ const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
+ const scoped=await readScopedIndexResults({api,token,index,controls,files,download});
+ const active={...controls,descriptor:files.has(DESCRIPTOR)?JSON.parse(files.get(DESCRIPTOR)):structuredClone(controls.descriptor),pointer:files.has(POINTER)?JSON.parse(files.get(POINTER)):structuredClone(controls.pointer)};
+ active.matrix=files.has(active.descriptor.moduleTruthPath)?JSON.parse(files.get(active.descriptor.moduleTruthPath)):controls.matrix;
+ active.ledger=files.has(active.descriptor.findingsLedgerPath)?JSON.parse(files.get(active.descriptor.findingsLedgerPath)):controls.ledger;
+ let financeScopeSha256=null;
+ if(scoped.verified.some(x=>x.result.kind==='FINANCE_METADATA'))financeScopeSha256=canonicalSha256(JSON.parse(await read(FINANCE_METADATA_SCOPE_PATH)));
+ const projection=projectCurrentScopedClauses({matrix:active.matrix,verified:scoped.verified,financeScopeSha256});
+ if(projection.changed){
+  const out={descriptor:structuredClone(active.descriptor),pointer:structuredClone(active.pointer),ledger:structuredClone(active.ledger),matrix:projection.matrix};
+  for(const control of [out.descriptor,out.pointer])control.currentFunctionalEvidenceIndex=structuredClone(scoped.index);
+  for(const control of [out.descriptor,out.pointer,out.ledger,out.matrix]){control.updatedAt=now;if(Object.hasOwn(control,'asOf'))control.asOf=now;}
+  const date=now.slice(0,10),compact=date.replaceAll('-','');
+  const matrixPath=files.has(active.descriptor.moduleTruthPath)?active.descriptor.moduleTruthPath:`RECOVERY-I3-MODULE-TRUTH-MATRIX-${compact}-V${Number(active.matrix.version.slice(1))+1}.json`;
+  const ledgerPath=files.has(active.descriptor.findingsLedgerPath)?active.descriptor.findingsLedgerPath:`CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V${Number(active.descriptor.findingsLedgerPath.match(/FULL_V(\d+)_/)[1])+1}_${date}.json`;
+  out.ledger.schemaVersion=`cxorbia.i3.canonical-cumulative-findings-ledger.full.v${Number(ledgerPath.match(/FULL_V(\d+)_/)[1])}`;
+  assertPreserved(active,out);
+  const bound=bindControlPaths(out,{matrixPath,ledgerPath});
+  const check=validateCurrentAuthorityAliases(out);must(check.pass,'MAPPING_FAILURE:SCOPED_PROJECTED_CONTROLS:'+check.failures.join(','));
+  for(const [file,text]of bound)files.set(file,text);
+ }
+ for(const [file,text]of files)destination.set(file,text);
+ return {...scoped,changedDomains:projection.changedDomains,changed:projection.changed||scoped.upgraded>0};
+}
+
 export function runJournal({run,jobs,artifacts,needs,now}){
  must(run.repository?.full_name===REPO&&run.head_branch===BRANCH&&run.path===`.github/workflows/${WORKFLOW}`,'SOURCE_FAILURE:RUN_AUTHORITY');
  return {schemaVersion:'cxorbia.i3.automatic-execution-journal.v1',repository:REPO,iteration:'I3',state:'HOLD',runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,controlHead:run.head_sha,observedAt:now,workflowStatus:run.status,workflowConclusion:run.conclusion||'FINALIZER_IN_PROGRESS',needs:needs||null,jobs:jobs.filter(j=>j.name!==SELF).map(j=>({id:j.id,name:j.name,status:j.status,conclusion:j.conclusion,runAttempt:j.run_attempt,startedAt:j.started_at,completedAt:j.completed_at})),artifacts:artifacts.map(a=>({id:a.id,name:a.name,digest:a.digest,createdAt:a.created_at,expired:a.expired})),newDomainMatches:0,production:false,productActionsPerformedByConsumer:0};
@@ -346,7 +411,11 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
  const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...queue.values()]}};
  const typed=await incorporateTypedResults({api,token,run,jobs,artifacts,controls:typedControls,journal,files,now});
- if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
+ let scoped={index:typed.index,upgraded:0,changedDomains:[],changed:false};
+ try{scoped=await reconcileCurrentScopedClauses({api,token,controls,files,index:typed.index,now});}
+ catch(error){typed.failures.push({key:`${run.id}/${run.run_attempt}/scoped-clauses`,runId:run.id,runAttempt:run.run_attempt,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED',observedAt:now});}
+ typed.index=scoped.index;
+ if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&!scoped.changed&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
  for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
   const value=files.has(file)?JSON.parse(files.get(file)):controls[key];
@@ -358,7 +427,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  }
  if(!journalExists)files.set(journalPath,jsonBytes(journal));
  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
- return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,typedFailures:typed.failures,productActions:0};
+ return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,scopedReceiptsNormalized:scoped.upgraded,scopedResidualDomainsUpdated:scoped.changedDomains,typedFailures:typed.failures,productActions:0};
 }
 
 export function validateConsumedJournal(journal,run,attempt){
