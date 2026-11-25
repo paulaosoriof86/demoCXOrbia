@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_METADATA",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-advance-metadata-result.v1",
+    "decision": "PASS_FINANCE_METADATA_SECOND_ADVANCE",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "success"
+  },
+  "provenance": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "jobId": "138871923237",
+    "controlHead": "7fa5862854e07b71bcb2c73edf73eab2e29fa8e9",
+    "artifactId": "14977308482",
+    "artifactDigest": "sha256:408850cd4c9a2243424229c6b26ff3c7471318e6387a086ca0302382c1b3759a",
+    "entry": "finance-metadata.json",
+    "resultSha256": "115532acd1e110cf5e51c4200bb514eb8866e73612536a81c263d30c2ea8c180"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": null,
+      "runtimeDigest": null,
+      "hostingVersion": null
+    },
+    "complete": false
+  },
+  "classification": null,
+  "failureCodes": [],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "idempotentReplay": true,
+    "idempotentNoop": false,
+    "readbackExact": true,
+    "firstUnchanged": true,
+    "financialFactsUnchanged": true,
+    "sameLedgerTotal": true,
+    "providerCommandsExecuted": 2,
+    "providerWrites": 3,
+    "advanceCount": 2,
+    "movementCount": 3,
+    "newMovements": 0,
+    "allocationOrPayoutWrites": 0,
+    "mutationOutcome": null,
+    "scopeSha256": "cf3f7d579596192d25c5eaf980faae68dbaf3086caa358122dab744316421269",
+    "safety": {
+      "hrWrites": 0,
+      "bankWrites": 0,
+      "externalPaymentWrites": 0,
+      "directFirestoreWrites": 0,
+      "financialFactWrites": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

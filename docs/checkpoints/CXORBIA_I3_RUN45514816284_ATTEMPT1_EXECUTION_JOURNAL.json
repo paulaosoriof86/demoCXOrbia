@@ -1,0 +1,1528 @@
+{
+  "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "iteration": "I3",
+  "state": "HOLD",
+  "runId": 45514816284,
+  "runNumber": 2783,
+  "runAttempt": 1,
+  "controlHead": "7fa5862854e07b71bcb2c73edf73eab2e29fa8e9",
+  "observedAt": "2026-11-25T00:06:16.480Z",
+  "workflowStatus": "in_progress",
+  "workflowConclusion": "FINALIZER_IN_PROGRESS",
+  "needs": {
+    "vrm153-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "canonical-candidate-authority": {
+      "result": "success",
+      "outputs": {
+        "source_sha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "source_tree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+        "source_qa_sha256": "d200b835c243be9d78552ed9108d18da7ab116ab1b2612a2abf55e4d61d67561",
+        "source_qa_run_attempt": "1"
+      }
+    },
+    "vrm143-151-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-b3-schedule-two-shopper-dev-qa": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-b7-reservation-to-visit-two-role-dev-qa": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-b7-shopper-notice-unread-route-dev-qa": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm143-151-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-historical-dry-run": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-historical-amount-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-canonical-owner-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-seven-exceptions-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-payment-eligibility-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-provider-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-runtime-only-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-final-canonical-dry-run": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-008-mapping-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-008-runtime-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-002-postulation-semantic-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-002-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-002-hosting-live-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-003-identity-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-003-owner-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-003-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-cumulative-regression-source-guard": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-004-hosting-materialization-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-004-cumulative-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "prei4-admin-003-cumulative-live-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-finance-focal-reproof": {
+      "result": "success",
+      "outputs": {}
+    },
+    "vrm085-postulation-sync-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm085-control-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm086-exact-alias-control-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm088-live-fixture-availability-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "gate21-same-certified-artifact-after-vrm088": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm083-hr-browser-revision-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm083-runtime-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm083-runtime-readback": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm084-benefits-human-label-hosting": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm076-terminal-module-truth-finalizer": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm077-postulation-hr-conflict-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm078-external-project-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm079-documents-resources-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm080-connected-admin-config-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm081-population-credential-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v70-vrm069-operational-visit-key-runtime": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "c3-preterminal-module-truth": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm043-name-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm043-control-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "certify": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "live-fixtures": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "gate21": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-vrm039-config-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-vrm037-042-source-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-vrm037-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm044-focal-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm044-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v21-paula-remediation-dev": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v21-paula-remediation-readback": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v25-second-visual-forensic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v26-identity-assignment-reconcile": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v27-duplicate-visit-owner-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v28-second-review-remediation": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v28-second-review-resume": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v33-profile-boundary-hosting-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v41-second-review-cumulative-live-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v42-milton-durable-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "v43-milton-durable-repair": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "c3-terminal-dev-identity-readback": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-capability-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-credential-route-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-provider-activate": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-runtime-readiness": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-source-contract": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-live-resume": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "pre-i4-cert-res-runtime-only-rematerialize": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm151-durable-historical-reconciliation": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm153-reconciliation-readback-diagnostic": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm154-156-frontend-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm154-156-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm185-admin-live-adjudication": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm157-dev-readback-only": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm153-durable-repair": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm185-paula-identity-topology-readonly": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm185-global-identity-consolidation-plan": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm185-admin-provider-source-test": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "phasea-rejected-checkpoint-source-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "b1-canonical-visible-identity-source-proof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "b1-canonical-visible-identity-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "phasea-representative-same-artifact-live-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm267-support-focal-live": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "julissa-identity-topology-readonly": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "julissa-identity-adjudication-write": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm215-shopper-population-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm217-durable-credential-sweep": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm219-exact-alias-remap": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm226-human-identity-topology": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "admin-cluster-a-postulations-lifecycle": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm249-reservations-read-model-source-reproof": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "b1-oct07-authenticated-readonly-visual": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-a09b11-backend-only-dev-materialization": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-a09b11-post-deploy-readback-only": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-d04e03-hosting-only-dev": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm287-dev-two-visit": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "vrm290-dev-hosting": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-current-source-hosting-dev": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-dev-storage-cors-alias-focal": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-b4-bank-flags-readonly": {
+      "result": "skipped",
+      "outputs": {}
+    },
+    "i3-keeper-role-e2e-readonly": {
+      "result": "failure",
+      "outputs": {}
+    },
+    "i3-run2382-academy-b7-isolated-dev-qa": {
+      "result": "failure",
+      "outputs": {}
+    },
+    "i3-b14-qa-provider-proof": {
+      "result": "success",
+      "outputs": {}
+    }
+  },
+  "jobs": [
+    {
+      "id": 138871404737,
+      "name": "canonical-candidate-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:58Z",
+      "completedAt": "2026-11-25T00:03:03Z"
+    },
+    {
+      "id": 138871406044,
+      "name": "vrm076-terminal-module-truth-finalizer",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871406459,
+      "name": "pre-i4-cert-res-source-contract",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871406693,
+      "name": "pre-i4-cert-res-credential-route-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871407094,
+      "name": "pre-i4-cert-res-capability-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871407130,
+      "name": "pre-i4-cert-res-runtime-readiness",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871407152,
+      "name": "pre-i4-cert-res-provider-activate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:01:56Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871452961,
+      "name": "vrm044-focal-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:02:02Z",
+      "completedAt": "2026-11-25T00:01:56Z"
+    },
+    {
+      "id": 138871922564,
+      "name": "i3-b3-schedule-two-shopper-dev-qa",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871922597,
+      "name": "i3-b7-reservation-to-visit-two-role-dev-qa",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871922695,
+      "name": "vrm143-151-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923237,
+      "name": "i3-finance-focal-reproof",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:07Z",
+      "completedAt": "2026-11-25T00:04:17Z"
+    },
+    {
+      "id": 138871923243,
+      "name": "vrm151-provider-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923276,
+      "name": "vrm153-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923565,
+      "name": "vrm086-exact-alias-control-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923806,
+      "name": "prei4-admin-003-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923858,
+      "name": "i3-b7-shopper-notice-unread-route-dev-qa",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923863,
+      "name": "vrm151-canonical-owner-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871923955,
+      "name": "prei4-admin-008-mapping-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924065,
+      "name": "prei4-admin-003-owner-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924217,
+      "name": "prei4-cumulative-regression-source-guard",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924326,
+      "name": "prei4-admin-002-hosting-live-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924397,
+      "name": "vrm085-postulation-sync-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924419,
+      "name": "prei4-admin-004-cumulative-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924722,
+      "name": "prei4-admin-002-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924738,
+      "name": "vrm151-final-canonical-dry-run",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924772,
+      "name": "vrm143-151-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924792,
+      "name": "vrm151-historical-amount-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924815,
+      "name": "vrm151-runtime-only-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924821,
+      "name": "pre-i4-cert-res-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924839,
+      "name": "prei4-admin-008-runtime-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924844,
+      "name": "pre-i4-vrm037-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924878,
+      "name": "vrm083-hr-browser-revision-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924898,
+      "name": "vrm151-historical-dry-run",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924902,
+      "name": "vrm077-postulation-hr-conflict-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871924957,
+      "name": "prei4-admin-003-identity-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925004,
+      "name": "vrm151-payment-eligibility-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925043,
+      "name": "vrm151-seven-exceptions-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925105,
+      "name": "gate21-same-certified-artifact-after-vrm088",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925180,
+      "name": "vrm043-control-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925279,
+      "name": "pre-i4-vrm039-config-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925290,
+      "name": "prei4-admin-004-hosting-materialization-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925305,
+      "name": "vrm079-documents-resources-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925368,
+      "name": "vrm081-population-credential-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925425,
+      "name": "prei4-admin-002-postulation-semantic-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925580,
+      "name": "vrm088-live-fixture-availability-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925650,
+      "name": "pre-i4-cert-res-runtime-only-rematerialize",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925674,
+      "name": "v28-second-review-remediation",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925691,
+      "name": "v42-milton-durable-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925705,
+      "name": "v27-duplicate-visit-owner-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925731,
+      "name": "v70-vrm069-operational-visit-key-runtime",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925767,
+      "name": "vrm084-benefits-human-label-hosting",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925797,
+      "name": "vrm083-runtime-readback",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925818,
+      "name": "vrm078-external-project-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925901,
+      "name": "c3-terminal-dev-identity-readback",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925913,
+      "name": "vrm080-connected-admin-config-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871925960,
+      "name": "pre-i4-cert-res-live-resume",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926004,
+      "name": "v41-second-review-cumulative-live-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926036,
+      "name": "v26-identity-assignment-reconcile",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926046,
+      "name": "vrm044-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926056,
+      "name": "prei4-admin-003-cumulative-live-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926191,
+      "name": "v43-milton-durable-repair",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926284,
+      "name": "v33-profile-boundary-hosting-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926297,
+      "name": "v28-second-review-resume",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926308,
+      "name": "v21-paula-remediation-dev",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926315,
+      "name": "vrm085-control-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926404,
+      "name": "v21-paula-remediation-readback",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926458,
+      "name": "pre-i4-vrm037-042-source-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926511,
+      "name": "vrm043-name-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871926601,
+      "name": "c3-preterminal-module-truth",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871927039,
+      "name": "v25-second-visual-forensic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871927090,
+      "name": "vrm083-runtime-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:04Z",
+      "completedAt": "2026-11-25T00:03:04Z"
+    },
+    {
+      "id": 138871930190,
+      "name": "i3-keeper-role-e2e-readonly",
+      "status": "completed",
+      "conclusion": "failure",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:07Z",
+      "completedAt": "2026-11-25T00:04:30Z"
+    },
+    {
+      "id": 138871930320,
+      "name": "i3-b14-qa-provider-proof",
+      "status": "completed",
+      "conclusion": "success",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:07Z",
+      "completedAt": "2026-11-25T00:04:16Z"
+    },
+    {
+      "id": 138871930326,
+      "name": "i3-run2382-academy-b7-isolated-dev-qa",
+      "status": "completed",
+      "conclusion": "failure",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:07Z",
+      "completedAt": "2026-11-25T00:05:28Z"
+    },
+    {
+      "id": 138871931409,
+      "name": "b1-canonical-visible-identity-source-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871931506,
+      "name": "vrm290-dev-hosting",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871931777,
+      "name": "julissa-identity-topology-readonly",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871931804,
+      "name": "b1-canonical-visible-identity-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871931875,
+      "name": "vrm185-admin-live-adjudication",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871931977,
+      "name": "vrm185-paula-identity-topology-readonly",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932033,
+      "name": "vrm151-durable-historical-reconciliation",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932083,
+      "name": "i3-d04e03-hosting-only-dev",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932120,
+      "name": "vrm185-global-identity-consolidation-plan",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932143,
+      "name": "vrm185-admin-provider-source-test",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932167,
+      "name": "vrm226-human-identity-topology",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932172,
+      "name": "i3-b4-bank-flags-readonly",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932208,
+      "name": "vrm215-shopper-population-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932286,
+      "name": "vrm154-156-frontend-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932302,
+      "name": "vrm153-durable-repair",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932421,
+      "name": "b1-oct07-authenticated-readonly-visual",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932554,
+      "name": "vrm217-durable-credential-sweep",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932592,
+      "name": "i3-dev-storage-cors-alias-focal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932634,
+      "name": "vrm267-support-focal-live",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932665,
+      "name": "julissa-identity-adjudication-write",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932762,
+      "name": "vrm154-156-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932772,
+      "name": "admin-cluster-a-postulations-lifecycle",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932776,
+      "name": "i3-a09b11-post-deploy-readback-only",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932947,
+      "name": "vrm153-reconciliation-readback-diagnostic",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871932974,
+      "name": "certify",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933009,
+      "name": "i3-current-source-hosting-dev",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933028,
+      "name": "vrm249-reservations-read-model-source-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933030,
+      "name": "vrm287-dev-two-visit",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933042,
+      "name": "i3-a09b11-backend-only-dev-materialization",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933248,
+      "name": "phasea-rejected-checkpoint-source-proof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871933484,
+      "name": "vrm219-exact-alias-remap",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871934703,
+      "name": "vrm157-dev-readback-only",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871935018,
+      "name": "live-fixtures",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871935249,
+      "name": "phasea-representative-same-artifact-live-reproof",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    },
+    {
+      "id": 138871936203,
+      "name": "gate21",
+      "status": "completed",
+      "conclusion": "skipped",
+      "runAttempt": 1,
+      "startedAt": "2026-11-25T00:03:05Z",
+      "completedAt": "2026-11-25T00:03:05Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14977750311,
+      "name": "cxorbia-i3-source-qa-45514816284-1",
+      "digest": "sha256:5fdf6eb58d1a168910c410af93b126d0b82a709eb331d10adb170735963ce6dc",
+      "createdAt": "2026-11-25T00:02:59Z",
+      "expired": false
+    },
+    {
+      "id": 14977566140,
+      "name": "cxorbia-i3-control-evidence-45514816284-1",
+      "digest": "sha256:5228e259117253d5dfc50f017d94fc0ede2a6f40b5f566b6322797e3eb772ce0",
+      "createdAt": "2026-11-25T00:03:00Z",
+      "expired": false
+    },
+    {
+      "id": 14977308482,
+      "name": "cxorbia-i3-finance-focal-45514816284",
+      "digest": "sha256:408850cd4c9a2243424229c6b26ff3c7471318e6387a086ca0302382c1b3759a",
+      "createdAt": "2026-11-25T00:04:13Z",
+      "expired": false
+    },
+    {
+      "id": 14976779119,
+      "name": "cxorbia-i3-run2382-academy-b7-synthetic-45514816284",
+      "digest": "sha256:aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+      "createdAt": "2026-11-25T00:05:24Z",
+      "expired": false
+    },
+    {
+      "id": 14976459189,
+      "name": "cxorbia-i3-two-keepers-role-e2e-readonly-45514816284",
+      "digest": "sha256:3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb",
+      "createdAt": "2026-11-25T00:04:28Z",
+      "expired": false
+    },
+    {
+      "id": 14976039629,
+      "name": "cxorbia-i3-b14-qa-provider-45514816284",
+      "digest": "sha256:422b49660cd80749c16c2d76ec86cca05aad0a03fbd74b5f96c6ce2e042beaf0",
+      "createdAt": "2026-11-25T00:04:13Z",
+      "expired": false
+    }
+  ],
+  "newDomainMatches": 0,
+  "production": false,
+  "productActionsPerformedByConsumer": 0,
+  "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
+  "materializationReceiptPath": null,
+  "pendingTypedResults": [
+    {
+      "jobId": 138871923237,
+      "name": "i3-finance-focal-reproof",
+      "conclusion": "success",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+    },
+    {
+      "jobId": 138871930190,
+      "name": "i3-keeper-role-e2e-readonly",
+      "conclusion": "failure",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+    },
+    {
+      "jobId": 138871930320,
+      "name": "i3-b14-qa-provider-proof",
+      "conclusion": "success",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+    },
+    {
+      "jobId": 138871930326,
+      "name": "i3-run2382-academy-b7-isolated-dev-qa",
+      "conclusion": "failure",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
+    }
+  ]
+}

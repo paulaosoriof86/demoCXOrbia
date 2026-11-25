@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "A08_RESIDUAL",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.a08.password3-api-storage.residual.readonly.v1",
+    "decision": "HOLD_I3_A08_RESIDUAL_READONLY",
+    "jobName": "i3-keeper-role-e2e-readonly",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "jobId": "138871930190",
+    "controlHead": "7fa5862854e07b71bcb2c73edf73eab2e29fa8e9",
+    "artifactId": "14976459189",
+    "artifactDigest": "sha256:3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb",
+    "entry": "result.json",
+    "resultSha256": "5dcd3da23e40937207831cc2ba04359d49a551a376a6177a3a454f3db8767acf"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": "AUTH_FAILURE",
+  "failureCodes": [
+    "AUTH_FAILURE:A08_EXACT_ORDINARY_PASSWORD_UNPROVEN"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "executionMode": "PASSWORD_ONLY",
+    "scopeDecision": "HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN",
+    "passwordProofCount": 3,
+    "passwordPassCount": 1,
+    "apiProofCount": 0,
+    "apiDenialPassCount": 0,
+    "apiStatusCounts": {
+      "200": 0,
+      "401": 0,
+      "403": 0
+    },
+    "finalChecks": {
+      "seal": true,
+      "passwords": false,
+      "apis": false,
+      "storage": false,
+      "requestedScopePass": false,
+      "pass": false,
+      "expectedAssetCount": 48,
+      "servedAssetCount": 48
+    },
+    "sameArtifactAfter": true,
+    "storageProof": {
+      "pass": false,
+      "objectStable": null
+    },
+    "storageDiscoveryExecuted": false,
+    "preservedEvidenceCount": 4,
+    "safety": {
+      "providerCommands": 0,
+      "directAuthWrites": 0,
+      "directFirestoreWrites": 0,
+      "storageWrites": 0,
+      "hrWrites": 0,
+      "passwordChanges": 0,
+      "passwordResets": 0,
+      "fixtureCreates": 0,
+      "builds": 0,
+      "deploys": 0,
+      "production": false,
+      "credentialsExported": false,
+      "tokensExported": false,
+      "privateBytesExported": false,
+      "privatePathsExported": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

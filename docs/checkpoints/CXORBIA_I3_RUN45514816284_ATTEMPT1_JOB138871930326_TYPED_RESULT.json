@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "D08_INCOMPLETE",
+  "state": "HOLD",
+  "decision": "RECORDED_D08_INCOMPLETE",
+  "provenance": {
+    "runId": 45514816284,
+    "runAttempt": 1,
+    "jobId": 138871930326,
+    "jobName": "i3-run2382-academy-b7-isolated-dev-qa",
+    "jobConclusion": "failure",
+    "controlHead": "7fa5862854e07b71bcb2c73edf73eab2e29fa8e9",
+    "artifactId": 14976779119,
+    "artifactDigest": "sha256:aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+    "verifiedArchiveDigest": "sha256:aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+    "entry": "result.json",
+    "resultSha256": "f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc",
+    "resultRef": "docs/checkpoints/CXORBIA_I3_RUN45514816284_ATTEMPT1_JOB138871930326_D08_RAW.json"
+  },
+  "observedAt": "2026-11-25T00:06:16.480Z",
+  "producerDecision": "HOLD",
+  "failureCode": "ENVIRONMENT_FAILURE:D08_AWAIT_TIMEOUT",
+  "failureSha256": "a6100ecd2f7f2356d1d5ae5d6f3d95b5cc017500c5801df8b773f745234b5706",
+  "observations": {
+    "functionalPass": false,
+    "cleanupOk": false,
+    "roleProofCount": 1,
+    "resourceCount": 1
+  },
+  "ownerSpecificReceipts": [],
+  "newDomainMatches": 0,
+  "fullDomain": false,
+  "phaseAComplete": false,
+  "production": false
+}

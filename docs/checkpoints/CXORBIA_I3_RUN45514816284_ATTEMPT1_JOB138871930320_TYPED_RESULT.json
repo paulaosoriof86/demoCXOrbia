@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "F3_RUN2782_RECOVERY",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.f3.run2782.exact-owned-recovery.v1",
+    "decision": "PASS_F3_RUN2782_EXACT_OWNED_RECOVERY_ONLY",
+    "jobName": "i3-b14-qa-provider-proof",
+    "jobConclusion": "success"
+  },
+  "provenance": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "jobId": "138871930320",
+    "controlHead": "7fa5862854e07b71bcb2c73edf73eab2e29fa8e9",
+    "artifactId": "14976039629",
+    "artifactDigest": "sha256:422b49660cd80749c16c2d76ec86cca05aad0a03fbd74b5f96c6ce2e042beaf0",
+    "entry": "f3-run2782-recovery.json",
+    "resultSha256": "291ef9727a3252ed54f698feb10c819ee9257d519a6bfc5ca75abe9dd050c7df"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": null,
+  "failureCodes": [],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "applicationAckProven": false,
+    "b14Closed": false,
+    "firestoreDeletes": 29,
+    "authDeletes": 1,
+    "cleanup": {
+      "firestore": true,
+      "auth": true,
+      "remoteMake": "INDEPENDENT_ABSENCE_ALREADY_PROVEN_NO_DELETE"
+    },
+    "writerProbe": {
+      "decision": "HOLD_F3_WRITER_TOOL_CONTRACT",
+      "stage": "contract",
+      "contractExact": false,
+      "nextCursorPresent": false,
+      "providerWrites": 0,
+      "callToolCount": 0,
+      "toolCount": 1,
+      "httpStatus": null
+    },
+    "safety": {
+      "hrWrites": 0,
+      "remoteMakeWrites": 0,
+      "productionWrites": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}
