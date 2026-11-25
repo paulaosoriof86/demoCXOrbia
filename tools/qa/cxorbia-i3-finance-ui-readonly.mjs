@@ -90,6 +90,18 @@ export async function financeBootstrapProbe({uid,tenantId,projectId,firebaseProj
     }catch(error){info.serverReads[key]=classify(error?.code||error?.message);}
     finally{clearTimeout(timer);}
   }));
+  if(Object.values(info.serverReads).every(code=>code==='TIMEOUT')&&typeof user.getIdToken==='function'){
+    try{
+      const token=await user.getIdToken();
+      const root='https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(firebaseProject)+'/databases/(default)/documents/';
+      const res=await fetch(root+encodeURIComponent(names.tenants||'tenants')+'/'+encodeURIComponent(tenantId)+':runQuery',{
+        method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({structuredQuery:{select:{fields:[{fieldPath:'__name__'}]},from:[{collectionId:names.projects||'projects'}],limit:1}}),
+        signal:AbortSignal.timeout(10000)
+      });
+      info.restProjectQuery=String(res.status);await res.body?.cancel();
+    }catch{info.restProjectQuery='NETWORK_OR_TIMEOUT';}
+  }
   return info;
 }
 async function captureHrOwner(page,identity){
@@ -213,7 +225,11 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
       return {member,expected,principalScopeSha256:digest({member,claims:user.customClaims,disabled:user.disabled===true})};
     };
     stage('ADMIN_AUTHORITY');
-    const initialPrincipal=await readPrincipal();browser=await chromium.launch({headless:true});
+    const initialPrincipal=await readPrincipal();
+    const http1=env.CXORBIA_FINANCE_BROWSER_TRANSPORT==='HTTP1_DIAGNOSTIC';
+    evidence.browserTransport=http1?'HTTP1_DIAGNOSTIC':'CHROMIUM_DEFAULT';
+    browser=await chromium.launch({headless:true,args:http1?['--disable-http2','--disable-quic']:[]});
+    evidence.firestoreListen={requests:0,responses:0,failed:0,statuses:{},errors:{}};
     for(let index=0;index<scope.independentAdminSessions;index++){
       evidence.sessionAttempted=index+1;evidence.activeSessionProgress={auth:false,period:false,serverRows:false,dom:false,advancePair:false,movementExport:false,dashboard:false,finalRead:false};
       const sessionStage=suffix=>stage('SESSION_'+(index+1)+'_'+suffix);let page,stopGuard=()=>{};
@@ -224,6 +240,15 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
         const initial=await context.storageState();need(initial.cookies.length===0&&initial.origins.length===0,'ENVIRONMENT_FAILURE:C09_C10_FRESH_CONTEXT');
         stopGuard=await installNetworkGuard(context,scope,project,host,evidence.network);
         page=await context.newPage();page.setDefaultTimeout(30000);
+        const isListen=req=>{
+          const url=new URL(req.url());
+          return url.origin==='https://firestore.googleapis.com'&&url.pathname==='/google.firestore.v1.Firestore/Listen/channel';
+        };
+        const listen=evidence.firestoreListen;
+        page.on('request',req=>{if(isListen(req))listen.requests++;});
+        page.on('response',res=>{if(isListen(res.request())){listen.responses++;const key=String(res.status());listen.statuses[key]=(listen.statuses[key]||0)+1;}});
+        page.on('requestfailed',req=>{if(isListen(req)){listen.failed++;const code=req.failure()?.errorText||'';const key=/^net::ERR_[A-Z0-9_]+$/.test(code)?code:'OTHER';listen.errors[key]=(listen.errors[key]||0)+1;}});
+
         await settleCustomRoleAuth({page,member:principal.member,role:'admin',tenantId:scope.tenantId,projectId:scope.projectId,baseUrl:base,getCustomToken:()=>{evidence.customTokenMints++;return auth.createCustomToken(exact.actorUid);}});
         const observedPrincipal=await page.evaluate(async()=>{const user=window.firebase.auth().currentUser,token=await user.getIdTokenResult(true);return {uid:user.uid,claims:token.claims,context:window.CX.backendAuth.context(),firebaseProject:window.firebase.app().options.projectId};});
         assertBrowserPrincipal({observed:observedPrincipal,expected:principal.expected,projectId:scope.projectId,firebaseProject:project});

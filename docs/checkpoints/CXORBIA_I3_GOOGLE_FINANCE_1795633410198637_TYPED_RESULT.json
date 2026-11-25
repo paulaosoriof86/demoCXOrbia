@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_UI_READONLY",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-core-ui-readonly.v1",
+    "decision": "HOLD_C09_C10_UI_READONLY",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/start.json#1795633226910903",
+    "startGeneration": "1795633226910903",
+    "startSha256": "2c9853a0388dc1353be63e36a2a06d20862d75e303284662202a7f3230f24c0d",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/result.json#1795633410198637",
+    "resultGeneration": "1795633410198637",
+    "bundleSha256": "1b093e51b0d379fbe39f5b3b4f8743560d2392617ef2f8cedd4ba7114dc31908",
+    "resultSha256": "aa38efe3cf29a2bdb0c8b197c1738f080522b0364d5d961f26109ebf4f680724",
+    "entry": "finance-ui-readonly.json",
+    "controlHead": "266f764ae585d654300ff6fbfb618512a644437a",
+    "transportSha": "266f764ae585d654300ff6fbfb618512a644437a",
+    "encryptedPdfEvidence": {
+      "status": "NOT_REQUESTED",
+      "objects": []
+    }
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+      "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+      "runtimeDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529"
+    },
+    "complete": true
+  },
+  "classification": "ENVIRONMENT_FAILURE",
+  "failureCodes": [
+    "ENVIRONMENT_FAILURE:C09_C10_UI_UNCONFIRMED"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "sameArtifactReadback": {
+      "entry": "identity-live-readback.json",
+      "present": true,
+      "bindingExact": true,
+      "parseable": true,
+      "jobSuccessful": false,
+      "fieldsExact": true,
+      "noDeployment": true,
+      "readbackExact": true,
+      "sha256": "60837b14e28aa621d6944f4abc1215b58bd066fe99b163a6057fa7bd34e49b25",
+      "verified": false
+    },
+    "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
+    "stage": "SESSION_1_AUTH",
+    "failureStage": "SESSION_1_AUTH",
+    "sessionAttempted": 1,
+    "activeSessionProgress": {
+      "auth": false,
+      "period": false,
+      "serverRows": false,
+      "dom": false,
+      "advancePair": false,
+      "movementExport": false,
+      "dashboard": false,
+      "finalRead": false
+    },
+    "failureUi": {
+      "available": true,
+      "firebaseUserPresent": true,
+      "contextAuthenticated": true,
+      "authorityApplied": false,
+      "expectedProjectSelected": false,
+      "expectedPeriodSelected": false,
+      "projectionLoaded": false,
+      "projectionKeyMatches": false,
+      "movExportPresent": false,
+      "finExportPresent": false,
+      "reportPreviewPresent": false,
+      "printTablePresent": false,
+      "route": "OTHER_OR_UNAVAILABLE",
+      "role": "admin",
+      "movementRowCount": 0,
+      "reportRowCount": 0
+    },
+    "hrOwnerDiagnostic": {
+      "available": null,
+      "authorityPresent": false,
+      "applied": false,
+      "retryable": false,
+      "sourceReady": false,
+      "sourceBlocked": true,
+      "runtimeReady": true,
+      "bootstrap": {
+        "lastStatePresent": true,
+        "sourceFirestore": false,
+        "authorizedStatePresent": false,
+        "actorMatches": false,
+        "bootAuthorized": true,
+        "bootBackendReady": false,
+        "bootDependenciesReady": true,
+        "bootExhausted": true,
+        "stateErrorCode": "NONE",
+        "serverReads": {
+          "projects": "TIMEOUT",
+          "shoppers": "TIMEOUT",
+          "periods": "TIMEOUT",
+          "visits": "TIMEOUT"
+        }
+      },
+      "ownerCode": "NO_OWNER_ERROR",
+      "ownerErrorSha256": null,
+      "authenticatedHrHttp": [
+        200
+      ]
+    },
+    "currentAdminClaimsVerified": null,
+    "browserServerReadVerified": null,
+    "committedMetadataReceiptVerified": null,
+    "firstAdvanceUnchanged": null,
+    "secondMetadataExact": null,
+    "sameCashPeriod": null,
+    "newSessionParity": null,
+    "financialDocumentsStable": null,
+    "independentAdminSessions": 0,
+    "advanceCount": null,
+    "customTokenMints": 1,
+    "network": {
+      "automaticHrSuppressed": 0,
+      "knownPresentationImagesBlocked": 3,
+      "unexpectedDenied": 0,
+      "allowedAuthRequests": 4,
+      "routeControlFailures": 0
+    },
+    "sessions": [],
+    "safety": {
+      "authIdentityOrClaimsWrites": 0,
+      "directFirestoreWrites": 0,
+      "providerCommandsExecuted": 0,
+      "financialMutationRequestsDispatched": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

@@ -108,6 +108,7 @@ function financeBootstrapDiagnostic(value){
   return {...booleans(value,['lastStatePresent','sourceFirestore','authorizedStatePresent','actorMatches',
     'bootAuthorized','bootBackendReady','bootDependenciesReady','bootExhausted']),
     stateErrorCode:codes.includes(value.stateErrorCode)?value.stateErrorCode:null,
+    ...(/^(?:[1-5][0-9]{2}|NETWORK_OR_TIMEOUT)$/.test(String(value.restProjectQuery||''))?{restProjectQuery:value.restProjectQuery}:{}),
     serverReads:Object.fromEntries(['projects','shoppers','periods','visits'].filter(key=>
       readCodes.includes(value.serverReads?.[key])).map(key=>[key,value.serverReads[key]]))};
 }
@@ -328,6 +329,10 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       failureUi:{...booleans(raw.failureUi,['available','firebaseUserPresent','contextAuthenticated','authorityApplied','expectedProjectSelected','expectedPeriodSelected','projectionLoaded','projectionKeyMatches','movExportPresent','finExportPresent','reportPreviewPresent','printTablePresent']),
         route:enumValue(raw.failureUi?.route,['login','inicio','dashboard','movimientos','financiero','OTHER_OR_UNAVAILABLE']),role:enumValue(raw.failureUi?.role,['super','admin','OTHER_OR_UNAVAILABLE']),...counts(raw.failureUi,['movementRowCount','reportRowCount'])},
       ...(raw.hrOwnerDiagnostic!==undefined?{hrOwnerDiagnostic:financeUiHrOwnerDiagnostic(raw.hrOwnerDiagnostic)}:{}),
+      ...(['HTTP1_DIAGNOSTIC','CHROMIUM_DEFAULT'].includes(raw.browserTransport)?{browserTransport:raw.browserTransport}:{}),
+      ...(raw.firestoreListen?{firestoreListen:{...counts(raw.firestoreListen,['requests','responses','failed']),
+        statuses:Object.fromEntries(Object.entries(raw.firestoreListen.statuses||{}).filter(([k,v])=>/^[1-5][0-9]{2}$/.test(k)&&Number.isSafeInteger(v)&&v>=0)),
+        errors:Object.fromEntries(Object.entries(raw.firestoreListen.errors||{}).filter(([k,v])=>/^(net::ERR_[A-Z0-9_]+|OTHER)$/.test(k)&&k.length<=64&&Number.isSafeInteger(v)&&v>=0))}}:{}),
       ...(raw.failurePdf!==undefined?{failurePdf:financeUiPdfDiagnostic(raw.failurePdf)}:{}),
       ...(raw.partialExportProof!==undefined?{partialExportProof:financeUiPartialExport(raw.partialExportProof)}:{}),
       ...(raw.networkFailure!==undefined?{networkFailure:safeTypedFailureCode(raw.networkFailure)}:{}),

@@ -43,7 +43,8 @@
     "financeResults": [
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795624487264686_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795624487264686_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795633410198637_TYPED_RESULT.json"
     ],
     "printProof": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json",
     "productProof": "docs/checkpoints/CXORBIA_I3_VRM378_PDF_SOURCE_20261125.json",
@@ -72,20 +73,124 @@
       "causedProtectedBackendFailure": "NOT_ESTABLISHED"
     },
     "currentFinance": {
-      "resultGeneration": "1795624487264686",
-      "sha256": "7b4dde1ca89c40dc50bd0d3ca7dfb9cf19bade788247259ac07481050e210134",
-      "observedAt": "2026-11-25T16:34:47.264Z",
-      "stage": "SESSION_1_MOVEMENT_EXPORT",
-      "classification": "FUNCTIONAL_DEFECT",
-      "protectedHrApplied": true,
-      "exactAdvancePair": true,
-      "previewRows": 3,
-      "parsedXlsxRows": 3,
-      "nativePrintDomExact": true,
-      "nativePdfMissingDateCells": 3,
-      "newFinancialMovements": 0,
-      "completeAdminSessions": 0,
-      "encryptedPdfEvidenceVerified": true
+      "key": "GOOGLE_CLOUD_SHELL/1795633226910903",
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795633410198637_TYPED_RESULT.json",
+      "sha256": "e7816f1cf7011cf8538e149d28858e93aa46ea6395d99e6af5fca444b1ebd60e",
+      "gitBlob": "75f75f87542f9dff5b366eacc29bcc01717382ac",
+      "provider": "GOOGLE_CLOUD_SHELL",
+      "controlHead": "266f764ae585d654300ff6fbfb618512a644437a",
+      "transportSha": "266f764ae585d654300ff6fbfb618512a644437a",
+      "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/start.json#1795633226910903",
+      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/result.json#1795633410198637",
+      "bundleSha256": "1b093e51b0d379fbe39f5b3b4f8743560d2392617ef2f8cedd4ba7114dc31908",
+      "decision": "RECORDED_TYPED_RESULT_HOLD",
+      "ownerReceiptCount": 0,
+      "observedAt": "2026-11-25T19:03:30.198Z",
+      "stage": "SESSION_1_AUTH",
+      "classification": "ENVIRONMENT_FAILURE",
+      "observations": {
+        "sameArtifactReadback": {
+          "entry": "identity-live-readback.json",
+          "present": true,
+          "bindingExact": true,
+          "parseable": true,
+          "jobSuccessful": false,
+          "fieldsExact": true,
+          "noDeployment": true,
+          "readbackExact": true,
+          "sha256": "60837b14e28aa621d6944f4abc1215b58bd066fe99b163a6057fa7bd34e49b25",
+          "verified": false
+        },
+        "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
+        "stage": "SESSION_1_AUTH",
+        "failureStage": "SESSION_1_AUTH",
+        "sessionAttempted": 1,
+        "activeSessionProgress": {
+          "auth": false,
+          "period": false,
+          "serverRows": false,
+          "dom": false,
+          "advancePair": false,
+          "movementExport": false,
+          "dashboard": false,
+          "finalRead": false
+        },
+        "failureUi": {
+          "available": true,
+          "firebaseUserPresent": true,
+          "contextAuthenticated": true,
+          "authorityApplied": false,
+          "expectedProjectSelected": false,
+          "expectedPeriodSelected": false,
+          "projectionLoaded": false,
+          "projectionKeyMatches": false,
+          "movExportPresent": false,
+          "finExportPresent": false,
+          "reportPreviewPresent": false,
+          "printTablePresent": false,
+          "route": "OTHER_OR_UNAVAILABLE",
+          "role": "admin",
+          "movementRowCount": 0,
+          "reportRowCount": 0
+        },
+        "hrOwnerDiagnostic": {
+          "available": null,
+          "authorityPresent": false,
+          "applied": false,
+          "retryable": false,
+          "sourceReady": false,
+          "sourceBlocked": true,
+          "runtimeReady": true,
+          "bootstrap": {
+            "lastStatePresent": true,
+            "sourceFirestore": false,
+            "authorizedStatePresent": false,
+            "actorMatches": false,
+            "bootAuthorized": true,
+            "bootBackendReady": false,
+            "bootDependenciesReady": true,
+            "bootExhausted": true,
+            "stateErrorCode": "NONE",
+            "serverReads": {
+              "projects": "TIMEOUT",
+              "shoppers": "TIMEOUT",
+              "periods": "TIMEOUT",
+              "visits": "TIMEOUT"
+            }
+          },
+          "ownerCode": "NO_OWNER_ERROR",
+          "ownerErrorSha256": null,
+          "authenticatedHrHttp": [
+            200
+          ]
+        },
+        "currentAdminClaimsVerified": null,
+        "browserServerReadVerified": null,
+        "committedMetadataReceiptVerified": null,
+        "firstAdvanceUnchanged": null,
+        "secondMetadataExact": null,
+        "sameCashPeriod": null,
+        "newSessionParity": null,
+        "financialDocumentsStable": null,
+        "independentAdminSessions": 0,
+        "advanceCount": null,
+        "customTokenMints": 1,
+        "network": {
+          "automaticHrSuppressed": 0,
+          "knownPresentationImagesBlocked": 3,
+          "unexpectedDenied": 0,
+          "allowedAuthRequests": 4,
+          "routeControlFailures": 0
+        },
+        "sessions": [],
+        "safety": {
+          "authIdentityOrClaimsWrites": 0,
+          "directFirestoreWrites": 0,
+          "providerCommandsExecuted": 0,
+          "financialMutationRequestsDispatched": 0,
+          "production": false
+        }
+      }
     },
     "qaSignerWindow2": {
       "role": "projects/cxorbia-backend-dev/roles/cxorbiaI3QaBlobSigner",
@@ -333,6 +438,13 @@
       "productPdfOwnerServedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
       "mailbox": "HOLD_E08_MAILBOX_UNCONFIGURED",
       "production": false
+    },
+    "qaSigning": {
+      "scope": "DEV_SERVICE_ACCOUNT_SIGNBLOB_ONLY",
+      "expiresUtc": "2026-11-25T20:53:46Z",
+      "rolePermissionsChecked": true,
+      "conditionalBindingReadBack": true,
+      "challengeSigned": true
     }
   },
   "lastChromeConnection": {
@@ -343,7 +455,7 @@
     "trafficPercent": 100
   },
   "next": {
-    "finance": "Run the original C09/C10 UI and export proof in two independent Admin sessions on the current Google receipt. Financial writes remain blocked.",
+    "finance": "Admin membership and metadata receipt were verified. On the sealed successor the browser reached authenticated HR HTTP 200, then Firestore server reads on projects, shoppers, periods and visits all timed out. Compare native Chromium HTTP/1 and the same authenticated read-only REST query, preserving every write guard. Then complete the PDF, dashboard and permission clauses.",
     "academy": "Preserve the three prior scoped D08 results and their exact cleanup. Use the current revision to diagnose protected HR before exercising residual roles.",
     "deployment": "Paired publication complete. Keep its real native UUID and immutable source. Do not redeploy before a proved product defect.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
