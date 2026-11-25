@@ -1,0 +1,132 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-25T19:46:07+00:00",
+  "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "tree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "served": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "pairedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+  "sourceArchive": {
+    "recipe": "git archive --format=tar <exact source> -- app backend .firebaserc firebase.json firestore.rules storage.rules tools/hr-source tools/qa/tya-live-hr-read-probe-gate.mjs | gzip -n",
+    "selection": [
+      "app",
+      "backend",
+      ".firebaserc",
+      "firebase.json",
+      "firestore.rules",
+      "storage.rules",
+      "tools/hr-source",
+      "tools/qa/tya-live-hr-read-probe-gate.mjs"
+    ],
+    "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39",
+    "bytes": 5960554,
+    "verifiedGitBlobs": 3523,
+    "verifiedDockerCopySources": 28,
+    "changedProductPaths": [
+      "app/core/importador.js"
+    ]
+  },
+  "publicDevReadback": [
+    {
+      "path": "modules/cliente-extra.js",
+      "status": 200,
+      "servedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+      "matchesPairedSource": true,
+      "successorSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+      "matchesSuccessor": true
+    },
+    {
+      "path": "modules/finanzas.js",
+      "status": 200,
+      "servedSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+      "matchesPairedSource": true,
+      "successorSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+      "matchesSuccessor": true
+    },
+    {
+      "path": "modules/academia.js",
+      "status": 200,
+      "servedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+      "matchesPairedSource": true,
+      "successorSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+      "matchesSuccessor": true
+    },
+    {
+      "path": "core/importador.js",
+      "status": 200,
+      "servedSha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+      "matchesPairedSource": true,
+      "successorSha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+      "matchesSuccessor": false
+    }
+  ],
+  "scope": "LOCAL_EXACT_CLOUDBUILD_INPUT_PREPARATION_AND_PUBLIC_DEV_READBACK",
+  "newGoogleImageBuilds": 0,
+  "newPairedReleases": 0,
+  "newOperationalImports": 0,
+  "functionalPasses": 0,
+  "production": false,
+  "controlReadback": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
+  "originalProducerPreflight": {
+    "servedControl": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+    "transportControl": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
+    "preservedProductAndProducerWorkflow": true,
+    "financeTransportBlobs": {
+      "tools/qa/cxorbia-i3-finance-google-transport.sh": "7bc322aec82d50983651090f733b4d041af2be40",
+      "tools/qa/cxorbia-i3-finance-print-country-proof.cjs": "45066780d18f097ffc463b033a47ac6c1937ff73",
+      "tools/qa/cxorbia-i3-finance-ui-readonly.mjs": "b252f1a26789b7624e0ba9507f8d3d3bbf8cee2a",
+      "tools/qa/cxorbia-i3-finance-ui-readonly-contract.mjs": "ee54c0f6db7d5ec544706d9bd906ba294d9a4d38",
+      "tools/qa/cxorbia-i3-google-qa-execution.mjs": "78ce01f3745ae6d9aadc079015591fe4b06bb2a7"
+    },
+    "financeOriginalWorkflowSourceGuard": "PASS",
+    "financeSyntheticCountryPdf": {
+      "scope": "SYNTHETIC_COUNTRY_RENDER_ONLY",
+      "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "chromium": "141.0.7390.37",
+      "playwright": "1.56.1",
+      "pdfjs": "3.11.174",
+      "dom": [
+        [
+          "🇬🇹 Guatemala",
+          "GTQ"
+        ],
+        [
+          "🇭🇳 Honduras",
+          "HNL"
+        ]
+      ],
+      "pdfBytes": 66323,
+      "pdfSha256": "6e8ab007d7624bb8ede214c60d1c3a50b466ba3f35012648a45e588be5c3e022",
+      "result": {
+        "matches": true,
+        "pages": 1,
+        "textCharacters": 577,
+        "textSha256": "942eaf5a199fa2f8fc17f42556f78202eb77af78896d2507b243f3b31701fd18",
+        "titleMatches": true,
+        "periodMatches": true,
+        "titleMatchesIgnoringWhitespace": true,
+        "periodMatchesIgnoringWhitespace": true,
+        "missingCellCount": 0,
+        "missingCells": [],
+        "missingCellsTruncated": false
+      },
+      "operationalWrites": 0
+    },
+    "d08RequestPreflight": {
+      "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
+      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "providerWrites": 0
+    },
+    "d08FixtureOwnership": {
+      "decision": "PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST",
+      "pass": 44,
+      "fail": 0,
+      "writes": 0
+    },
+    "externalRunsStarted": 0
+  },
+  "nextAction": "Use the original Google Finance job, producer and verified transport with the served source and paired receipt. Incorporate its native readback before another functional write. Run Academy roles on their bound revision, then publish the selected E10 successor through the existing paired DEV lane.",
+  "externalSourceObject": null,
+  "productImageBuildId": null,
+  "terminalCertification": false
+}

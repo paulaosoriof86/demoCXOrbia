@@ -593,6 +593,13 @@
       "alternateChromeCloudConsole": "HTTP_403_SITE_UNAVAILABLE",
       "alternateChromeCloudShell": "HTTP_403_SITE_UNAVAILABLE_IN_EMBED_AND_DIRECT",
       "googleQaRunStartedOnThisReadback": false
+    },
+    "exactE10InputAndServedQaProducer": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_INPUT_AND_235D_QA_PRODUCER_READBACK_20261125.json",
+      "sha256": "429e9cbfa0ea4f0f380f8170fe517d25d6050442725b07236f1bfe72af6d19dd",
+      "gitBlob": "7ceec7e5374d8382aeb056635d43668f8bd9bc8c",
+      "externalRunsStarted": 0,
+      "selectedSourceSha256Archive": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
     }
   },
   "lastChromeConnection": {
@@ -622,7 +629,9 @@
       "pairedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
       "academyAfterFinance": "i3-run2382-academy-b7-isolated-dev-qa",
       "nativeResultRequired": true,
-      "duplicateDispatch": false
+      "duplicateDispatch": false,
+      "financeTransportCommit": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
+      "academyTransportCommit": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69"
     }
   },
   "newDevDeploys": 1,
