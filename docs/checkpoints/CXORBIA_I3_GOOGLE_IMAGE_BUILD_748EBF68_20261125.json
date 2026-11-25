@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.i3.google-native-product-image.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_EXACT_IMAGE_BUILD_AND_REGISTRY_READBACK",
+  "project": "cxorbia-backend-dev",
+  "location": "global",
+  "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "sourceObject": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
+    "generation": "1795638786579207",
+    "size": 5960554,
+    "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
+  },
+  "sourceObjectBeforeGcloudStaging": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "cxorbia-i3-paired-dev/sources/d727f3be67a4430f08216dbb37cccba790f934f5/6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39.tgz",
+    "generation": "1795638772206249",
+    "size": 5960554,
+    "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
+  },
+  "stagingAndNativeSourceSha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39",
+  "productInputFilesVerifiedAgainstGit": 3523,
+  "dockerCopyInputsVerified": 28,
+  "imageBuild": {
+    "id": "748ebf68-744a-43b5-9c08-f6251e363059",
+    "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-d727f3be67a4-google-1795638772206249",
+    "digest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8"
+  },
+  "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+  "nativeBuildStatus": "SUCCESS",
+  "nativeStepStatus": "SUCCESS",
+  "nativeDescribeFileSha256": "8dbd267ef6dad5384680676333297e5851a78fa519c7830fc1f33b8fb5f6163d",
+  "startedAt": "2026-11-25T20:33:07.647131654Z",
+  "completedAt": "2026-11-25T20:34:09.372841Z",
+  "independentRegistryDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+  "originalConfig": "backend/runtime/hr-live-service/cloudbuild.yaml",
+  "configBlob": "e9ec8e7c9b4fabe4d1f26d68bea284d56f2bde57",
+  "newProductImageBuilds": 1,
+  "trafficChanged": false,
+  "hostingChanged": false,
+  "devPublished": false,
+  "production": false,
+  "certifiedArtifact": false
+}

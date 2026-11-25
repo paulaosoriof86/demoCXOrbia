@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_UI_READONLY",
+  "state": "HOLD",
+  "decision": "RECORDED_FINANCE_UI_SCOPED_PASS",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-core-ui-readonly.v1",
+    "decision": "PASS_C09_C10_ADVANCE_UI_AND_EXPORT_SCOPE",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "success"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/87a55a8d-e223-45eb-9c32-3c11c5412dd5/start.json#1795638768858939",
+    "startGeneration": "1795638768858939",
+    "startSha256": "54fe715a3e06d0826e8cff53eb4eeaccf01a8b7a2ffe86ede1edd269938d1596",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/87a55a8d-e223-45eb-9c32-3c11c5412dd5/result.json#1795638868819016",
+    "resultGeneration": "1795638868819016",
+    "bundleSha256": "78846eab6bfe491f9de89838d63509d353053655c8181450880426549ca059dd",
+    "resultSha256": "449292dcaf737dfb055bc3428a4b65a2cfd2e06a02ad1d35426afe99e6cb9989",
+    "entry": "finance-ui-readonly.json",
+    "controlHead": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+    "transportSha": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
+    "encryptedPdfEvidence": {
+      "status": "NOT_REQUESTED",
+      "objects": []
+    }
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+      "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+      "runtimeDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529"
+    },
+    "complete": true
+  },
+  "classification": null,
+  "failureCodes": [],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "sameArtifactReadback": {
+      "entry": "identity-live-readback.json",
+      "present": true,
+      "bindingExact": true,
+      "parseable": true,
+      "jobSuccessful": true,
+      "fieldsExact": true,
+      "noDeployment": true,
+      "readbackExact": true,
+      "sha256": "60837b14e28aa621d6944f4abc1215b58bd066fe99b163a6057fa7bd34e49b25",
+      "verified": true
+    },
+    "effectiveDecision": "PASS_C09_C10_ADVANCE_UI_AND_EXPORT_SCOPE",
+    "stage": "COMPLETE",
+    "failureStage": null,
+    "sessionAttempted": 2,
+    "activeSessionProgress": {
+      "auth": true,
+      "period": true,
+      "serverRows": true,
+      "dom": true,
+      "advancePair": true,
+      "movementExport": true,
+      "dashboard": true,
+      "finalRead": true
+    },
+    "failureUi": {
+      "available": null,
+      "firebaseUserPresent": null,
+      "contextAuthenticated": null,
+      "authorityApplied": null,
+      "expectedProjectSelected": null,
+      "expectedPeriodSelected": null,
+      "projectionLoaded": null,
+      "projectionKeyMatches": null,
+      "movExportPresent": null,
+      "finExportPresent": null,
+      "reportPreviewPresent": null,
+      "printTablePresent": null,
+      "route": null,
+      "role": null,
+      "movementRowCount": null,
+      "reportRowCount": null
+    },
+    "browserTransport": "HTTP1_DIAGNOSTIC",
+    "firestoreListen": {
+      "requests": 65,
+      "responses": 63,
+      "failed": 4,
+      "statuses": {
+        "200": 63
+      },
+      "errors": {
+        "net::ERR_ABORTED": 4
+      }
+    },
+    "currentAdminClaimsVerified": true,
+    "browserServerReadVerified": true,
+    "committedMetadataReceiptVerified": true,
+    "firstAdvanceUnchanged": true,
+    "secondMetadataExact": true,
+    "sameCashPeriod": true,
+    "newSessionParity": true,
+    "financialDocumentsStable": true,
+    "independentAdminSessions": 2,
+    "advanceCount": 2,
+    "customTokenMints": 2,
+    "network": {
+      "automaticHrSuppressed": 0,
+      "knownPresentationImagesBlocked": 30,
+      "unexpectedDenied": 0,
+      "allowedAuthRequests": 12,
+      "routeControlFailures": 0
+    },
+    "sessions": [
+      {
+        "newContextEmpty": true,
+        "exactCurrentAdminClaims": true,
+        "serverReadConfirmed": true,
+        "advancePairExact": true,
+        "firstAdvanceUnchanged": true,
+        "secondMetadataExact": true,
+        "rowCount": 3,
+        "movementExport": {
+          "decision": "PASS_EXPORT_PARITY",
+          "rows": 3,
+          "xlsx": {
+            "parsed": true,
+            "contentMatches": true
+          },
+          "pdf": {
+            "parsed": true,
+            "contentMatches": true
+          }
+        },
+        "dashboard": {
+          "decision": "PASS_EXPORT_PARITY",
+          "realRows": true,
+          "emptyStateObserved": null,
+          "independentHrKpisCertified": false
+        }
+      },
+      {
+        "newContextEmpty": true,
+        "exactCurrentAdminClaims": true,
+        "serverReadConfirmed": true,
+        "advancePairExact": true,
+        "firstAdvanceUnchanged": true,
+        "secondMetadataExact": true,
+        "rowCount": 3,
+        "movementExport": {
+          "decision": "PASS_EXPORT_PARITY",
+          "rows": 3,
+          "xlsx": {
+            "parsed": true,
+            "contentMatches": true
+          },
+          "pdf": {
+            "parsed": true,
+            "contentMatches": true
+          }
+        },
+        "dashboard": {
+          "decision": "PASS_EXPORT_PARITY",
+          "realRows": true,
+          "emptyStateObserved": null,
+          "independentHrKpisCertified": false
+        }
+      }
+    ],
+    "safety": {
+      "authIdentityOrClaimsWrites": 0,
+      "directFirestoreWrites": 0,
+      "providerCommandsExecuted": 0,
+      "financialMutationRequestsDispatched": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}
