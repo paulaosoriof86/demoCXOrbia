@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-and-module-continuity-method-fix.v1",
+  "observedAt": "2026-11-24T22:14:46.055Z",
+  "iteration": "I3",
+  "state": "HOLD",
+  "failureClass": "RELEASE_COMPOSITION_FAILURE",
+  "priorControl": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V724_2026-11-24.json",
+    "head": "bfd29a432d3cf274e0bb5f36536cb533f808bcf3"
+  },
+  "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "productSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "materializationRunId": 45488581923,
+  "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+  "changes": {
+    "moduleCurrentAliasCount": 81,
+    "oldHeadersArchived": "docs/checkpoints/CXORBIA_I3_MODULE_ALIAS_AND_D08_RESIDUAL_HISTORY_20261124.json",
+    "ownerBlobDriftCount": 0,
+    "currentOwnerFilesInspected": 170,
+    "typedJobs": [
+      "F3_ENDPOINT",
+      "A08_RESIDUAL",
+      "D08_ACADEMY_UI",
+      "FINANCE_METADATA",
+      "FINANCE_READONLY",
+      "F3_RUN2782_RECOVERY"
+    ],
+    "immutableExecutionJournalsPreserved": true,
+    "drainAlreadyJournaledRuns": true,
+    "exactQueueKeyRemovalAfterAtomicCommit": true,
+    "d08ScopedObligationCount": 25,
+    "d08FullDomainInventory": false,
+    "d08PeriodScopeFixed": true,
+    "vrm192AcceptedProviderEvidenceRestored": true,
+    "artifactJournalDigestBinding": true,
+    "duplicatedIndexEqualityRequired": true,
+    "unresolvedFailuresPreservedAcrossRuns": true,
+    "f3RecoveryExactInitialGtDigestRequired": true,
+    "f3RecoveryWriterProbeInitializeListToolsOnly": true
+  },
+  "validation": {
+    "methodOwnerIndexTests": {
+      "passed": 133,
+      "failed": 0
+    },
+    "typedSummaryAndConsumerTests": {
+      "passed": 99,
+      "failed": 0
+    },
+    "wiringAndFinanceTests": {
+      "passed": 75,
+      "failed": 0
+    },
+    "f3RecoveryOwnershipAndGtBaselineTests": {
+      "passed": 54,
+      "failed": 0
+    },
+    "scope": "SOURCE_CONTROL_TESTS_NOT_NEW_FUNCTIONAL_CERTIFICATION"
+  },
+  "functionalWork": {
+    "f3Run2782": {
+      "runId": 45493719666,
+      "jobId": 138799051105,
+      "decision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+      "applicationAckProven": false,
+      "remoteMakeScenarioExecutions": 0,
+      "remoteBaselineRecoveryRequired": true,
+      "rawReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2782_F3_ENDPOINT_RAW_20261124.json",
+      "recoveryAuthority": "docs/checkpoints/CXORBIA_I3_RUN2782_F3_REMOTE_ABSENCE_RECOVERY_AUTHORITY_20261124.json",
+      "recoveryState": "REQUESTED_EXACT_OWNED_RECOVERY_AND_READONLY_MCP_PROBE",
+      "recoveryExecuted": false
+    },
+    "a08": "REQUESTED_PASSWORD3_ON_CURRENT_DEV",
+    "d08": "REQUESTED_THREE_ROLE_UI_ON_CURRENT_DEV",
+    "finance": "AUTHORIZED_SECOND_ADVANCE_METADATA_RESUMED_AFTER_EXACT_HR_PASS"
+  },
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "production": false,
+  "builds": 0,
+  "deploys": 0,
+  "preExecutionReview": {
+    "observedAt": "2026-11-24T23:57:55.463Z",
+    "recoveredCommit": "589213fce5715b821e8731643a976345d82058db",
+    "pendingCandidateAliasesGuardedIndependentlyOfServedPredecessor": true,
+    "pendingCandidateGuardTests": {
+      "passed": 75,
+      "failed": 0,
+      "scope": "automatic-result-consumer.test.mjs including four new candidate/predecessor cases"
+    },
+    "controlWrappersAligned": [
+      "currentA08ResidualQaExecution",
+      "VRM-369.currentExecutionScope",
+      "VRM-367.currentServingAuthority"
+    ],
+    "supersededWrappers": {
+      "path": "docs/checkpoints/CXORBIA_I3_PRE_EXECUTION_CONTROL_ALIAS_HISTORY_20261124.json",
+      "gitBlob": "f2fb210135ad5bc3643d91b651dcf7098ea9076a"
+    },
+    "remoteExecutionYetObserved": false,
+    "phaseAComplete": false
+  }
+}

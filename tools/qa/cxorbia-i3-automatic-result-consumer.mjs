@@ -5,6 +5,8 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
+import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
+import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
@@ -74,6 +76,101 @@ export function selectPairedArtifact({run,job,artifacts}){
  must(matches.length===1,'SOURCE_FAILURE:PAIRED_ARTIFACT_MISSING_OR_AMBIGUOUS');return matches[0];
 }
 
+export const TYPED_JOBS={
+ 'i3-b14-qa-provider-proof':{prefix:'cxorbia-i3-b14-qa-provider',entries:['receipt.json','f3-run2782-recovery.json']},
+ 'i3-keeper-role-e2e-readonly':{prefix:'cxorbia-i3-two-keepers-role-e2e-readonly',entries:['result.json']},
+ 'i3-finance-focal-reproof':{prefix:'cxorbia-i3-finance-focal',entries:['finance-metadata.json','finance-readonly.json']},
+ 'i3-run2382-academy-b7-isolated-dev-qa':{prefix:'cxorbia-i3-run2382-academy-b7-synthetic',entries:['result.json']}
+};
+export function selectTypedArtifact({run,job,artifacts}){
+ const rule=TYPED_JOBS[job.name];must(rule,'MAPPING_FAILURE:TYPED_PRODUCER_UNSUPPORTED');
+ // Existing focal producers retain the legacy name on reruns. The exact job
+ // attempt window and immutable artifact digest bind either naming convention.
+ const names=[`${rule.prefix}-${run.id}-${run.run_attempt}`,`${rule.prefix}-${run.id}`];
+ const found=artifacts.filter(a=>names.includes(a.name)&&a.workflow_run?.id===run.id&&a.workflow_run?.head_sha===run.head_sha&&!a.expired&&
+  Date.parse(a.created_at)>=Date.parse(job.started_at)&&Date.parse(a.created_at)<=Date.parse(job.completed_at)+60000);
+ must(found.length===1,'SOURCE_FAILURE:TYPED_ARTIFACT_MISSING_OR_AMBIGUOUS');return found[0];
+}
+export const typedResultKey=x=>`${x.runId}/${x.runAttempt}/${x.jobId}`;
+export function pendingTypedRuns(queue=[]){return [...new Map(queue.filter(x=>TYPED_JOBS[x.name]).map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];}
+
+async function normalizeD08Artifact({text,transport,producer}){
+ const q=producer.pointer.currentD08UiQaRequest,a=producer.pointer.currentD08ScopedAuthority;
+ must(q?.path&&q.gitBlob===producer.blobs.get(q.path)&&a?.path&&a.gitBlob===producer.blobs.get(a.path),'SOURCE_FAILURE:D08_FROZEN_CONTROL_POINTERS');
+ const request=await producer.readFile(q.path),authorityText=await producer.readBytes(a.path),authority=JSON.parse(authorityText);
+ must(sha256(authorityText)===a.sha256,'SOURCE_FAILURE:D08_FROZEN_SCOPE_HASH');
+ const baseContractText=execFileSync('git',['show',`${request.sourceSha}:backend/contracts/cxorbia-academy-base-progress-contract-v1.json`],{encoding:'utf8',maxBuffer:2*1024*1024});
+ const mod=producer.matrix.modules.find(m=>m.domain==='certifications');
+ must(mod?.scopedContractAuthorities?.D08?.sha256===a.sha256,'SOURCE_FAILURE:D08_MODULE_SCOPE_AUTHORITY');
+ const sourceAssets=Object.fromEntries(D08_ASSET_PATHS.map(file=>{
+  const bytes=execFileSync('git',['show',`${request.sourceSha}:${file}`],{maxBuffer:10*1024*1024});
+  return [file,{gitBlob:gitBlob(bytes),sourceSha256:sha256(bytes)}];
+ }));
+ return normalizeD08Result({resultText:text,transport,request,baseContractText,moduleContract:mod.contractFunctional,
+  scopeAuthority:{...authority,sha256:a.sha256},sourceAssets});
+}
+
+// Typed incorporation is separate from the immutable execution journal. A failed
+// producer is recorded as a failure, never promoted to a functional certificate.
+export async function incorporateTypedResults({api,token,run,jobs,artifacts,controls,journal,files,now,
+ download=downloadArtifact,producerLoader=loadControls,d08Normalizer=normalizeD08Artifact}){
+ const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[typedResultKey(x),x]));
+ must(JSON.stringify(controls.descriptor.currentFunctionalEvidenceIndex||null)===JSON.stringify(controls.pointer.currentFunctionalEvidenceIndex||null),'MAPPING_FAILURE:TYPED_INDEX_CONTROL_DESYNC');
+ const index=controls.pointer.currentFunctionalEvidenceIndex||{schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[],production:false};
+ must(index.schemaVersion==='cxorbia.i3.typed-result-index.v1'&&index.production===false&&Array.isArray(index.results),'MAPPING_FAILURE:TYPED_INDEX_SCHEMA');
+ const entries=new Map(index.results.map(x=>[x.key,x])),failures=[],incorporated=[];
+ let producer;
+ for(const pending of journal.pendingTypedResults||[]){
+  if(!TYPED_JOBS[pending.name])continue;
+  const job=jobs.find(j=>j.id===pending.jobId&&j.name===pending.name),key=typedResultKey({runId:run.id,runAttempt:run.run_attempt,jobId:pending.jobId});
+  if(!job||!job.conclusion||job.conclusion==='skipped')continue;
+  const old=entries.get(key);let archive;
+  try{
+   if(old){
+   const text=await controls.readBytes(old.path);
+   must(gitBlob(text)===old.gitBlob&&sha256(text)===old.sha256,'SOURCE_FAILURE:TYPED_INDEX_RECEIPT_HASH');
+   const saved=JSON.parse(text),proof=saved.provenance||saved.evidence;
+   must(String(proof?.runId)===String(run.id)&&String(proof?.runAttempt)===String(run.run_attempt)&&String(proof?.jobId)===String(job.id)&&proof?.controlHead===run.head_sha,'SOURCE_FAILURE:TYPED_INDEX_IDENTITY');
+   must(String(proof.artifactId)===String(old.artifactId)&&proof.artifactDigest===old.artifactDigest,'SOURCE_FAILURE:TYPED_INDEX_ARTIFACT_IDENTITY');
+    queue.delete(key);continue;
+   }
+   const artifact=selectTypedArtifact({run,job,artifacts});
+   const journalArtifact=(journal.artifacts||[]).find(item=>String(item.id)===String(artifact.id));
+   must(journalArtifact&&journalArtifact.name===artifact.name&&journalArtifact.digest===artifact.digest,'SOURCE_FAILURE:TYPED_ARTIFACT_JOURNAL_MISMATCH');
+   archive=await download(api,artifact,token);
+   const names=TYPED_JOBS[job.name].entries.filter(entry=>fs.existsSync(path.join(archive.folder,entry)));
+   must(names.length===1,'SOURCE_FAILURE:TYPED_RESULT_ENTRY_MISSING_OR_AMBIGUOUS');
+   const entry=names[0],text=fs.readFileSync(path.join(archive.folder,entry),'utf8'),raw=JSON.parse(text);
+   const base=`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${run.run_attempt}_JOB${job.id}`;
+   const receiptPath=base+'_TYPED_RESULT.json',rawPath=base+'_D08_RAW.json';
+   const transport={runId:run.id,runAttempt:run.run_attempt,jobId:job.id,jobName:job.name,jobConclusion:job.conclusion,
+    controlHead:run.head_sha,artifactId:artifact.id,artifactDigest:artifact.digest,verifiedArchiveDigest:archive.digest,entry,resultSha256:sha256(text),resultRef:rawPath};
+   producer??=await producerLoader(api,run.head_sha);
+   let result;
+   if(raw.schemaVersion==='cxorbia.i3.d08-ui-provider-new-session.v1'){
+    if(job.conclusion==='success'){
+     result=await d08Normalizer({text,transport,producer});files.set(rawPath,text);
+    }else{
+     must(String(raw.runId)===String(run.id)&&String(raw.runAttempt)===String(run.run_attempt)&&raw.production===false,'SOURCE_FAILURE:D08_HELD_RESULT_SCOPE');
+     result={schemaVersion:'cxorbia.i3.typed-result-summary.v1',kind:'D08_INCOMPLETE',state:'HOLD',decision:'RECORDED_D08_INCOMPLETE',
+      provenance:transport,observedAt:now,producerDecision:/^[A-Z0-9_]+$/.test(raw.decision||'')?raw.decision:null,
+      failureCode:safeTypedFailureCode(raw.error),failureSha256:raw.error?sha256(String(raw.error)):null,
+      observations:{functionalPass:raw.functionalPass===true,cleanupOk:raw.cleanup?.ok===true,roleProofCount:Object.keys(raw.roles||{}).length,resourceCount:(raw.resources||[]).length},
+      ownerSpecificReceipts:[],newDomainMatches:0,fullDomain:false,phaseAComplete:false,production:false};
+    }
+   }else result=summarizeTypedResult({resultText:text,transport,expectedIdentity:producer.descriptor.currentMaterialization});
+   const bytes=jsonBytes(result);files.set(receiptPath,bytes);
+   const saved={key,path:receiptPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes),runId:run.id,runAttempt:run.run_attempt,jobId:job.id,
+    controlHead:run.head_sha,artifactId:artifact.id,artifactDigest:artifact.digest,decision:result.decision,
+    ownerReceiptCount:result.ownerSpecificReceipts?.length||0,observedAt:now};
+   entries.set(key,saved);queue.delete(key);incorporated.push(saved);
+  }catch(error){
+   failures.push({key,runId:run.id,runAttempt:run.run_attempt,jobId:job.id,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:TYPED_INCORPORATION_UNCONFIRMED',observedAt:now});
+  }finally{archive?.cleanup();}
+ }
+ return {queue,incorporated,failures,index:{...index,results:[...entries.values()],updatedAt:now}};
+}
+
 export function runJournal({run,jobs,artifacts,needs,now}){
  must(run.repository?.full_name===REPO&&run.head_branch===BRANCH&&run.path===`.github/workflows/${WORKFLOW}`,'SOURCE_FAILURE:RUN_AUTHORITY');
  return {schemaVersion:'cxorbia.i3.automatic-execution-journal.v1',repository:REPO,iteration:'I3',state:'HOLD',runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,controlHead:run.head_sha,observedAt:now,workflowStatus:run.status,workflowConclusion:run.conclusion||'FINALIZER_IN_PROGRESS',needs:needs||null,jobs:jobs.filter(j=>j.name!==SELF).map(j=>({id:j.id,name:j.name,status:j.status,conclusion:j.conclusion,runAttempt:j.run_attempt,startedAt:j.started_at,completedAt:j.completed_at})),artifacts:artifacts.map(a=>({id:a.id,name:a.name,digest:a.digest,createdAt:a.created_at,expired:a.expired})),newDomainMatches:0,production:false,productActionsPerformedByConsumer:0};
@@ -104,10 +201,12 @@ async function loadControls(api,head){
  const root=`/repos/${REPO}`;
  const c=await api(`${root}/git/commits/${head}`),tree=await api(`${root}/git/trees/${c.tree.sha}?recursive=1`);must(!tree.truncated,'SOURCE_FAILURE:TREE_TRUNCATED');
  const blobs=new Map(tree.tree.map(x=>[x.path,x.sha]));
- const load=async file=>{const sha=blobs.get(file);must(Boolean(sha),'SOURCE_FAILURE:MISSING_CONTROL:'+file);const b=await api(`${root}/git/blobs/${sha}`);return JSON.parse(Buffer.from(b.content.replace(/\n/g,''),'base64').toString('utf8'));};
+ const bytes=async file=>{const sha=blobs.get(file);must(Boolean(sha),'SOURCE_FAILURE:MISSING_CONTROL:'+file);const b=await api(`${root}/git/blobs/${sha}`);const text=Buffer.from(b.content.replace(/\n/g,''),'base64').toString('utf8');must(gitBlob(text)===sha,'SOURCE_FAILURE:CONTROL_BYTES:'+file);return text;};
+ const load=async file=>JSON.parse(await bytes(file));
  const [descriptor,pointer]=await Promise.all([load(DESCRIPTOR),load(POINTER)]);
+ must(JSON.stringify(descriptor.currentFunctionalEvidenceIndex||null)===JSON.stringify(pointer.currentFunctionalEvidenceIndex||null),'MAPPING_FAILURE:TYPED_INDEX_CONTROL_DESYNC');
  const [ledger,matrix]=await Promise.all([load(descriptor.findingsLedgerPath),load(descriptor.moduleTruthPath)]);
- return {descriptor,pointer,ledger,matrix,blobs,readFile:load};
+ return {descriptor,pointer,ledger,matrix,blobs,readFile:load,readBytes:bytes};
 }
 
 export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now=new Date().toISOString()}){
@@ -116,11 +215,12 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  const [jobs,artifacts,ref]=await Promise.all([pages(api,`${root}/actions/runs/${runId}/attempts/${run.run_attempt}/jobs`,'jobs'),pages(api,`${root}/actions/runs/${runId}/artifacts`,'artifacts'),api(`${root}/git/ref/heads/${BRANCH}`)]);
  const head=ref.object.sha,controls=await loadControls(api,head);
  const journalPath=`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${run.run_attempt}_EXECUTION_JOURNAL.json`;
- const journal=runJournal({run,jobs,artifacts,needs,now});
- if(controls.blobs.has(journalPath)){validateConsumedJournal(await controls.readFile(journalPath),run,run.run_attempt);return {decision:'NOOP_ALREADY_CONSUMED',runId,head};}
+ const journalExists=controls.blobs.has(journalPath);
+ const journal=journalExists?await controls.readFile(journalPath):runJournal({run,jobs,artifacts,needs,now});
+ if(journalExists)validateConsumedJournal(journal,run,run.run_attempt);
  const paired=jobs.find(j=>j.name===PRODUCER&&j.conclusion!=='skipped');
- let files=new Map(),outcome='RECORDED_EXECUTION_NO_PRODUCT_PROMOTION',materialization=null;
- if(paired?.conclusion==='success'){
+ let files=new Map(),outcome=journalExists?journal.outcome:'RECORDED_EXECUTION_NO_PRODUCT_PROMOTION',materialization=journal.materializationReceiptPath||null;
+ if(!journalExists&&paired?.conclusion==='success'){
   const artifact=selectPairedArtifact({run,job:paired,artifacts}),download=await downloadArtifact(api,artifact,token);
   try{
    const result=readJson(path.join(download.folder,'result.json'));
@@ -144,18 +244,26 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
     materialization=bundle.receiptPath;outcome=projected.noop?'NOOP_MATERIALIZATION_ALREADY_INCORPORATED':'CONSUMED_EXACT_DEV_MATERIALIZATION';
    }
   }finally{download.cleanup();}
- }else if(paired){outcome='HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED';}
- journal.outcome=outcome;journal.materializationReceiptPath=materialization;
- journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER].includes(j.name)&&j.conclusion!=='skipped'&&(j.name!=='canonical-candidate-authority'||j.conclusion!=='success')).map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));
+ }else if(!journalExists&&paired){outcome='HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED';}
+ if(!journalExists){journal.outcome=outcome;journal.materializationReceiptPath=materialization;
+  journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER].includes(j.name)&&j.conclusion!=='skipped'&&(j.name!=='canonical-candidate-authority'||j.conclusion!=='success')).map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));}
  const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[`${x.runId}/${x.runAttempt}/${x.jobId}`,x]));
- for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
+ for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
+ const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...queue.values()]}};
+ const typed=await incorporateTypedResults({api,token,run,jobs,artifacts,controls:typedControls,journal,files,now});
+ if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
  for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
-  const value=files.has(file)?JSON.parse(files.get(file)):controls[key];value.currentAutomationReceipt=event;value.currentResultIncorporationQueue=[...queue.values()];files.set(file,jsonBytes(value));
+  const value=files.has(file)?JSON.parse(files.get(file)):controls[key];
+  if(!journalExists)value.currentAutomationReceipt=event;
+  value.currentResultIncorporationQueue=[...typed.queue.values()];value.currentFunctionalEvidenceIndex=typed.index;
+  value.currentTypedResultFailures=[...new Map([...(value.currentTypedResultFailures||[]).filter(x=>typed.queue.has(x.key)),...typed.failures].map(x=>[x.key,x])).values()];
+  if(typed.incorporated.length)value.lastTypedResultIncorporation={observedAt:now,runId:run.id,runAttempt:run.run_attempt,receipts:typed.incorporated,production:false,newDomainMatches:0};
+  files.set(file,jsonBytes(value));
  }
- files.set(journalPath,jsonBytes(journal));
+ if(!journalExists)files.set(journalPath,jsonBytes(journal));
  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
- return {decision:outcome,runId,...saved,pendingTypedResults:journal.pendingTypedResults.length,productActions:0};
+ return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,typedFailures:typed.failures,productActions:0};
 }
 
 export function validateConsumedJournal(journal,run,attempt){
@@ -193,7 +301,8 @@ async function main(){
  const pending=await pendingRuns({api,currentRunId:process.env.GITHUB_RUN_ID,currentRunAttempt:process.env.GITHUB_RUN_ATTEMPT,descriptor:controls.descriptor,knownPaths:controls.blobs,readJournal:controls.readFile});
  if(process.argv.includes('--preflight')){must(!pending.length,`MAPPING_FAILURE:UNCONSUMED_COMPLETED_RUNS:${pending.map(p=>p.runId+'/'+p.runAttempt).join(',')}`);console.log(jsonBytes({decision:'PASS_NO_UNCONSUMED_EXECUTION',hrReads:0,builds:0,deploys:0}));return;}
  must(process.argv.includes('--consume-current-run'),'SOURCE_FAILURE:UNSUPPORTED_CONSUMER_MODE');
- for(const item of pending)console.log(jsonBytes(await consumeRun({api,token,...item})));
+ const drain=[...new Map([...pending,...pendingTypedRuns(controls.pointer.currentResultIncorporationQueue)].map(x=>[x.runId+'/'+x.runAttempt,x])).values()];
+ for(const item of drain)console.log(jsonBytes(await consumeRun({api,token,...item})));
  console.log(jsonBytes(await consumeRun({api,token,runId:Number(process.env.GITHUB_RUN_ID),runAttempt:Number(process.env.GITHUB_RUN_ATTEMPT),needs:JSON.parse(process.env.CXORBIA_I3_NEEDS_JSON||'null')})));
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(error=>{console.error(error.message);process.exitCode=1;});

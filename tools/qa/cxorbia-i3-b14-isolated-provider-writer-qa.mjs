@@ -591,10 +591,243 @@ async function runF3Run2768Cleanup(){
  finally{await appSdk.deleteApp(app);}
 }
 
+// Exact run-owned recovery in the existing provider QA runner.
+// Reuses its f3* helpers. This file alone never initializes a provider.
+export const F3_RUN2782_RECOVERY=Object.freeze({
+ runId:'45493719666',runAttempt:'1',owner:'f3-qa-45493719666-1',
+ rawPath:'docs/checkpoints/CXORBIA_I3_RUN2782_F3_ENDPOINT_RAW_20261124.json',
+ rawSha256:'8acedd5453ecdc67f9cbb72806e207507d2ff50af38129ce3a99bf35f77740de',
+ authorityPath:'docs/checkpoints/CXORBIA_I3_RUN2782_F3_REMOTE_ABSENCE_RECOVERY_AUTHORITY_20261124.json',
+ authoritySha256:'88640db6467b26730bb19d3d1929068d74b6912419515672b1540110d1c12e65',
+ manifestSha256:'9276e4b72e67a33ac74dc3342fb6c7ca9223a770f0adaec3f46294b5f96a694a',
+ gate:'ROOT_REVIEWED_RUN2782_EXACT_OWNED_RECOVERY_20261124'
+});
+const f3rNeed=(ok,code)=>f3Need(ok,'PERSISTENCE_FAILURE:F3_RUN2782_'+code);
+const f3rBytesSha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const f3rProject='tenants/tya/projects/'+F3_QA.projectId;
+const f3rUid=F3_RUN2782_RECOVERY.owner+'-admin';
+const f3rLock='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
+const f3rClaims={tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:[F3_QA.projectId],qaOwner:F3_RUN2782_RECOVERY.owner};
+
+export function f3ValidateRun2782RecoveryInputs({rawBytes,authorityBytes,manifestBytes}){
+ const p=F3_RUN2782_RECOVERY;
+ f3rNeed(f3rBytesSha(rawBytes)===p.rawSha256,'RAW_SHA');
+ f3rNeed(f3rBytesSha(authorityBytes)===p.authoritySha256,'ROOT_AUTHORITY_SHA');
+ f3rNeed(f3rBytesSha(manifestBytes)===p.manifestSha256,'MANIFEST_SHA');
+ const raw=JSON.parse(String(rawBytes)),authority=JSON.parse(String(authorityBytes)),manifest=JSON.parse(String(manifestBytes));
+ f3rNeed(raw.runId===p.runId&&raw.runAttempt===p.runAttempt&&raw.qaOwner===p.owner&&raw.projectId===F3_QA.projectId&&raw.tenantId==='tya'&&raw.periodId===F3_QA.periodId,'TARGET');
+ f3rNeed(raw.recoveryRequired===true&&raw.remoteValuesRestored===false&&raw.cleanup.firestore===false&&raw.cleanup.auth===false&&raw.scopeLockBaseline.existed===false&&raw.scopeLockBaseline.data===null,'RECOVERY_STATE');
+ f3rNeed(raw.events.length===1&&raw.remoteCommandAttempts.length===3&&raw.reconciliations.length===1,'EXACT_INVOCATION');
+ const command=raw.remoteCommandAttempts[0].command,event=raw.events[0];
+ f3rNeed(raw.remoteCommandAttempts.every(a=>f3Same(a.command,command)&&a.response.status==='pending_hr')&&command.idempotencyKey===p.owner+'-field-1'&&event.event.actorUid===f3rUid&&event.fieldKey==='escenario'&&event.countryCode==='GT','EVENT_OWNER');
+ f3rNeed(authority.schemaVersion==='cxorbia.f3.run2782.remote-absence-recovery-authority.v1'&&authority.runId===p.runId&&authority.runAttempt===p.runAttempt&&authority.qaOwner===p.owner&&authority.rawReceiptSha256===p.rawSha256,'ROOT_TARGET');
+ f3rNeed(authority.writer.scenarioId===10199316&&authority.writer.executionCount===0&&authority.writer.hasMore===false&&Date.parse(authority.writer.from)<=Date.parse(raw.runtimeBefore.readAt)&&Date.parse(authority.writer.toObservedAt)>=Date.parse(raw.remoteCommandAttempts.at(-1).finishedAt)+90000,'WRITER_ZERO_COMPLETE_WINDOW');
+ f3rNeed(authority.dataStore.id===213856&&authority.dataStore.total===1&&f3Same(authority.dataStore.allKeys,[authority.dataStore.preservedSentinel.key])&&authority.dataStore.preservedSentinel.data.recordType==='sentinel','MAKE_INVENTORY');
+ f3rNeed(f3Same(authority.eventKeysAbsent,[event.remoteEventKey])&&f3Same(authority.headKeysAbsent,[event.remoteHeadKey])&&!authority.dataStore.allKeys.includes(event.remoteEventKey)&&!authority.dataStore.allKeys.includes(event.remoteHeadKey),'MAKE_EXACT_KEYS_NOT_ABSENT');
+ f3rNeed(authority.authorization==='RECOVER_EXACT_OWNED_DISPOSABLE_QA_RESOURCES_ONLY_AFTER_FRESH_BASELINE_READBACK_AND_OWNERSHIP_CAS'&&authority.production===false&&authority.hrWrites===0&&authority.makeRecordDeletes===0,'ROOT_SCOPE');
+ return {raw,authority,manifest};
+}
+
+export function f3Run2782ExpectedRows({raw,manifest}){
+ const fixed=new Map(f3FixtureDocuments(manifest,F3_RUN2782_RECOVERY.owner).map(r=>[r.path,r.data]));
+ fixed.set('tenants/tya/users/'+f3rUid,{...f3rClaims,uid:f3rUid,active:true,status:'active',synthetic:true,qaOwner:F3_RUN2782_RECOVERY.owner});
+ const reconcile=raw.reconciliations[0],durable=reconcile.durable,event=raw.events[0];
+ fixed.set(reconcile.receiptPath,durable.receipt);
+ for(const kind of ['stages','intents','effects'])for(const row of durable[kind])fixed.set(row.path,row.data);
+ fixed.set(f3rProject+'/hrFieldEvents/'+event.eventId,event.event);
+ fixed.set(f3rProject+'/hrFieldDeliveries/'+event.eventId,event.delivery);
+ for(const row of event.attempts){const {id,...data}=row;fixed.set(f3rProject+'/hrFieldDeliveries/'+event.eventId+'/attempts/'+id,data);}
+ const e=event.event,head={};
+ for(const k of ['tenantId','projectId','periodId','countryCode','visitId','hrRowId','fieldKey'])head[k]=e[k];
+ Object.assign(head,{confirmedValue:e.before,latestEventId:null,causalSequence:1,pendingEventId:e.eventId,leaseOwner:null,leaseUntil:0});
+ fixed.set(f3rProject+'/hrFieldHeads/'+event.remoteHeadKey,head);
+ const visits=raw.remoteBaseline.rows.map(r=>f3rProject+'/visits/'+r.visitId),commandPaths=raw.remoteCommandAttempts[0].receiptPaths;
+ return {fixed,visits,commandPaths,reconcilePaths:[reconcile.receiptPath],roots:[f3rProject,...commandPaths,reconcile.receiptPath,...[...fixed.keys()].filter(p=>!p.startsWith(f3rProject+'/')&&!p.startsWith(reconcile.receiptPath+'/')&&!commandPaths.includes(p)&&p!==f3rProject&&p!==reconcile.receiptPath)],
+  expectedPaths:[...fixed.keys(),...visits,...commandPaths].sort()};
+}
+
+// Insert in the same runner and call from f3AssessRun2782Documents' GT branch.
+// Proves all original GT values against the pinned reconciliation create digest.
+// This reconstructs a verification value in memory; it never writes a baseline.
+export function f3VerifyRun2782GtPendingBaseline({raw,data,effect,effectRecord}){
+ const command=raw.remoteCommandAttempts[0].command,e=raw.events[0].event;
+ f3rNeed(command.commandType==='visit.hr.fields.update'&&command.expectedVersion===1&&Object.keys(command.payload.patch).join(',')==='escenario'&&e.fieldKey==='escenario'&&e.countryCode==='GT'&&e.idempotencyKey===command.idempotencyKey,'GT_COMMAND_SCOPE');
+ f3rNeed(effect?.operation==='create'&&effect.entity===f3rProject+'/visits/'+F3_QA.visits.GT&&effectRecord?.providerAck===true&&effectRecord.readbackVerified===true&&/^[a-f0-9]{64}$/.test(effect.expectedDigest),'GT_CREATE_PROOF');
+ const added=['hrPendingFields','hrSyncStatus','hrFieldJournalVersion'];
+ f3rNeed(added.every(k=>!effect.fields.includes(k)),'GT_BASELINE_JOURNAL_PREEXISTED');
+ const exactPending={escenario:{eventId:e.eventId,status:'pending_hr',requestedValue:e.after,baseValue:e.before,baseRevision:e.baseRevision,eventDigest:e.eventDigest,providerAck:false}};
+ f3rNeed(f3Same(data.hrPendingFields,exactPending)&&data.hrSyncStatus==='pending_hr'&&data.hrFieldJournalVersion===e.schemaVersion&&f3Same(data.escenario,e.after)&&data.version===command.expectedVersion+1,'GT_PENDING_MUTATION_DRIFT');
+ const changedAt=Date.parse(data.updatedAt),commandStart=Date.parse(raw.remoteCommandAttempts[0].startedAt),eventAt=Date.parse(e.createdAt);
+ f3rNeed(Number.isFinite(changedAt)&&changedAt>=commandStart&&changedAt<=eventAt,'GT_PENDING_UPDATED_AT');
+ const restored={...data,escenario:e.before,version:command.expectedVersion};
+ for(const key of added)delete restored[key];
+ f3rNeed(f3Same(Object.keys(restored).sort(),[...effect.fields].sort()),'GT_BASELINE_FIELD_SET');
+ // reconcileVisitDoc creates {createdAt:now(), updatedAt:now(), version:1}.
+ // These two calls can straddle a millisecond. Their recorded create effect is
+ // a proven upper bound; accept only an exact SHA256 match within that interval.
+ const from=Date.parse(data.createdAt),to=Date.parse(effectRecord.committedAt);
+ f3rNeed(Number.isFinite(from)&&Number.isFinite(to)&&to>=from&&to-from<=2000&&new Date(from).toISOString()===data.createdAt,'GT_BASELINE_TIME_PROVENANCE');
+ let matches=0,matchedAt=null;
+ for(let ms=from;ms<=to;ms++){
+  restored.updatedAt=new Date(ms).toISOString();
+  if(f3Digest(restored)===effect.expectedDigest){matches++;matchedAt=restored.updatedAt;}
+ }
+ f3rNeed(matches===1,'GT_BASELINE_DIGEST_DRIFT');
+ return {decision:'PASS_GT_ORIGINAL_VALUES_EXACT_CREATE_DIGEST',expectedDigest:effect.expectedDigest,restoredVersion:command.expectedVersion,originalUpdatedAt:matchedAt,providerWrites:0};
+}
+
+
+// Broad f3OwnedCleanupPath is only an outer boundary. Exact inventory and typed
+// owners below are mandatory, including children of an otherwise owned root.
+export function f3AssessRun2782Documents({inputs,rows,lock,authUser,now=Date.now()}){
+ const {raw}=inputs,plan=f3Run2782ExpectedRows(inputs),event=raw.events[0],command=raw.remoteCommandAttempts[0].command;
+ f3rNeed(f3Same(rows.map(r=>r.path).sort(),plan.expectedPaths)&&new Set(rows.map(r=>r.path)).size===rows.length,'UNEXPECTED_OR_MISSING_DOCUMENT');
+ const min=Date.parse(raw.runtimeBefore.readAt),max=Date.parse(raw.remoteCommandAttempts.at(-1).finishedAt)+5000;
+ for(const row of rows){
+  f3rNeed(f3OwnedCleanupPath(row.path,F3_RUN2782_RECOVERY.owner,[...plan.commandPaths,...plan.reconcilePaths])&&row.exists===true&&row.updateTime&&row.updateTimeMs>=min&&row.updateTimeMs<=max,'PATH_VERSION_OR_INVOCATION');
+  if(plan.fixed.has(row.path)){f3rNeed(f3Same(row.data,plan.fixed.get(row.path)),'FIXED_DOCUMENT_DRIFT');continue;}
+  const d=row.data;
+  if(plan.visits.includes(row.path)){
+   const original=raw.remoteBaseline.rows.find(x=>row.path.endsWith('/'+x.visitId));
+   f3rNeed(d.tenantId==='tya'&&d.projectId===F3_QA.projectId&&d.periodId===F3_QA.periodId&&(d.id||d.visitId)===original.visitId&&d.hrRowId===original.hrRowId&&d.excelWorksheetFingerprint===original.worksheetFingerprint&&d.hrSourceRevision===raw.initialSourceRevision,'VISIT_OWNER');
+   const effect=raw.reconciliations[0].durable.effects.flatMap(x=>x.data.operations).find(x=>x.entity===row.path);
+   const allowed=new Set([...effect.fields,'hrPendingFields','hrSyncStatus','hrFieldJournalVersion']);
+   f3rNeed(Object.keys(d).every(k=>allowed.has(k)),'VISIT_UNOWNED_FIELDS');
+   if(original.countryCode==='HN')f3rNeed(f3Digest(d)===effect.expectedDigest,'UNTOUCHED_VISIT_DRIFT');
+   else {const effectRecord=raw.reconciliations[0].durable.effects.find(x=>x.data.operations.some(o=>o.entity===row.path))?.data;f3VerifyRun2782GtPendingBaseline({raw,data:d,effect,effectRecord});}
+  }else if(row.path===plan.commandPaths[0])f3rNeed(d.actorUid===f3rUid&&d.commandDigest===f3Digest(command)&&d.commandType===command.commandType&&d.entityId===command.entityId&&f3Same(d.hrFieldEventIds,[event.eventId])&&d.status==='committed','FIELD_COMMAND_OWNER');
+  else if(row.path===plan.commandPaths[1])f3rNeed(d.actorUid===f3rUid&&d.idempotencyKey===command.idempotencyKey&&d.tenantId==='tya'&&d.projectId===F3_QA.projectId&&d.periodId===F3_QA.periodId&&d.commandType===command.commandType&&d.entityId===command.entityId,'AUDIT_OWNER');
+  else f3rNeed(false,'UNCLASSIFIED_DOCUMENT');
+ }
+ f3rNeed(lock.exists===true&&lock.path===f3rLock&&lock.updateTime&&f3Same(lock.data,raw.reconciliations[0].durable.scopeLock)&&Number.isFinite(lock.data.expiresAt)&&lock.data.expiresAt<now,'LOCK_CHANGED_OR_LEASE_ACTIVE');
+ f3AssertCleanupLock({current:lock.data,baseline:raw.scopeLockBaseline.data,owner:F3_RUN2782_RECOVERY.owner,reconcilePaths:plan.reconcilePaths,receipts:rows.map(r=>({path:r.path,data:r.data}))});
+ const head=rows.find(r=>r.path===f3rProject+'/hrFieldHeads/'+event.remoteHeadKey);
+ f3rNeed(head&&Number.isFinite(head.data.leaseUntil)&&head.data.leaseUntil<=now&&!head.data.leaseOwner,'ACTIVE_FIELD_LEASE');
+ f3rNeed(authUser.uid===f3rUid&&f3Same(authUser.customClaims,f3rClaims)&&authUser.displayName==='CXOrbia isolated QA operator'&&authUser.disabled===false&&authUser.providerData.length===0&&Date.parse(authUser.metadata.creationTime)>=min&&Date.parse(authUser.metadata.creationTime)<=Date.parse(raw.remoteBaseline.readAt),'AUTH_OWNER');
+ return plan;
+}
+
+const f3rCaptureSnap=snap=>({path:snap.ref.path,exists:snap.exists,data:snap.exists?snap.data():null,updateTime:snap.updateTime||null,updateTimeMs:snap.updateTime?.toMillis?.()||null});
+export async function f3CaptureRun2782State({db,auth,inputs}){
+ f3rNeed(db.projectId===F3_QA.firebaseProject,'DATABASE_PROJECT');
+ const plan=f3Run2782ExpectedRows(inputs),found=new Map();
+ const visit=async ref=>{const snap=await ref.get();if(snap.exists)found.set(ref.path,f3rCaptureSnap(snap));for(const collection of await ref.listCollections())for(const child of (await collection.get()).docs)await visit(child.ref);};
+ for(const root of [...new Set(plan.roots)])await visit(db.doc(root));
+ const [lock,authUser]=await Promise.all([db.doc(f3rLock).get(),auth.getUser(f3rUid)]);
+ // No shopper assignment occurred; no crosswalk is owned by this invocation.
+ for(const c of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+c.toLowerCase()+'_'+sha(('CXOrbia QA '+c+' F3 '+letter).toLowerCase()).slice(0,10);f3rNeed(!(await db.doc('tenants/tya/shopperIdentityCrosswalk/'+id).get()).exists,'UNEXPECTED_CROSSWALK');}
+ return {rows:[...found.values()].sort((a,b)=>a.path.localeCompare(b.path)),lock:f3rCaptureSnap(lock),authUser};
+}
+
+// readFreshBaseline is GET-only and must assert _runtime.externalReadCurrent,
+// sourceReadAt >= its request start, writes/readModelWrites/hrWrites false, exact
+// runtime/source pins, and then return {rows, revision}. No reconcile or send.
+// checkpoint MUST persist before returning; its failure prevents all deletion.
+export async function f3RecoverRun2782OwnedQa({db,auth,inputs,readFreshBaseline,checkpoint,probeWriter}){
+ f3rNeed(typeof checkpoint==='function'&&typeof readFreshBaseline==='function','CALLBACKS');
+ const receipt={schemaVersion:'cxorbia.f3.run2782.exact-owned-recovery.v1',state:'HOLD',decision:'PENDING',targetRunId:inputs.raw.runId,targetRunAttempt:inputs.raw.runAttempt,qaOwner:inputs.raw.qaOwner,
+  applicationAckProven:false,b14Closed:false,newModuleMatches:0,hrWrites:0,remoteMakeWrites:0,productionWrites:0,firestoreDeletes:0,authDeletes:0};
+ // MCP diagnostic is independent: initialize/listTools only, never callTool.
+ // A probe failure is recorded; it does not veto independently safe cleanup.
+ try{receipt.writerProbe=await probeWriter();}catch{receipt.writerProbe={decision:'HOLD_F3_WRITER_INITIALIZE_OR_LISTTOOLS_FAILED',providerWrites:0,callToolCount:0};}
+ await checkpoint('writerProbe',receipt);
+ const live=await readFreshBaseline();receipt.remoteBaselineReadback=f3VerifyRestoredBaseline(inputs.raw.remoteBaseline,live);
+ const before=await f3CaptureRun2782State({db,auth,inputs});
+ f3AssessRun2782Documents({inputs,...before});
+ receipt.before=f3SafeEvidence({documents:before.rows.map(r=>({path:r.path,data:r.data,digest:f3Digest(r.data),updateTime:r.updateTime})),lock:before.lock,auth:{uid:before.authUser.uid,customClaims:before.authUser.customClaims,displayName:before.authUser.displayName,disabled:before.authUser.disabled,creationTime:before.authUser.metadata.creationTime}});
+ receipt.planDigest=f3Digest(receipt.before);await checkpoint('beforeDeletion',receipt);
+ // Re-enumerate BEFORE any write; an unknown new descendant prevents all deletes.
+ const again=await f3CaptureRun2782State({db,auth,inputs});f3AssessRun2782Documents({inputs,...again});
+ f3rNeed(f3Same(again.rows.map(r=>[r.path,f3Digest(r.data),r.updateTime]),before.rows.map(r=>[r.path,f3Digest(r.data),r.updateTime])),'INVENTORY_CHANGED');
+ await db.runTransaction(async tx=>{
+  const all=[...before.rows,before.lock],snaps=await tx.getAll(...all.map(r=>db.doc(r.path)));
+  for(let i=0;i<all.length;i++){const fresh=snaps[i],old=all[i];f3rNeed(fresh.exists&&fresh.updateTime?.isEqual(old.updateTime)&&f3Same(fresh.data(),old.data),'CAS_DRIFT');}
+  f3AssessRun2782Documents({inputs,rows:snaps.slice(0,-1).map(f3rCaptureSnap),lock:f3rCaptureSnap(snaps.at(-1)),authUser:again.authUser});
+  for(const row of before.rows)tx.delete(db.doc(row.path));
+  // The pinned original scope-lock baseline was absent. Never reconstruct one.
+  tx.delete(db.doc(f3rLock));
+ });
+ receipt.firestoreDeletes=before.rows.length+1;await checkpoint('firestoreDeleted',receipt);
+ // Verify exact deleted roots/subtrees absent. Preserve Auth on uncertainty.
+ const plan=f3Run2782ExpectedRows(inputs);
+ for(const root of [...new Set([...plan.roots,f3rLock])]){const ref=db.doc(root);f3rNeed(!(await ref.get()).exists&&(await ref.listCollections()).length===0,'POST_DELETE_NOT_ABSENT');}
+ const current=await auth.getUser(f3rUid);
+ f3rNeed(current.uid===before.authUser.uid&&f3Same(current.customClaims,before.authUser.customClaims)&&current.metadata.creationTime===before.authUser.metadata.creationTime&&current.displayName===before.authUser.displayName&&current.disabled===before.authUser.disabled&&f3Same(current.providerData,before.authUser.providerData),'AUTH_CHANGED');
+ await checkpoint('beforeAuthDeletion',receipt);await auth.deleteUser(f3rUid);
+ try{await auth.getUser(f3rUid);throw Error('PERSISTENCE_FAILURE:F3_RUN2782_AUTH_NOT_ABSENT');}catch(e){if(e.code!=='auth/user-not-found')throw e;}
+ receipt.authDeletes=1;receipt.cleanup={firestore:true,auth:true,remoteMake:'INDEPENDENT_ABSENCE_ALREADY_PROVEN_NO_DELETE'};receipt.decision='PASS_F3_RUN2782_EXACT_OWNED_RECOVERY_ONLY';
+ await checkpoint('complete',receipt);return receipt;
+}
+
+// Optional adapter for the existing recovery wrapper. Secret stays in memory;
+// the surrounding error handler must NEVER serialize SDK/Gaxios errors.
+export async function f3ProbeWriterMcpMetadataOnly({cloudClient,Client,StreamableHTTPClientTransport}){
+ let secret='',mcp,stage='secret_access';
+ const base={providerWrites:0,callToolCount:0,sdkVersion:'1.26.0'};
+ try{
+  const r=await cloudClient.request({method:'GET',url:'https://secretmanager.googleapis.com/v1/projects/87461567267/secrets/cxorbia-dev-f3-make-toolbox/versions/1:access',timeout:30000,retry:false,maxRedirects:0});
+  secret=Buffer.from(r.data?.payload?.data||'','base64').toString('utf8').trim();f3rNeed(secret.length>0,'MCP_SECRET_EMPTY');
+  stage='initialize';mcp=new Client({name:'cxorbia-f3-run2782-recovery-readonly',version:'1.0.0'});
+  await mcp.connect(new StreamableHTTPClientTransport(new URL('https://eu2.make.com/mcp/server/4b7fc076-74a6-410b-8a7b-937e972e8bbe'),{requestInit:{redirect:'error',headers:{Authorization:'Bearer '+secret}}}));
+  stage='list_tools';const list=await mcp.listTools(),tool=list.tools?.[0],keys=Object.keys(tool?.inputSchema?.properties||{});
+  const contractExact=!list.nextCursor&&list.tools?.length===1&&tool?.annotations?.readOnlyHint===false&&['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].every(k=>keys.includes(k));
+  return {...base,decision:contractExact?'PASS_F3_WRITER_INITIALIZE_LISTTOOLS_CONTRACT_ONLY':'HOLD_F3_WRITER_TOOL_CONTRACT',stage:'contract',contractExact,nextCursorPresent:Boolean(list.nextCursor),toolCount:list.tools?.length||0,tools:(list.tools||[]).map(t=>({name:t.name,readOnlyHint:typeof t.annotations?.readOnlyHint==='boolean'?t.annotations.readOnlyHint:null,inputKeys:Object.keys(t.inputSchema?.properties||{}).sort()}))};
+ }catch(error){
+  const status=Number(error.response?.status||error.status||error.code),safeMessage=String(error.message||'');
+  return {...base,decision:'HOLD_F3_WRITER_INITIALIZE_OR_LISTTOOLS_FAILED',stage,httpStatus:Number.isInteger(status)&&status>=100&&status<=599?status:null,errorCode:/^[A-Z_]+:[A-Z0-9_]+$/.test(safeMessage)?safeMessage:'PROVIDER_FAILURE:F3_WRITER_METADATA_REQUEST_FAILED'};
+ }finally{secret='';try{await mcp?.close();}catch{}}
+}
+
+// Same existing runner. This recovery wrapper reaches no setup/create,
+// reconcile, command POST, Make callTool, worksheet write, or binding mutation.
+async function runF3Run2782Recovery(){
+ const env=process.env,p=F3_RUN2782_RECOVERY;
+ f3rNeed(env.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&env.GITHUB_REF===QA_BRANCH&&env.GOOGLE_CLOUD_PROJECT===F3_QA.firebaseProject&&/^\d{8,}$/.test(env.GITHUB_RUN_ID||'')&&/^\d+$/.test(env.GITHUB_RUN_ATTEMPT||'1')&&env.CXORBIA_F3_QA_ENDPOINT_GATE==='PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124'&&env.CXORBIA_F3_RUN2782_RECOVERY_GATE===p.gate,'ENV_GATE');
+ const config=JSON.parse(fs.readFileSync('docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json','utf8'));
+ const inputs=f3ValidateRun2782RecoveryInputs({rawBytes:fs.readFileSync(p.rawPath),authorityBytes:fs.readFileSync(p.authorityPath),manifestBytes:fs.readFileSync(config.remoteManifestPath)});
+ for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])f3rNeed(config[k]===inputs.raw[k],'CURRENT_SOURCE_PINS');
+ const out=path.resolve(env.CXORBIA_F3_CLEANUP_RECEIPT||'.tmp/i3-b14-provider-qa/f3-run2782-recovery.json');
+ let receipt={schemaVersion:'cxorbia.f3.run2782.exact-owned-recovery.v1',production:false,...Object.fromEntries(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].map(k=>[k,config[k]])),state:'HOLD',decision:'PENDING',runId:String(env.GITHUB_RUN_ID),runAttempt:String(env.GITHUB_RUN_ATTEMPT||'1'),targetRunId:p.runId,targetRunAttempt:p.runAttempt,hrWrites:0,productionWrites:0,applicationAckProven:false,b14Closed:false,newModuleMatches:0},token='';
+ const save=()=>{fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(f3SafeEvidence(receipt),null,2)+'\n');};save();
+ const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
+ const cloudClient=await new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();
+ const principal=String(typeof cloudClient.getServiceAccountEmail==='function'?await cloudClient.getServiceAccountEmail():cloudClient.email||'');f3rNeed(principal===QA_PRINCIPAL,'PRINCIPAL');
+ const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
+ const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject},'f3-run2782-recovery'),auth=getAuth(app),db=getFirestore(app);
+ const httpJson=async(url,options={})=>{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(180000),...options});let body;try{body=await r.json();}catch{throw Error('PROVIDER_FAILURE:F3_RUN2782_NON_JSON');}return {status:r.status,body};};
+ try{
+  const cloudGet=async url=>(await cloudClient.request({method:'GET',url,timeout:30000,retry:false,maxRedirects:0})).data;
+  const root='https://'+F3_QA.region+'-run.googleapis.com/apis/serving.knative.dev/v1/namespaces/'+F3_QA.firebaseProject;
+  const [service,rev,hosting]=await Promise.all([cloudGet(root+'/services/'+F3_QA.service),cloudGet(root+'/revisions/'+config.runtimeRevision),cloudGet('https://firebasehosting.googleapis.com/v1beta1/sites/'+F3_QA.firebaseProject+'/channels/live')]);
+  f3rNeed(service.status.latestReadyRevisionName===config.runtimeRevision&&service.status.traffic.some(t=>t.revisionName===config.runtimeRevision&&t.percent===100)&&rev.status.imageDigest.endsWith(config.runtimeDigest)&&hosting.release.version.name===config.hostingVersion,'LIVE_ARTIFACT_DRIFT');
+  const environment=rev.spec?.containers?.[0]?.env||[];
+  receipt.runtimeWriterEnvironment={enabled:environment.find(x=>x.name==='CXORBIA_F3_HR_FIELDS_ENABLED')?.value==='true',urlMatchesExpected:environment.find(x=>x.name==='CXORBIA_F3_MAKE_TOOLBOX_URL')?.value==='https://eu2.make.com/mcp/server/4b7fc076-74a6-410b-8a7b-937e972e8bbe',secretRef:environment.find(x=>x.name==='CXORBIA_F3_MAKE_TOOLBOX_TOKEN')?.valueFrom?.secretKeyRef||null};
+  const [{Client},{StreamableHTTPClientTransport}]=await Promise.all([import('@modelcontextprotocol/sdk/client/index.js'),import('@modelcontextprotocol/sdk/client/streamableHttp.js')]);
+  receipt.writerProbe=await f3ProbeWriterMcpMetadataOnly({cloudClient,Client,StreamableHTTPClientTransport});save();
+  const before=await f3CaptureRun2782State({db,auth,inputs});f3AssessRun2782Documents({inputs,...before});
+  const init=await httpJson(F3_QA.baseUrl+'/__/firebase/init.json');f3rNeed(init.status===200&&init.body.projectId===F3_QA.firebaseProject&&init.body.apiKey,'FIREBASE_CONFIG');
+  let custom=await auth.createCustomToken(f3rUid,f3rClaims);
+  const signed=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});custom='';token=signed.body.idToken||'';
+  f3rNeed(signed.status===200&&token,'TOKEN_EXCHANGE');const decoded=await auth.verifyIdToken(token,true);f3rNeed(decoded.uid===f3rUid&&decoded.qaOwner===p.owner&&decoded.tenantId==='tya'&&decoded.role==='admin'&&f3Same(decoded.projectIds,[F3_QA.projectId]),'SESSION_OWNER');
+  const result=await f3RecoverRun2782OwnedQa({db,auth,inputs,checkpoint:async(stage,data)=>{receipt={...receipt,...data,lastStage:stage};save();},
+   readFreshBaseline:async()=>{const started=Date.now(),r=await httpJson(F3_QA.baseUrl+'/api/tenants/tya/projects/'+F3_QA.projectId+'/hr-live?fresh=1&protectedState=1',{headers:{Authorization:'Bearer '+token}}),m=r.body._runtime,s=r.body.snapshot;
+    f3rNeed(r.status===200&&s?.tenantId==='tya'&&s.projectId===F3_QA.projectId&&s.sourceSafe===true&&m?.externalReadCurrent===true&&Date.parse(m.sourceReadAt)>=started&&m.writes===false&&m.readModelWrites===false&&m.hrWrites===false&&m.operationalWrites===false,'FRESH_READ_ONLY_BASELINE');return {rows:s.visits,revision:m.revision};},
+   probeWriter:async()=>receipt.writerProbe
+  });
+  receipt={...receipt,...result,finishedAt:new Date().toISOString()};save();
+  console.log(JSON.stringify({decision:receipt.decision,state:'HOLD',firestoreDeletes:receipt.firestoreDeletes,authDeletes:receipt.authDeletes,writerProbe:receipt.writerProbe?.decision,hrWrites:0,productionWrites:0,applicationAckProven:false,b14Closed:false,newModuleMatches:0}));
+ }catch(error){receipt.state='HOLD';receipt.decision='HOLD_F3_RUN2782_RECOVERY_UNVERIFIED';receipt.failure=/^[A-Z_]+:[A-Z0-9_]+$/.test(error.message||'')?error.message:'PERSISTENCE_FAILURE:F3_RUN2782_UNCLASSIFIED';save();throw Error(receipt.failure);}
+ finally{token='';await appSdk.deleteApp(app);}
+}
+
+// Add BEFORE --f3-endpoint dispatch in the existing CLI:
+// else if(process.argv.includes('--f3-recover-run2782'))runF3Run2782Recovery().catch(err=>{console.error('F3_QA_RECOVERY_HOLD',f3Code(err));process.exitCode=1;});
+
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
   if(process.argv.includes('--self-test'))selfTest();
   else if(process.argv.includes('--f3-cleanup-run2768'))runF3Run2768Cleanup().catch(err=>{console.error('F3_QA_CLEANUP_HOLD',/^[A-Z_]+:[A-Z0-9_]+$/.test(err.message)?err.message:'PERSISTENCE_FAILURE:F3_CLEANUP_UNCLASSIFIED');process.exitCode=1;});
   else if(process.argv.includes('--f3-inspect-run2768'))runF3Run2768Inspection().catch(err=>{console.error('F3_QA_RECOVERY_HOLD',/^[A-Z_]+:[A-Z0-9_]+$/.test(err.message)?err.message:'PERSISTENCE_FAILURE:F3_RECOVERY_UNCLASSIFIED');process.exitCode=1;});
+  else if(process.argv.includes('--f3-recover-run2782'))runF3Run2782Recovery().catch(err=>{console.error('F3_QA_RECOVERY_HOLD',f3Code(err));process.exitCode=1;});
   else if(process.argv.includes('--f3-endpoint'))runF3EndpointProbe().catch(err=>{console.error('F3_QA_ENDPOINT_HOLD',f3Code(err));process.exitCode=1;});
   else runProviderProbe().catch(err=>{console.error('B14_QA_PROVIDER_PROBE_HOLD',String(err?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,160));process.exitCode=1;});
 }

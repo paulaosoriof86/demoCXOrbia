@@ -388,8 +388,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
-          "gitBlob": "971329f46ecf4c81113e2d143d44389aa4e066fe",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
+          "gitBlob": "53c95c814c125a0b6750fce2ef4ede22a513c91f",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -859,7 +859,7 @@
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-24T21:20:00.106Z",
+  "asOf": "2026-11-24T22:14:46.055Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -1055,7 +1055,7 @@
         "productionChanged": false
       }
     },
-    "immediateAction": "I3: DEV is published and its exact receipt is incorporated. The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove the existing F3 application fixture ACK/readback/replay/conflict/echo/restoration/cleanup, authenticated HR durability, and the remaining A08/D08/finance clauses. E08 mailbox remains disabled/HOLD because metadata lookup was denied; do not infer key absence. Credit only exact newly proved clauses, preserve existing MATCH domains and B4/B5/B6/B7, then close C3/Gate20/Gate21 on the same artifact. Production DO_NOT_TOUCH; I4 requires explicit authorization.",
+    "immediateAction": "I3: preserve exact DEV source1691/RUN2780/runtime00391 and all accepted evidence. Recover only RUN2782 owned QA resources after fresh eight-field Excel baseline and exact original-document digest/CAS; diagnose writer MCP using initialize/listTools only. Run existing A08 password exceptions, D08 three-role UI and authorized second-advance metadata jobs on this same DEV. Automatically incorporate each typed result, preserve partial clauses and unresolved failures; correct only the proved F3 transport owner before another endpoint attempt. Complete uncovered frozen-plan clauses including E08 authenticated mailbox, then C3/Gate20/Gate21 on one certified artifact. No product rebuild or production deployment in this package; I4 requires I3 GO and exact-artifact authorization.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -1181,7 +1181,7 @@
         "domainMatches": 6
       }
     },
-    "asOf": "2026-11-24T21:20:00.106Z",
+    "asOf": "2026-11-24T22:14:46.055Z",
     "authority": "AUTOMATIC_EXACT_RUN_RESULT_CONSUMPTION",
     "latestBatchRunId": 45488581923
   },
@@ -1189,7 +1189,7 @@
     "authority": "AUTOMATIC_EXACT_RUN_RESULT_CONSUMPTION",
     "path": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
     "gitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
-    "asOf": "2026-11-24T21:20:00.106Z",
+    "asOf": "2026-11-24T22:14:46.055Z",
     "iteration": "I3",
     "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
     "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
@@ -1206,7 +1206,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3: DEV is published and its exact receipt is incorporated. The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove the existing F3 application fixture ACK/readback/replay/conflict/echo/restoration/cleanup, authenticated HR durability, and the remaining A08/D08/finance clauses. E08 mailbox remains disabled/HOLD because metadata lookup was denied; do not infer key absence. Credit only exact newly proved clauses, preserve existing MATCH domains and B4/B5/B6/B7, then close C3/Gate20/Gate21 on the same artifact. Production DO_NOT_TOUCH; I4 requires explicit authorization.",
+    "immediateAction": "I3: preserve exact DEV source1691/RUN2780/runtime00391 and all accepted evidence. Recover only RUN2782 owned QA resources after fresh eight-field Excel baseline and exact original-document digest/CAS; diagnose writer MCP using initialize/listTools only. Run existing A08 password exceptions, D08 three-role UI and authorized second-advance metadata jobs on this same DEV. Automatically incorporate each typed result, preserve partial clauses and unresolved failures; correct only the proved F3 transport owner before another endpoint attempt. Complete uncovered frozen-plan clauses including E08 authenticated mailbox, then C3/Gate20/Gate21 on one certified artifact. No product rebuild or production deployment in this package; I4 requires I3 GO and exact-artifact authorization.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -1804,7 +1804,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3: DEV is published and its exact receipt is incorporated. The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove the existing F3 application fixture ACK/readback/replay/conflict/echo/restoration/cleanup, authenticated HR durability, and the remaining A08/D08/finance clauses. E08 mailbox remains disabled/HOLD because metadata lookup was denied; do not infer key absence. Credit only exact newly proved clauses, preserve existing MATCH domains and B4/B5/B6/B7, then close C3/Gate20/Gate21 on the same artifact. Production DO_NOT_TOUCH; I4 requires explicit authorization.",
+  "nextExactAction": "I3: preserve exact DEV source1691/RUN2780/runtime00391 and all accepted evidence. Recover only RUN2782 owned QA resources after fresh eight-field Excel baseline and exact original-document digest/CAS; diagnose writer MCP using initialize/listTools only. Run existing A08 password exceptions, D08 three-role UI and authorized second-advance metadata jobs on this same DEV. Automatically incorporate each typed result, preserve partial clauses and unresolved failures; correct only the proved F3 transport owner before another endpoint attempt. Complete uncovered frozen-plan clauses including E08 authenticated mailbox, then C3/Gate20/Gate21 on one certified artifact. No product rebuild or production deployment in this package; I4 requires I3 GO and exact-artifact authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2523,8 +2523,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
-    "gitBlob": "971329f46ecf4c81113e2d143d44389aa4e066fe"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
+    "gitBlob": "53c95c814c125a0b6750fce2ef4ede22a513c91f"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4524,8 +4524,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
-    "matrixBlob": "971329f46ecf4c81113e2d143d44389aa4e066fe",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
+    "matrixBlob": "53c95c814c125a0b6750fce2ef4ede22a513c91f",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -4534,7 +4534,7 @@
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-24T21:20:00.106Z",
+    "derivedAt": "2026-11-24T22:14:46.055Z",
     "meaning": "CURRENT_PAIRED_DEV_EXACT_FUNCTIONAL_CLAUSES_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
@@ -6423,12 +6423,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
-      "gitBlob": "971329f46ecf4c81113e2d143d44389aa4e066fe"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
+      "gitBlob": "53c95c814c125a0b6750fce2ef4ede22a513c91f"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V724_2026-11-24.json",
-      "gitBlob": "0cbae409bdfd8f7635494657039385ae07062691"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V725_2026-11-24.json",
+      "gitBlob": "06a67a44469eff9ec2d9622d95688ecfb80e7a50"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -6751,7 +6751,7 @@
     "i4Authorized": false
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: DEV is published and its exact receipt is incorporated. The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove the existing F3 application fixture ACK/readback/replay/conflict/echo/restoration/cleanup, authenticated HR durability, and the remaining A08/D08/finance clauses. E08 mailbox remains disabled/HOLD because metadata lookup was denied; do not infer key absence. Credit only exact newly proved clauses, preserve existing MATCH domains and B4/B5/B6/B7, then close C3/Gate20/Gate21 on the same artifact. Production DO_NOT_TOUCH; I4 requires explicit authorization.",
+  "exactNextAction": "I3: preserve exact DEV source1691/RUN2780/runtime00391 and all accepted evidence. Recover only RUN2782 owned QA resources after fresh eight-field Excel baseline and exact original-document digest/CAS; diagnose writer MCP using initialize/listTools only. Run existing A08 password exceptions, D08 three-role UI and authorized second-advance metadata jobs on this same DEV. Automatically incorporate each typed result, preserve partial clauses and unresolved failures; correct only the proved F3 transport owner before another endpoint attempt. Complete uncovered frozen-plan clauses including E08 authenticated mailbox, then C3/Gate20/Gate21 on one certified artifact. No product rebuild or production deployment in this package; I4 requires I3 GO and exact-artifact authorization.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -6825,7 +6825,8 @@
   },
   "nextPlannedBlock": {
     "taskIds": [
-      "F3",
+      "F3_RUN2782_RECOVERY",
+      "F3_TRANSPORT_DIAGNOSIS",
       "A08",
       "D08",
       "FINANCE_RESIDUAL",
@@ -6836,7 +6837,7 @@
     "completedTaskIds": [
       "HR_PERIOD_WINDOW"
     ],
-    "exactPending": "I3: DEV is published and its exact receipt is incorporated. The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove the existing F3 application fixture ACK/readback/replay/conflict/echo/restoration/cleanup, authenticated HR durability, and the remaining A08/D08/finance clauses. E08 mailbox remains disabled/HOLD because metadata lookup was denied; do not infer key absence. Credit only exact newly proved clauses, preserve existing MATCH domains and B4/B5/B6/B7, then close C3/Gate20/Gate21 on the same artifact. Production DO_NOT_TOUCH; I4 requires explicit authorization.",
+    "exactPending": "I3: preserve exact DEV source1691/RUN2780/runtime00391 and all accepted evidence. Recover only RUN2782 owned QA resources after fresh eight-field Excel baseline and exact original-document digest/CAS; diagnose writer MCP using initialize/listTools only. Run existing A08 password exceptions, D08 three-role UI and authorized second-advance metadata jobs on this same DEV. Automatically incorporate each typed result, preserve partial clauses and unresolved failures; correct only the proved F3 transport owner before another endpoint attempt. Complete uncovered frozen-plan clauses including E08 authenticated mailbox, then C3/Gate20/Gate21 on one certified artifact. No product rebuild or production deployment in this package; I4 requires I3 GO and exact-artifact authorization.",
     "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
     "production": false
   },
@@ -7238,8 +7239,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V724_2026-11-24.json",
-  "findingsLedgerExpectedGitBlob": "0cbae409bdfd8f7635494657039385ae07062691",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V725_2026-11-24.json",
+  "findingsLedgerExpectedGitBlob": "06a67a44469eff9ec2d9622d95688ecfb80e7a50",
   "nextFindingId": "VRM-376",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8259,7 +8260,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V397.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -9446,7 +9447,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-24T21:20:00.106Z",
+  "updatedAt": "2026-11-24T22:14:46.055Z",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -10834,7 +10835,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "971329f46ecf4c81113e2d143d44389aa4e066fe",
+  "moduleTruthExpectedGitBlob": "53c95c814c125a0b6750fce2ef4ede22a513c91f",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -26288,22 +26289,31 @@
   },
   "currentD08UiQaRequest": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
-    "gitBlob": "cd38cfbeca606e578114923ff11899501b58e07f",
+    "gitBlob": "89c23617d814ee36fe8d38f6ae26f9440f7720b4",
     "state": "REQUESTED_CURRENT_DEV_UI_WITH_EXACT_RUN2760_RECOVERY",
-    "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
-    "pairedRunId": 45384571856,
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "pairedRunId": 45488581923,
     "production": false
   },
   "currentA08ResidualQaExecution": {
     "state": "REQUESTED_EXISTING_DEV_READONLY",
-    "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
-    "materializationRunId": 45359320300,
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "materializationRunId": 45488581923,
+    "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "materializationReceiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
     "marker": "[i3-a08-exceptions-negative-readonly]",
+    "executionMode": "PASSWORD_ONLY",
     "scope": [
-      "three exact ordinary-password session lifecycles",
-      "API401 anonymous and403 shopper",
-      "existing private Storage object owner and negative users"
+      "three exact ordinary-password session lifecycles"
     ],
+    "preservedApiProof": {
+      "runNumber": 2760,
+      "artifactId": 14906482096,
+      "denialsPassed": 4,
+      "reexecutionRequired": false
+    },
+    "storageProof": "PENDING_EXISTING_PRIVATE_OBJECT_OWNER_AND_NEGATIVE_USERS",
     "fullDomain": false,
     "production": false,
     "writes": 0
@@ -27185,5 +27195,29 @@
     "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
     "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
     "scope": "READ_WINDOW_AND_HISTORY_ONLY_NO_DOMAIN_PROMOTION"
+  },
+  "currentD08ScopedAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_SCOPED_OBLIGATION_AUTHORITY_20261124.json",
+    "gitBlob": "c0acf2f60ee14597f2c6da397ff4c8a59e79d8c0",
+    "sha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+    "taskId": "D08",
+    "fullDomain": false,
+    "production": false
+  },
+  "currentContinuityMethodRepair": {
+    "path": "docs/checkpoints/CXORBIA_I3_TYPED_RESULT_AND_MODULE_CONTINUITY_METHOD_FIX_20261124.json",
+    "gitBlob": "a82d9dcb857b6f04f1e2113e9820c94cf0003707",
+    "observedAt": "2026-11-24T22:14:46.055Z",
+    "scope": "METHOD_AND_TYPED_EVIDENCE_NOT_FUNCTIONAL_GO",
+    "preExecutionReviewAt": "2026-11-24T23:57:55.463Z"
+  },
+  "moduleCurrentAliasHistory": {
+    "path": "docs/checkpoints/CXORBIA_I3_MODULE_ALIAS_AND_D08_RESIDUAL_HISTORY_20261124.json",
+    "gitBlob": "65327cb6988302cd61551c6f915e0274434bdd88"
+  },
+  "preExecutionControlAliasHistory": {
+    "path": "docs/checkpoints/CXORBIA_I3_PRE_EXECUTION_CONTROL_ALIAS_HISTORY_20261124.json",
+    "gitBlob": "f2fb210135ad5bc3643d91b651dcf7098ea9076a",
+    "semantics": "HISTORICAL_ONLY_NOT_EXECUTION_AUTHORITY"
   }
 }

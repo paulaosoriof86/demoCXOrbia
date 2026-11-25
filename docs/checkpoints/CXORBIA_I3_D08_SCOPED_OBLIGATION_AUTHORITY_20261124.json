@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-scoped-obligation-authority.v1",
+  "taskId": "D08",
+  "periodRequired": false,
+  "scopeKind": "D08_ACADEMY_TENANT_COURSE",
+  "moduleDomain": "certifications",
+  "ownerPaths": [
+    "app/modules/academia.js"
+  ],
+  "baseContractPath": "backend/contracts/cxorbia-academy-base-progress-contract-v1.json",
+  "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558",
+  "baseContractGitBlob": "6e22d060b4534413de58ca55b6a07ab34a84f83e",
+  "obligationIds": [
+    "D08.admin.course",
+    "D08.admin.lesson",
+    "D08.admin.evaluation",
+    "D08.admin.resource",
+    "D08.admin.progress",
+    "D08.admin.new_session_replay",
+    "D08.shopper.course",
+    "D08.shopper.lesson",
+    "D08.shopper.evaluation",
+    "D08.shopper.resource",
+    "D08.shopper.progress",
+    "D08.shopper.new_session_replay",
+    "D08.cliente.course",
+    "D08.cliente.lesson",
+    "D08.cliente.evaluation",
+    "D08.cliente.resource",
+    "D08.cliente.progress",
+    "D08.cliente.new_session_replay",
+    "D08.admin.edit",
+    "D08.shopper.edit_denied",
+    "D08.cliente.edit_denied",
+    "D08.stale_version_denied",
+    "D08.other_learner_isolated",
+    "D08.wrong_audience_denied",
+    "D08.cleanup"
+  ],
+  "originalPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "authorityBasis": [
+    "Existing D08 requirement for role-authorized courses, lessons, resources, evaluation and durable learner progress",
+    "Existing source command contract requirePeriod:false; course progress periodId:null",
+    "This scoped inventory is not the complete certifications-domain obligation inventory"
+  ],
+  "fullDomain": false,
+  "completeDomainInventory": false,
+  "scopeRules": {
+    "tenantExact": true,
+    "projectAuthorized": true,
+    "roleExact": true,
+    "progressPeriodId": null,
+    "courseEditContextualPeriodAllowed": true,
+    "hrRevisionRequired": false
+  },
+  "production": false
+}

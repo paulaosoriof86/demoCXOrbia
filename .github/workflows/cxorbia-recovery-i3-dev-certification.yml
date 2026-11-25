@@ -85,6 +85,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs
+      node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring}.test.mjs
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs
       node --test tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs
       node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
@@ -6477,7 +6478,7 @@ jobs:
 
   i3-b14-qa-provider-proof:
    needs: canonical-candidate-authority
-   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]')||contains(github.event.head_commit.message,'[i3-f3-qa-inspect-run2768]')||contains(github.event.head_commit.message,'[i3-f3-qa-cleanup-run2768]'))&&needs.canonical-candidate-authority.result=='success'}}
+   if: ${{github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-b14-qa-provider-write]')||contains(github.event.head_commit.message,'[i3-f3-qa-endpoint]')||contains(github.event.head_commit.message,'[i3-f3-qa-recover-run2782]')||contains(github.event.head_commit.message,'[i3-f3-qa-inspect-run2768]')||contains(github.event.head_commit.message,'[i3-f3-qa-cleanup-run2768]'))&&needs.canonical-candidate-authority.result=='success'}}
    runs-on: ubuntu-24.04
    permissions: {contents: read, id-token: write}
    env:
@@ -6498,14 +6499,19 @@ jobs:
    - run: |
       node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --self-test
       node --test tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs
-      node --test tools/qa/cxorbia-i3-f3-run2768-cleanup.test.mjs
+      node --test tools/qa/cxorbia-i3-f3-run2768-cleanup.test.mjs tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
    - run: |
       set -Eeuo pipefail
       mkdir -p .tmp/i3-b14-provider-qa
       npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      if jq -e '.head_commit.message | contains("[i3-f3-qa-cleanup-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+      if jq -e '.head_commit.message | contains("[i3-f3-qa-recover-run2782]")' "$GITHUB_EVENT_PATH" >/dev/null; then
+        npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 @modelcontextprotocol/sdk@1.26.0 >/dev/null 2>&1
+        export CXORBIA_F3_RUN2782_RECOVERY_GATE=ROOT_REVIEWED_RUN2782_EXACT_OWNED_RECOVERY_20261124
+        node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-recover-run2782
+        jq -e '.decision=="PASS_F3_RUN2782_EXACT_OWNED_RECOVERY_ONLY" and .cleanup.firestore==true and .cleanup.auth==true and .hrWrites==0 and .productionWrites==0 and .b14Closed==false' .tmp/i3-b14-provider-qa/f3-run2782-recovery.json >/dev/null
+      elif jq -e '.head_commit.message | contains("[i3-f3-qa-cleanup-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then
         export CXORBIA_F3_RUN2768_CLEANUP_GATE=ROOT_REVIEWED_RUN2770_EXACT_OWNED_ORPHAN_20261124
         node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-cleanup-run2768
       elif jq -e '.head_commit.message | contains("[i3-f3-qa-inspect-run2768]")' "$GITHUB_EVENT_PATH" >/dev/null; then

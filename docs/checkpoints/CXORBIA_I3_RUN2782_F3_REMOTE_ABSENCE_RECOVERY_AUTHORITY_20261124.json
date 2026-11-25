@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.f3.run2782.remote-absence-recovery-authority.v1",
+  "observedAt": "2026-11-24 21:53:12 UTC",
+  "iteration": "I3",
+  "state": "HOLD",
+  "runId": "45493719666",
+  "runAttempt": "1",
+  "qaOwner": "f3-qa-45493719666-1",
+  "rawReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2782_F3_ENDPOINT_RAW_20261124.json",
+  "rawReceiptSha256": "8acedd5453ecdc67f9cbb72806e207507d2ff50af38129ce3a99bf35f77740de",
+  "artifactId": 14967637551,
+  "artifactDigest": "sha256:12521d78b84f076f8b7a27c9664cd40b942dc435d119212380d866522c799df0",
+  "writer": {
+    "scenarioId": 10199316,
+    "from": "2026-11-24T21:43:28Z",
+    "toObservedAt": "2026-11-24 21:53:12 UTC",
+    "executionCount": 0,
+    "hasMore": false
+  },
+  "dataStore": {
+    "id": 213856,
+    "total": 1,
+    "allKeys": [
+      "757bfe4bd75b"
+    ],
+    "preservedSentinel": {
+      "key": "757bfe4bd75b",
+      "data": {
+        "schemaVersion": 1,
+        "recordType": "sentinel",
+        "payloadJson": "{\"schemaVersion\":1,\"absent\":true}"
+      }
+    }
+  },
+  "eventKeysAbsent": [
+    "event:hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+  ],
+  "headKeysAbsent": [
+    "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98"
+  ],
+  "authorization": "RECOVER_EXACT_OWNED_DISPOSABLE_QA_RESOURCES_ONLY_AFTER_FRESH_BASELINE_READBACK_AND_OWNERSHIP_CAS",
+  "requiredBeforeDeletion": [
+    "Fresh independent read verifies baseline eight fields across exact two QA worksheets",
+    "All owned Firestore records captured and identity-checked",
+    "No active field lease or unowned descendants",
+    "Only exact run-owned allowlist may be removed; read absence after deletion",
+    "No HR write, no writer scenario execution, no retry of pending field command"
+  ],
+  "production": false,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "authWrites": 0,
+  "makeRecordDeletes": 0,
+  "newDomainMatches": 0
+}

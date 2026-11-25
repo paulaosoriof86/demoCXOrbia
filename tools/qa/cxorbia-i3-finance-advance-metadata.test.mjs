@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {gitBlob} from './cxorbia-i3-current-control-projection.mjs';
 import {createFinanceCommandProvider} from '../../backend/runtime/cxorbia-finance-command-provider-v1.mjs';
 import {digest,prepareMetadataCommand,executeAdvanceMetadata,validateMetadataEnvironment} from './cxorbia-i3-finance-advance-metadata.mjs';
 const sourcePlan=JSON.parse(fs.readFileSync(new URL('../../docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json',import.meta.url),'utf8'));
@@ -57,12 +58,21 @@ test('a new process verifies an already committed exact receipt without another 
   assert.equal(f.commands.length,2);assert.equal(f.db.committedWrites,3);assert.deepEqual([...f.db.store],after);
 });
 
-test('current Make/HR provider HOLD still prepares exact live CAS but performs zero command or Auth dispatch',async()=>{
+test('Make/HR provider HOLD prepares exact live CAS but performs zero command or Auth dispatch',async()=>{
   const f=fixture({dispatch:false}),before=copy([...f.db.store]);
   await assert.rejects(executeAdvanceMetadata(f),/PROVIDER_FAILURE:FINANCE_METADATA_CONFIGURE_REQUIRES_HR/);
   assert.equal(f.commands.length,0);assert.equal(f.db.committedWrites,0);assert.deepEqual([...f.db.store],before);
   assert.equal(f.privateRecords.length,1);assert.equal(f.privateRecords[0].data.command.expectedVersion,f.second.updatedAt);
-  assert.equal(sourcePlan.commandDispatchAllowed,false);
+  assert.equal(f.plan.commandDispatchAllowed,false);
+});
+
+test('authorized resume is bound to the exact successful current HR materialization receipt',()=>{
+  assert.equal(sourcePlan.commandDispatchAllowed,true);assert.equal(sourcePlan.holdReason,null);
+  const proof=sourcePlan.resumeEvidence,bytes=fs.readFileSync(proof.receiptPath),receipt=JSON.parse(bytes);
+  assert.equal(gitBlob(bytes),proof.receiptGitBlob);assert.equal(receipt.runId,proof.runId);
+  assert.equal(receipt.decision,'PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION');assert.equal(receipt.sourceHostedExact,true);assert.equal(receipt.production,false);
+  assert.equal(sourcePlan.authorization,'USER_ALREADY_AUTHORIZED_SECOND_ADVANCE_METADATA_CORRECTION');
+  assert.equal(sourcePlan.financialFactWrites,false);assert.equal(sourcePlan.firstAdvanceWrites,0);assert.equal(sourcePlan.newMovements,0);
 });
 
 test('unexpected before-state changes stop before any provider command',async t=>{

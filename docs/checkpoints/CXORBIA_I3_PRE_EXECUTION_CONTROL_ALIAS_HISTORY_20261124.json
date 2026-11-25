@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i3.pre-execution-control-alias-history.v1",
+  "observedAt": "2026-11-24T23:57:55.463Z",
+  "reason": "Preserve the superseded wrappers verbatim; align only active execution scope and served materialization with already verified evidence.",
+  "sourceCommit": "589213fce5715b821e8731643a976345d82058db",
+  "currentA08ResidualQaExecution": {
+    "state": "REQUESTED_EXISTING_DEV_READONLY",
+    "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+    "materializationRunId": 45359320300,
+    "marker": "[i3-a08-exceptions-negative-readonly]",
+    "scope": [
+      "three exact ordinary-password session lifecycles",
+      "API401 anonymous and403 shopper",
+      "existing private Storage object owner and negative users"
+    ],
+    "fullDomain": false,
+    "production": false,
+    "writes": 0
+  },
+  "vrm369CurrentExecutionScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json",
+    "gitBlob": "1846d66916b7dcdec3e028c8241e1d207625ea45",
+    "commandDispatchAllowed": false,
+    "reason": "Provider quota blocks existing command configure; correction remains authorized",
+    "realWrites": 0
+  },
+  "vrm367ActiveHeader": {
+    "id": "VRM-367",
+    "priority": "P0_PROVEN",
+    "classification": "FUNCTIONAL_DEFECT",
+    "ownerFiles": [
+      "backend/runtime/hr-live-service/Dockerfile",
+      "backend/runtime/hr-live-service/mailbox-runtime.mjs",
+      "backend/runtime/hr-live-service/mailbox-smtp.mjs",
+      "backend/runtime/hr-live-service/mailbox-outbound.mjs",
+      "app/modules/correo.js",
+      "backend/contracts/cxorbia-user-mailbox-pop3-v1.json",
+      "backend/config/mailbox-provider-policy.source-safe.json"
+    ],
+    "precodeScope": {
+      "path": "docs/checkpoints/CXORBIA_I3_P0367_SMTP_SEND_REPLY_PRE_EDIT_TRUTH_20261124.json",
+      "gitBlob": "7b737ad4fc0cfc46fd01da918a7a5b00f6971738"
+    },
+    "state": "SOURCE_FIXED_PROVEN_PENDING_DEV",
+    "sourceSha": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+    "sourceTree": "a73f5579a5d791012e911d5ca3e74d343b716a1d",
+    "sourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_F3_SMTP_PUBLISHED_SOURCE_20261124.json",
+      "gitBlob": "da2601dbf77914f44a03aa38a55d5971c8d23a88",
+      "sourceSha": "9b6ee21643406be44e822dad5cd0031de6c0ce9b",
+      "sourceTree": "a73f5579a5d791012e911d5ca3e74d343b716a1d",
+      "sourceTestsPass": 584,
+      "sourceTestsFail": 0,
+      "production": false
+    },
+    "scopeReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_F3_SMTP_COMBINED_SCOPE_20261124.json",
+      "gitBlob": "f6d7372290534b86f5a024b02dd392b740e33c0a"
+    },
+    "production": false,
+    "fullDomain": false
+  },
+  "productChanged": false,
+  "newDomainMatches": 0,
+  "production": false
+}

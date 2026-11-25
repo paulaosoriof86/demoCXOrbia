@@ -4,7 +4,9 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
-import {evaluateTerminalModuleTruth,discoverCanonicalDomainReceipts,permitsModuleScopeRole} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import {evaluateTerminalModuleTruth,discoverCanonicalDomainReceipts,permitsModuleScopeRole,readDurableDomainReceipts} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import {gitBlob} from './cxorbia-i3-current-control-projection.mjs';
+import {D08_RECEIPT_SCHEMA,D08_OBLIGATION_IDS} from './cxorbia-i3-d08-result-normalizer.mjs';
 
 const SHA='a'.repeat(40), TREE='b'.repeat(40), HR='c'.repeat(64), DIGEST='sha256:'+'d'.repeat(64), HASH='e'.repeat(64);
 const hash=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
@@ -15,6 +17,7 @@ const TYPES={read:'historical',shell:'base-router-shell-cache',write:'finance-co
 const OWNERS={read:'app/core/historical-proof.js',shell:'app/core/shell-proof.js',write:'app/modules/finance-proof.js',auth:'app/core/auth-proof.js',ui:'app/modules/dashboard-proof.js'};
 const BLOBS=Object.fromEntries(Object.entries(OWNERS).map(([k])=>[k,(k==='read'?'1':k==='shell'?'5':k==='write'?'2':k==='auth'?'3':'4').repeat(40)]));
 const CONTRACTS={read:'Historical/ProtectedRead',shell:'Release/Visual/Security',write:'País/moneda/Persistencia/ACK',auth:'Auth/Identidad/Seguridad',ui:'Operación/HR/Visual'};
+TYPES.academy='certifications';OWNERS.academy='app/modules/academia.js';BLOBS.academy='6'.repeat(40);CONTRACTS.academy='Shopper/Identidad/Visual';
 
 test('A08 immutable-DEV read-only role proof does not inherit HEAD release-composition failure',()=>{
   const workflow=fs.readFileSync('.github/workflows/cxorbia-recovery-i3-dev-certification.yml','utf8');
@@ -75,6 +78,19 @@ const append=(f,rows)=>{const rs=Array.isArray(rows)?rows:[rows];const paths=[..
   f.ledger.findings['VRM-900']={state:'FIXED_PROVEN',owner:paths};
   f.additionalReceipts.push(...rs);return f;};
 const decision=f=>evaluateTerminalModuleTruth(f).terminalClosure;
+
+test('durable owner evidence requires exact index, receipt bytes and original raw bytes',()=>{
+ const rawPath='docs/checkpoints/CXORBIA_I3_TEST_RAW.json',receiptPath='docs/checkpoints/CXORBIA_I3_TEST_TYPED.json',raw='{"synthetic":true}\n';
+ const proof={runId:10,runAttempt:1,jobId:20,controlHead:SHA,artifactId:30,artifactDigest:DIGEST,resultRef:rawPath,resultSha256:hash(raw)};
+ const body=JSON.stringify({evidence:proof,production:false,ownerSpecificReceipts:[{syntheticTestOnly:true}]});
+ const entry={...proof,path:receiptPath,gitBlob:gitBlob(body),sha256:hash(body),ownerReceiptCount:1};
+ const d={currentFunctionalEvidenceIndex:{schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[entry],production:false}},p=structuredClone(d),files=new Map([[rawPath,raw],[receiptPath,body]]);
+ const load=()=>readDurableDomainReceipts({descriptor:d,pointer:p,readBytes:path=>files.get(path)});
+ assert.equal(load().receipts.length,1);
+ files.set(rawPath,'tampered');assert.throws(load,/RAW_HASH/);files.set(rawPath,raw);
+ files.set(receiptPath,body+' ');assert.throws(load,/RECEIPT_HASH/);files.set(receiptPath,body);
+ p.currentFunctionalEvidenceIndex.results[0].artifactId=31;assert.throws(load,/INDEX_DESYNC/);
+});
 
 test('focal readonly evidence can certify a truly read-only domain, with no invented remote ACK',()=>{
   const f=append(fixture('read'),receipt('read'));
@@ -141,6 +157,22 @@ test('provider partial without a full inventory survives save/load and never inv
  assert.equal(evaluateTerminalModuleTruth(f).terminalClosure.acceptedCurrentOwnerReceipts.length,1);
  f.identity={...f.identity,runtimeRevision:'different-runtime'};
  const drift=evaluateTerminalModuleTruth(f);assert.equal(drift.terminalClosure.acceptedCurrentOwnerReceipts.length,0);assert.equal(drift.terminalClosure.matchModules,20);
+});
+test('D08 tenant/course scope retains a partial receipt only under its frozen module authority',()=>{
+ const f=fixture('academy'),mod=f.pre.modules.find(x=>x.domain==='certifications');
+ const r=receipt('academy','PROVIDER_WRITE','D08.shopper.progress',false);
+ Object.assign(r,{schemaVersion:D08_RECEIPT_SCHEMA,hrIndependent:true,fullDomain:false});
+ Object.assign(r.scope,{kind:'D08_ACADEMY_TENANT_COURSE',periodId:null});
+ Object.assign(r.contractAuthority,{taskId:'D08',scopeContractSha256:HASH});
+ mod.scopedContractAuthorities={D08:{taskId:'D08',periodRequired:false,sha256:HASH,obligationIds:D08_OBLIGATION_IDS}};
+ append(f,r);let out=decision(f);assert.equal(out.matchModules,20);assert.equal(out.acceptedCurrentOwnerReceipts.length,1);
+ delete mod.scopedContractAuthorities;out=decision(f);assert.equal(out.acceptedCurrentOwnerReceipts.length,0);assert.ok(out.rejectedReceipts[0].reasons.includes('AUTHENTICATED_CONTRACT_SCOPE'));
+});
+test('HR-independent flag alone never waives finance period scope',()=>{
+ const f=append(fixture('write'),receipt('write','PROVIDER_WRITE','D08.shopper.progress',false));
+ Object.assign(f.additionalReceipts[0],{schemaVersion:D08_RECEIPT_SCHEMA,hrIndependent:true});
+ f.additionalReceipts[0].scope.periodId=null;
+ const out=decision(f);assert.equal(out.acceptedCurrentOwnerReceipts.length,0);assert.equal(out.matchModules,20);
 });
 test('ordinary credential login is an explicit non-writing proof kind',()=>{
   const f=append(fixture('auth'),receipt('auth','AUTH_SESSION'));

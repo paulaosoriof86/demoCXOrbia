@@ -86,6 +86,28 @@ export function residualAction(mod){
 
 function archiveActive(object,keys,archive){for(const key of keys)if(Object.hasOwn(object,key)){archive[key]=object[key];delete object[key];}}
 
+// These module-level compatibility headers describe the current candidate or
+// current paired deployment. Their original values remain verbatim in history;
+// approved functional receipts keep their original identities and classifications.
+export function synchronizeModuleServingAliases(matrix,{sourceSha,sourceTree,materialization,archive={}}){
+ let changed=0;
+ for(const mod of matrix.modules||[]){
+  const old={};
+  for(const [key,value]of Object.entries({currentCandidateSource:sourceSha,currentCandidateTree:sourceTree,cumulativeSource:sourceSha})){
+   if(Object.hasOwn(mod,key)&&!same(mod[key],value)){old[key]=clone(mod[key]);mod[key]=value;changed++;}
+  }
+  for(const key of REGISTRY.materialization)if(Object.hasOwn(mod,key)&&!same(mod[key],materialization)){
+   old[key]=clone(mod[key]);mod[key]=clone(materialization);changed++;
+  }
+  if(Object.hasOwn(mod,'currentF2OperationalExcel')){old.currentF2OperationalExcel=clone(mod.currentF2OperationalExcel);delete mod.currentF2OperationalExcel;changed++;}
+  if(mod.sourceClosure?.state==='COMPOSED_NOT_DEPLOYED'){
+   old.sourceClosure=clone(mod.sourceClosure);delete mod.sourceClosure;changed++;
+  }
+  if(Object.keys(old).length)(archive.moduleCurrentAliases||={})[mod.domain]=old;
+ }
+ return {changed,archive};
+}
+
 export function projectMaterialization(input,{receipt,receiptPath,now=receipt.observedAt,ledgerPath,matrixPath,finding}){
  const out=Object.fromEntries(['descriptor','pointer','ledger','matrix'].map(k=>[k,clone(input[k])])),{descriptor:d,pointer:p,ledger:l,matrix:m}=out;
  const r=receipt.materialization,blob=gitBlob(jsonBytes(receipt));
@@ -121,6 +143,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  const count=execution.matchModules;
  archived.matrixProductSourceMaterialization=clone(m.productSource.currentMaterialization);
  Object.assign(m.productSource,{authorityState:'RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',state:HOLD,currentMaterialization:clone(r),message:'Exact runtime, Hosting assets and HR readback verified. Functional and current-source C3 clauses remain pending.',devMaterializationReceiptPath:receiptPath,devMaterializationReceiptGitBlob:blob});
+ synchronizeModuleServingAliases(m,{sourceSha:d.productSourceSha,sourceTree:d.productSourceTree,materialization:r,archive:archived});
  for(const mod of m.modules){
   if(mod.classification==='SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION'){(archived.modulePublicationStages||={})[mod.domain]=mod.classification;mod.classification='DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E';}
   Object.assign(mod,{lastServedSource:r.sourceSha,currentMaterializationRunId:r.runId,servedHostingVersion:r.hostingVersion,servedRuntimeRevision:r.runtimeRevision,currentServingAuthority:clone(serving),currentDevStage:'EXACT_CURRENT_SOURCE_DEV_VERIFIED_FUNCTIONAL_RESIDUAL_UNCHANGED'});
@@ -210,6 +233,13 @@ export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matr
  check(seal.receiptPath===d.currentControlProjection.receiptPath&&seal.receiptBlob===d.currentControlProjection.receiptBlob,'projection.receipt');
  for(const mod of m.modules){
   check(mod.lastServedSource===seal.sourceSha,`matrix.modules.${mod.domain}.lastServedSource`);
+  for(const key of REGISTRY.materialization)if(Object.hasOwn(mod,key))check(same(mod[key],materialization),`matrix.modules.${mod.domain}.${key}`);
+  // Candidate identity advances independently of the immutable served predecessor.
+  for(const [key,value]of Object.entries({currentCandidateSource:d.productSourceSha,currentCandidateTree:d.productSourceTree,cumulativeSource:d.productSourceSha}))if(Object.hasOwn(mod,key))check(mod[key]===value,`matrix.modules.${mod.domain}.${key}`);
+  if(seal.mode==='CURRENT_SOURCE_SERVING'&&seal.sourceSha===d.productSourceSha){
+   check(!Object.hasOwn(mod,'currentF2OperationalExcel'),`matrix.modules.${mod.domain}.currentF2OperationalExcel.must_be_historical`);
+   check(mod.sourceClosure?.state!=='COMPOSED_NOT_DEPLOYED',`matrix.modules.${mod.domain}.sourceClosure.already_deployed`);
+  }
   if(seal.mode==='CURRENT_SOURCE_SERVING'&&residualAction(mod)!==null)check(mod.actionRequired===residualAction(mod),`matrix.modules.${mod.domain}.actionRequired`);
   if(mod.domain==='client-portal-reportkit'&&d.currentControlProjection.currentSourceC3Certified===false)check(!/RUN2564 current-source C3 is complete/.test(mod.actionRequired||''),`matrix.modules.${mod.domain}.historicalC3`);
  }

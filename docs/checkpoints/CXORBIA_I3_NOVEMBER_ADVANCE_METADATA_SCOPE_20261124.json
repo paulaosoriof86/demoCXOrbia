@@ -49,7 +49,15 @@
   "newMovements": 0,
   "allocationOrPayoutWrites": 0,
   "bankEvidenceConfirmed": false,
-  "commandDispatchAllowed": false,
-  "holdReason": "PROVIDER_FAILURE:MAKE_CREDIT_EXHAUSTED_RUNTIME_CONFIGURE_REQUIRES_HR",
-  "resumeRule": "Root may enable this same scope after current HR provider recovery is proved; reread provider CAS, never reuse the prepared version."
+  "commandDispatchAllowed": true,
+  "holdReason": null,
+  "resumeRule": "Root may enable this same scope after current HR provider recovery is proved; reread provider CAS, never reuse the prepared version.",
+  "resumeEvidence": {
+    "runId": 45488581923,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptGitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+    "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "provider": "excel_online"
+  },
+  "executionRule": "Read the exact provider CAS immediately before the authorized second-advance metadata command. Never change financial facts, first advance, allocation or payout."
 }

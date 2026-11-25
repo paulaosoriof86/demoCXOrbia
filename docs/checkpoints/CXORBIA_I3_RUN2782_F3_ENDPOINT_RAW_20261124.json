@@ -1,0 +1,1068 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.qa-endpoint.v1",
+  "state": "HOLD",
+  "decision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+  "runId": "45493719666",
+  "runAttempt": "1",
+  "qaOwner": "f3-qa-45493719666-1",
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "sourceProof": "EXACT_PARENT_CERTIFIED_RUNTIME_PINS_REQUIRED",
+  "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+  "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+  "tenantId": "tya",
+  "projectId": "f3-qa-20261124",
+  "periodId": "f3-qa-20261124-2026-11",
+  "baseUrl": "https://cxorbia-backend-dev.web.app",
+  "remoteFixtureDigest": "605e1393a5fa95f8d26eeaa0fae240ad9e9e1d412f3a7b172bce1c4a29ba8d19",
+  "productionWrites": 0,
+  "operationalHrWrites": 0,
+  "syntheticOnly": true,
+  "notesPrivacyProven": false,
+  "ordinaryPasswordAuthenticationProven": false,
+  "applicationAckProven": false,
+  "b14Closed": false,
+  "newModuleMatches": 0,
+  "cases": [
+    {
+      "name": "explicit_reconcile_initial",
+      "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+      "receiptPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149",
+      "authWrites": 0
+    }
+  ],
+  "events": [
+    {
+      "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+      "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+      "countryCode": "GT",
+      "fieldKey": "escenario",
+      "remoteEventKey": "event:hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+      "remoteHeadKey": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "event": {
+        "schemaVersion": "cxorbia.hr-field-event.v1",
+        "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "countryCode": "GT",
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "durableVisitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+        "sourceRowIdentity": {
+          "cinemaId": "2022002",
+          "sucursal": "C. Miraflores"
+        },
+        "fieldKey": "escenario",
+        "origin": "platform",
+        "actorUid": "f3-qa-45493719666-1-admin",
+        "before": "CXOrbia QA Escenario A",
+        "after": "CXOrbia QA Escenario B",
+        "providerValueBinding": null,
+        "baseRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+        "baseEventId": null,
+        "baseEventOrigin": null,
+        "causalSequence": 1,
+        "causalEvidence": "verified_base_value_and_unsettled_predecessor_absent",
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "commandReceiptId": "1642c98ea050ea92c2b93460604a495152723af6",
+        "createdAt": "2026-11-24T21:44:32.730Z",
+        "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08"
+      },
+      "delivery": {
+        "schemaVersion": "cxorbia.hr-field-delivery.v1",
+        "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+        "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+        "writeAckVerified": false,
+        "providerAck": false,
+        "createdAt": "2026-11-24T21:44:32.742Z",
+        "periodId": "f3-qa-20261124-2026-11",
+        "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "fieldKey": "escenario",
+        "readbackVerified": false,
+        "remoteWriteRequests": null,
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "countryCode": "GT",
+        "readbackDigest": null,
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "providerExecutionId": null,
+        "lastAttemptId": "5f4937d7-41c7-4efb-bde4-0f294066105a",
+        "attempts": 3,
+        "observedAt": "2026-11-24T21:46:00.401Z",
+        "status": "pending_hr"
+      },
+      "attempts": [
+        {
+          "id": "5f4937d7-41c7-4efb-bde4-0f294066105a-effect",
+          "attemptId": "5f4937d7-41c7-4efb-bde4-0f294066105a",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "status": "pending_hr",
+          "providerAck": false,
+          "writeAckVerified": false,
+          "remoteWriteRequests": null,
+          "readbackVerified": false,
+          "readbackDigest": null,
+          "providerExecutionId": null,
+          "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+          "observedAt": "2026-11-24T21:46:00.401Z"
+        },
+        {
+          "id": "5f4937d7-41c7-4efb-bde4-0f294066105a-intent",
+          "attemptId": "5f4937d7-41c7-4efb-bde4-0f294066105a",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "recoveryOnly": true,
+          "startedAt": "2026-11-24T21:45:52.423Z",
+          "status": "pending"
+        },
+        {
+          "id": "b9b2bbbe-cd51-4cb6-8b25-f29f18f3ec8b-effect",
+          "attemptId": "b9b2bbbe-cd51-4cb6-8b25-f29f18f3ec8b",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "status": "pending_hr",
+          "providerAck": false,
+          "writeAckVerified": false,
+          "remoteWriteRequests": null,
+          "readbackVerified": false,
+          "readbackDigest": null,
+          "providerExecutionId": null,
+          "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+          "observedAt": "2026-11-24T21:44:39.663Z"
+        },
+        {
+          "id": "b9b2bbbe-cd51-4cb6-8b25-f29f18f3ec8b-intent",
+          "attemptId": "b9b2bbbe-cd51-4cb6-8b25-f29f18f3ec8b",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "recoveryOnly": false,
+          "startedAt": "2026-11-24T21:44:32.842Z",
+          "status": "pending"
+        },
+        {
+          "id": "d388a429-536b-4038-8564-6e7681e9961c-effect",
+          "attemptId": "d388a429-536b-4038-8564-6e7681e9961c",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "status": "pending_hr",
+          "providerAck": false,
+          "writeAckVerified": false,
+          "remoteWriteRequests": null,
+          "readbackVerified": false,
+          "readbackDigest": null,
+          "providerExecutionId": null,
+          "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+          "observedAt": "2026-11-24T21:45:20.377Z"
+        },
+        {
+          "id": "d388a429-536b-4038-8564-6e7681e9961c-intent",
+          "attemptId": "d388a429-536b-4038-8564-6e7681e9961c",
+          "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+          "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+          "recoveryOnly": true,
+          "startedAt": "2026-11-24T21:45:12.560Z",
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "cleanup": {
+    "firestore": false,
+    "auth": false,
+    "remoteMake": false,
+    "authPreservedForRecovery": true
+  },
+  "guarantees": {
+    "atomicHumanExcelCas": false,
+    "observedBaseGuard": true,
+    "remoteReceiptAndIndependentRead": true,
+    "uncertainWriteRetry": false
+  },
+  "unproven": [
+    "provider_response_loss_live_fault_injection",
+    "external_human_concurrent_edit_atomicity",
+    "historical_period_live_fixture",
+    "T&A_private_notes_live_fixture"
+  ],
+  "runtimeBefore": {
+    "revision": "cxorbia-live-hr-dev-00391-8mg",
+    "digest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "readAt": "2026-11-24T21:43:36.603Z"
+  },
+  "scopeLockBaseline": {
+    "path": "tenants/tya/commandReceipts/hr-scope-38ba66b3872622d6dcfa5d81598618cb11b30b347f6c49a26f7e3691843c186d",
+    "existed": false,
+    "data": null,
+    "digest": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "readAt": "2026-11-24T21:43:39.034Z",
+    "updateTime": null
+  },
+  "initialSourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+  "remoteBaseline": {
+    "revision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+    "rows": [
+      {
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "countryCode": "GT",
+        "periodId": "f3-qa-20261124-2026-11",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+        "values": {
+          "escenario": "CXOrbia QA Escenario A",
+          "tipoCombo": "CXOrbia QA Combo A",
+          "agendada": null,
+          "shopperId": null
+        }
+      },
+      {
+        "visitId": "hr_excel_ec25c41b6656f0000daef0af1398",
+        "countryCode": "HN",
+        "periodId": "f3-qa-20261124-2026-11",
+        "hrRowId": "CXR_B14_QA_HN_20261119!2",
+        "worksheetFingerprint": "3eff016a8c0884e0999c62bd6f5db56de383051fc31985c07105b6b49bcf3a98",
+        "values": {
+          "escenario": "CXOrbia QA Escenario A",
+          "tipoCombo": "CXOrbia QA Combo A",
+          "agendada": null,
+          "shopperId": null
+        }
+      }
+    ],
+    "readAt": "2026-11-24T21:44:04.994Z"
+  },
+  "reconciliations": [
+    {
+      "serial": "initial",
+      "idempotencyKey": "f3-qa-45493719666-1-reconcile-initial",
+      "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+      "receiptPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149",
+      "startedAt": "2026-11-24T21:44:11.828Z",
+      "http": {
+        "status": 200,
+        "body": {
+          "commandType": "hr.snapshot.reconcile",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+          "receiptPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149",
+          "receiptBinding": {
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+            "actorUid": "f3-qa-45493719666-1-admin",
+            "idempotencyKey": "f3-qa-45493719666-1-reconcile-initial",
+            "commandType": "hr.snapshot.reconcile"
+          },
+          "localMutation": false,
+          "localStorageWrite": false,
+          "hrWrites": 0,
+          "storageWrites": 0,
+          "production": false,
+          "ok": true,
+          "status": "committed",
+          "committed": true,
+          "providerAck": true,
+          "readbackVerified": true,
+          "successUiAllowed": true,
+          "code": "HR_RECONCILIATION_COMMITTED",
+          "stages": {
+            "shoppers": {
+              "ok": true,
+              "status": "committed",
+              "providerAck": true,
+              "shopperCount": 0,
+              "reconciledShopperCount": 0,
+              "identityHeldShopperCount": 0,
+              "identityReviewRequired": false,
+              "identityReviewCount": 0,
+              "identityMigrationRequired": false,
+              "identityMigrationCount": 0,
+              "aliasMigrated": 0,
+              "aliasPrincipalsRetired": 0,
+              "automaticIdentityConsolidated": 0,
+              "automaticIdentityAliases": 0,
+              "automaticIdentityAmbiguousGroups": 0,
+              "automaticIncomingHrAliases": 0,
+              "automaticIncomingReviewsResolved": 0,
+              "tenantAdjudicationSuppressed": 0,
+              "staleTenantAdjudicationRepairs": 0,
+              "retiredKeeperCrosswalkRepairs": 0,
+              "canonicalFullNamesRestored": 0,
+              "authCreated": 0,
+              "idempotentReplays": 0,
+              "credentialNormalized": 0,
+              "credentialRuleMissing": 0,
+              "identityReviewWrites": 0,
+              "providerWrites": 0,
+              "hrWrites": 0,
+              "externalWrites": 0,
+              "fuzzyMatching": false
+            },
+            "visits": {
+              "ok": true,
+              "status": "committed",
+              "providerAck": true,
+              "visitCount": 2,
+              "createdVisits": 2,
+              "idempotentReplays": 0,
+              "reviewRequiredVisits": 0,
+              "conflicts": 0,
+              "providerWrites": 2,
+              "reconciliationConcurrency": 2,
+              "reconciliationDurationMs": 405,
+              "hrWrites": 0,
+              "externalWrites": 0,
+              "fuzzyMatching": false
+            }
+          },
+          "authWrites": 0,
+          "firestoreWrites": 2,
+          "confirmedProviderWrites": 2,
+          "providerWrites": 2,
+          "unresolvedEffects": 0,
+          "unverifiedEffects": 0,
+          "reviewWrites": 0,
+          "credentialAuthenticationPending": false,
+          "credentialReadback": "NO_CREDENTIAL_CHANGE",
+          "systems": {
+            "auth": 0,
+            "firestore": 2
+          },
+          "applicationWritesThisAttempt": {
+            "auth": 0,
+            "firestore": 2
+          },
+          "providerWritesScope": "cumulative_command_effects",
+          "effectCollectionPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/effects",
+          "intentCollectionPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/intents",
+          "identityReviewRequired": false,
+          "viewRefreshVerified": false,
+          "controlWrites": 12,
+          "idempotentReplay": false
+        }
+      },
+      "finishedAt": "2026-11-24T21:44:19.363Z",
+      "durable": {
+        "receipt": {
+          "actorUid": "f3-qa-45493719666-1-admin",
+          "idempotencyKey": "f3-qa-45493719666-1-reconcile-initial",
+          "digest": "7a619e493be3179c086927561c64a47d10457d3e8f8e1a6403ea896967747eba",
+          "tenantId": "tya",
+          "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+          "startedAt": "2026-11-24T21:44:18.547Z",
+          "projectId": "f3-qa-20261124",
+          "version": "cxorbia.hr-reconciliation-receipt.v1",
+          "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+          "result": {
+            "commandType": "hr.snapshot.reconcile",
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+            "receiptPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149",
+            "receiptBinding": {
+              "tenantId": "tya",
+              "projectId": "f3-qa-20261124",
+              "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+              "actorUid": "f3-qa-45493719666-1-admin",
+              "idempotencyKey": "f3-qa-45493719666-1-reconcile-initial",
+              "commandType": "hr.snapshot.reconcile"
+            },
+            "localMutation": false,
+            "localStorageWrite": false,
+            "hrWrites": 0,
+            "storageWrites": 0,
+            "production": false,
+            "ok": true,
+            "status": "committed",
+            "committed": true,
+            "providerAck": true,
+            "readbackVerified": false,
+            "successUiAllowed": true,
+            "code": "HR_RECONCILIATION_COMMITTED",
+            "stages": {
+              "shoppers": {
+                "ok": true,
+                "status": "committed",
+                "providerAck": true,
+                "shopperCount": 0,
+                "reconciledShopperCount": 0,
+                "identityHeldShopperCount": 0,
+                "identityReviewRequired": false,
+                "identityReviewCount": 0,
+                "identityMigrationRequired": false,
+                "identityMigrationCount": 0,
+                "aliasMigrated": 0,
+                "aliasPrincipalsRetired": 0,
+                "automaticIdentityConsolidated": 0,
+                "automaticIdentityAliases": 0,
+                "automaticIdentityAmbiguousGroups": 0,
+                "automaticIncomingHrAliases": 0,
+                "automaticIncomingReviewsResolved": 0,
+                "tenantAdjudicationSuppressed": 0,
+                "staleTenantAdjudicationRepairs": 0,
+                "retiredKeeperCrosswalkRepairs": 0,
+                "canonicalFullNamesRestored": 0,
+                "authCreated": 0,
+                "idempotentReplays": 0,
+                "credentialNormalized": 0,
+                "credentialRuleMissing": 0,
+                "identityReviewWrites": 0,
+                "providerWrites": 0,
+                "hrWrites": 0,
+                "externalWrites": 0,
+                "fuzzyMatching": false
+              },
+              "visits": {
+                "ok": true,
+                "status": "committed",
+                "providerAck": true,
+                "visitCount": 2,
+                "createdVisits": 2,
+                "idempotentReplays": 0,
+                "reviewRequiredVisits": 0,
+                "conflicts": 0,
+                "providerWrites": 2,
+                "reconciliationConcurrency": 2,
+                "reconciliationDurationMs": 405,
+                "hrWrites": 0,
+                "externalWrites": 0,
+                "fuzzyMatching": false
+              }
+            },
+            "authWrites": 0,
+            "firestoreWrites": 2,
+            "confirmedProviderWrites": 2,
+            "providerWrites": 2,
+            "unresolvedEffects": 0,
+            "unverifiedEffects": 0,
+            "reviewWrites": 0,
+            "credentialAuthenticationPending": false,
+            "credentialReadback": "NO_CREDENTIAL_CHANGE",
+            "systems": {
+              "auth": 0,
+              "firestore": 2
+            },
+            "applicationWritesThisAttempt": {
+              "auth": 0,
+              "firestore": 2
+            },
+            "providerWritesScope": "cumulative_command_effects",
+            "effectCollectionPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/effects",
+            "intentCollectionPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/intents",
+            "identityReviewRequired": false,
+            "viewRefreshVerified": false,
+            "controlWrites": 10
+          },
+          "completedAt": "2026-11-24T21:44:19.216Z",
+          "status": "committed"
+        },
+        "stages": [
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/stages/shoppers",
+            "data": {
+              "status": "committed",
+              "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+              "summary": {
+                "status": "committed",
+                "ok": true,
+                "providerAck": true,
+                "shopperCount": 0,
+                "reconciledShopperCount": 0,
+                "identityHeldShopperCount": 0,
+                "identityReviewRequired": false,
+                "identityReviewCount": 0,
+                "identityMigrationRequired": false,
+                "identityMigrationCount": 0,
+                "aliasMigrated": 0,
+                "aliasPrincipalsRetired": 0,
+                "automaticIdentityConsolidated": 0,
+                "automaticIdentityAliases": 0,
+                "automaticIdentityAmbiguousGroups": 0,
+                "automaticIncomingHrAliases": 0,
+                "automaticIncomingReviewsResolved": 0,
+                "tenantAdjudicationSuppressed": 0,
+                "staleTenantAdjudicationRepairs": 0,
+                "retiredKeeperCrosswalkRepairs": 0,
+                "canonicalFullNamesRestored": 0,
+                "authCreated": 0,
+                "idempotentReplays": 0,
+                "credentialNormalized": 0,
+                "credentialRuleMissing": 0,
+                "identityReviewWrites": 0,
+                "providerWrites": 0,
+                "hrWrites": 0,
+                "externalWrites": 0,
+                "fuzzyMatching": false
+              },
+              "completedAt": "2026-11-24T21:44:19.030Z"
+            }
+          },
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/stages/visits",
+            "data": {
+              "status": "committed",
+              "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+              "summary": {
+                "status": "committed",
+                "ok": true,
+                "providerAck": true,
+                "visitCount": 2,
+                "createdVisits": 2,
+                "idempotentReplays": 0,
+                "reviewRequiredVisits": 0,
+                "conflicts": 0,
+                "providerWrites": 2,
+                "reconciliationConcurrency": 2,
+                "reconciliationDurationMs": 405,
+                "hrWrites": 0,
+                "externalWrites": 0,
+                "fuzzyMatching": false
+              },
+              "completedAt": "2026-11-24T21:44:19.095Z"
+            }
+          }
+        ],
+        "intents": [
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/intents/5508b722-9386-49b8-a51a-87d1015a03e9",
+            "data": {
+              "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+              "stage": "visits",
+              "system": "firestore",
+              "operations": [],
+              "status": "pending",
+              "startedAt": "2026-11-24T21:44:18.680Z"
+            }
+          },
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/intents/60987ff3-4d5b-48d8-b144-0016f5710fad",
+            "data": {
+              "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+              "stage": "visits",
+              "system": "firestore",
+              "operations": [],
+              "status": "pending",
+              "startedAt": "2026-11-24T21:44:18.683Z"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/effects/5508b722-9386-49b8-a51a-87d1015a03e9",
+            "data": {
+              "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+              "stage": "visits",
+              "system": "firestore",
+              "operations": [
+                {
+                  "entity": "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_45c62e0543d229c8ca625f3cf857",
+                  "operation": "create",
+                  "fields": [
+                    "agendada",
+                    "assignmentSource",
+                    "assignmentState",
+                    "assignmentSyncStatus",
+                    "availabilityDependency",
+                    "availabilityState",
+                    "boleto",
+                    "canonicalFacets",
+                    "canonicalShopperId",
+                    "canonicalState",
+                    "cinemaId",
+                    "ciudad",
+                    "comboAmt",
+                    "controlDia",
+                    "country",
+                    "createdAt",
+                    "cuestFecha",
+                    "currency",
+                    "disponibleDesde",
+                    "durableAliasIds",
+                    "escenario",
+                    "estado",
+                    "excelSourceRow",
+                    "excelWorksheetFingerprint",
+                    "executionState",
+                    "formato",
+                    "franja",
+                    "franjaCode",
+                    "hasShopper",
+                    "honorario",
+                    "hrManaged",
+                    "hrReview",
+                    "hrRowId",
+                    "hrSourceRevision",
+                    "id",
+                    "liquidationCandidate",
+                    "liquidationState",
+                    "metodoPago",
+                    "operationalState",
+                    "outOfRange",
+                    "pais",
+                    "paymentConfirmed",
+                    "paymentControlOnly",
+                    "paymentState",
+                    "periodId",
+                    "periodKey",
+                    "periodLabel",
+                    "piiProtected",
+                    "program",
+                    "projectId",
+                    "questionnaireState",
+                    "quincena",
+                    "realizada",
+                    "reviewReasons",
+                    "reviewRequired",
+                    "rootProjectId",
+                    "schedulingState",
+                    "shopper",
+                    "shopperCode",
+                    "shopperId",
+                    "sourceCoord",
+                    "sourceRow",
+                    "sourceSafe",
+                    "sourceTab",
+                    "submissionState",
+                    "submittedAt",
+                    "sucursal",
+                    "tenantId",
+                    "tipoCombo",
+                    "updatedAt",
+                    "version",
+                    "visitId"
+                  ],
+                  "expectedDigest": "16a90c35444510c0cf9fcdc48310bfe95dce7e23bc36fe40915c768b104633c0"
+                }
+              ],
+              "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+              "committedAt": "2026-11-24T21:44:18.807Z",
+              "providerAck": true,
+              "readbackAt": "2026-11-24T21:44:18.974Z",
+              "readbackVerified": true
+            }
+          },
+          {
+            "path": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149/effects/60987ff3-4d5b-48d8-b144-0016f5710fad",
+            "data": {
+              "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+              "stage": "visits",
+              "system": "firestore",
+              "operations": [
+                {
+                  "entity": "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_ec25c41b6656f0000daef0af1398",
+                  "operation": "create",
+                  "fields": [
+                    "agendada",
+                    "assignmentSource",
+                    "assignmentState",
+                    "assignmentSyncStatus",
+                    "availabilityDependency",
+                    "availabilityState",
+                    "boleto",
+                    "canonicalFacets",
+                    "canonicalShopperId",
+                    "canonicalState",
+                    "cinemaId",
+                    "ciudad",
+                    "comboAmt",
+                    "controlDia",
+                    "country",
+                    "createdAt",
+                    "cuestFecha",
+                    "currency",
+                    "disponibleDesde",
+                    "durableAliasIds",
+                    "escenario",
+                    "estado",
+                    "excelSourceRow",
+                    "excelWorksheetFingerprint",
+                    "executionState",
+                    "formato",
+                    "franja",
+                    "franjaCode",
+                    "hasShopper",
+                    "honorario",
+                    "hrManaged",
+                    "hrReview",
+                    "hrRowId",
+                    "hrSourceRevision",
+                    "id",
+                    "liquidationCandidate",
+                    "liquidationState",
+                    "metodoPago",
+                    "operationalState",
+                    "outOfRange",
+                    "pais",
+                    "paymentConfirmed",
+                    "paymentControlOnly",
+                    "paymentState",
+                    "periodId",
+                    "periodKey",
+                    "periodLabel",
+                    "piiProtected",
+                    "program",
+                    "projectId",
+                    "questionnaireState",
+                    "quincena",
+                    "realizada",
+                    "reviewReasons",
+                    "reviewRequired",
+                    "rootProjectId",
+                    "schedulingState",
+                    "shopper",
+                    "shopperCode",
+                    "shopperId",
+                    "sourceCoord",
+                    "sourceRow",
+                    "sourceSafe",
+                    "sourceTab",
+                    "submissionState",
+                    "submittedAt",
+                    "sucursal",
+                    "tenantId",
+                    "tipoCombo",
+                    "updatedAt",
+                    "version",
+                    "visitId"
+                  ],
+                  "expectedDigest": "d064022afcd0ee824c22f1e864af8fb5c4105ce2ef57401e6df2317ca626d699"
+                }
+              ],
+              "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+              "committedAt": "2026-11-24T21:44:18.834Z",
+              "providerAck": true,
+              "readbackAt": "2026-11-24T21:44:19.003Z",
+              "readbackVerified": true
+            }
+          }
+        ],
+        "scopeLock": {
+          "receiptPath": "tenants/tya/commandReceipts/hr-b74f480e8f6194011d3c40703e73a81b2833db38e6b144c7f1d42719c6a8f149",
+          "attemptId": "e38d9f8f-9caf-4639-ae9f-ab3f1033074b",
+          "expiresAt": 1795556778548,
+          "projectId": "f3-qa-20261124",
+          "status": "committed"
+        },
+        "readAt": "2026-11-24T21:44:19.614Z"
+      }
+    }
+  ],
+  "remoteValuesRestored": false,
+  "remoteCommandAttempts": [
+    {
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "expectedVersion": 1,
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "visit.hr.fields.update"
+        },
+        "payload": {
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "countryCode": "GT",
+          "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+          "baseFieldValues": {
+            "escenario": "CXOrbia QA Escenario A"
+          },
+          "patch": {
+            "escenario": "CXOrbia QA Escenario B"
+          }
+        }
+      },
+      "receiptPaths": [
+        "tenants/tya/commandReceipts/1642c98ea050ea92c2b93460604a495152723af6",
+        "tenants/tya/entityAuditTrail/1a16f64b64050c878d3df9b016f62e19c664de0d"
+      ],
+      "startedAt": "2026-11-24T21:44:26.662Z",
+      "state": "RESPONSE_RECORDED_RESTORE_STILL_REQUIRED",
+      "httpStatus": 202,
+      "response": {
+        "ok": false,
+        "status": "pending_hr",
+        "committed": false,
+        "providerAck": false,
+        "successUiAllowed": false,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "localCommitted": true,
+        "persistenceAck": true,
+        "hrProviderAck": false,
+        "hrFieldEventIds": [
+          "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+        ],
+        "providerWrites": 7,
+        "code": "HR_FIELD_ACK_PENDING",
+        "hrFieldOutcomes": [
+          {
+            "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+            "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "periodId": "f3-qa-20261124-2026-11",
+            "countryCode": "GT",
+            "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+            "hrRowId": "CXR_B14_QA_GT_20261119!2",
+            "fieldKey": "escenario",
+            "status": "pending_hr",
+            "providerAck": false,
+            "writeAckVerified": false,
+            "remoteWriteRequests": null,
+            "readbackVerified": false,
+            "readbackDigest": null,
+            "providerExecutionId": null,
+            "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+            "observedAt": "2026-11-24T21:44:39.663Z"
+          }
+        ]
+      },
+      "finishedAt": "2026-11-24T21:44:39.761Z"
+    },
+    {
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "expectedVersion": 1,
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "visit.hr.fields.update"
+        },
+        "payload": {
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "countryCode": "GT",
+          "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+          "baseFieldValues": {
+            "escenario": "CXOrbia QA Escenario A"
+          },
+          "patch": {
+            "escenario": "CXOrbia QA Escenario B"
+          }
+        }
+      },
+      "receiptPaths": [
+        "tenants/tya/commandReceipts/1642c98ea050ea92c2b93460604a495152723af6",
+        "tenants/tya/entityAuditTrail/1a16f64b64050c878d3df9b016f62e19c664de0d"
+      ],
+      "startedAt": "2026-11-24T21:45:04.763Z",
+      "state": "RESPONSE_RECORDED_RESTORE_STILL_REQUIRED",
+      "httpStatus": 202,
+      "response": {
+        "ok": false,
+        "status": "pending_hr",
+        "committed": false,
+        "providerAck": false,
+        "successUiAllowed": false,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "localCommitted": true,
+        "persistenceAck": true,
+        "hrProviderAck": false,
+        "hrFieldEventIds": [
+          "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+        ],
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "code": "HR_FIELD_ACK_PENDING",
+        "hrFieldOutcomes": [
+          {
+            "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+            "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "periodId": "f3-qa-20261124-2026-11",
+            "countryCode": "GT",
+            "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+            "hrRowId": "CXR_B14_QA_GT_20261119!2",
+            "fieldKey": "escenario",
+            "status": "pending_hr",
+            "providerAck": false,
+            "writeAckVerified": false,
+            "remoteWriteRequests": null,
+            "readbackVerified": false,
+            "readbackDigest": null,
+            "providerExecutionId": null,
+            "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+            "observedAt": "2026-11-24T21:45:20.377Z"
+          }
+        ]
+      },
+      "finishedAt": "2026-11-24T21:45:20.565Z"
+    },
+    {
+      "command": {
+        "version": "cxorbia-command-adapter-v1",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "expectedVersion": 1,
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "authorization": {
+          "providerEnforcementRequired": true,
+          "permission": "visit.hr.fields.update"
+        },
+        "payload": {
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "countryCode": "GT",
+          "sourceRevision": "8bb9f54cc921535be9cbb1468b419e916dafa5c28b29953dba1ce01e0618f98e",
+          "baseFieldValues": {
+            "escenario": "CXOrbia QA Escenario A"
+          },
+          "patch": {
+            "escenario": "CXOrbia QA Escenario B"
+          }
+        }
+      },
+      "receiptPaths": [
+        "tenants/tya/commandReceipts/1642c98ea050ea92c2b93460604a495152723af6",
+        "tenants/tya/entityAuditTrail/1a16f64b64050c878d3df9b016f62e19c664de0d"
+      ],
+      "startedAt": "2026-11-24T21:45:45.574Z",
+      "state": "RESPONSE_RECORDED_RESTORE_STILL_REQUIRED",
+      "httpStatus": 202,
+      "response": {
+        "ok": false,
+        "status": "pending_hr",
+        "committed": false,
+        "providerAck": false,
+        "successUiAllowed": false,
+        "localMutation": false,
+        "localStorageWrite": false,
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "commandType": "visit.hr.fields.update",
+        "entityType": "visit",
+        "entityId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "idempotencyKey": "f3-qa-45493719666-1-field-1",
+        "localCommitted": true,
+        "persistenceAck": true,
+        "hrProviderAck": false,
+        "hrFieldEventIds": [
+          "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+        ],
+        "idempotentReplay": true,
+        "providerWrites": 0,
+        "code": "HR_FIELD_ACK_PENDING",
+        "hrFieldOutcomes": [
+          {
+            "eventId": "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45",
+            "eventDigest": "30f80997042063077686e6af730dc657bb8d6619d5c949fbfa353948f897bf08",
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "periodId": "f3-qa-20261124-2026-11",
+            "countryCode": "GT",
+            "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+            "hrRowId": "CXR_B14_QA_GT_20261119!2",
+            "fieldKey": "escenario",
+            "status": "pending_hr",
+            "providerAck": false,
+            "writeAckVerified": false,
+            "remoteWriteRequests": null,
+            "readbackVerified": false,
+            "readbackDigest": null,
+            "providerExecutionId": null,
+            "code": "HR_FIELD_REMOTE_PROOF_INVALID",
+            "observedAt": "2026-11-24T21:46:00.401Z"
+          }
+        ]
+      },
+      "finishedAt": "2026-11-24T21:46:00.646Z"
+    }
+  ],
+  "lastPending": {
+    "commandId": "f3-qa-45493719666-1-field-1",
+    "httpStatus": 202,
+    "code": "HR_FIELD_ACK_PENDING",
+    "eventIds": [
+      "hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+    ]
+  },
+  "failure": "PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED",
+  "remoteCleanup": {
+    "required": true,
+    "scenarioId": 10199316,
+    "dataStoreId": 213856,
+    "eventKeys": [
+      "event:hfe-a463352fcdda3d76bd78afcf609934e17325923c98eab317b93d94da147cef45"
+    ],
+    "headKeys": [
+      "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98"
+    ],
+    "worksheetNames": [
+      "CXR_B14_QA_GT_20261119",
+      "CXR_B14_QA_HN_20261119"
+    ],
+    "rule": "ROOT_VERIFIES_EXACT_KEYS_AND_CURRENT_OWNER_BEFORE_DELETE_THEN_READS_ABSENCE"
+  },
+  "cleanupErrors": [
+    "PERSISTENCE_FAILURE:F3_QA_REMOTE_RESTORE_REQUIRED"
+  ],
+  "recoveryRequired": true,
+  "recoveryScope": {
+    "qaOwner": "f3-qa-45493719666-1",
+    "adminUid": "f3-qa-45493719666-1-admin",
+    "projectPath": "tenants/tya/projects/f3-qa-20261124",
+    "lockPath": "tenants/tya/commandReceipts/hr-scope-38ba66b3872622d6dcfa5d81598618cb11b30b347f6c49a26f7e3691843c186d",
+    "commandAttempts": 3,
+    "rule": "PRESERVE_FIRESTORE_AUTH_MAKE_AND_QA_WORKSHEETS_UNTIL_EXACT_OWNED_RECOVERY_AND_FRESH_BASELINE_READBACK"
+  }
+}

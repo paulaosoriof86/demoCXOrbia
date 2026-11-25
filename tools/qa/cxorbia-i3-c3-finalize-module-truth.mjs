@@ -5,6 +5,8 @@ import {pathToFileURL} from 'node:url';
 import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {validateTenantReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.mjs';
 import {validateBenefitsReadonlyReceipt,BENEFITS_FINDINGS} from './cxorbia-i3-benefits-readonly-contract.mjs';
+import {permitsD08PeriodlessScope} from './cxorbia-i3-d08-result-normalizer.mjs';
+import {DESCRIPTOR,POINTER,gitBlob} from './cxorbia-i3-current-control-projection.mjs';
 
 const resolvedState=state=>{
   const s=String(state||'');
@@ -79,7 +81,8 @@ const scopeErrors=(r,mod,sourceFiles,paths)=>{
   need(paths.every(p=>currentBlobFor(p,mod,sourceFiles) &&
     evidence.some(x=>x.path===p && validByteProof(x,currentBlobFor(p,mod,sourceFiles)))),'EXACT_CURRENT_OWNER_BYTE_PARITY');
   const s=r.scope||{},a=r.auth||{};
-  need(typeof s==='object' && !!s.tenantId && !!s.projectId && !!s.periodId &&
+  const periodSatisfied=!!s.periodId||permitsD08PeriodlessScope(r,mod.scopedContractAuthorities?.D08);
+  need(typeof s==='object' && !!s.tenantId && !!s.projectId && periodSatisfied &&
     ['admin','super','shopper','client','cliente'].includes(s.role) && a.authenticated===true &&
     a.tenantExact===true && a.projectAuthorized===true && a.role===s.role,'AUTHENTICATED_CONTRACT_SCOPE');
   need(permitsModuleScopeRole(mod.roles,s.role),'MODULE_ROLE_AUTHORITY');
@@ -203,6 +206,27 @@ export function discoverCanonicalDomainReceipts(indexPath){
   };
   walk(root,0);
   return {receipts,filesInspected};
+}
+
+export function readDurableDomainReceipts({descriptor,pointer,readBytes}){
+ const index=descriptor.currentFunctionalEvidenceIndex,other=pointer.currentFunctionalEvidenceIndex;
+ if(!index&&!other)return {receipts:[],records:0};
+ const need=(ok,code)=>{if(!ok)throw Error('SOURCE_FAILURE:C3_DURABLE_'+code);};
+ need(JSON.stringify(index)===JSON.stringify(other),'INDEX_DESYNC');
+ need(index?.schemaVersion==='cxorbia.i3.typed-result-index.v1'&&index.production===false&&Array.isArray(index.results),'INDEX_SCHEMA');
+ const receipts=[];let records=0;
+ for(const entry of index.results){
+  if(entry.ownerReceiptCount===0)continue;
+  need(Number.isSafeInteger(entry.ownerReceiptCount)&&entry.ownerReceiptCount>0&&/^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(entry.path||''),'RECEIPT_REFERENCE');
+  const bytes=readBytes(entry.path);need(gitBlob(bytes)===entry.gitBlob&&sha256(bytes)===entry.sha256,'RECEIPT_HASH');
+  const result=JSON.parse(bytes),proof=result.evidence||result.provenance;
+  need(String(proof?.runId)===String(entry.runId)&&String(proof?.runAttempt)===String(entry.runAttempt)&&String(proof?.jobId)===String(entry.jobId)&&proof.controlHead===entry.controlHead&&String(proof.artifactId)===String(entry.artifactId)&&proof.artifactDigest===entry.artifactDigest,'RECEIPT_IDENTITY');
+  need(result.production===false&&Array.isArray(result.ownerSpecificReceipts)&&result.ownerSpecificReceipts.length===entry.ownerReceiptCount,'RECEIPT_SCOPE');
+  need(/^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(proof.resultRef||''),'RAW_REFERENCE');
+  need(sha256(readBytes(proof.resultRef))===proof.resultSha256,'RAW_HASH');
+  receipts.push(...result.ownerSpecificReceipts);records++;
+ }
+ return {receipts,records};
 }
 
 // Pending functional proof produces a durable HOLD report. Identity corruption
@@ -354,13 +378,15 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   for(const k of ['C3_PRETERMINAL','C3_LEDGER','C3_FINAL_MATRIX','C3_SOURCE','C3_TREE','C3_RUNTIME_REVISION','C3_RUNTIME_DIGEST','C3_HOSTING_VERSION'])if(!E[k])throw new Error('ENVIRONMENT_FAILURE:C3_FINALIZE_'+k);
   const extra=read(E.C3_ADDITIONAL_RECEIPTS),indexed=Array.isArray(extra)?extra:extra.moduleDomain?[extra]:extra.ownerSpecificReceipts||[];
   const discovery=discoverCanonicalDomainReceipts(E.C3_ADDITIONAL_RECEIPTS);
+  const durable=readDurableDomainReceipts({descriptor:read(DESCRIPTOR),pointer:read(POINTER),readBytes:p=>fs.readFileSync(p,'utf8')});
   const indexKeys=new Set(indexed.map(r=>sha256(JSON.stringify(r))));
   const unique=new Map();
-  for(const r of [...indexed,...discovery.receipts])unique.set(sha256(JSON.stringify(r)),r);
+  for(const r of [...indexed,...discovery.receipts,...durable.receipts])unique.set(sha256(JSON.stringify(r)),r);
   const additionalReceipts=[...unique.values()];
   const out=evaluateTerminalModuleTruth({pre:read(E.C3_PRETERMINAL),ledger:read(E.C3_LEDGER),focal:read(E.C3_FOCAL),human:read(E.C3_HUMAN),qa:read(E.C3_QA),parity:read(E.C3_PARITY),additionalReceipts,
     identity:{sourceSha:E.C3_SOURCE,sourceTree:E.C3_TREE,runtimeRevision:E.C3_RUNTIME_REVISION,runtimeDigest:E.C3_RUNTIME_DIGEST,hostingVersion:E.C3_HOSTING_VERSION}});
   out.terminalClosure.evidenceDiscovery={indexReceipts:indexed.length,sameRunFilesInspected:discovery.filesInspected,
+    durableResultRecords:durable.records,durableOwnerReceipts:durable.receipts.length,
     sameRunAdditionalUniqueReceipts:discovery.receipts.filter(r=>!indexKeys.has(sha256(JSON.stringify(r)))).length,
     discoveryOnly:true,noImplicitAccreditation:true};
   fs.writeFileSync(E.C3_FINAL_MATRIX,JSON.stringify(out,null,2)+'\n');

@@ -50,11 +50,46 @@ for(const [name,mutate]of [
  ['project completed reader repeated as pending',o=>{o.matrix.modules.find(m=>m.domain==='projects-periods-hr-source-wizard-multiproject').actionRequired='Repeat original Excel binding';}],
  ['client predecessor C3 presented as current',o=>{o.matrix.modules.find(m=>m.domain==='client-portal-reportkit').actionRequired='RUN2564 current-source C3 is complete';}],
  ['module serving source',o=>{o.matrix.modules[0].lastServedSource='old';}],
+ ['module candidate source',o=>{o.matrix.modules[0].currentCandidateSource='old';}],
+ ['module candidate tree',o=>{o.matrix.modules[0].currentCandidateTree='old';}],
+ ['module cumulative source',o=>{o.matrix.modules[0].cumulativeSource='old';}],
+ ['module nested deployment',o=>{o.matrix.modules[0].currentMaterialization={runId:1};}],
+ ['module obsolete F2 operational receipt',o=>{o.matrix.modules[0].currentF2OperationalExcel={runId:1};}],
+ ['module stale not deployed status',o=>{o.matrix.modules[0].sourceClosure={state:'COMPOSED_NOT_DEPLOYED'};}],
  ['owner serving source',o=>{o.matrix.sourceFiles.find(x=>x.currentServingAuthority).lastServedSource='old';}],
  ['owner serving receipt',o=>{o.matrix.sourceFiles.find(x=>x.currentServingAuthority).currentServingAuthority.runId=1;}],
  ])test(`previously unguarded active alias rejects ${name}`,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
 test('historical archives stay historical and do not become active source assertions',()=>{
  const {out}=project();out.matrix.historicalFixture={currentMaterialization:{sourceSha:'old'},nextExactAction:'old'};assert.equal(validateProjectionRegistry(out).pass,true);
+});
+function pendingCandidateProjection(){
+ const {out}=project(),prior=structuredClone(out.descriptor.currentMaterialization);
+ for(const key of ['descriptor','pointer','ledger','matrix'])out[key].postDeployRunSeal.mode='PREDECESSOR_SERVING_PENDING_SOURCE';
+ out.descriptor.productSourceSha='1'.repeat(40);out.descriptor.productSourceTree='2'.repeat(40);
+ for(const mod of out.matrix.modules)for(const [key,value]of Object.entries({currentCandidateSource:out.descriptor.productSourceSha,currentCandidateTree:out.descriptor.productSourceTree,cumulativeSource:out.descriptor.productSourceSha}))if(Object.hasOwn(mod,key))mod[key]=value;
+ return {out,prior};
+}
+test('pending candidate aliases advance while the served predecessor receipt stays immutable',()=>{
+ const {out,prior}=pendingCandidateProjection();
+ assert.equal(validateProjectionRegistry(out).pass,true);
+ assert.deepEqual(out.descriptor.currentMaterialization,prior);
+ assert.ok(out.matrix.modules.every(mod=>mod.lastServedSource===prior.sourceSha));
+});
+for(const key of ['currentCandidateSource','currentCandidateTree','cumulativeSource'])test(`pending candidate rejects stale ${key}`,()=>{
+ const {out,prior}=pendingCandidateProjection(),mod=out.matrix.modules.find(mod=>Object.hasOwn(mod,key));
+ assert.ok(mod);mod[key]=key==='currentCandidateTree'?prior.sourceTree:prior.sourceSha;
+ assert.ok(validateProjectionRegistry(out).failures.includes(`CURRENT_PROJECTION_DESYNC:matrix.modules.${mod.domain}.${key}`));
+ assert.deepEqual(out.descriptor.currentMaterialization,prior);
+});
+test('module alias migration preserves original receipts in history without changing approvals',()=>{
+ const f=fixture(),mod=f.controls.matrix.modules[0];
+ const old={sourceSha:'old-source',runtimeRevision:'old-runtime',runId:1};
+ mod.currentMaterialization=old;mod.currentCandidateSource='old-source';mod.sourceClosure={state:'COMPOSED_NOT_DEPLOYED',proof:['original source proof']};
+ const {out}=project(f),saved=out.archived.moduleCurrentAliases[mod.domain];
+ assert.deepEqual(saved.currentMaterialization,old);assert.equal(saved.currentCandidateSource,'old-source');
+ assert.deepEqual(saved.sourceClosure,mod.sourceClosure);
+ assert.deepEqual(out.matrix.modules[0].currentMaterialization,out.descriptor.currentMaterialization);
+ assert.equal(out.matrix.modules[0].classification,mod.classification);
 });
 for(const key of ['sourceSha','sourceTree','runId','runtimeRevision','runtimeDigest','hostingVersion','revision','production','hrWrites','authWrites','commandPosts','firestoreWrites'])test(`HR proof must match exact scope: ${key}`,()=>{
  const f=fixture();f.hrResult[key]=typeof f.hrResult[key]==='number'?1:typeof f.hrResult[key]==='boolean'?true:'other';assert.throws(()=>makeMaterializationReceipt(f),/HR_READBACK_IDENTITY/);

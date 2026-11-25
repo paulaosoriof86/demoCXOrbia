@@ -1,9 +1,9 @@
 {
-  "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
-  "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
-  "runtimeRevision": "cxorbia-live-hr-dev-00389-p4r",
-  "runtimeDigest": "sha256:cbe7eb5b4595848d3044dd41434881bfda3d89a047dd69d5473ac21065123580",
-  "hostingVersion": "sites/cxorbia-backend-dev/versions/49fecd39bac8b307",
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+  "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
   "schemaVersion": "cxorbia.i3.d08-ui-qa-request.v1",
   "createdAt": "2026-11-24T09:01:15.993049+00:00",
   "iteration": "I3",
@@ -14,9 +14,9 @@
   "projectId": "cinepolis",
   "country": "GT",
   "hrIndependent": true,
-  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN2767_F3_SAME_ARTIFACT_ENV_PASS_20261124.json",
-  "pairedReceiptGitBlob": "89c67247a7d4df713e6f7aaffa4a7d8f389c1120",
-  "pairedRunId": 45384571856,
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedReceiptGitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+  "pairedRunId": 45488581923,
   "draftScope": {
     "tenantId": [
       "tya"
@@ -72,5 +72,5 @@
     "expectedAuthUsers": 4,
     "policy": "EXACT_PINNED_RUN2760_FIXTURE_CLEANUP_ONLY"
   },
-  "updatedAt": "2026-11-24T11:37:20.629845+00:00"
+  "updatedAt": "2026-11-24T21:57:35.399Z"
 }
