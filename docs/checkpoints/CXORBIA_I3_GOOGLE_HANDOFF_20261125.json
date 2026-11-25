@@ -44,7 +44,8 @@
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795624487264686_TYPED_RESULT.json",
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795633410198637_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795633410198637_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795634012210303_TYPED_RESULT.json"
     ],
     "printProof": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json",
     "productProof": "docs/checkpoints/CXORBIA_I3_VRM378_PDF_SOURCE_20261125.json",
@@ -73,21 +74,21 @@
       "causedProtectedBackendFailure": "NOT_ESTABLISHED"
     },
     "currentFinance": {
-      "key": "GOOGLE_CLOUD_SHELL/1795633226910903",
-      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795633410198637_TYPED_RESULT.json",
-      "sha256": "e7816f1cf7011cf8538e149d28858e93aa46ea6395d99e6af5fca444b1ebd60e",
-      "gitBlob": "75f75f87542f9dff5b366eacc29bcc01717382ac",
+      "key": "GOOGLE_CLOUD_SHELL/1795633941596300",
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795634012210303_TYPED_RESULT.json",
+      "sha256": "acc41992e5f67459b12f5d7197ac51a54c77b90963a241619933976c734d3fcc",
+      "gitBlob": "b4bb765a0ac817caf30602a187f6c9c5b5fab4a4",
       "provider": "GOOGLE_CLOUD_SHELL",
-      "controlHead": "266f764ae585d654300ff6fbfb618512a644437a",
-      "transportSha": "266f764ae585d654300ff6fbfb618512a644437a",
-      "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/start.json#1795633226910903",
-      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/ea026427-7a58-47fb-87eb-f6d774788d8c/result.json#1795633410198637",
-      "bundleSha256": "1b093e51b0d379fbe39f5b3b4f8743560d2392617ef2f8cedd4ba7114dc31908",
+      "controlHead": "30d19a63962e40ac78c9d86e30d501c40e68adbd",
+      "transportSha": "30d19a63962e40ac78c9d86e30d501c40e68adbd",
+      "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/2350cfab-c2ca-4928-9b49-52c29cccdfec/start.json#1795633941596300",
+      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/2350cfab-c2ca-4928-9b49-52c29cccdfec/result.json#1795634012210303",
+      "bundleSha256": "a370f55f9900f9654e589cfe7a9e94445338608f369a97ca91059020b3d794af",
       "decision": "RECORDED_TYPED_RESULT_HOLD",
       "ownerReceiptCount": 0,
-      "observedAt": "2026-11-25T19:03:30.198Z",
-      "stage": "SESSION_1_AUTH",
-      "classification": "ENVIRONMENT_FAILURE",
+      "observedAt": "2026-11-25T19:13:32.210Z",
+      "stage": "SESSION_1_DASHBOARD",
+      "classification": "FUNCTIONAL_DEFECT",
       "observations": {
         "sameArtifactReadback": {
           "entry": "identity-live-readback.json",
@@ -102,16 +103,16 @@
           "verified": false
         },
         "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
-        "stage": "SESSION_1_AUTH",
-        "failureStage": "SESSION_1_AUTH",
+        "stage": "SESSION_1_DASHBOARD",
+        "failureStage": "SESSION_1_DASHBOARD",
         "sessionAttempted": 1,
         "activeSessionProgress": {
-          "auth": false,
-          "period": false,
-          "serverRows": false,
-          "dom": false,
-          "advancePair": false,
-          "movementExport": false,
+          "auth": true,
+          "period": true,
+          "serverRows": true,
+          "dom": true,
+          "advancePair": true,
+          "movementExport": true,
           "dashboard": false,
           "finalRead": false
         },
@@ -119,50 +120,128 @@
           "available": true,
           "firebaseUserPresent": true,
           "contextAuthenticated": true,
-          "authorityApplied": false,
-          "expectedProjectSelected": false,
-          "expectedPeriodSelected": false,
-          "projectionLoaded": false,
-          "projectionKeyMatches": false,
+          "authorityApplied": true,
+          "expectedProjectSelected": true,
+          "expectedPeriodSelected": true,
+          "projectionLoaded": true,
+          "projectionKeyMatches": true,
           "movExportPresent": false,
-          "finExportPresent": false,
-          "reportPreviewPresent": false,
-          "printTablePresent": false,
-          "route": "OTHER_OR_UNAVAILABLE",
+          "finExportPresent": true,
+          "reportPreviewPresent": true,
+          "printTablePresent": true,
+          "route": "financiero",
           "role": "admin",
           "movementRowCount": 0,
-          "reportRowCount": 0
+          "reportRowCount": 2
         },
         "hrOwnerDiagnostic": {
           "available": null,
-          "authorityPresent": false,
-          "applied": false,
+          "authorityPresent": true,
+          "applied": true,
           "retryable": false,
-          "sourceReady": false,
-          "sourceBlocked": true,
+          "sourceReady": true,
+          "sourceBlocked": false,
           "runtimeReady": true,
           "bootstrap": {
             "lastStatePresent": true,
             "sourceFirestore": false,
-            "authorizedStatePresent": false,
-            "actorMatches": false,
+            "authorizedStatePresent": true,
+            "actorMatches": true,
             "bootAuthorized": true,
-            "bootBackendReady": false,
+            "bootBackendReady": true,
             "bootDependenciesReady": true,
-            "bootExhausted": true,
+            "bootExhausted": null,
             "stateErrorCode": "NONE",
-            "serverReads": {
-              "projects": "TIMEOUT",
-              "shoppers": "TIMEOUT",
-              "periods": "TIMEOUT",
-              "visits": "TIMEOUT"
-            }
+            "serverReads": {}
           },
           "ownerCode": "NO_OWNER_ERROR",
           "ownerErrorSha256": null,
           "authenticatedHrHttp": [
+            200,
+            200,
+            200,
+            200,
             200
           ]
+        },
+        "browserTransport": "HTTP1_DIAGNOSTIC",
+        "firestoreListen": {
+          "requests": 31,
+          "responses": 31,
+          "failed": 2,
+          "statuses": {
+            "200": 31
+          },
+          "errors": {
+            "net::ERR_ABORTED": 2
+          }
+        },
+        "failurePdf": {
+          "matches": false,
+          "parsed": null,
+          "titleMatches": true,
+          "periodMatches": true,
+          "titleMatchesIgnoringWhitespace": true,
+          "periodMatchesIgnoringWhitespace": true,
+          "bytes": 50547,
+          "pages": 1,
+          "textCharacters": 584,
+          "missingCellCount": 2,
+          "sha256": "ab156f037d41a68e79d3202c456173045abcc36ca49ba6c14d725123da39d4fb",
+          "textSha256": "b5a5e9633ac6a4de87c30afb117c0ece7b1147772a65b80e954d6e33577d4ec3",
+          "missingCells": [
+            {
+              "row": 0,
+              "column": 0,
+              "expectedCharacters": 14,
+              "expectedSha256": "f20c8e92b1216d28f833999d3f86e95ac310773a4261a8434175e5ee99155b12",
+              "matchesIgnoringWhitespace": false
+            },
+            {
+              "row": 1,
+              "column": 0,
+              "expectedCharacters": 13,
+              "expectedSha256": "ac534d70cd42409b4a20c9e0012d7f60bbdef429a283c9de7614563bb61242fc",
+              "matchesIgnoringWhitespace": false
+            }
+          ],
+          "missingCellsTruncated": false,
+          "privateEvidence": {
+            "entry": "private-session-0-dashboard-pdf.envelope.json",
+            "sha256": "8e09a42c43f212aca565e344bf1c93a4b2310bc371eb3ef816e50af7df97a5ae",
+            "plainSha256": "4b01af3ecbf9da713522abd7542702987936c2f5a5f45838c235c978e460b8ee",
+            "encrypted": true,
+            "algorithm": "RSA-OAEP-SHA256+AES-256-GCM",
+            "referenceOnly": true
+          },
+          "privateEvidenceError": null
+        },
+        "partialExportProof": {
+          "decision": "PARTIAL_EXPORT_PROOF_PDF_PENDING",
+          "rows": 2,
+          "semanticRowsSha256": "726ac4345cc2cfcf650ddfffacd568a369e8e5ebf7135f300484fe07b37ab570",
+          "preview": {
+            "sha256": "f443898c9c177e7fe781c5dda82bc65ed12e4b018be0192e6359e2f1ed3d4a79",
+            "contentMatches": true
+          },
+          "xlsx": {
+            "bytes": 22048,
+            "pages": null,
+            "sha256": "86fe65f39d2ccffbcc90feeb05f0853803d5013c4b1bb79bc74da3f86766f2bf",
+            "parsed": true,
+            "contentMatches": true
+          },
+          "nativePrintDom": {
+            "sha256": "f443898c9c177e7fe781c5dda82bc65ed12e4b018be0192e6359e2f1ed3d4a79",
+            "contentMatches": true
+          },
+          "pdf": {
+            "bytes": 50547,
+            "pages": 1,
+            "sha256": "ab156f037d41a68e79d3202c456173045abcc36ca49ba6c14d725123da39d4fb",
+            "parsed": true,
+            "contentMatches": false
+          }
         },
         "currentAdminClaimsVerified": null,
         "browserServerReadVerified": null,
@@ -177,9 +256,9 @@
         "customTokenMints": 1,
         "network": {
           "automaticHrSuppressed": 0,
-          "knownPresentationImagesBlocked": 3,
+          "knownPresentationImagesBlocked": 15,
           "unexpectedDenied": 0,
-          "allowedAuthRequests": 4,
+          "allowedAuthRequests": 6,
           "routeControlFailures": 0
         },
         "sessions": [],
@@ -501,7 +580,7 @@
     "trafficPercent": 100
   },
   "next": {
-    "finance": "The HTTP/1 run proved the real Movimientos PDF in the first session. Dashboard preview and XLSX match both rows; the two flag + country strings are absent from parsed dashboard PDF. Compare identical printed fixture with the baseline Chromium fonts and an isolated emoji font before changing product or validating the remaining second session.",
+    "finance": "Retain the first-session Movimientos PDF and two advances. Compare the same country-label PDF with and without the supported Chromium fonts. Use that result to locate the owner before repeating the two read-only sessions and remaining permissions on the paired DEV revision.",
     "academy": "Use the new D08 request bound to Google 18d8d2fd and the tested Chromium HTTP/1 transport. Preserve the earlier Admin cycles, clean fixture evidence, and the original 25-clause contract.",
     "deployment": "Paired publication complete. Keep its real native UUID and immutable source. Do not redeploy before a proved product defect.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
