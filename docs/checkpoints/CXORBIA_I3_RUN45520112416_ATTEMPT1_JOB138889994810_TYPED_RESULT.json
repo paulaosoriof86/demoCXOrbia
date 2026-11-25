@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_NOT_EXECUTED",
+  "state": "HOLD",
+  "decision": "RECORDED_FINANCE_NOT_EXECUTED_ENVIRONMENT_FAILURE",
+  "classification": "ENVIRONMENT_FAILURE",
+  "executionStatus": "NOT_EXECUTED",
+  "failureCodes": [
+    "ENVIRONMENT_FAILURE:FINANCE_DEPENDENCIES_FAILED_BEFORE_AUTH_AND_EXECUTION"
+  ],
+  "observedAt": "2026-11-25T01:02:40.872Z",
+  "producer": {
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "failure",
+    "resultProduced": false
+  },
+  "provenance": {
+    "runId": "45520112416",
+    "runAttempt": "1",
+    "jobId": "138889994810",
+    "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
+    "artifactId": null,
+    "artifactDigest": null,
+    "entry": null,
+    "resultRef": null,
+    "resultSha256": null,
+    "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "journalGitBlob": "9504eb7eef497a91bb0cfd6d987550e508348fa4",
+    "jobMetadataApiPath": "/repos/paulaosoriof86/demoCXOrbia/actions/jobs/138889994810",
+    "jobMetadataScope": "IDENTITY_STATUS_STEPS",
+    "jobMetadataSha256": "69add6486ae08e57e2028b667adf9e59a8386d2e924ee99a619f40f81cd5e186"
+  },
+  "artifact": null,
+  "executionEvidence": {
+    "id": 138889994810,
+    "runId": 45520112416,
+    "runAttempt": 1,
+    "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
+    "name": "i3-finance-focal-reproof",
+    "status": "completed",
+    "conclusion": "failure",
+    "startedAt": "2026-11-25T00:43:12Z",
+    "completedAt": "2026-11-25T00:43:42Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:13Z",
+        "completedAt": "2026-11-25T00:43:14Z"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:14Z",
+        "completedAt": "2026-11-25T00:43:29Z"
+      },
+      {
+        "number": 3,
+        "name": "Run actions/setup-node@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:29Z",
+        "completedAt": "2026-11-25T00:43:29Z"
+      },
+      {
+        "number": 4,
+        "name": "Run set -Eeuo pipefail",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:29Z",
+        "completedAt": "2026-11-25T00:43:29Z"
+      },
+      {
+        "number": 5,
+        "name": "Run bash tools/qa/cxorbia-i3-finance-dependencies.sh",
+        "status": "completed",
+        "conclusion": "failure",
+        "startedAt": "2026-11-25T00:43:29Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 6,
+        "name": "Run google-github-actions/auth@v2",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 7,
+        "name": "Run google-github-actions/setup-gcloud@v2",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 8,
+        "name": "Run set -Eeuo pipefail",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 9,
+        "name": "Run bash tools/qa/cxorbia-i3-finance-focal-execute.sh",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 10,
+        "name": "Run actions/upload-artifact@v4",
+        "status": "completed",
+        "conclusion": "failure",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 19,
+        "name": "Post Run actions/setup-node@v4",
+        "status": "completed",
+        "conclusion": "skipped",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:39Z"
+      },
+      {
+        "number": 20,
+        "name": "Post Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:39Z",
+        "completedAt": "2026-11-25T00:43:40Z"
+      },
+      {
+        "number": 21,
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-25T00:43:40Z",
+        "completedAt": "2026-11-25T00:43:40Z"
+      }
+    ]
+  },
+  "observations": {
+    "dependencyStepFailed": true,
+    "authStepSkipped": true,
+    "functionalExecuteStepSkipped": true,
+    "functionalResultProduced": false
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}
