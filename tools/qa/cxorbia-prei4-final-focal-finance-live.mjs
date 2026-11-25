@@ -47,6 +47,9 @@ if(financeMode){
   if(financeMode==='APPLY_NOV_ADVANCE_METADATA'){
     const {runAdvanceMetadata}=await import('./cxorbia-i3-finance-advance-metadata.mjs');
     await runAdvanceMetadata({project:PROJECT,host:HOST,out:OUT,source:SOURCE});
+  }else if(financeMode==='READONLY_C09_C10_CURRENT_UI'){
+    const {runFinanceUiReadonly}=await import('./cxorbia-i3-finance-ui-readonly.mjs');
+    await runFinanceUiReadonly({project:PROJECT,host:HOST,out:OUT,source:SOURCE});
   }else if(financeMode==='READONLY_SEP_ADVANCES')await runFinanceResidualReadonly({project:PROJECT,host:HOST,out:OUT,source:SOURCE,period:PERIOD});
   else throw new Error('SOURCE_FAILURE:UNKNOWN_FINANCE_FOCAL_MODE');
   process.exit(0);

@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync,execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {A08_USER_ADMIN_PATH} from '../../tools/qa/cxorbia-i3-a08-exact-password-proof.mjs';
+import {A08_USER_ADMIN_PATH,A08_PROVENANCE_TARGETS,publicA08ProvenanceDiagnostic} from '../../tools/qa/cxorbia-i3-a08-exact-password-proof.mjs';
 import {assertA08AssetSeal} from '../../tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs';
 
 export const EXCEPTION_IDS=Object.freeze(['shopper_gt_a092a0647f','shopper_hn_3b3c2f5cc1','shp-3669abbb015a']);
@@ -58,8 +58,30 @@ export function finalDecision(result,before,after,pin){
   const apis=result.apiProofs?.length===4&&result.apiProofs.every(x=>x.pass===true);
   const storage=result.storageProof?.pass===true&&result.storageProof?.objectStable===true;
   const errorFree=result.errors?.length===0;
-  const requestedScopePass=Boolean(seal&&passwords&&errorFree&&(result.scope?.executionMode==='PASSWORD_ONLY'||(apis&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage))));
-  return {seal,expectedAssetCount:pin?.verifiedServedAssetCount??null,servedAssetCount:seal?before.servedAssetsMatch:0,passwords,apis,storage,requestedScopePass,pass:Boolean(seal&&passwords&&apis&&storage&&errorFree)};
+  const diagnosticOnly=result.scope?.executionMode==='PROVENANCE_ONLY',diagnostics=arr(result.provenanceDiagnostics);
+  const diagnosticComplete=diagnosticOnly&&seal&&errorFree&&diagnostics.length===2&&Object.keys(A08_PROVENANCE_TARGETS).every(id=>diagnostics.filter(x=>x.caseId===id).length===1)&&
+    diagnostics.every(x=>x.diagnosticOnly===true&&x.diagnosticComplete===true&&x.loginAttempts===0&&x.browserLaunches===0&&x.customTokensUsed===0&&x.historicalSameUidProof?.recipeUsedForLogin===false)&&
+    result.passwordProofs?.length===0&&result.apiProofs?.length===0&&result.storageDiscovery?.executed===false;
+  const requestedScopePass=Boolean(!diagnosticOnly&&seal&&passwords&&errorFree&&(result.scope?.executionMode==='PASSWORD_ONLY'||(apis&&(result.scope?.executionMode==='PASSWORD_API_ONLY'||storage))));
+  return {seal,expectedAssetCount:pin?.verifiedServedAssetCount??null,servedAssetCount:seal?before.servedAssetsMatch:0,passwords,apis,storage,requestedScopePass,pass:Boolean(!diagnosticOnly&&seal&&passwords&&apis&&storage&&errorFree),...(diagnosticOnly?{diagnosticComplete:Boolean(diagnosticComplete)}:{})};
+}
+
+export function validateA08ProvenanceChild(proof,{caseId,shopperId,sourceSha}){
+  need(proof?.schemaVersion==='cxorbia.i3.r20.one-proven-credential-readonly.v2'&&proof.sourceSha===sourceSha&&proof.decision==='HOLD_R20_PROVENANCE_ONLY'&&proof.diagnosticOnly===true&&proof.diagnosticComplete===true,'MAPPING_FAILURE:A08_PROVENANCE_CHILD_INCOMPLETE');
+  need(proof.selection?.boundedShopperIdQuery===true&&proof.selection.requestedShopperId===shopperId&&proof.selection.selected===false,'MAPPING_FAILURE:A08_PROVENANCE_CHILD_SCOPE');
+  need(['attemptedAccounts','loginAttempts','browserLaunches','customTokensUsed','authWrites','passwordChanges','passwordResets','firestoreWrites','hrWrites','financeWrites','providerWrites','deploys'].every(k=>proof[k]===0)&&proof.production===false,'AUTH_FAILURE:A08_PROVENANCE_UNEXPECTED_ACTION');
+  need(proof.provenanceDiagnostics?.length===1&&proof.provenanceDiagnostics[0].caseId===caseId,'MAPPING_FAILURE:A08_PROVENANCE_CHILD_CASE');
+  const diagnostic=publicA08ProvenanceDiagnostic(proof.provenanceDiagnostics[0]);
+  need(diagnostic.diagnosticOnly&&diagnostic.diagnosticComplete&&diagnostic.primaryReason&&diagnostic.historicalSameUidProof.recipeUsedForLogin===false,'MAPPING_FAILURE:A08_PROVENANCE_CHILD_DIAGNOSTIC');
+  return diagnostic;
+}
+// Keep the existing password-only job contract in code instead of duplicating
+// its long jq expression for every mode in the size-bounded workflow.
+export function assertA08ExecutionResult(result){
+  need(result?.gate==='HOLD'&&result.fullA08Certified===false&&result.newDomainMatches===0,'MAPPING_FAILURE:A08_RESULT_SCOPE');
+  if(result.scope?.executionMode==='PROVENANCE_ONLY')need(result.decision==='HOLD_I3_A08_RESIDUAL_READONLY'&&result.diagnosticComplete===true&&result.finalChecks?.diagnosticComplete===true&&result.finalChecks.requestedScopePass===false&&result.finalChecks.pass===false&&result.passwordProofs?.length===0&&result.apiProofs?.length===0&&result.storageDiscovery?.executed===false,'MAPPING_FAILURE:A08_PROVENANCE_RESULT_INCOMPLETE');
+  else if(result.scope?.executionMode==='PASSWORD_ONLY')need(result.decision==='HOLD_I3_A08_STORAGE_PENDING'&&result.passwordProofs?.length===3&&result.apiProofs?.length===0&&result.scopeDecision==='PASS_I3_A08_PASSWORD3_SCOPED_READONLY'&&result.finalChecks?.requestedScopePass===true&&result.storageDiscovery?.executed===false,'MAPPING_FAILURE:A08_PASSWORD_RESULT_INCOMPLETE');
+  return true;
 }
 
 async function boundedBytes(response,max){
@@ -78,19 +100,22 @@ async function safeJson(response,max=65536){
 }
 async function run(){
   fs.mkdirSync(OUT,{recursive:true});
+  const provenanceOnly=process.argv.includes('--provenance-only');
   if(process.argv.includes('--execute-and-seal')){
     need(process.env.CXORBIA_A08_RESIDUAL_READONLY==='PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY','SOURCE_FAILURE:A08_READONLY_GATE_REQUIRED');
     fs.rmSync(OUT+'/same-artifact-after.json',{force:true});
     const self=fileURLToPath(import.meta.url);
-    const proof=spawnSync(process.execPath,[self,...(process.argv.includes('--password-only')?['--password-only']:process.argv.includes('--password-api-only')?['--password-api-only']:[])],{env:process.env,stdio:'ignore',timeout:30*60*1000});
+    const proof=spawnSync(process.execPath,[self,...(provenanceOnly?['--provenance-only']:process.argv.includes('--password-only')?['--password-only']:process.argv.includes('--password-api-only')?['--password-api-only']:[])],{env:process.env,stdio:'ignore',timeout:30*60*1000});
     const after=spawnSync('bash',['tools/qa/cxorbia-i3-a08-same-artifact-readonly.sh'],{
       env:{...process.env,CXORBIA_A08_PREFLIGHT_PHASE:'after'},stdio:'ignore',timeout:5*60*1000});
     const final=spawnSync(process.execPath,[self,'--finalize'],{env:process.env,stdio:'ignore',timeout:30000});
     let summary=null;try{summary=read(OUT+'/result.json');}catch{}
+    try{assertA08ExecutionResult(summary);}catch(error){console.error(safeFailure(error));process.exitCode=1;}
     console.log(JSON.stringify({decision:summary?.decision||'HOLD_I3_A08_RESIDUAL_READONLY',
       passwordPassCount:summary?.passwordProofs?.filter(x=>x.pass).length||0,
       apiDenialPassCount:summary?.apiProofs?.filter(x=>x.pass).length||0,
       storagePass:summary?.storageProof?.pass===true,artifactAfterPass:summary?.sameArtifactAfter===true,scopeDecision:summary?.scopeDecision||null,
+      diagnosticComplete:summary?.diagnosticComplete===true,provenanceCaseCount:summary?.provenanceDiagnostics?.length||0,
       failureCodes:summary?.errors?.map(x=>x.code)||[],
       executionExitCodes:{proof:proof.status,after:after.status,final:final.status},fullA08Certified:false,newDomainMatches:0}));
     if(proof.status!==0||after.status!==0||final.status!==0)process.exitCode=1;
@@ -104,11 +129,12 @@ async function run(){
       const pin=read(process.env.CXORBIA_A08_PIN_PATH||OUT+'/current-artifact-pin.json');
       result.finalChecks=finalDecision(result,before,after,pin);
       result.sameArtifactAfter=result.finalChecks.seal;
+      if(result.scope.executionMode==='PROVENANCE_ONLY')result.diagnosticComplete=result.finalChecks.diagnosticComplete;
       result.decision=result.finalChecks.pass?'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY':result.finalChecks.requestedScopePass?'HOLD_I3_A08_STORAGE_PENDING':'HOLD_I3_A08_RESIDUAL_READONLY';
       result.scopeDecision=result.finalChecks.requestedScopePass?(result.scope.executionMode==='PASSWORD_ONLY'?'PASS_I3_A08_PASSWORD3_SCOPED_READONLY':result.scope.executionMode==='PASSWORD_API_ONLY'?'PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY':'PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY'):'HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN';
       result.gate='HOLD';result.fullA08Certified=false;result.newDomainMatches=0;
       save(result);console.log(JSON.stringify({decision:result.decision,checks:result.finalChecks,fullA08Certified:false,newDomainMatches:0}));
-      if(!result.finalChecks.requestedScopePass)process.exitCode=1;
+      if(!(result.scope.executionMode==='PROVENANCE_ONLY'?result.finalChecks.diagnosticComplete:result.finalChecks.requestedScopePass))process.exitCode=1;
     }catch(error){
       if(result){result.errors??=[];result.errors.push({stage:'artifact-after',code:safeFailure(error)});result.decision='HOLD_I3_A08_RESIDUAL_READONLY';save(result);}
       console.error('RELEASE_COMPOSITION_FAILURE:A08_FINAL_ARTIFACT_READBACK_MISSING');process.exitCode=1;
@@ -118,16 +144,18 @@ async function run(){
   const result={schemaVersion:'cxorbia.i3.a08.password3-api-storage.residual.readonly.v1',iteration:'I3',gate:'HOLD',
     decision:'HOLD_I3_A08_RESIDUAL_READONLY',environment:PROJECT,fullA08Certified:false,newDomainMatches:0,
     sourceSha:null,sourceTree:null,runtimeRevision:null,runtimeDigest:null,hostingVersion:null,
-    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:EXCEPTION_IDS,executionMode:process.argv.includes('--password-only')?'PASSWORD_ONLY':process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
-      apiOperation:'GET /api/tenants/{tenant}/users',storageOperation:'GET existing private visit evidence',
+    scope:{tenantId:TENANT,projectId:PROGRAM,exceptionShopperIds:provenanceOnly?Object.values(A08_PROVENANCE_TARGETS):EXCEPTION_IDS,executionMode:provenanceOnly?'PROVENANCE_ONLY':process.argv.includes('--password-only')?'PASSWORD_ONLY':process.argv.includes('--password-api-only')?'PASSWORD_API_ONLY':'PASSWORD_API_STORAGE',
+      apiOperation:provenanceOnly?null:'GET /api/tenants/{tenant}/users',storageOperation:provenanceOnly?null:'GET existing private visit evidence',
       rolesRequiredForIntegralA08:['super','admin','ops','coordinador','shopper','cliente'],
-      rolesNewlyProbed:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false,requiresProtectedHrAuthority:true,
-      passwordProofBoundary:'EXACT_PASSWORD_PLUS_HR_IDENTITY_RESTORE_LOGOUT_RELOGIN'},
+      rolesNewlyProbed:provenanceOnly?[]:['shopper','anonymous'],repeatsAcceptedFirestoreProof:false,requiresProtectedHrAuthority:!provenanceOnly,
+      passwordProofBoundary:provenanceOnly?'PROVENANCE_ONLY_NO_PASSWORD_ATTEMPT':'EXACT_PASSWORD_PLUS_HR_IDENTITY_RESTORE_LOGOUT_RELOGIN'},
     passwordProofs:[],apiProofs:[],storageProof:null,preservedEvidence:[],errors:[],
+    ...(provenanceOnly?{provenanceDiagnostics:[],diagnosticComplete:false}:{}),
     remainingIntegralA08:['Uncovered UI/claims/membership/API/Firestore/Storage cells for all six roles; retain exact accepted cells.'],
     safety:{providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,storageWrites:0,hrWrites:0,
       passwordChanges:0,passwordResets:0,fixtureCreates:0,builds:0,deploys:0,production:false,
-      credentialsExported:false,tokensExported:false,privateBytesExported:false,privatePathsExported:false}};
+      credentialsExported:false,tokensExported:false,privateBytesExported:false,privatePathsExported:false,
+      ...(provenanceOnly?{loginAttempts:0,browserLaunches:0,customTokensUsed:0}:{})}};
   save(result);
   const capture=async(stage,fn)=>{try{await fn();}catch(error){result.errors.push({stage,code:safeFailure(error)});}finally{save(result);}};
   try{
@@ -154,6 +182,29 @@ async function run(){
       need(/^PASS_/.test(str(evidence.scopeDecision||evidence.decision)),'SOURCE_FAILURE:A08_ACCEPTED_RECEIPT_UNAVAILABLE');
       result.preservedEvidence.push({path:file,gitBlob:execFileSync('git',['rev-parse','HEAD:'+file],{encoding:'utf8'}).trim(),
         sha256:sha(content),credit:'HISTORICAL_ACCEPTED_SCOPE_PRESERVED_NOT_REEXECUTED'});
+    }
+    if(provenanceOnly){
+      result.provenanceDiagnostics=[];result.diagnosticComplete=false;
+      result.storageDiscovery={executed:false,reason:'PROVENANCE_ONLY_NOT_REQUESTED'};
+      result.storageProof={pass:false,skipped:true,reason:'PROVENANCE_ONLY_NOT_REQUESTED'};
+      Object.assign(result.safety,{loginAttempts:0,browserLaunches:0,customTokensUsed:0});
+      result.preservedEvidence.push({runId:45514816284,runAttempt:1,jobId:138871930190,artifactId:14976459189,
+        artifactSha256:'3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb',
+        entry:'r20-shopper_hn_3b3c2f5cc1/result.json',entrySha256:'f901d42c1ff1ec0dd6538324b076021731da154f08b7d34e72a987939c76f2da',
+        credit:'HISTORICAL_HN_PASSWORD_LIFECYCLE_PASS_PRESERVED_NOT_REEXECUTED',currentRunLoginAttempts:0},
+        {runNumber:2760,artifactId:14906482096,artifactSha256:'ec78e422057ff95e8d062c58df9c57aff9e30ddec505303461b2e95daf700dfa',credit:'HISTORICAL_API_DENIALS_4_OF_4_PRESERVED_NOT_REEXECUTED',currentRunApiCalls:0});
+      for(const [caseId,id]of Object.entries(A08_PROVENANCE_TARGETS))await capture('provenance-'+caseId,async()=>{
+        const output=OUT+'/r20-'+id;
+        const proc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs','--provenance-only'],{
+          env:{...process.env,R20_CREDENTIAL_AUTHORITY:'CURRENT_PROVIDER_VERIFIED_RULE_V1',R20_AUTHORIZED_TEST_SHOPPER_ID:id,R20_AUTHORIZED_TEST_LOGIN:'',R20_SOURCE_SHA:pin.sourceSha,R20_HOSTING_URL:ROOT,R20_SAFE_OUT:output},
+          encoding:'utf8',timeout:120000,maxBuffer:2*1024*1024,stdio:['ignore','pipe','pipe']});
+        let proof=null;try{proof=read(output+'/result.json');}catch{}
+        need(proc.status===0,'ENVIRONMENT_FAILURE:A08_PROVENANCE_CHILD_FAILED');
+        result.provenanceDiagnostics.push(validateA08ProvenanceChild(proof,{caseId,shopperId:id,sourceSha:pin.sourceSha}));
+      });
+      result.decision='PENDING_A08_FINAL_SAME_ARTIFACT_READBACK';
+      if(result.errors.length)process.exitCode=1;
+      return;
     }
     const [{applicationDefault,getApps,initializeApp},{getAuth},{getFirestore},{getStorage}]=await Promise.all([
       import('firebase-admin/app'),import('firebase-admin/auth'),import('firebase-admin/firestore'),import('firebase-admin/storage')]);

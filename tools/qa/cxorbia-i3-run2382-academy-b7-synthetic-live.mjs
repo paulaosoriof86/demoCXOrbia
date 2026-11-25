@@ -29,7 +29,8 @@ function runD08Preflight(){
   check(q.schemaVersion==='cxorbia.i3.d08-ui-qa-request.v1'&&q.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&q.production===false&&q.hrIndependent===true&&q.sourceSha===e.FOCAL_SOURCE&&q.sourceTree===e.FOCAL_TREE&&q.tenantId===e.TENANT_ID&&q.projectId===e.PROJECT_ID,'AUTH_FAILURE:D08_REQUEST_SCOPE');
   for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])check(q[k]===seal[k],'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_SEAL_'+k);
   check(q.pairedReceiptPath===seal.receiptPath&&/^docs\/checkpoints\/[^/]+\.json$/.test(q.pairedReceiptPath||'')&&execFileSync('git',['hash-object',q.pairedReceiptPath],{encoding:'utf8'}).trim()===q.pairedReceiptGitBlob,'RELEASE_COMPOSITION_FAILURE:D08_PAIRED_RECEIPT');
-  const variables={D08_QA_REQUEST:pointer.path,CXORBIA_I3_QA_SCOPE:'D08_ACADEMY_UI',CXORBIA_I3_QA_ISOLATED_WRITE_GATE:'PAULA_AUTHORIZED_D08_DEV_ONLY',DEV_REVISION:q.runtimeRevision,RUNTIME_DIGEST:q.runtimeDigest,HOSTING_VERSION_NAME:q.hostingVersion};
+  check(['RECOVERY_ONLY','UI_WITH_RECOVERY'].includes(q.executionMode),'AUTH_FAILURE:D08_REQUEST_EXECUTION_MODE');
+  const variables={D08_QA_CLEANUP_ONLY:String(q.executionMode==='RECOVERY_ONLY'),D08_QA_REQUEST:pointer.path,CXORBIA_I3_QA_SCOPE:'D08_ACADEMY_UI',CXORBIA_I3_QA_ISOLATED_WRITE_GATE:'PAULA_AUTHORIZED_D08_DEV_ONLY',DEV_REVISION:q.runtimeRevision,RUNTIME_DIGEST:q.runtimeDigest,HOSTING_VERSION_NAME:q.hostingVersion};
   for(const [k,v] of Object.entries(variables)){check(typeof v==='string'&&!/[\r\n]/.test(v),'SOURCE_FAILURE:D08_ENV_VALUE');fs.appendFileSync(e.GITHUB_ENV,k+'='+v+'\n');}
   console.log(JSON.stringify({decision:'PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT',sourceSha:q.sourceSha,providerWrites:0}));
   return {request:q,current:c,descriptor:d};
@@ -140,6 +141,53 @@ function academyUiQaPrimitives(){
     check(row&&same(without(row,['createdAt','updatedAt']),expected)&&Number.isFinite(Date.parse(row.createdAt))&&Number.isFinite(Date.parse(row.updatedAt)),'PERSISTENCE_FAILURE:D08_DRAFT_OWNERSHIP_OR_CONCURRENT_CHANGE');
   }
   return {str,stable,hash,check,same,without,progressKey,describeCommand,verifyBundle,verifyMembership,verifyCourse};
+}
+
+// A raw browser command is not finished at headers. Keep the same abort handle
+// alive until the JSON body settles; perform still independently validates ACK.
+async function d08BrowserCommandPost({command,httpTimeoutMs=75000,tokenTimeoutMs=20000}){
+  const controller=new AbortController();window.__D08_REQUEST_ABORT=controller;let tokenTimer;
+  const httpTimer=setTimeout(()=>controller.abort(),httpTimeoutMs);
+  try{
+    const token=await Promise.race([firebase.auth().currentUser.getIdToken(true),new Promise((_,reject)=>{tokenTimer=setTimeout(()=>reject(Error('ENVIRONMENT_FAILURE:D08_TOKEN_DEADLINE')),tokenTimeoutMs);})]);
+    clearTimeout(tokenTimer);
+    const response=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(command),signal:controller.signal});
+    const ack=await response.json();return {status:response.status,ack};
+  }finally{
+    clearTimeout(tokenTimer);clearTimeout(httpTimer);
+    if(window.__D08_REQUEST_ABORT===controller)delete window.__D08_REQUEST_ABORT;
+  }
+}
+
+// Only the control self-test calls this fixture. It uses no sockets, credentials,
+// SDKs or providers and restores globals even when an assertion fails.
+async function d08ResponseLifetimeSelfTest(){
+  const {check}=academyUiQaPrimitives(),names=['window','firebase','fetch'];
+  const saved=new Map(names.map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let passed=0;
+  const assert=(value,code)=>{check(value,'SOURCE_FAILURE:D08_BODY_SELF_TEST_'+code);passed++;};
+  try{
+    globalThis.window={};globalThis.firebase={auth:()=>({currentUser:{getIdToken:async()=>'LOCAL_FIXTURE_ONLY'}})};
+    let release,signal,settled=false,bodyStarted;
+    const started=new Promise(resolve=>bodyStarted=resolve);
+    globalThis.fetch=async(_url,options)=>{signal=options.signal;return {status:200,json:()=>{bodyStarted();return new Promise(resolve=>release=resolve);}};};
+    const complete=d08BrowserCommandPost({command:{fixture:true},httpTimeoutMs:1000,tokenTimeoutMs:500}).then(value=>{settled=true;return value;});
+    await started;assert(!settled&&window.__D08_REQUEST_ABORT?.signal===signal,'HANDLE_RETAINS_BODY');
+    release({ok:true});const value=await complete;
+    assert(value.status===200&&value.ack.ok===true&&!window.__D08_REQUEST_ABORT,'BODY_BEFORE_SUCCESS');
+    let aborted=false;
+    globalThis.fetch=async(_url,options)=>({status:200,json:()=>new Promise((_resolve,reject)=>options.signal.addEventListener('abort',()=>{aborted=true;reject(Error('LOCAL_ABORT'));},{once:true}))});
+    let failed=false;try{await d08BrowserCommandPost({command:{fixture:true},httpTimeoutMs:15,tokenTimeoutMs:500});}catch(error){failed=error.message==='LOCAL_ABORT';}
+    assert(failed&&aborted&&!window.__D08_REQUEST_ABORT,'STALLED_BODY_ABORTS');
+    let fetches=0;
+    globalThis.firebase={auth:()=>({currentUser:{getIdToken:()=>new Promise(()=>{})}})};globalThis.fetch=async()=>{fetches++;};
+    failed=false;try{await d08BrowserCommandPost({command:{fixture:true},httpTimeoutMs:1000,tokenTimeoutMs:15});}catch(error){failed=error.message==='ENVIRONMENT_FAILURE:D08_TOKEN_DEADLINE';}
+    assert(failed&&fetches===0&&!window.__D08_REQUEST_ABORT,'TOKEN_TIMEOUT_NO_DISPATCH');
+    globalThis.firebase={auth:()=>({currentUser:{getIdToken:async()=>'LOCAL_FIXTURE_ONLY'}})};
+    globalThis.fetch=async()=>({status:502,json:async()=>{throw Error('LOCAL_INVALID_JSON');}});
+    failed=false;try{await d08BrowserCommandPost({command:{fixture:true},httpTimeoutMs:1000,tokenTimeoutMs:500});}catch(error){failed=error.message==='LOCAL_INVALID_JSON';}
+    assert(failed&&!window.__D08_REQUEST_ABORT,'PARSE_FAILURE_NOT_SUCCESS');
+    return passed;
+  }finally{for(const name of names){const descriptor=saved.get(name);if(descriptor)Object.defineProperty(globalThis,name,descriptor);else delete globalThis[name];}}
 }
 
 // QA-only deadlines: keep the observed await and its outcome in the artifact.
@@ -269,20 +317,21 @@ async function runAcademyUiQaSelfTest(){
   negative('unplanned draft field update',()=>describeCommand({...update,payload:{...update.payload,patch:{...update.payload.patch,createdByUserId:'real-user'}}},admin,{type:update.commandType,mode:'write'},draftSpec));
   positive('observed browser actor label remains non-authoritative',()=>describeCommand({...c,actor:{actorId:'authenticated-user',role:'shopper'}},identity,{...plan,actorId:'authenticated-user'},spec));
   passed+=await d08DeadlineSelfTest();
+  passed+=await d08ResponseLifetimeSelfTest();
   passed+=await d08CaptureFrameSelfTest();
   console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
 }
 
-const D08_RUN2760_RECOVERY=Object.freeze({runId:'45364936404',runAttempt:'1',artifactId:14910495563,
-  artifactName:'cxorbia-i3-run2382-academy-b7-synthetic-45364936404',
-  artifactSha256:'4e6477931012962a8eaa14b661b3b51bee39f5eb0679f5ff255ab7e0af2f3909',journalEntry:'result.json',
-  journalSha256:'84c5d252f4b8d633c1b8b5cc4e26e703fa5a94515b06e0ff4ef09167c17523eb',
-  sourceSha:'f13b355b52e71736b1f93f2faeb9b6f483292d63',sourceTree:'97b943e502a8ee30270ace1e2b1e32d1e3699727',
-  expectedDocuments:18,expectedAuthUsers:4,policy:'EXACT_PINNED_RUN2760_FIXTURE_CLEANUP_ONLY'});
+const D08_RUN2783_RECOVERY=Object.freeze({runId:'45514816284',runAttempt:'1',artifactId:14976779119,
+  artifactName:'cxorbia-i3-run2382-academy-b7-synthetic-45514816284',
+  artifactSha256:'aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c',journalEntry:'result.json',
+  journalSha256:'f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc',
+  sourceSha:'1691a76a7bc095ad4bf444aa0db76df2f359a5f0',sourceTree:'3725071a72014d6b891648ab5d2eeef9638276ac',
+  expectedDocuments:18,expectedAuthUsers:4,policy:'EXACT_PINNED_RUN2783_FIXTURE_CLEANUP_ONLY'});
 
 function buildD08RecoveryPlan(bytes,request,base){
-  const {check,hash,same,describeCommand,verifyBundle}=academyUiQaPrimitives(),pin=request.recoveryRun2760;
-  check(pin&&Object.entries(D08_RUN2760_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
+  const {check,hash,same,describeCommand,verifyBundle}=academyUiQaPrimitives(),pin=request.recoveryRun2783;
+  check(pin&&Object.entries(D08_RUN2783_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
   check(hash(bytes)===pin.journalSha256,'SOURCE_FAILURE:D08_RECOVERY_JOURNAL_HASH');
   const j=JSON.parse(bytes.toString('utf8'));
   check(j.schemaVersion==='cxorbia.i3.d08-ui-provider-new-session.v1'&&j.runId===pin.runId&&j.runAttempt===pin.runAttempt&&
@@ -290,6 +339,10 @@ function buildD08RecoveryPlan(bytes,request,base){
     j.production===false&&j.hrIndependent===true&&j.fixtureIdsPreflightAbsent===true,'AUTH_FAILURE:D08_RECOVERY_JOURNAL_SCOPE');
   const selections=[['admin','admin','a_fin_op'],['shopper','shopper','s_ruta'],['cliente','cliente','cl_ruta'],['other','shopper',null]],tag='qa_d08_'+j.runId+'_'+j.runAttempt;
   check(j.identities?.length===4&&j.creationJournal?.length===4,'SOURCE_FAILURE:D08_RECOVERY_COUNTS');
+  const requests=j.requestJournal||[],unsettled=requests.filter(r=>r.dispatched===true&&r.responseParsed!==true);
+  check(requests.length===5&&requests.slice(0,4).every((r,i)=>r.mode==='write'&&r.responseParsed===true&&r.recordPath===j.creationJournal[i].receiptPath)&&
+    unsettled.length===1&&unsettled[0]===requests[4]&&unsettled[0].mode==='replay'&&unsettled[0].recordPath===j.creationJournal[3].receiptPath&&unsettled[0].closed===true,
+    'AUTH_FAILURE:D08_RECOVERY_ONLY_KNOWN_REPLAY_UNSETTLED');
   const identities=selections.map(([label,role,courseId])=>{
     const matches=j.identities.filter(x=>x.label===label),uid=tag+'_'+label;check(matches.length===1,'SOURCE_FAILURE:D08_RECOVERY_IDENTITY');const x=matches[0];
     check(x.uid===uid&&x.role===role&&x.courseId===courseId&&x.observer===(label==='other')&&x.namespace===(role==='shopper'?'shopper':'staff')&&
@@ -353,14 +406,15 @@ function d08RecoverySelfTest(plan,bytes,request,base){
 
 async function runD08RecoverCleanup({selfTestOnly=false}={}){
   const e=process.env,h=academyUiQaPrimitives(),{check,hash,same}=h;
-  const request=selfTestOnly?JSON.parse(fs.readFileSync(e.D08_QA_REQUEST,'utf8')):runD08Preflight().request,pin=request.recoveryRun2760;
-  check(pin&&Object.entries(D08_RUN2760_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
+  const request=selfTestOnly?JSON.parse(fs.readFileSync(e.D08_QA_REQUEST,'utf8')):runD08Preflight().request,pin=request.recoveryRun2783;
+  check(pin&&Object.entries(D08_RUN2783_RECOVERY).every(([k,v])=>pin[k]===v),'AUTH_FAILURE:D08_RECOVERY_PIN');
+  check(['RECOVERY_ONLY','UI_WITH_RECOVERY'].includes(request.executionMode),'AUTH_FAILURE:D08_RECOVERY_MODE');
   const base=JSON.parse(execFileSync('git',['show',pin.sourceSha+':backend/contracts/cxorbia-academy-base-progress-contract-v1.json'],{encoding:'utf8'}));
   let bytes,out;
   if(selfTestOnly)bytes=fs.readFileSync(e.D08_RECOVERY_SELF_TEST_JOURNAL);
   else{
     check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&e.PROJECT==='cxorbia-backend-dev'&&e.HOSTING_URL==='https://cxorbia-backend-dev.web.app'&&e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&/^\d{8,}$/.test(e.GITHUB_RUN_ID||''),'AUTH_FAILURE:D08_RECOVERY_DEV_ONLY');
-    out=e.QA_OUT+'/run2760-recovery';fs.mkdirSync(out,{recursive:true});
+    out=e.QA_OUT+(request.executionMode==='RECOVERY_ONLY'?'/d08-recovery':'/run2783-recovery');fs.mkdirSync(out,{recursive:true});
     const gh=endpoint=>execFileSync('gh',['api','--method','GET',endpoint],{timeout:45000,maxBuffer:20*1024*1024});
     const artifact=JSON.parse(gh('repos/paulaosoriof86/demoCXOrbia/actions/artifacts/'+pin.artifactId)),run=JSON.parse(gh('repos/paulaosoriof86/demoCXOrbia/actions/runs/'+pin.runId));
     check(artifact.id===pin.artifactId&&artifact.name===pin.artifactName&&artifact.expired===false&&String(artifact.workflow_run?.id)===pin.runId&&run.status==='completed'&&String(run.run_attempt)===pin.runAttempt&&run.head_branch==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_RECOVERY_ARTIFACT_AUTHORITY');
@@ -370,8 +424,8 @@ async function runD08RecoverCleanup({selfTestOnly=false}={}){
     fs.writeFileSync(out+'/artifact-metadata.json',JSON.stringify({artifactId:artifact.id,name:artifact.name,runId:run.id,status:run.status,runAttempt:run.run_attempt,expired:false},null,2)+'\n');
   }
   const plan=buildD08RecoveryPlan(bytes,request,base),tests=d08RecoverySelfTest(plan,bytes,request,base);
-  if(selfTestOnly){console.log(JSON.stringify({decision:'PASS_D08_RUN2760_RECOVERY_OWNERSHIP_SELF_TEST',...tests,documents:plan.paths.length,auth:plan.identities.length}));return;}
-  const result={schemaVersion:'cxorbia.i3.d08-recovery-cleanup.v1',decision:'HOLD',executionRunId:e.GITHUB_RUN_ID,executionRunAttempt:e.GITHUB_RUN_ATTEMPT,fixtureRunId:pin.runId,fixtureRunAttempt:pin.runAttempt,originalJournalSha256:pin.journalSha256,sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,production:false,phaseAComplete:false,fullDomain:false,tests,cleanup:{ok:false},awaitJournal:[]};
+  if(selfTestOnly){console.log(JSON.stringify({decision:'PASS_D08_RUN2783_RECOVERY_OWNERSHIP_SELF_TEST',...tests,documents:plan.paths.length,auth:plan.identities.length}));return;}
+  const result={schemaVersion:'cxorbia.i3.d08-recovery-cleanup.v1',state:'HOLD',decision:'HOLD',runId:String(e.GITHUB_RUN_ID),runAttempt:String(e.GITHUB_RUN_ATTEMPT||'1'),executionRunId:e.GITHUB_RUN_ID,executionRunAttempt:e.GITHUB_RUN_ATTEMPT,executionMode:request.executionMode,fixtureRunId:pin.runId,fixtureRunAttempt:pin.runAttempt,originalJournalSha256:pin.journalSha256,sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,production:false,phaseAComplete:false,fullDomain:false,newDomainMatches:0,fixtureCreates:0,providerCommands:0,hrWrites:0,productionWrites:0,expectedDocuments:pin.expectedDocuments,expectedAuthUsers:pin.expectedAuthUsers,tests,cleanup:{ok:false},awaitJournal:[]};
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n'),awaited=d08DeadlineHarness(result,save);save();
   if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:e.PROJECT});
   const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(request.tenantId),uids=plan.identities.map(x=>x.uid);
@@ -393,7 +447,7 @@ async function runD08RecoverCleanup({selfTestOnly=false}={}){
     const refs=await awaited('recovery.references.absence',()=>references(q=>q.get()));check(!remaining.length&&!refs.actorReferences.length&&!refs.courseReferences.length,'PERSISTENCE_FAILURE:D08_RECOVERY_RESIDUE');
     for(const identity of plan.identities)check(await userFor(identity)===null,'AUTH_FAILURE:D08_RECOVERY_AUTH_RESIDUE');
     result.cleanup={ok:true,exactKnownPathsOnly:true,deletedDocuments:deleted.length,deletedAuth,remainingOwnedDocuments:0,remainingOwnedAuth:0,ownershipTransaction:true};
-    result.decision='PASS_I3_D08_RUN2760_EXACT_RECOVERY_CLEANUP';
+    result.decision='PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP';
   }catch(error){result.error=String(error.message||error).slice(0,700);result.classification=result.error.split(':')[0];process.exitCode=2;}
   finally{save();console.log(JSON.stringify({decision:result.decision,fixtureRunId:pin.runId,cleanup:result.cleanup,error:result.error||null,production:false}));}
   if(result.awaitJournal.some(x=>x.state==='TIMED_OUT')){await awaited('recovery.firestore.terminate',()=>db.terminate(),10000).catch(()=>{});save();process.exit(2);}
@@ -406,6 +460,7 @@ async function runAcademyUiQa(){
   const requestPath=s(e.D08_QA_REQUEST),readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
   check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&projectName==='cxorbia-backend-dev'&&host==='https://cxorbia-backend-dev.web.app'&&e.SERVICE==='cxorbia-live-hr-dev'&&e.REGION==='us-central1'&&e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831'&&tenantId&&projectId&&out&&/^\d{8,}$/.test(runId)&&/^\d+$/.test(attempt)&&/^[a-f0-9]{40}$/.test(sourceSha)&&/^[a-f0-9]{40}$/.test(sourceTree)&&/^docs\/checkpoints\/[^/]+\.json$/.test(requestPath),'SOURCE_FAILURE:D08_SCOPE_GATE');
   const current=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),descriptor=readJson(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),qa=readJson(requestPath),seal=descriptor.postDeployRunSeal||{};
+  check(qa.executionMode==='UI_WITH_RECOVERY','AUTH_FAILURE:D08_CLEANUP_ONLY_NO_NEW_FIXTURE');
   check(current.production==='DO_NOT_TOUCH'&&current.authorizationI4===false&&descriptor.productSourceSha===sourceSha&&descriptor.productTreeAuthority===sourceTree&&current.currentD08UiQaRequest?.path===requestPath&&execFileSync('git',['hash-object',requestPath],{encoding:'utf8'}).trim()===current.currentD08UiQaRequest.gitBlob,'AUTH_FAILURE:D08_REQUEST_AUTHORITY');
   check(qa.schemaVersion==='cxorbia.i3.d08-ui-qa-request.v1'&&qa.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&qa.production===false&&qa.tenantId===tenantId&&qa.projectId===projectId&&qa.sourceSha===sourceSha&&qa.sourceTree===sourceTree&&qa.hrIndependent===true,'SOURCE_FAILURE:D08_REQUEST_SCOPE');
   for(const k of ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'])check(qa[k]===seal[k],'RELEASE_COMPOSITION_FAILURE:D08_REQUEST_SEAL_'+k);
@@ -518,7 +573,7 @@ async function runAcademyUiQa(){
     check(!ses.expected,'ENVIRONMENT_FAILURE:D08_OVERLAPPING_DISPATCH');ses.expected={...plan,actorId:plan.actorId||ses.boundaryActorId};ses.lastRecord=null;
     ses.activeRequest={sequence:result.requestJournal.length+1,session:ses.label,commandType:plan.type,mode:plan.mode,dispatched:false,responseParsed:false,startedAt:new Date().toISOString()};result.requestJournal.push(ses.activeRequest);save();
     try{
-      const responseTask=awaited(ses.label+':command.response',()=>ses.page.waitForResponse(r=>{try{return new URL(r.url()).pathname==='/v1/cxorbia/commands'&&r.request().postDataJSON()?.commandType===plan.type;}catch{return false;}},{timeout:90000}),92000).then(async response=>{const ack=await awaited(ses.label+':command.response.json',()=>response.json(),30000);ses.activeRequest.responseParsed=true;ses.activeRequest.httpStatus=response.status();ses.activeRequest.finishedAt=new Date().toISOString();save();return {ack};});
+      const responseTask=awaited(ses.label+':command.response',()=>ses.page.waitForResponse(r=>{try{return new URL(r.url()).pathname==='/v1/cxorbia/commands'&&r.request().postDataJSON()?.commandType===plan.type;}catch{return false;}},{timeout:90000}),92000).then(async response=>{ses.activeRequest.httpStatus=response.status();ses.activeRequest.headersReceivedAt=new Date().toISOString();save();const ack=await awaited(ses.label+':command.response.json',()=>response.json(),30000);ses.activeRequest.responseParsed=true;ses.activeRequest.finishedAt=new Date().toISOString();save();return {ack};});
       const [{ack}]=await Promise.all([responseTask,awaited(ses.label+':command.action',action,95000)]);
       const record=ses.lastRecord;check(record&&!result.interceptionError,'SOURCE_FAILURE:D08_COMMAND_NOT_JOURNALED');await observe(record);
       if(plan.mode==='negative'){
@@ -533,15 +588,7 @@ async function runAcademyUiQa(){
       save();return {ack,record};
     }finally{ses.expected=null;ses.activeRequest.closed=true;save();}
   }
-  const rawPost=(ses,command)=>ses.page.evaluate(async c=>{
-    const controller=new AbortController();window.__D08_REQUEST_ABORT=controller;let tokenTimer;
-    const httpTimer=setTimeout(()=>controller.abort(),75000);
-    try{
-      const token=await Promise.race([firebase.auth().currentUser.getIdToken(true),new Promise((_,reject)=>{tokenTimer=setTimeout(()=>reject(Error('ENVIRONMENT_FAILURE:D08_TOKEN_DEADLINE')),20000);})]);
-      clearTimeout(tokenTimer);
-      const r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify(c),signal:controller.signal});return {status:r.status};
-    }finally{clearTimeout(tokenTimer);clearTimeout(httpTimer);delete window.__D08_REQUEST_ABORT;}
-  },command);
+  const rawPost=(ses,command)=>ses.page.evaluate(d08BrowserCommandPost,{command});
   const capture=async(ses,selector,name,expectedTexts=[])=>awaited(ses.label+':screenshot:'+name,()=>d08CaptureFrame(ses.page,selector,out+'/'+name+'.png',row=>{result.visualCaptureJournal??=[];const old=result.visualCaptureJournal.find(x=>x.path===row.path&&x.attempt===row.attempt);if(old)Object.assign(old,row);else result.visualCaptureJournal.push({...row});save();},expectedTexts),45000);
   async function resource(ses){
     const before=ses.postCount,role=ses.identity.role,page=ses.page;

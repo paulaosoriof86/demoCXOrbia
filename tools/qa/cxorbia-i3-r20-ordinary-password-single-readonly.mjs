@@ -13,7 +13,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {decryptCredentialBundle,internalEmail} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 import '../../app/core/shopper-credential-rule.js';
-import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS,a08ProvenanceCase,diagnoseCurrentProviderPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
 const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
@@ -21,15 +21,18 @@ const ROOT=String(process.env.R20_HOSTING_URL||'https://cxorbia-backend-dev.web.
 const OUT=String(process.env.R20_SAFE_OUT||((process.env.PHASEA_LIVE_OUT||'.tmp')+'/r20'));
 const targetShopperId=String(process.env.R20_AUTHORIZED_TEST_SHOPPER_ID||'').trim();
 const currentProviderMode=process.env.R20_CREDENTIAL_AUTHORITY==='CURRENT_PROVIDER_VERIFIED_RULE_V1';
+const provenanceOnly=process.argv.includes('--provenance-only');
+if(provenanceOnly&&(!currentProviderMode||!a08ProvenanceCase(targetShopperId)))throw Error('SOURCE_FAILURE:A08_PROVENANCE_TARGET_NOT_AUTHORIZED');
 if(currentProviderMode&&!A08_PASSWORD_EXCEPTION_IDS.includes(targetShopperId))throw Error('SOURCE_FAILURE:A08_CURRENT_PROVIDER_TARGET_NOT_AUTHORIZED');
 const word=v=>String(v??'').trim();
 const hash=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const receipt={schemaVersion:'cxorbia.i3.r20.one-proven-credential-readonly.v2',
  sourceSha:SOURCE,decision:'HOLD_R20_PREFLIGHT',classification:'AUTH_FAILURE',
  credentialProvenance:'NOT_PROVEN',selectionPolicy:'ONE_EXACT_VERIFIED_CREDENTIAL_SORTED_SHA256',
- attemptedAccounts:0,loginAttempts:0,customTokensUsed:0,authWrites:0,
+ attemptedAccounts:0,loginAttempts:0,browserLaunches:0,customTokensUsed:0,authWrites:0,
  passwordChanges:0,passwordResets:0,firestoreWrites:0,hrWrites:0,
- financeWrites:0,providerWrites:0,deploys:0,production:false};
+ financeWrites:0,providerWrites:0,deploys:0,production:false,
+ ...(provenanceOnly?{diagnosticOnly:true,diagnosticComplete:false,provenanceDiagnostics:[]}: {})};
 fs.mkdirSync(OUT,{recursive:true});
 function emit(decision,classification='AUTH_FAILURE'){
  receipt.decision=decision;receipt.classification=classification;
@@ -97,22 +100,30 @@ for(const m of sorted){
  if(targetLogin&&visible!==targetLogin)continue;
  let principal=null,proof;
  if(currentProviderMode){
+  let cross=null,adjudication=null,link=null;
+  const readState={complete:false,stage:'AUTH',crossExists:null,receiptExists:null,linkExists:null,linkDocumentId:null};
   try{
    const tenant=getFirestore().collection('tenants').doc(TENANT);
    principal=await getAuth().getUser(m.uid);
+   readState.stage='CROSSWALK';
    const crossSnap=await tenant.collection('shopperIdentityCrosswalk').doc(id).get();
-   let adjudication=null,link=null;
+   readState.crossExists=crossSnap.exists;cross=crossSnap.exists?crossSnap.data():null;
    if(profile.identityAuthority==='tenant_adjudication'&&/^[a-f0-9]{40}$/.test(word(profile.identityAuthorityRef))){
+    readState.stage='RECEIPT';
     const doc=await tenant.collection('commandReceipts').doc(profile.identityAuthorityRef).get();adjudication=doc.exists?doc.data():null;
-    if(/^irl_[a-f0-9]{32}$/.test(word(adjudication?.identityLinkId))){const ls=await tenant.collection('shopperIdentityLinks').doc(adjudication.identityLinkId).get();link=ls.exists?ls.data():null;}
+    readState.receiptExists=doc.exists;
+    if(/^irl_[a-f0-9]{32}$/.test(word(adjudication?.identityLinkId))){readState.stage='LINK';const ls=await tenant.collection('shopperIdentityLinks').doc(adjudication.identityLinkId).get();link=ls.exists?ls.data():null;readState.linkExists=ls.exists;readState.linkDocumentId=ls.id;}
    }
+   readState.complete=true;readState.stage='COMPLETE';
    proof=assessCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal,expected,
-    cross:crossSnap.exists?crossSnap.data():null,receipt:adjudication,link,sealedHashes:sameKeeperSealedHashes(bundle.records,m.uid)});
+    cross,receipt:adjudication,link,sealedHashes:sameKeeperSealedHashes(bundle.records,m.uid)});
   }catch{proof={allowed:false,ruleAvailable:expected?.ok===true,reason:'CURRENT_PROVIDER_PROVENANCE_READ_FAILED'};}
+  if(provenanceOnly)receipt.provenanceDiagnostics.push(diagnoseCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal||{},expected,cross,receipt:adjudication,link},bundle.records,readState));
  }else proof=assessExactPasswordProof({shopperId:targetShopperId===id?id:'',expected,visibleLogin:visible,sealedHashes:sealed.get(visible)||[]});
  stats.credentialReasonCounts[proof.reason]=(stats.credentialReasonCounts[proof.reason]||0)+1;
  if(proof.ruleAvailable)stats.ruleMatch++;
  if(proof.ruleAvailable&&!proof.canonicalLoginMatches)stats.canonicalLoginMismatch++;
+ if(provenanceOnly)continue;
  if(!proof.allowed)continue;
  if(proof.credentialHashMatches)stats.sealedProofMatch++;
  if(proof.durableProviderProof)stats.durableProviderProofMatch=(stats.durableProviderProofMatch||0)+1;
@@ -137,12 +148,18 @@ receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(ta
  selectedShopperMatchesRequested:targetShopperId?selected?.shopperId===targetShopperId:null,
  canonicalLoginMatches:selected?.canonicalLoginMatches??null,exactExistingAliasProven:selected?.exactAliasAllowed===true,
  usernameCanonizationProven:false,durableProviderProof:selected?.durableProviderProof===true,credentialHashSource:selected?.credentialHashSource||'NOT_PROVEN',credentialAuthorityMode:currentProviderMode?'CURRENT_PROVIDER_VERIFIED_RULE_V1':'LEGACY_SEALED_V1'};
+if(provenanceOnly){
+ receipt.diagnosticComplete=receipt.provenanceDiagnostics.length===1&&receipt.provenanceDiagnostics.every(x=>x.diagnosticComplete)&&stats.activeShopperMembers===1&&stats.exactProfiles===1;
+ emit('HOLD_R20_PROVENANCE_ONLY',receipt.provenanceDiagnostics.some(x=>x.provenanceAllowed===false)?'AUTH_FAILURE':null);
+ process.exit(receipt.diagnosticComplete?0:1);
+}
 if(!selected){
  emit('HOLD_R20_NO_SINGLE_EXISTING_PASSWORD_PROOF','AUTH_FAILURE');process.exit(0);
 }
 receipt.credentialProvenance=selected.credentialProvenance;
 receipt.loginAttempts=1;
 receipt.attemptedAccounts=1;
+receipt.browserLaunches=1;
 const runner=new URL('./cxorbia-p0-shopper-real-auth-e2e.mjs',import.meta.url);
 const proc=spawnSync(process.execPath,[runner.pathname,'--execute-real'],{
  env:{...process.env,CXORBIA_P0_REAL_AUTH_E2E_AUTHORIZED:'YES_SOURCE_APPROVED_REAL_READONLY_E2E',

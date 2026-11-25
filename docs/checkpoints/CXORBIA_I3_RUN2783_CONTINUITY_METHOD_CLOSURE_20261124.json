@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.continuity-method-closure.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParentSha": "07a372cd79b73b5e454ecb4cff52f8aff15157e7",
+  "observedAt": "2026-11-25T00:19:35.934Z",
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "priorMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V398.json",
+  "priorLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V725_2026-11-24.json",
+  "retiredAliases": 6,
+  "archive": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN2783_RETIRED_EXECUTION_ALIASES_20261124.json",
+    "gitBlob": "ec63838d18e52338c2fa5078c5241567a1e719bf"
+  },
+  "repairs": [
+    "Remove unused duplicate A08 and D08 execution wrappers; preserve exact execution request and typed evidence",
+    "Retire an exact D08 request atomically only after its 25-clause normalized receipt; preserve unknown residuals and full-domain HOLD",
+    "Reconcile satisfied old indexed request after interruption even with empty incorporation queue",
+    "Bind ledger active self references with descriptor-selected successor path"
+  ],
+  "functionalEvidence": {
+    "runId": 45514816284,
+    "indexEntries": 6,
+    "pendingQueue": 0,
+    "financeMetadata": "PASS_SECOND_ADVANCE_14600_TOTAL_UNCHANGED",
+    "f3Recovery": "PASS_29_DOCUMENTS_1_AUTH_USER_REMOVED_APPLICATION_ACK_NOT_PROVED",
+    "a08": "HN_PASSWORD_SESSION_PASS_TWO_PROVENANCE_GATES_HOLD",
+    "d08": "FOUR_ADMIN_ACK_READBACK_PROOFS_REPLAY_RESPONSE_BODY_TIMEOUT_RECOVERY_REQUIRED"
+  },
+  "newDomainMatches": 0,
+  "preservedMatchDomains": [
+    "benefits",
+    "historical",
+    "identity-membership-roll-forward",
+    "phase-a-supporting-core",
+    "reports-admin-shopper",
+    "tenant-admin-config-branding"
+  ],
+  "humanPassPreserved": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "productEditsInThisControlPackage": 0,
+  "devDeploys": 0,
+  "production": false
+}

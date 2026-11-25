@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.duplicate-execution-alias-archive.v1",
+  "controlParentSha": "07a372cd79b73b5e454ecb4cff52f8aff15157e7",
+  "observedAt": "2026-11-25T00:19:35.934Z",
+  "production": false,
+  "controls": {
+    "descriptor": {
+      "independentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
+        "gitBlob": "685b82bf72379b228e0a4330acab316dbd9a8842",
+        "state": "REQUESTED_EXISTING_DEV_FOCAL_UI_QA",
+        "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+        "pairedRunId": 45359320300,
+        "production": false
+      }
+    },
+    "pointer": {
+      "currentA08ResidualQaExecution": {
+        "state": "REQUESTED_EXISTING_DEV_READONLY",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "materializationRunId": 45488581923,
+        "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "materializationReceiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "marker": "[i3-a08-exceptions-negative-readonly]",
+        "executionMode": "PASSWORD_ONLY",
+        "scope": [
+          "three exact ordinary-password session lifecycles"
+        ],
+        "preservedApiProof": {
+          "runNumber": 2760,
+          "artifactId": 14906482096,
+          "denialsPassed": 4,
+          "reexecutionRequired": false
+        },
+        "storageProof": "PENDING_EXISTING_PRIVATE_OBJECT_OWNER_AND_NEGATIVE_USERS",
+        "fullDomain": false,
+        "production": false,
+        "writes": 0
+      },
+      "independentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
+        "gitBlob": "685b82bf72379b228e0a4330acab316dbd9a8842",
+        "state": "REQUESTED_EXISTING_DEV_FOCAL_UI_QA",
+        "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+        "pairedRunId": 45359320300,
+        "production": false
+      }
+    },
+    "matrix": {
+      "independentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
+        "gitBlob": "685b82bf72379b228e0a4330acab316dbd9a8842",
+        "state": "REQUESTED_EXISTING_DEV_FOCAL_UI_QA",
+        "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+        "pairedRunId": 45359320300,
+        "production": false
+      }
+    },
+    "ledger": {
+      "independentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
+        "gitBlob": "685b82bf72379b228e0a4330acab316dbd9a8842",
+        "state": "REQUESTED_EXISTING_DEV_FOCAL_UI_QA",
+        "sourceSha": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+        "pairedRunId": 45359320300,
+        "production": false
+      },
+      "vrm369CurrentExecutionScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json",
+        "gitBlob": "65f5c38ce820349be84fb8fa5aaeb1e1e1734553",
+        "commandDispatchAllowed": true,
+        "reason": "Existing metadata correction resumed after exact HR readback RUN2780; fresh provider CAS is mandatory immediately before the command.",
+        "resumeEvidence": {
+          "runId": 45488581923,
+          "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+          "receiptGitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+          "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+          "provider": "excel_online"
+        },
+        "realWrites": 0,
+        "executionState": "REQUESTED_NOT_EXECUTED"
+      },
+      "activeSelfReferences": {
+        "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V721_2026-11-24.json",
+        "currentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V725_2026-11-24.json",
+        "governanceCurrentLedgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V723_2026-11-24.json"
+      }
+    }
+  }
+}

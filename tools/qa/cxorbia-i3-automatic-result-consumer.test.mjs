@@ -23,6 +23,13 @@ function project(f=fixture()){
  const bundle=makeMaterializationReceipt(f),out=projectMaterialization(f.controls,{...bundle,matrixPath:'RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V999.json',ledgerPath:'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V999_2026-11-24.json'});
  const files=bindControlPaths(out,{matrixPath:out.matrixPath,ledgerPath:out.ledgerPath});return {f,out,files,bundle};
 }
+test('ledger active self pointers advance together and stale paths fail validation',()=>{
+ const {out}=project();
+ assert.equal(out.ledger.findingsLedgerPath,out.descriptor.findingsLedgerPath);
+ assert.equal(out.ledger.currentLedgerSuccessor,out.descriptor.findingsLedgerPath);
+ out.ledger.findingsLedgerPath='stale-ledger.json';
+ assert.ok(validateProjectionRegistry(out).failures.includes('CURRENT_PROJECTION_DESYNC:ledger.currentLedgerPath'));
+});
 test('interruption after deploy: exact receipt advances DEV without altering six domains, C3, or human approvals',()=>{
  const {f,out,files}=project();assert.equal(out.descriptor.postDeployRunSeal.runId,f.run.id);
  assert.deepEqual(out.matrix.modules.filter(x=>x.classification==='MATCH').map(x=>x.domain),f.controls.matrix.modules.filter(x=>x.classification==='MATCH').map(x=>x.domain));
@@ -61,6 +68,19 @@ for(const [name,mutate]of [
  ])test(`previously unguarded active alias rejects ${name}`,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
 test('historical archives stay historical and do not become active source assertions',()=>{
  const {out}=project();out.matrix.historicalFixture={currentMaterialization:{sourceSha:'old'},nextExactAction:'old'};assert.equal(validateProjectionRegistry(out).pass,true);
+});
+for(const [name,mutate]of [
+ ['A08 obsolete request',o=>{o.pointer.currentA08ResidualQaExecution={state:'REQUESTED'};}],
+ ['D08 obsolete handoff',o=>{o.matrix.continuityHandoff||={};o.matrix.continuityHandoff.independentD08UiQaRequest={state:'REQUESTED'};}],
+ ['finance obsolete request',o=>{o.ledger.findings['VRM-369'].currentExecutionScope={executionState:'REQUESTED_NOT_EXECUTED'};}]
+])test('request guard rejects '+name,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
+test('D08 fulfilled request cannot remain active, but a distinct new request is allowed',()=>{
+ const {out}=project(),request=out.pointer.currentD08UiQaRequest;
+ assert.ok(request);
+ for(const o of [out.descriptor,out.pointer])o.currentFunctionalEvidenceIndex={results:[{decision:'PASS_D08_TYPED_PARTIAL_INCORPORATION',requestBinding:{path:request.path,gitBlob:request.gitBlob}}]};
+ assert.equal(validateProjectionRegistry(out).pass,false);
+ for(const o of [out.descriptor,out.pointer])o.currentD08UiQaRequest.gitBlob='9'.repeat(40);
+ assert.equal(validateProjectionRegistry(out).pass,true);
 });
 function pendingCandidateProjection(){
  const {out}=project(),prior=structuredClone(out.descriptor.currentMaterialization);

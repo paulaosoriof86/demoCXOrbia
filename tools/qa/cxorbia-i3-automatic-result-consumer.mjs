@@ -79,8 +79,8 @@ export function selectPairedArtifact({run,job,artifacts}){
 export const TYPED_JOBS={
  'i3-b14-qa-provider-proof':{prefix:'cxorbia-i3-b14-qa-provider',entries:['receipt.json','f3-run2782-recovery.json']},
  'i3-keeper-role-e2e-readonly':{prefix:'cxorbia-i3-two-keepers-role-e2e-readonly',entries:['result.json']},
- 'i3-finance-focal-reproof':{prefix:'cxorbia-i3-finance-focal',entries:['finance-metadata.json','finance-readonly.json']},
- 'i3-run2382-academy-b7-isolated-dev-qa':{prefix:'cxorbia-i3-run2382-academy-b7-synthetic',entries:['result.json']}
+ 'i3-finance-focal-reproof':{prefix:'cxorbia-i3-finance-focal',entries:['finance-metadata.json','finance-readonly.json','finance-ui-readonly.json']},
+ 'i3-run2382-academy-b7-isolated-dev-qa':{prefix:'cxorbia-i3-run2382-academy-b7-synthetic',entries:['result.json','d08-recovery/result.json']}
 };
 export function selectTypedArtifact({run,job,artifacts}){
  const rule=TYPED_JOBS[job.name];must(rule,'MAPPING_FAILURE:TYPED_PRODUCER_UNSUPPORTED');
@@ -93,6 +93,79 @@ export function selectTypedArtifact({run,job,artifacts}){
 }
 export const typedResultKey=x=>`${x.runId}/${x.runAttempt}/${x.jobId}`;
 export function pendingTypedRuns(queue=[]){return [...new Map(queue.filter(x=>TYPED_JOBS[x.name]).map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];}
+
+const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
+export function pendingSatisfiedRequestRuns(controls){
+ const request=controls.pointer.currentD08UiQaRequest;
+ if(!request)return [];
+ return [...new Map((controls.pointer.currentFunctionalEvidenceIndex?.results||[])
+  .filter(x=>(x.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'||x.kind==='D08_RECOVERY'&&x.producerDecision==='PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP')&&(!x.requestBinding||(x.requestBinding.path===request.path&&x.requestBinding.gitBlob===request.gitBlob)))
+  .map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];
+}
+
+// The producer commit retains its immutable request. Only the exact satisfied
+// active request is retired; a late result cannot remove a newer request.
+export async function retireSatisfiedD08Request({result,entry,producer,controls,files}){
+ if(result.schemaVersion!=='cxorbia.i3.d08-typed-incorporation.v1'||result.decision!=='PASS_D08_TYPED_PARTIAL_INCORPORATION')return false;
+ must(result.focalObligationCount===25&&result.ownerSpecificReceipts?.length===3&&result.fullDomain===false&&result.newDomainMatches===0&&result.production===false,'MAPPING_FAILURE:D08_REQUEST_CREDIT_BOUNDARY');
+ const request=producer.pointer.currentD08UiQaRequest;
+ must(request?.path&&request.gitBlob===producer.blobs.get(request.path)&&JSON.stringify(request)===JSON.stringify(producer.descriptor.currentD08UiQaRequest),'SOURCE_FAILURE:D08_REQUEST_PRODUCER_BINDING');
+ const bytes=await producer.readBytes(request.path),body=JSON.parse(bytes),digest=sha256(JSON.stringify(canonical(body)));
+ must(gitBlob(bytes)===request.gitBlob&&digest===result.evidence?.requestCanonicalSha256,'SOURCE_FAILURE:D08_REQUEST_RECEIPT_BINDING');
+ const binding={path:request.path,gitBlob:request.gitBlob,canonicalSha256:digest};
+ if(entry.requestBinding)must(JSON.stringify(entry.requestBinding)===JSON.stringify(binding),'SOURCE_FAILURE:D08_INDEX_REQUEST_BINDING');
+ const bindingChanged=!entry.requestBinding;
+ const active=Object.fromEntries([[DESCRIPTOR,'descriptor'],[POINTER,'pointer']].map(([file,key])=>[key,files.has(file)?JSON.parse(files.get(file)):structuredClone(controls[key])]));
+ const current=active.pointer.currentD08UiQaRequest;
+ must(JSON.stringify(current||null)===JSON.stringify(active.descriptor.currentD08UiQaRequest||null),'MAPPING_FAILURE:D08_ACTIVE_REQUEST_DESYNC');
+ if(!current||current.path!==request.path||current.gitBlob!==request.gitBlob){entry.requestBinding=binding;return bindingChanged;}
+ const archivePath=`docs/checkpoints/CXORBIA_I3_RUN${entry.runId}_ATTEMPT${entry.runAttempt}_JOB${entry.jobId}_SATISFIED_D08_REQUEST.json`;
+ const archive={schemaVersion:'cxorbia.i3.satisfied-d08-request.v1',requestBinding:binding,typedReceipt:{path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},controls:{},production:false,newDomainMatches:0,fullDomain:false};
+ const provedResiduals=new Set(['Current Admin, Shopper and Cliente independent UI/session acceptance','Authorized content edit/provider ACK for content, distinct from historical learner progress','Current command integration proof for owners changed since the historical provider run']);
+ const updates=new Map();
+ for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
+  const value=active[key],saved=archive.controls[key]={currentD08UiQaRequest:value.currentD08UiQaRequest};delete value.currentD08UiQaRequest;
+  const residual=value.d08AcademyProgressResidual;
+  if(residual){
+   saved.d08AcademyProgressResidual=structuredClone(residual);
+   for(const field of ['roleSessionsPending','currentReadOnlyUiObservation','currentUiCertified'])delete residual[field];
+   if(Array.isArray(residual.remaining))residual.remaining=residual.remaining.filter(x=>!provedResiduals.has(x));
+   residual.status='HISTORICAL_PROVIDER_PASS_PRESERVED_SCOPED_CURRENT_UI_CLAUSES_INDEXED';
+  }
+  updates.set(file,jsonBytes(value));
+ }
+ const archiveBytes=jsonBytes(archive);
+ if(controls.blobs?.has(archivePath))must(controls.blobs.get(archivePath)===gitBlob(archiveBytes),'SOURCE_FAILURE:D08_SATISFIED_REQUEST_ARCHIVE_CHANGED');
+ entry.requestBinding=binding;
+ for(const [file,text]of updates)files.set(file,text);
+ files.set(archivePath,archiveBytes);return true;
+}
+
+// Cleanup settles only its exact cleanup-only request. Functional D08 residuals
+// remain untouched, and a late artifact cannot retire a newer request.
+export async function retireSatisfiedD08RecoveryRequest({result,entry,producer,controls,files}){
+ if(result.kind!=='D08_RECOVERY'||result.producer?.decision!=='PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP'||result.producer.jobConclusion!=='success')return false;
+ const o=result.observations;
+ must(result.state==='HOLD'&&result.newDomainMatches===0&&result.ownerSpecificReceipts?.length===0&&result.fullDomain===false&&result.phaseAComplete===false&&result.production===false&&o?.cleanup?.ok===true&&o.cleanup.remainingOwnedDocuments===0&&o.cleanup.remainingOwnedAuth===0&&o.firestoreTransactionConfirmed===true,'MAPPING_FAILURE:D08_RECOVERY_REQUEST_CREDIT_BOUNDARY');
+ const request=producer.pointer.currentD08UiQaRequest;
+ must(request?.path&&request.gitBlob===producer.blobs.get(request.path)&&JSON.stringify(request)===JSON.stringify(producer.descriptor.currentD08UiQaRequest),'SOURCE_FAILURE:D08_RECOVERY_REQUEST_PRODUCER_BINDING');
+ const bytes=await producer.readBytes(request.path),body=JSON.parse(bytes),pin=body.recoveryRun2783;
+ must(gitBlob(bytes)===request.gitBlob&&body.executionMode==='RECOVERY_ONLY'&&body.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&body.production===false&&String(pin?.runId)===o.fixtureRunId&&String(pin.runAttempt)===o.fixtureRunAttempt&&pin.journalSha256===o.originalJournalSha256&&pin.expectedDocuments===18&&pin.expectedAuthUsers===4,'SOURCE_FAILURE:D08_RECOVERY_REQUEST_RECEIPT_BINDING');
+ const binding={path:request.path,gitBlob:request.gitBlob,canonicalSha256:sha256(JSON.stringify(canonical(body)))};
+ if(entry.requestBinding)must(JSON.stringify(entry.requestBinding)===JSON.stringify(binding),'SOURCE_FAILURE:D08_RECOVERY_INDEX_REQUEST_BINDING');
+ const bindingChanged=!entry.requestBinding;
+ const active=Object.fromEntries([[DESCRIPTOR,'descriptor'],[POINTER,'pointer']].map(([file,key])=>[key,files.has(file)?JSON.parse(files.get(file)):structuredClone(controls[key])]));
+ const current=active.pointer.currentD08UiQaRequest;
+ must(JSON.stringify(current||null)===JSON.stringify(active.descriptor.currentD08UiQaRequest||null),'MAPPING_FAILURE:D08_RECOVERY_ACTIVE_REQUEST_DESYNC');
+ if(!current||current.path!==request.path||current.gitBlob!==request.gitBlob){entry.requestBinding=binding;return bindingChanged;}
+ const archivePath=`docs/checkpoints/CXORBIA_I3_RUN${entry.runId}_ATTEMPT${entry.runAttempt}_JOB${entry.jobId}_SATISFIED_D08_RECOVERY_REQUEST.json`;
+ const archive={schemaVersion:'cxorbia.i3.satisfied-d08-recovery-request.v1',requestBinding:binding,fixtureRunId:o.fixtureRunId,typedReceipt:{path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},controls:{},production:false,newDomainMatches:0,fullDomain:false};
+ const updates=new Map();
+ for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){const value=active[key];archive.controls[key]={currentD08UiQaRequest:value.currentD08UiQaRequest};delete value.currentD08UiQaRequest;updates.set(file,jsonBytes(value));}
+ const archiveBytes=jsonBytes(archive);
+ if(controls.blobs?.has(archivePath))must(controls.blobs.get(archivePath)===gitBlob(archiveBytes),'SOURCE_FAILURE:D08_RECOVERY_SATISFIED_ARCHIVE_CHANGED');
+ entry.requestBinding=binding;for(const [file,text]of updates)files.set(file,text);files.set(archivePath,archiveBytes);return true;
+}
 
 async function normalizeD08Artifact({text,transport,producer}){
  const q=producer.pointer.currentD08UiQaRequest,a=producer.pointer.currentD08ScopedAuthority;
@@ -118,7 +191,8 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
  must(JSON.stringify(controls.descriptor.currentFunctionalEvidenceIndex||null)===JSON.stringify(controls.pointer.currentFunctionalEvidenceIndex||null),'MAPPING_FAILURE:TYPED_INDEX_CONTROL_DESYNC');
  const index=controls.pointer.currentFunctionalEvidenceIndex||{schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[],production:false};
  must(index.schemaVersion==='cxorbia.i3.typed-result-index.v1'&&index.production===false&&Array.isArray(index.results),'MAPPING_FAILURE:TYPED_INDEX_SCHEMA');
- const entries=new Map(index.results.map(x=>[x.key,x])),failures=[],incorporated=[];
+ const entries=new Map(index.results.map(x=>[x.key,structuredClone(x)])),failures=[],incorporated=[];
+ let requestsReconciled=0;
  let producer;
  for(const pending of journal.pendingTypedResults||[]){
   if(!TYPED_JOBS[pending.name])continue;
@@ -132,6 +206,14 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
    const saved=JSON.parse(text),proof=saved.provenance||saved.evidence;
    must(String(proof?.runId)===String(run.id)&&String(proof?.runAttempt)===String(run.run_attempt)&&String(proof?.jobId)===String(job.id)&&proof?.controlHead===run.head_sha,'SOURCE_FAILURE:TYPED_INDEX_IDENTITY');
    must(String(proof.artifactId)===String(old.artifactId)&&proof.artifactDigest===old.artifactDigest,'SOURCE_FAILURE:TYPED_INDEX_ARTIFACT_IDENTITY');
+   if(saved.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'){
+    producer??=await producerLoader(api,run.head_sha);
+    if(await retireSatisfiedD08Request({result:saved,entry:old,producer,controls,files}))requestsReconciled++;
+   }
+   if(saved.kind==='D08_RECOVERY'){
+    producer??=await producerLoader(api,run.head_sha);
+    if(await retireSatisfiedD08RecoveryRequest({result:saved,entry:old,producer,controls,files}))requestsReconciled++;
+   }
     queue.delete(key);continue;
    }
    const artifact=selectTypedArtifact({run,job,artifacts});
@@ -158,17 +240,30 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
       observations:{functionalPass:raw.functionalPass===true,cleanupOk:raw.cleanup?.ok===true,roleProofCount:Object.keys(raw.roles||{}).length,resourceCount:(raw.resources||[]).length},
       ownerSpecificReceipts:[],newDomainMatches:0,fullDomain:false,phaseAComplete:false,production:false};
     }
-   }else result=summarizeTypedResult({resultText:text,transport,expectedIdentity:producer.descriptor.currentMaterialization});
+   }else{
+    let identityReadback;
+    if(raw.schemaVersion==='cxorbia.i3.finance-core-ui-readonly.v1'){
+     const sealEntry='identity-live-readback.json',sealPath=path.join(archive.folder,sealEntry);
+     if(fs.existsSync(sealPath)){
+      const stat=fs.lstatSync(sealPath);
+      identityReadback={entry:sealEntry,artifactId:artifact.id,artifactDigest:archive.digest,
+       text:stat.isFile()&&stat.size<=65536?fs.readFileSync(sealPath,'utf8'):null};
+     }
+    }
+    result=summarizeTypedResult({resultText:text,transport,expectedIdentity:producer.descriptor.currentMaterialization,identityReadback});
+   }
    const bytes=jsonBytes(result);files.set(receiptPath,bytes);
    const saved={key,path:receiptPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes),runId:run.id,runAttempt:run.run_attempt,jobId:job.id,
     controlHead:run.head_sha,artifactId:artifact.id,artifactDigest:artifact.digest,decision:result.decision,
-    ownerReceiptCount:result.ownerSpecificReceipts?.length||0,observedAt:now};
+    ownerReceiptCount:result.ownerSpecificReceipts?.length||0,observedAt:now,...(result.kind==='D08_RECOVERY'?{kind:result.kind,producerDecision:result.producer.decision}:{})};
+   if(await retireSatisfiedD08Request({result,entry:saved,producer,controls,files}))requestsReconciled++;
+   if(await retireSatisfiedD08RecoveryRequest({result,entry:saved,producer,controls,files}))requestsReconciled++;
    entries.set(key,saved);queue.delete(key);incorporated.push(saved);
   }catch(error){
    failures.push({key,runId:run.id,runAttempt:run.run_attempt,jobId:job.id,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:TYPED_INCORPORATION_UNCONFIRMED',observedAt:now});
   }finally{archive?.cleanup();}
  }
- return {queue,incorporated,failures,index:{...index,results:[...entries.values()],updatedAt:now}};
+ return {queue,incorporated,failures,requestsReconciled,index:{...index,results:[...entries.values()],updatedAt:now}};
 }
 
 export function runJournal({run,jobs,artifacts,needs,now}){
@@ -251,7 +346,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
  const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...queue.values()]}};
  const typed=await incorporateTypedResults({api,token,run,jobs,artifacts,controls:typedControls,journal,files,now});
- if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
+ if(journalExists&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
  for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
   const value=files.has(file)?JSON.parse(files.get(file)):controls[key];
@@ -263,7 +358,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  }
  if(!journalExists)files.set(journalPath,jsonBytes(journal));
  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
- return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,typedFailures:typed.failures,productActions:0};
+ return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,typedFailures:typed.failures,productActions:0};
 }
 
 export function validateConsumedJournal(journal,run,attempt){
@@ -301,7 +396,7 @@ async function main(){
  const pending=await pendingRuns({api,currentRunId:process.env.GITHUB_RUN_ID,currentRunAttempt:process.env.GITHUB_RUN_ATTEMPT,descriptor:controls.descriptor,knownPaths:controls.blobs,readJournal:controls.readFile});
  if(process.argv.includes('--preflight')){must(!pending.length,`MAPPING_FAILURE:UNCONSUMED_COMPLETED_RUNS:${pending.map(p=>p.runId+'/'+p.runAttempt).join(',')}`);console.log(jsonBytes({decision:'PASS_NO_UNCONSUMED_EXECUTION',hrReads:0,builds:0,deploys:0}));return;}
  must(process.argv.includes('--consume-current-run'),'SOURCE_FAILURE:UNSUPPORTED_CONSUMER_MODE');
- const drain=[...new Map([...pending,...pendingTypedRuns(controls.pointer.currentResultIncorporationQueue)].map(x=>[x.runId+'/'+x.runAttempt,x])).values()];
+ const drain=[...new Map([...pending,...pendingTypedRuns(controls.pointer.currentResultIncorporationQueue),...pendingSatisfiedRequestRuns(controls)].map(x=>[x.runId+'/'+x.runAttempt,x])).values()];
  for(const item of drain)console.log(jsonBytes(await consumeRun({api,token,...item})));
  console.log(jsonBytes(await consumeRun({api,token,runId:Number(process.env.GITHUB_RUN_ID),runAttempt:Number(process.env.GITHUB_RUN_ATTEMPT),needs:JSON.parse(process.env.CXORBIA_I3_NEEDS_JSON||'null')})));
 }

@@ -16,7 +16,7 @@ const must=(ok,code)=>{if(!ok)throw new Error(code);};
 export const REGISTRY={
  materialization:['currentMaterialization','currentDevMaterialization','lastDevMaterialization','latestDevMaterialization','latestDev'],
  execution:['currentExecutionReceipt','lastExecutionReceipt','latestExecutionReceipt'],
- obsolete:['currentAuthorityAliasPrevention','currentControlStatusCompatibilityRepair','currentHarnessOnlyCorrection','currentSessionProofPackage','currentSessionProofRequest','currentSourceReproof','currentSourceSuccessor419','devCertification','humanVisualCheckpointState','lastModuleTruthAttempt','lastSourceFix','lastSourceProof','latestFocalSourceFix','latestSourceSuccessor','sourceReproof','currentB14ToolboxStatus','currentB14ExecutionPrerequisite','currentF3EnvironmentReadback','planChoque20261113'],
+ obsolete:['currentAuthorityAliasPrevention','currentControlStatusCompatibilityRepair','currentHarnessOnlyCorrection','currentSessionProofPackage','currentSessionProofRequest','currentSourceReproof','currentSourceSuccessor419','devCertification','humanVisualCheckpointState','lastModuleTruthAttempt','lastSourceFix','lastSourceProof','latestFocalSourceFix','latestSourceSuccessor','sourceReproof','currentB14ToolboxStatus','currentB14ExecutionPrerequisite','currentF3EnvironmentReadback','planChoque20261113','currentA08ResidualQaExecution'],
  completedPending:['pendingDevSuccessor','pendingDevSuccessorEvidence','pendingMaterialization','pairedBuildResumeRequest','currentDevEnvironmentFailure','currentRemediationCandidate','currentRemediationPackage','currentHostingOnlyDevMaterialization'],
 };
 
@@ -86,6 +86,20 @@ export function residualAction(mod){
 
 function archiveActive(object,keys,archive){for(const key of keys)if(Object.hasOwn(object,key)){archive[key]=object[key];delete object[key];}}
 
+// These compatibility snapshots have no execution readers. The exact request
+// file and typed evidence index carry authority; duplicate pending states do not.
+export function retireDuplicateExecutionAliases(out,archive={}){
+ let changed=0;
+ for(const [name,value]of Object.entries(out).filter(([key])=>['descriptor','pointer','ledger','matrix'].includes(key))){
+  const histories=archive.controls||={},old=histories[name]||={};
+  if(Object.hasOwn(value,'currentA08ResidualQaExecution')){old.currentA08ResidualQaExecution=value.currentA08ResidualQaExecution;delete value.currentA08ResidualQaExecution;changed++;}
+  if(value.continuityHandoff&&Object.hasOwn(value.continuityHandoff,'independentD08UiQaRequest')){old.independentD08UiQaRequest=value.continuityHandoff.independentD08UiQaRequest;delete value.continuityHandoff.independentD08UiQaRequest;changed++;}
+ }
+ const finding=out.ledger.findings?.['VRM-369'];
+ if(finding&&Object.hasOwn(finding,'currentExecutionScope')){(archive.controls.ledger||={}).vrm369CurrentExecutionScope=finding.currentExecutionScope;delete finding.currentExecutionScope;changed++;}
+ return {changed,archive};
+}
+
 // These module-level compatibility headers describe the current candidate or
 // current paired deployment. Their original values remain verbatim in history;
 // approved functional receipts keep their original identities and classifications.
@@ -140,6 +154,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   if(o.currentMailboxEnvironmentHold&&receipt.mailboxEnvironment){old.currentMailboxEnvironmentHold=clone(o.currentMailboxEnvironmentHold);Object.assign(o.currentMailboxEnvironmentHold,{runtimeRevision:r.runtimeRevision,observedRunId:r.runId,reason:receipt.mailboxEnvironment.secretMetadataOutcome==='PERMISSION_DENIED'?'Mailbox key metadata lookup was denied; key existence is not established. Retain E08 functional HOLD.':'Mailbox environment observation only; authenticated functional E08 proof remains required.',secretMetadataOutcome:receipt.mailboxEnvironment.secretMetadataOutcome,mailboxEnabled:receipt.mailboxEnvironment.mailboxEnabled,sendEnabled:receipt.mailboxEnvironment.sendEnabled,receiptPath,receiptBlob:blob});}
   if(o.d08AcademyProgressResidual?.currentMaterialization)o.d08AcademyProgressResidual.currentMaterialization=clone(r);
  }
+ retireDuplicateExecutionAliases(out,archived);
  const count=execution.matchModules;
  archived.matrixProductSourceMaterialization=clone(m.productSource.currentMaterialization);
  Object.assign(m.productSource,{authorityState:'RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E',state:HOLD,currentMaterialization:clone(r),message:'Exact runtime, Hosting assets and HR readback verified. Functional and current-source C3 clauses remain pending.',devMaterializationReceiptPath:receiptPath,devMaterializationReceiptGitBlob:blob});
@@ -193,7 +208,8 @@ export function bindControlPaths(out,{matrixPath,ledgerPath}){
  const matrixBlob=gitBlob(jsonBytes(m));
  p.moduleTruthAuthority={path:matrixPath,gitBlob:matrixBlob};
  Object.assign(p.activeShockModuleTruth,{sourceSha:d.productSourceSha,matrixPath,matrixBlob,classificationCounts:clone(m.classificationCounts),derivedAt:d.updatedAt,meaning:'CURRENT_PAIRED_DEV_EXACT_FUNCTIONAL_CLAUSES_PENDING'});
- Object.assign(l,{currentLedgerSuccessor:ledgerPath});
+ Object.assign(l,{currentLedgerSuccessor:ledgerPath,findingsLedgerPath:ledgerPath});
+ if(l.governance)l.governance.currentLedgerSuccessor=ledgerPath;
  Object.assign(l.currentTruth,{moduleTruthPath:matrixPath,moduleTruthGitBlob:matrixBlob});
  const ledgerBlob=gitBlob(jsonBytes(l));
  for(const o of [d,p]){
@@ -223,6 +239,8 @@ export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matr
   check(o.activeAuthoritySemantics===d.activeAuthoritySemantics,name+'.activeAuthoritySemantics');
   if(Object.hasOwn(o,'asOf'))check(o.asOf===o.updatedAt,name+'.asOf');
   for(const key of REGISTRY.obsolete)check(!Object.hasOwn(o,key),name+'.'+key+'.must_be_historical');
+  check(!Object.hasOwn(o.continuityHandoff||{},'independentD08UiQaRequest'),name+'.continuityHandoff.independentD08UiQaRequest.must_be_historical');
+  if(o.currentD08UiQaRequest)check(!(o.currentFunctionalEvidenceIndex?.results||[]).some(x=>x.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'&&x.requestBinding?.path===o.currentD08UiQaRequest.path&&x.requestBinding.gitBlob===o.currentD08UiQaRequest.gitBlob),name+'.currentD08UiQaRequest.already_satisfied');
   if(seal.mode==='CURRENT_SOURCE_SERVING')for(const key of REGISTRY.completedPending)check(!Object.hasOwn(o,key),name+'.'+key+'.already_completed');
   if(o.canonicalFunctionalCandidate){check(o.canonicalFunctionalCandidate.nextExactAction===d.exactNextAction,name+'.canonicalFunctionalCandidate.nextExactAction');check(same(o.canonicalFunctionalCandidate.currentMaterialization,materialization),name+'.canonicalFunctionalCandidate.currentMaterialization');}
  }
@@ -231,6 +249,8 @@ export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matr
  check(l.currentTruth.latestHostingReadbackRunId===seal.runId&&l.currentTruth.latestHostingReadbackReceiptPath===seal.receiptPath&&l.currentTruth.latestHostingReadbackReceiptBlob===seal.receiptBlob,'ledger.currentTruth.latestHostingReadback');
  check(seal.runId===d.currentControlProjection.runId,'projection.runId');
  check(seal.receiptPath===d.currentControlProjection.receiptPath&&seal.receiptBlob===d.currentControlProjection.receiptBlob,'projection.receipt');
+ check(!Object.hasOwn(l.findings?.['VRM-369']||{},'currentExecutionScope'),'ledger.findings.VRM-369.currentExecutionScope.must_be_historical');
+ check(l.findingsLedgerPath===d.findingsLedgerPath&&l.currentLedgerSuccessor===d.findingsLedgerPath&&l.governance?.currentLedgerSuccessor===d.findingsLedgerPath,'ledger.currentLedgerPath');
  for(const mod of m.modules){
   check(mod.lastServedSource===seal.sourceSha,`matrix.modules.${mod.domain}.lastServedSource`);
   for(const key of REGISTRY.materialization)if(Object.hasOwn(mod,key))check(same(mod[key],materialization),`matrix.modules.${mod.domain}.${key}`);

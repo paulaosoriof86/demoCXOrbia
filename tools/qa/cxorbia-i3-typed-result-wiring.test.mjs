@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {incorporateTypedResults,consumeRun,selectTypedArtifact,pendingTypedRuns,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
+import {incorporateTypedResults,consumeRun,selectTypedArtifact,pendingTypedRuns,pendingSatisfiedRequestRuns,retireSatisfiedD08Request,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes} from './cxorbia-i3-current-control-projection.mjs';
 import {TYPED_SUMMARY_SCHEMAS} from './cxorbia-i3-typed-result-summary.mjs';
 
@@ -153,4 +153,66 @@ test('draining one run preserves another run pending failure and clears only the
     assert.deepEqual(current.currentTypedResultFailures,[otherFailure]);
   }
   assert.equal(mock.currentText(journalPath),journalText);assert.ok(!mock.mutatedPaths.includes(journalPath));
+});
+
+function requestRetirementFixture(){
+ const body={authorization:'PAULA_AUTHORIZED_D08_DEV_ONLY',production:false,sourceSha:'a'.repeat(40)},bytes=jsonBytes(body);
+ const request={path:'docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_TEST.json',gitBlob:gitBlob(bytes),state:'REQUESTED'};
+ const residual={status:'PENDING',providerEvidence:{decision:'PASS',historicalProviderOnly:true},wholeD08HumanAcceptance:'PENDING',roleSessionsPending:['Admin','Shopper','Cliente'],currentReadOnlyUiObservation:{dateLocal:'2026-11-17'},currentUiCertified:false,remaining:['Current Admin, Shopper and Cliente independent UI/session acceptance','Unproved clause outside this exact request']};
+ const controls={descriptor:{currentD08UiQaRequest:structuredClone(request),d08AcademyProgressResidual:structuredClone(residual)},pointer:{currentD08UiQaRequest:structuredClone(request),d08AcademyProgressResidual:structuredClone(residual)},blobs:new Map()};
+ const producer={descriptor:{currentD08UiQaRequest:structuredClone(request)},pointer:{currentD08UiQaRequest:structuredClone(request)},blobs:new Map([[request.path,request.gitBlob]]),readBytes:async()=>bytes};
+ const result={schemaVersion:'cxorbia.i3.d08-typed-incorporation.v1',decision:'PASS_D08_TYPED_PARTIAL_INCORPORATION',focalObligationCount:25,ownerSpecificReceipts:[{},{},{}],fullDomain:false,newDomainMatches:0,production:false,evidence:{requestCanonicalSha256:sha256(JSON.stringify(body))}};
+ const entry={path:'docs/checkpoints/CXORBIA_I3_TEST_TYPED_RESULT.json',gitBlob:'b'.repeat(40),sha256:'c'.repeat(64),runId:12345678,runAttempt:1,jobId:222};
+ return {result,entry,producer,controls,files:new Map()};
+}
+test('exact normalized D08 request retires atomically while unknown clauses and historical acceptance survive',async()=>{
+ const f=requestRetirementFixture(),before=structuredClone(f.controls);
+ assert.equal(await retireSatisfiedD08Request(f),true);assert.equal(f.files.size,3);
+ for(const file of [DESCRIPTOR,POINTER]){
+  const value=JSON.parse(f.files.get(file));assert.equal(value.currentD08UiQaRequest,undefined);
+  assert.deepEqual(value.d08AcademyProgressResidual.providerEvidence,before.pointer.d08AcademyProgressResidual.providerEvidence);
+  assert.equal(value.d08AcademyProgressResidual.wholeD08HumanAcceptance,'PENDING');
+  assert.deepEqual(value.d08AcademyProgressResidual.remaining,['Unproved clause outside this exact request']);
+ }
+ assert.deepEqual(f.controls,before);assert.equal(f.entry.requestBinding.gitBlob,f.producer.pointer.currentD08UiQaRequest.gitBlob);
+});
+test('D08 incomplete result leaves request and files untouched',async()=>{
+ const f=requestRetirementFixture();f.result.decision='RECORDED_D08_INCOMPLETE';
+ assert.equal(await retireSatisfiedD08Request(f),false);assert.equal(f.files.size,0);assert.equal(f.entry.requestBinding,undefined);
+});
+test('late normalized D08 result binds its evidence but preserves a different active request',async()=>{
+ const f=requestRetirementFixture();for(const o of [f.controls.descriptor,f.controls.pointer])o.currentD08UiQaRequest.gitBlob='f'.repeat(40);
+ assert.equal(await retireSatisfiedD08Request(f),true);assert.equal(f.files.size,0);
+ assert.equal(f.controls.pointer.currentD08UiQaRequest.gitBlob,'f'.repeat(40));
+ assert.equal(f.entry.requestBinding.gitBlob,f.producer.pointer.currentD08UiQaRequest.gitBlob);
+});
+for(const kind of ['receipt hash','producer mismatch','archive collision'])test('D08 retirement rejects '+kind+' before changing files or index binding',async()=>{
+ const f=requestRetirementFixture();
+ if(kind==='receipt hash')f.result.evidence.requestCanonicalSha256='0'.repeat(64);
+ if(kind==='producer mismatch')f.producer.descriptor.currentD08UiQaRequest.gitBlob='0'.repeat(40);
+ if(kind==='archive collision')f.controls.blobs.set('docs/checkpoints/CXORBIA_I3_RUN12345678_ATTEMPT1_JOB222_SATISFIED_D08_REQUEST.json','0'.repeat(40));
+ await assert.rejects(retireSatisfiedD08Request(f),/SOURCE_FAILURE:D08_/);assert.equal(f.files.size,0);assert.equal(f.entry.requestBinding,undefined);
+});
+test('already indexed D08 evidence closes its request without downloading or replacing its immutable receipt; replay is a no-op',async()=>{
+ const f=fixture(),q=requestRetirementFixture();f.args.jobs[0].name='i3-run2382-academy-b7-isolated-dev-qa';f.args.jobs[0].conclusion='success';f.args.journal.pendingTypedResults[0].name=f.args.jobs[0].name;
+ const entry=installOld(f),old=JSON.parse(f.known.get(entry.path));
+ const saved={...q.result,evidence:{...q.result.evidence,...old.provenance}},text=jsonBytes(saved);
+ entry.gitBlob=gitBlob(text);entry.sha256=sha256(text);entry.decision=saved.decision;f.known.set(entry.path,text);
+ for(const key of ['descriptor','pointer'])Object.assign(f.args.controls[key],structuredClone(q.controls[key]));
+ f.args.controls.blobs=new Map();f.args.producerLoader=async()=>q.producer;
+ const out=await incorporateTypedResults(f.args);
+ assert.equal(out.requestsReconciled,1);assert.equal(out.incorporated.length,0);assert.equal(out.queue.size,0);assert.equal(f.downloads,0);assert.equal(f.known.get(entry.path),text);
+ for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){f.args.controls[key]=JSON.parse(f.files.get(file));f.args.controls[key].currentFunctionalEvidenceIndex=out.index;}
+ f.args.controls.pointer.currentResultIncorporationQueue=[];f.files.clear();
+ const replay=await incorporateTypedResults(f.args);assert.equal(replay.requestsReconciled,0);assert.equal(replay.incorporated.length,0);assert.equal(f.files.size,0);
+});
+test('request reconciliation finds an indexed fulfilled request even when the incorporation queue is empty',()=>{
+ const f=requestRetirementFixture(),q=f.controls.pointer.currentD08UiQaRequest;
+ f.controls.pointer.currentResultIncorporationQueue=[];
+ f.controls.pointer.currentFunctionalEvidenceIndex={results:[
+  {runId:1,runAttempt:1,decision:'PASS_D08_TYPED_PARTIAL_INCORPORATION'},
+  {runId:2,runAttempt:1,decision:'PASS_D08_TYPED_PARTIAL_INCORPORATION',requestBinding:{path:q.path,gitBlob:'0'.repeat(40)}},
+  {runId:3,runAttempt:1,decision:'RECORDED_D08_INCOMPLETE'}]};
+ assert.deepEqual(pendingSatisfiedRequestRuns(f.controls),[{runId:1,runAttempt:1}]);
+ delete f.controls.pointer.currentD08UiQaRequest;assert.deepEqual(pendingSatisfiedRequestRuns(f.controls),[]);
 });

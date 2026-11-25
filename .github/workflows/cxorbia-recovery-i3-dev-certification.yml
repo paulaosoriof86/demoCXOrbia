@@ -1372,7 +1372,7 @@ jobs:
      with: {name: 'cxorbia-prei4-admin-003-resume-${{ github.run_id }}',path: '${{ env.PREI4_003_RESUME_OUT }}',if-no-files-found: error,retention-days: 30,compression-level: 0,include-hidden-files: true}
   i3-finance-focal-reproof:
    needs: canonical-candidate-authority
-   if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED'||(github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-finance-current-readonly]')||contains(github.event.head_commit.message,'[i3-finance-metadata]')))}}
+   if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED'||(github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-finance-current-readonly]')||contains(github.event.head_commit.message,'[i3-finance-metadata]')||contains(github.event.head_commit.message,'[i3-finance-ui-readonly]')))}}
    runs-on: ubuntu-latest
    timeout-minutes: 60
    env:
@@ -1380,7 +1380,7 @@ jobs:
     FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     FINAL_FOCAL_OUT: .tmp/i3-finance-focal
     FIN_RUNNER: tools/qa/cxorbia-prei4-final-focal-finance-live.mjs
-    CXORBIA_I3_FINANCE_MODE: ${{ contains(github.event.head_commit.message,'[i3-finance-metadata]') && 'APPLY_NOV_ADVANCE_METADATA' || contains(github.event.head_commit.message,'[i3-finance-current-readonly]') && 'READONLY_SEP_ADVANCES' || '' }}
+    CXORBIA_I3_FINANCE_MODE: ${{ contains(github.event.head_commit.message,'[i3-finance-ui-readonly]') && 'READONLY_C09_C10_CURRENT_UI' || contains(github.event.head_commit.message,'[i3-finance-metadata]') && 'APPLY_NOV_ADVANCE_METADATA' || contains(github.event.head_commit.message,'[i3-finance-current-readonly]') && 'READONLY_SEP_ADVANCES' || '' }}
    steps:
    - uses: actions/checkout@v4
      with: {fetch-depth: 0}
@@ -1410,30 +1410,10 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOUT/hosting.json"
       test "$(jq -r '.release.version.name' "$FOUT/hosting.json")" = "$H"
-   - run: |
-      set -Eeuo pipefail
-      FOUT=$FINAL_FOCAL_OUT
-      export SOURCE_SHA="$FOCAL_SOURCE" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID"
-      STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
-      if [[ "$CXORBIA_I3_FINANCE_MODE" == APPLY_NOV_ADVANCE_METADATA ]];then
-      node "$FIN_RUNNER"
-      bash tools/qa/cxorbia-i3-finance-current-readback.sh
-      elif [[ "$CXORBIA_I3_FINANCE_MODE" == READONLY_SEP_ADVANCES ]]; then
-      FINAL_FOCAL_OUT="$FOUT/readonly" node "$FIN_RUNNER" | tee "$FOUT/console.log"
-      jq -e '.decision=="PASS_FINANCE_READONLY_CURRENT_MANIFEST" and .sameDocumentsStable and .privateDataExposed==false and .providerCommandsExecuted==0 and .production==false and .newDomainMatches==0' "$FOUT/readonly/finance-readonly.json" >/dev/null
-      bash tools/qa/cxorbia-i3-finance-current-readback.sh
-      elif [[ "$STATUS" == "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED" ]]; then
-      VRM174_OUT="$FOUT/historical" node tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs | tee "$FOUT/console.log"
-      R="$FOUT/historical/result.json"
-      jq -e '.decision=="PASS_I3_VRM174_HISTORICAL_PAYMENT_LIVE" and .writes==0 and .hrWrites==0 and .production==false' "$R" >/dev/null
-      else
-      FINAL_FOCAL_OUT="$FOUT/live" node "$FIN_RUNNER" | tee "$FOUT/console.log"
-      R="$FOUT/live/finance-live.json"
-      jq -e '.decision=="PASS_PREI4_FINAL_FOCAL_FINANCE" and .durableProjection==true and .idempotentReplay==true and .cleanup==true and .hrWrites==0 and .production==false' "$R" >/dev/null
-      fi
+   - run: bash tools/qa/cxorbia-i3-finance-focal-execute.sh
    - if: always()
      uses: actions/upload-artifact@v4
-     with: {name: 'cxorbia-i3-finance-focal-${{ github.run_id }}',path: "${{ env.CXORBIA_I3_FINANCE_MODE == 'APPLY_NOV_ADVANCE_METADATA' && '.tmp/i3-finance-focal/metadata' || env.CXORBIA_I3_FINANCE_MODE == 'READONLY_SEP_ADVANCES' && '.tmp/i3-finance-focal/readonly' || '.tmp/i3-finance-focal' }}",if-no-files-found: error,retention-days: 30,compression-level: 0}
+     with: {name: 'cxorbia-i3-finance-focal-${{ github.run_id }}',path: "${{ env.CXORBIA_I3_FINANCE_MODE == 'READONLY_C09_C10_CURRENT_UI' && '.tmp/i3-finance-focal/ui-readonly' || env.CXORBIA_I3_FINANCE_MODE == 'APPLY_NOV_ADVANCE_METADATA' && '.tmp/i3-finance-focal/metadata' || env.CXORBIA_I3_FINANCE_MODE == 'READONLY_SEP_ADVANCES' && '.tmp/i3-finance-focal/readonly' || '.tmp/i3-finance-focal' }}",if-no-files-found: error,retention-days: 30,compression-level: 0}
   vrm085-postulation-sync-diagnostic:
    needs: canonical-candidate-authority
    if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message,'[vrm-085-diagnostic]')}}
@@ -6331,7 +6311,7 @@ jobs:
 
   i3-keeper-role-e2e-readonly:
    needs: canonical-candidate-authority
-   if: ${{always() && !cancelled()&&(contains(github.event.head_commit.message,'[i3-a08-exceptions-negative-readonly]')||(contains(github.event.head_commit.message,'[i3-keeper-role-e2e-readonly]')&&needs.canonical-candidate-authority.result=='success'))}}
+   if: ${{always() && !cancelled()&&(contains(github.event.head_commit.message,'[i3-a08-exceptions-negative-readonly]')||contains(github.event.head_commit.message,'[i3-a08-provenance-only]')||(contains(github.event.head_commit.message,'[i3-keeper-role-e2e-readonly]')&&needs.canonical-candidate-authority.result=='success'))}}
    runs-on: ubuntu-24.04
    timeout-minutes: 40
    permissions:
@@ -6345,7 +6325,7 @@ jobs:
      run: |
       set -Eeuo pipefail
       test "$GITHUB_REF_NAME" = recovery/cxorbia-phase-a-20260831
-      node --test tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs
+      node --test tools/qa/cxorbia-i3-a08-residual-readonly.test.mjs tools/qa/cxorbia-i3-a08-exact-password-proof.test.mjs tools/qa/cxorbia-i3-a08-provenance-readonly.test.mjs
       node tools/qa/cxorbia-i3-a08-current-artifact-pin.mjs
    - uses: google-github-actions/auth@v2
      with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
@@ -6363,11 +6343,11 @@ jobs:
       set -Eeuo pipefail
       MESSAGE="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
       R=.tmp/cxorbia-i3-two-keepers-role-e2e-readonly/result.json
-      if [[ "$MESSAGE" == *'[i3-a08-exceptions-negative-readonly]'* ]]; then
+      if [[ "$MESSAGE" =~ \[i3-a08-(exceptions-negative-readonly|provenance-only)\] ]]; then
         export CXORBIA_A08_RESIDUAL_READONLY=PAULA_I3_EXISTING_DEV_RESIDUAL_READONLY
-        node firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs --execute-and-seal --password-only
-        D=HOLD_I3_A08_STORAGE_PENDING
-        jq -e '.gate=="HOLD" and .fullA08Certified==false and .newDomainMatches==0 and (.passwordProofs|length)==3 and (.apiProofs|length)==0 and .scopeDecision=="PASS_I3_A08_PASSWORD3_SCOPED_READONLY" and .finalChecks.requestedScopePass==true and .storageDiscovery.executed==false' "$R" >/dev/null
+        MODE=--password-only; D=HOLD_I3_A08_STORAGE_PENDING
+        if [[ "$MESSAGE" == *'[i3-a08-provenance-only]'* ]]; then MODE=--provenance-only; D=HOLD_I3_A08_RESIDUAL_READONLY; fi
+        node firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs --execute-and-seal "$MODE"
       else
         node firebase/auth-dev-tools/cxorbia-i3-two-keepers-admin-shopper-readonly-e2e.mjs
         D=PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E
@@ -6452,6 +6432,7 @@ jobs:
       set -Eeuo pipefail
       if [[ "$QA_D08" == true ]]; then
         CXORBIA_I3_QA_SCOPE=D08_RECOVER_CLEANUP node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
+        if [[ "$D08_QA_CLEANUP_ONLY" == true ]]; then exit 0; fi
         node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs | tee "$QA_OUT/d08-console.log"
         CXORBIA_I3_QA_SCOPE=D08_VERIFY node tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
         exit 0

@@ -1,0 +1,80 @@
+{
+  "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+  "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+  "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+  "schemaVersion": "cxorbia.i3.d08-ui-qa-request.v1",
+  "createdAt": "2026-11-25T00:21:02.496969+00:00",
+  "iteration": "I3",
+  "authorization": "PAULA_AUTHORIZED_D08_DEV_ONLY",
+  "authorizationBasis": "User current request to complete pending work and prior frozen D08 isolated QA authorization; real learners and real courses excluded",
+  "production": false,
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "country": "GT",
+  "hrIndependent": true,
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedReceiptGitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+  "pairedRunId": 45488581923,
+  "draftScope": {
+    "tenantId": [
+      "tya"
+    ],
+    "projectId": [],
+    "pais": [],
+    "rol": [
+      "admin"
+    ],
+    "nivel": [],
+    "modulo": [],
+    "paquete": []
+  },
+  "scopeNote": "Recover only the exact 18 Firestore documents and four Auth users from RUN2783. This request must not start a new D08 UI fixture.",
+  "allowedWrites": [
+    "Exact ownership-verified recovery cleanup of RUN2783: 18 documents and four Auth UIDs derived from the immutable pinned journal; no prefix or collection-wide deletion."
+  ],
+  "forbidden": [
+    "real learner progress",
+    "real course edit or publication",
+    "HR writes",
+    "real visit writes",
+    "production deploy",
+    "permission or rules change",
+    "new D08 fixture creation in this cleanup-only request",
+    "replaying the unsettled command"
+  ],
+  "requiredEvidence": [
+    "Exact RUN2783 artifact and journal hashes",
+    "All 18 documents and four Auth identities verified before cleanup, or exact already-absent resumption",
+    "No unknown actor references or course creation",
+    "Ownership transaction and independent absence readback",
+    "No new fixture, command replay, HR write or production change"
+  ],
+  "fullDomainPromotionAutomatic": false,
+  "updatedAt": "2026-11-25T00:21:02.496969+00:00",
+  "executionMode": "RECOVERY_ONLY",
+  "recoveryRun2783": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "artifactId": 14976779119,
+    "artifactName": "cxorbia-i3-run2382-academy-b7-synthetic-45514816284",
+    "artifactSha256": "aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+    "journalEntry": "result.json",
+    "journalSha256": "f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "expectedDocuments": 18,
+    "expectedAuthUsers": 4,
+    "policy": "EXACT_PINNED_RUN2783_FIXTURE_CLEANUP_ONLY"
+  },
+  "supersedesRequest": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_QA_REQUEST_20261124.json",
+    "gitBlob": "89c23617d814ee36fe8d38f6ae26f9440f7720b4",
+    "state": "REQUESTED_CURRENT_DEV_UI_WITH_EXACT_RUN2760_RECOVERY",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "pairedRunId": 45488581923,
+    "production": false,
+    "outcome": "RUN2783_FOUR_ADMIN_ACKS_REPLAY_BODY_TIMEOUT_EXACT_RECOVERY_REQUIRED"
+  }
+}

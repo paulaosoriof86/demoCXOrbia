@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.c09-c10-advance-ui-readonly-scope.v1",
+  "requestId": "CXORBIA-I3-C09-C10-ADVANCE-UI-READONLY-20261125",
+  "mode": "READONLY_C09_C10_CURRENT_UI",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "cashPeriodId": "cinepolis-2026-10",
+  "metadataScopePath": "docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json",
+  "prerequisite": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "jobId": "138871923237",
+    "artifactId": "14977308482",
+    "artifactDigest": "sha256:408850cd4c9a2243424229c6b26ff3c7471318e6387a086ca0302382c1b3759a",
+    "entry": "finance-metadata.json",
+    "decision": "PASS_FINANCE_METADATA_SECOND_ADVANCE",
+    "scopeSha256": "cf3f7d579596192d25c5eaf980faae68dbaf3086caa358122dab744316421269"
+  },
+  "authorization": "EXISTING_PHASE_A_DEV_FUNCTIONAL_CLOSURE",
+  "operationKind": "READ_ONLY_WITH_APP_MUTATIONS_BLOCKED",
+  "independentAdminSessions": 2,
+  "authActorSource": "EXACT_COMMITTED_METADATA_RECEIPT",
+  "networkPolicy": "BLOCK_ALL_APP_MUTATIONS",
+  "expectedAutomaticHrAction": "BLOCK_AND_RECORD",
+  "routes": [
+    "movimientos",
+    "financiero"
+  ],
+  "exports": [
+    "MOVEMENTS_XLSX",
+    "MOVEMENTS_PRINT_PDF",
+    "DASHBOARD_XLSX_IF_REAL_ROWS",
+    "DASHBOARD_PRINT_PDF_IF_REAL_ROWS"
+  ],
+  "paymentsTested": false,
+  "benefitsRetested": false,
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "production": false,
+  "i4Authorized": false
+}
