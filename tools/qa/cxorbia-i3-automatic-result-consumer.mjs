@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
+import {readGoogleAcademyResult} from './cxorbia-i3-google-qa-execution.mjs';
 import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
 import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
 
@@ -184,6 +185,23 @@ async function normalizeD08Artifact({text,transport,producer}){
   scopeAuthority:{...authority,sha256:a.sha256},sourceAssets});
 }
 
+function incompleteAcademyResult(raw,transport,observedAt){
+ return {schemaVersion:'cxorbia.i3.typed-result-summary.v1',kind:'D08_INCOMPLETE',state:'HOLD',decision:'RECORDED_D08_INCOMPLETE',
+   provenance:transport,observedAt,producerDecision:/^[A-Z0-9_]+$/.test(raw.decision||'')?raw.decision:null,
+   failureCode:safeTypedFailureCode(raw.error),failureSha256:raw.error?sha256(String(raw.error)):null,
+   observations:{functionalPass:raw.functionalPass===true,cleanupOk:raw.cleanup?.ok===true,roleProofCount:Object.keys(raw.roles||{}).length,resourceCount:(raw.resources||[]).length},
+   ownerSpecificReceipts:[],newDomainMatches:0,fullDomain:false,phaseAComplete:false,production:false};
+}
+export async function summarizeGoogleAcademyResult({uri,expectedIdentity},read,readArchive){
+ const {text,transport}=readGoogleAcademyResult(uri,expectedIdentity,read,readArchive);
+ const raw=JSON.parse(text),observedAt=new Date(Number(BigInt(transport.resultGeneration)/1000n)).toISOString();
+ if(transport.jobConclusion!=='success')return incompleteAcademyResult(raw,transport,observedAt);
+ const git=(...args)=>execFileSync('git',args,{encoding:'utf8',maxBuffer:10*1024*1024});
+ const readBytes=p=>git('show',transport.controlHead+':'+p),readFile=p=>JSON.parse(readBytes(p));
+ const pointer=readFile(POINTER),descriptor=readFile(DESCRIPTOR),matrix=readFile(descriptor.moduleTruthPath);
+ const blobs=new Map([pointer.currentD08UiQaRequest.path,pointer.currentD08ScopedAuthority.path].map(p=>[p,gitBlob(readBytes(p))]));
+ return normalizeD08Artifact({text,transport,producer:{pointer,matrix,blobs,readFile,readBytes}});
+}
 const FINANCE_JOB='i3-finance-focal-reproof';
 const FINANCE_DEPENDENCIES='Run bash tools/qa/cxorbia-i3-finance-dependencies.sh';
 const FINANCE_EXECUTE='Run bash tools/qa/cxorbia-i3-finance-focal-execute.sh';
@@ -313,11 +331,7 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
      result=await d08Normalizer({text,transport,producer});files.set(rawPath,text);
     }else{
      must(String(raw.runId)===String(run.id)&&String(raw.runAttempt)===String(run.run_attempt)&&raw.production===false,'SOURCE_FAILURE:D08_HELD_RESULT_SCOPE');
-     result={schemaVersion:'cxorbia.i3.typed-result-summary.v1',kind:'D08_INCOMPLETE',state:'HOLD',decision:'RECORDED_D08_INCOMPLETE',
-      provenance:transport,observedAt:now,producerDecision:/^[A-Z0-9_]+$/.test(raw.decision||'')?raw.decision:null,
-      failureCode:safeTypedFailureCode(raw.error),failureSha256:raw.error?sha256(String(raw.error)):null,
-      observations:{functionalPass:raw.functionalPass===true,cleanupOk:raw.cleanup?.ok===true,roleProofCount:Object.keys(raw.roles||{}).length,resourceCount:(raw.resources||[]).length},
-      ownerSpecificReceipts:[],newDomainMatches:0,fullDomain:false,phaseAComplete:false,production:false};
+     result=incompleteAcademyResult(raw,transport,now);
     }
    }else{
     let identityReadback;

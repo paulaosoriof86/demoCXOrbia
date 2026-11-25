@@ -92,3 +92,19 @@ test('D08 period waiver cannot be reused for finance',()=>{
   const {raw,normalize,inputs}=d08SyntheticFixture(),receipt=normalize(raw).ownerSpecificReceipts[0];
   assert.equal(permitsD08PeriodlessScope({...receipt,moduleDomain:'finance-core-liquidation-costs'},inputs.scopeAuthority),false);
 });
+
+test('Google Academy receipt preserves 25 scopes and rejects mixed provenance or unverified archives',()=>{
+  const {raw,inputs}=d08SyntheticFixture(),{jobId,artifactId,artifactDigest,verifiedArchiveDigest,...base}=inputs.transport;
+  const prefix='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/5573055a-facf-48a5-8e80-2d9698b4c21b';
+  const startUri=prefix+'/start.json#'+raw.runId,archiveUri=prefix+'/evidence.zip#1795624414514001';
+  raw.controlSha=base.controlHead;raw.externalExecution={startUri,transportSha:'a'.repeat(40)};
+  raw.priorAbsence={status:'VERIFIED_ABSENT',writes:0};
+  const resultText=JSON.stringify(raw),transport={...base,provider:'GOOGLE_CLOUD_SHELL',startGeneration:raw.runId,startUri,
+    resultGeneration:'1795624414514002',resultUri:prefix+'/result.json#1795624414514002',archiveUri,resultRef:archiveUri,
+    archiveVerified:true,archiveSha256:'2'.repeat(64),bundleSha256:'3'.repeat(64),startSha256:'4'.repeat(64),transportSha:'a'.repeat(40),resultSha256:h(resultText)};
+  const normalize=t=>normalizeD08Result({...inputs,resultText,transport:t});
+  assert.equal(normalize(transport).focalObligationCount,25);
+  for(const bad of [{jobId:123},{archiveVerified:false},{archiveUri:archiveUri.replace('evidence.zip','other.zip')},{resultSha256:'0'.repeat(64)}]){
+    assert.throws(()=>normalize({...transport,...bad}),/GOOGLE_TRANSPORT_IDENTITY/);
+  }
+});

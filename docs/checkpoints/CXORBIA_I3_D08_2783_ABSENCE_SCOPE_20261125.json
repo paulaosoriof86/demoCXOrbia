@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.historical-absence-scope.v1",
+  "producerRunId": "45514816284",
+  "producerAttempt": "1",
+  "artifactId": 14976779119,
+  "zipSha256": "aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+  "journalSha256": "f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc",
+  "typedCleanupSha256": "a597dbf6b8f928e2f1950873b5021208bb418904c7390758364fdb3f686fbc47",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "documentPaths": [
+    "tenants/tya/academyAudit/academy-progress-786dd70a0215bc0a0f0021cab50332f1684407bb",
+    "tenants/tya/academyAudit/academy-progress-868672cf7fd2056b9c915878d77d91bb0342ccbd",
+    "tenants/tya/academyAudit/academy-progress-be282ff29367e46d762cdd4be571185d84eb35f4",
+    "tenants/tya/academyAudit/academy-progress-ddf0f6c84b24e004bdb88f54a4391ca0b1d48918",
+    "tenants/tya/commandReceipts/academy-progress-786dd70a0215bc0a0f0021cab50332f1684407bb",
+    "tenants/tya/commandReceipts/academy-progress-868672cf7fd2056b9c915878d77d91bb0342ccbd",
+    "tenants/tya/commandReceipts/academy-progress-be282ff29367e46d762cdd4be571185d84eb35f4",
+    "tenants/tya/commandReceipts/academy-progress-ddf0f6c84b24e004bdb88f54a4391ca0b1d48918",
+    "tenants/tya/entityAuditTrail/academy-progress-786dd70a0215bc0a0f0021cab50332f1684407bb",
+    "tenants/tya/entityAuditTrail/academy-progress-868672cf7fd2056b9c915878d77d91bb0342ccbd",
+    "tenants/tya/entityAuditTrail/academy-progress-be282ff29367e46d762cdd4be571185d84eb35f4",
+    "tenants/tya/entityAuditTrail/academy-progress-ddf0f6c84b24e004bdb88f54a4391ca0b1d48918",
+    "tenants/tya/shoppers/qa_d08_45514816284_1_other",
+    "tenants/tya/shoppers/qa_d08_45514816284_1_shopper",
+    "tenants/tya/users/qa_d08_45514816284_1_admin",
+    "tenants/tya/users/qa_d08_45514816284_1_cliente",
+    "tenants/tya/users/qa_d08_45514816284_1_other",
+    "tenants/tya/users/qa_d08_45514816284_1_shopper"
+  ],
+  "syntheticUids": [
+    "qa_d08_45514816284_1_admin",
+    "qa_d08_45514816284_1_cliente",
+    "qa_d08_45514816284_1_other",
+    "qa_d08_45514816284_1_shopper"
+  ],
+  "coursePath": "tenants/tya/academyCourses/qa_d08_45514816284_1_course",
+  "production": false
+}

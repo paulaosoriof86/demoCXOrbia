@@ -17,7 +17,8 @@ async function loadQaFirebaseDependencies(){
 
 function runD08Preflight(){
   const e=process.env,read=p=>JSON.parse(fs.readFileSync(p,'utf8')),check=(ok,code)=>{if(!ok)throw Error(code);};
-  check(e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_BRANCH');
+  const native=e.CXORBIA_GOOGLE_QA_BRANCH;
+  check((!native||(!e.GITHUB_ACTIONS&&!e.GITHUB_RUN_ID))&&(native||e.GITHUB_REF_NAME)==='recovery/cxorbia-phase-a-20260831','AUTH_FAILURE:D08_BRANCH');
   check(execFileSync('git',['rev-parse',e.FOCAL_SOURCE+'^{tree}'],{encoding:'utf8'}).trim()===e.FOCAL_TREE,'RELEASE_COMPOSITION_FAILURE:D08_SOURCE_TREE');
   execFileSync('git',['diff','--quiet',e.FOCAL_SOURCE,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules',':(exclude)backend/runtime/hr-live-service/test/**'],{stdio:'pipe'});
   execFileSync(process.execPath,['--check','tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs'],{stdio:'pipe'});
@@ -31,7 +32,7 @@ function runD08Preflight(){
   check(q.pairedReceiptPath===seal.receiptPath&&/^docs\/checkpoints\/[^/]+\.json$/.test(q.pairedReceiptPath||'')&&execFileSync('git',['hash-object',q.pairedReceiptPath],{encoding:'utf8'}).trim()===q.pairedReceiptGitBlob,'RELEASE_COMPOSITION_FAILURE:D08_PAIRED_RECEIPT');
   check(['RECOVERY_ONLY','UI_WITH_RECOVERY'].includes(q.executionMode),'AUTH_FAILURE:D08_REQUEST_EXECUTION_MODE');
   const variables={D08_QA_CLEANUP_ONLY:String(q.executionMode==='RECOVERY_ONLY'),D08_QA_REQUEST:pointer.path,CXORBIA_I3_QA_SCOPE:'D08_ACADEMY_UI',CXORBIA_I3_QA_ISOLATED_WRITE_GATE:'PAULA_AUTHORIZED_D08_DEV_ONLY',DEV_REVISION:q.runtimeRevision,RUNTIME_DIGEST:q.runtimeDigest,HOSTING_VERSION_NAME:q.hostingVersion};
-  for(const [k,v] of Object.entries(variables)){check(typeof v==='string'&&!/[\r\n]/.test(v),'SOURCE_FAILURE:D08_ENV_VALUE');fs.appendFileSync(e.GITHUB_ENV,k+'='+v+'\n');}
+  for(const [k,v] of Object.entries(variables)){check(typeof v==='string'&&!/[\r\n]/.test(v),'SOURCE_FAILURE:D08_ENV_VALUE');fs.appendFileSync(native?e.CXORBIA_GOOGLE_QA_ENV:e.GITHUB_ENV,k+'='+v+'\n');}
   console.log(JSON.stringify({decision:'PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT',sourceSha:q.sourceSha,providerWrites:0}));
   return {request:q,current:c,descriptor:d};
 }
@@ -453,12 +454,40 @@ async function runD08RecoverCleanup({selfTestOnly=false}={}){
   if(result.awaitJournal.some(x=>x.state==='TIMED_OUT')){await awaited('recovery.firestore.terminate',()=>db.terminate(),10000).catch(()=>{});save();process.exit(2);}
 }
 
+async function verifyClosedAcademyFixture({request,scopePath,db,auth,tenant}){
+  const {check,hash}=academyUiQaPrimitives(),pin=request.recoveryRun2783,prior=request.priorCleanupPrerequisite;
+  const bytes=fs.readFileSync(scopePath),scope=JSON.parse(bytes);
+  check(hash(bytes)==='99b6797e43b9b97ff762bbe91fa89bc542801c1e5ac202f9fb47e89ad7507fe7'&&
+    scope.journalSha256===pin.journalSha256&&scope.zipSha256===pin.artifactSha256&&scope.tenantId===request.tenantId&&
+    scope.projectId===request.projectId&&scope.typedCleanupSha256===prior.typedResult.sha256,'SOURCE_FAILURE:D08_ABSENCE_SCOPE');
+  for(const ref of [prior.typedResult,prior.retirementArchive]){
+    const body=fs.readFileSync(ref.path);
+    check(hash(body)===ref.sha256&&execFileSync('git',['hash-object',ref.path],{encoding:'utf8'}).trim()===ref.gitBlob,'SOURCE_FAILURE:D08_CLEANUP_AUTHORITY');
+  }
+  const receipt=JSON.parse(fs.readFileSync(prior.typedResult.path)),clean=receipt.observations?.cleanup;
+  check(prior.fixtureRunId===pin.runId&&prior.fixtureRunAttempt===pin.runAttempt&&
+    clean?.ok===true&&clean.ownershipTransaction===true&&clean.remainingOwnedDocuments===0&&clean.remainingOwnedAuth===0,
+    'PERSISTENCE_FAILURE:D08_PRIOR_CLEANUP_NOT_VERIFIED');
+  const actor=scope.syntheticUids;
+  const [docs,users,refs]=await Promise.all([
+    db.getAll(...[...scope.documentPaths,scope.coursePath].map(p=>db.doc(p))),
+    auth.getUsers(actor.map(uid=>({uid}))),
+    Promise.all([['commandReceipts','actorUid'],['academyAudit','actorUid'],['entityAuditTrail','actorUid'],['academyCourses','createdByUserId']]
+      .map(([name,field])=>tenant.collection(name).where(field,'in',actor).limit(1).get()))
+  ]);
+  check(docs.length===19&&docs.every(d=>!d.exists)&&users.users.length===0&&users.notFound.length===4&&refs.every(s=>s.empty),
+    'PERSISTENCE_FAILURE:D08_PRIOR_FIXTURE_NOT_ABSENT');
+  return {status:'VERIFIED_ABSENT',journalSha256:scope.journalSha256,scopeSha256:hash(bytes),documents:18,authUsers:4,remainingOwnedDocuments:0,remainingOwnedAuth:0,writes:0};
+}
 async function runAcademyUiQa(){
   const e=process.env,h=academyUiQaPrimitives(),{str:s,stable,hash,check,same,without,describeCommand,verifyBundle,verifyMembership,verifyCourse}=h;
-  const sourceSha=s(e.FOCAL_SOURCE),sourceTree=s(e.FOCAL_TREE),runId=s(e.GITHUB_RUN_ID),attempt=s(e.GITHUB_RUN_ATTEMPT||'1'),out=s(e.QA_OUT);
+  const sourceSha=s(e.FOCAL_SOURCE),sourceTree=s(e.FOCAL_TREE);
+  const googleControl=e.CXORBIA_GOOGLE_QA_START?await import('./cxorbia-i3-google-qa-execution.mjs'):null;
+  const google=googleControl?.readGoogleQaExecution(e,googleControl.academyJob,sourceSha,sourceTree);
+  const runId=s(google?.runId||e.GITHUB_RUN_ID),attempt=s(google?.runAttempt||e.GITHUB_RUN_ATTEMPT||'1'),out=s(e.QA_OUT);
   const projectName=s(e.PROJECT),tenantId=s(e.TENANT_ID),projectId=s(e.PROJECT_ID),host=s(e.HOSTING_URL).replace(/\/$/,'');
   const requestPath=s(e.D08_QA_REQUEST),readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-  check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&projectName==='cxorbia-backend-dev'&&host==='https://cxorbia-backend-dev.web.app'&&e.SERVICE==='cxorbia-live-hr-dev'&&e.REGION==='us-central1'&&e.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia'&&e.GITHUB_REF_NAME==='recovery/cxorbia-phase-a-20260831'&&tenantId&&projectId&&out&&/^\d{8,}$/.test(runId)&&/^\d+$/.test(attempt)&&/^[a-f0-9]{40}$/.test(sourceSha)&&/^[a-f0-9]{40}$/.test(sourceTree)&&/^docs\/checkpoints\/[^/]+\.json$/.test(requestPath),'SOURCE_FAILURE:D08_SCOPE_GATE');
+  check(e.CXORBIA_I3_QA_ISOLATED_WRITE_GATE==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&projectName==='cxorbia-backend-dev'&&host==='https://cxorbia-backend-dev.web.app'&&e.SERVICE==='cxorbia-live-hr-dev'&&e.REGION==='us-central1'&&(google?.repository||e.GITHUB_REPOSITORY)==='paulaosoriof86/demoCXOrbia'&&(google?.branch||e.GITHUB_REF_NAME)==='recovery/cxorbia-phase-a-20260831'&&tenantId&&projectId&&out&&/^\d{8,}$/.test(runId)&&/^\d+$/.test(attempt)&&/^[a-f0-9]{40}$/.test(sourceSha)&&/^[a-f0-9]{40}$/.test(sourceTree)&&/^docs\/checkpoints\/[^/]+\.json$/.test(requestPath),'SOURCE_FAILURE:D08_SCOPE_GATE');
   const current=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json'),descriptor=readJson(e.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),qa=readJson(requestPath),seal=descriptor.postDeployRunSeal||{};
   check(qa.executionMode==='UI_WITH_RECOVERY','AUTH_FAILURE:D08_CLEANUP_ONLY_NO_NEW_FIXTURE');
   check(current.production==='DO_NOT_TOUCH'&&current.authorizationI4===false&&descriptor.productSourceSha===sourceSha&&descriptor.productTreeAuthority===sourceTree&&current.currentD08UiQaRequest?.path===requestPath&&execFileSync('git',['hash-object',requestPath],{encoding:'utf8'}).trim()===current.currentD08UiQaRequest.gitBlob,'AUTH_FAILURE:D08_REQUEST_AUTHORITY');
@@ -478,9 +507,9 @@ async function runAcademyUiQa(){
   check(courses.every(c=>c&&c.lessons.length>=2&&c.lessons.some(l=>l.quiz.length>0)&&!c.technicalOnly),'SOURCE_FAILURE:D08_BASE_CONTRACT');
   const spec={tenantId,projectId,runId,attempt,identities,courses,courseId:customId,draftScope,draftName:'QA D08 '+runId+' borrador',draftDescription:'Fixture temporal de edición autorizada D08.',updatedName:'QA D08 '+runId+' editado',updatedDescription:'Edición D08 confirmada por proveedor y sesión nueva.'};
   fs.mkdirSync(out,{recursive:true});
-  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName});
+  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName,...(google?{serviceAccountId:google.signer}:{})});
   const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
-  const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
+  const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',...(google?{externalExecution:google,controlSha:google.controlSha}:{}),decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
     runtimeRevision:qa.runtimeRevision,runtimeDigest:qa.runtimeDigest,hostingVersion:qa.hostingVersion,scope:'D08_FOCAL_UI_PROVIDER_PROGRESS_EDIT_AND_ROLE_NEGATIVES_NOT_FULL_CERTIFICATIONS_DOMAIN',
     identities,creationJournal:[],requestJournal:[],awaitJournal:[],roles:{},negatives:[],resources:[],sessionDiagnostics:[],cleanup:{ok:false},serving:{},safety:{hrWrites:0,realLearnerWrites:0,realCourseWrites:0,realVisitsWritten:0,paymentWrites:0,emailCalls:0,calendarCalls:0,productionDeploys:0}};
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');save();
@@ -639,6 +668,7 @@ async function runAcademyUiQa(){
     const docPaths=[...identities.flatMap(x=>[x.memberPath,x.profilePath].filter(Boolean)),tenant.collection('academyCourses').doc(customId).path];
     check((await Promise.all(docPaths.map(p=>readDoc(p,'fixture.preflight')))).every(x=>!x.exists),'SOURCE_FAILURE:D08_FIXTURE_DOC_COLLISION');
     for(const identity of identities){try{await auth.getUser(identity.uid);throw Error('SOURCE_FAILURE:D08_AUTH_COLLISION');}catch(error){if(error.code!=='auth/user-not-found')throw error;}}
+    if(google){result.priorAbsence=await awaited('preflight.prior-fixture.absence',()=>verifyClosedAcademyFixture({request:qa,scopePath:googleControl.academyAbsenceScope,db,auth,tenant}),45000);save();}
     fixturesStarted=true;result.fixtureIdsPreflightAbsent=true;save();
     for(const identity of identities){
       const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:identity.namespace,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08',...(identity.role==='shopper'?{shopperId:identity.uid,country}:{})};

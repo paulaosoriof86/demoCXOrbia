@@ -148,3 +148,19 @@ test('legacy Google PDF locator is marked unbound and is not invented from an Ac
  assert.equal(s.provenance.encryptedPdfEvidence.status,'HOLD_LEGACY_REFERENCE_UNBOUND');assert.equal(f.envelopeReads,0);
  assert.equal(s.observations.failurePdf.privateEvidence.referenceOnly,true);assert.equal(s.provenance.artifactId,undefined);assert.equal(s.provenance.jobId,undefined);
 });
+
+import {academyJob,readGoogleAcademyResult} from './cxorbia-i3-google-qa-execution.mjs';
+test('Academy requires its own marker, exact ZIP generation and current served tuple',()=>{
+ const academyStart={...start,job:academyJob},prefix='gs://'+bucket+'/cxorbia-i3-qa/'+id;
+ const ext=readGoogleQaExecution(env,academyJob,source,tree,reader(academyStart));
+ const expected={sourceSha:source,sourceTree:tree,controlSha:control,transportSha:control,runtimeRevision:'r',runtimeDigest:'d',hostingVersion:'h'};
+ const raw={...expected,schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',runId:generation,runAttempt:'1',externalExecution:ext,production:false};
+ const rawBytes=JSON.stringify(raw),resultUri=prefix+'/result.json#1795624487264686';
+ const b={schemaVersion:'cxorbia.i3.google-d08-result.v1',startUri:env.CXORBIA_GOOGLE_QA_START,exitCode:2,archiveUri:prefix+'/evidence.zip#1795624414514001',archiveSha256:'e'.repeat(64),resultSha256:digest(rawBytes)};
+ const read=(cmd,args)=>{const uri=args.find(x=>x===resultUri);if(!uri)return reader(academyStart)(cmd,args);
+   return args[1]==='cat'?JSON.stringify(b):JSON.stringify({name:'cxorbia-i3-qa/'+id+'/result.json',bucket,generation:'1795624487264686',timeCreated:'2026-11-25T16:34:00Z'});};
+ const archive=(uri,sha)=>{assert.equal(uri,b.archiveUri);assert.equal(sha,b.archiveSha256);return rawBytes;};
+ assert.equal(readGoogleAcademyResult(resultUri,expected,read,archive).transport.jobConclusion,'failure');
+ assert.throws(()=>readGoogleAcademyResult(resultUri,{...expected,runtimeDigest:'incorrect'},read,archive),/RESULT_IDENTITY/);
+ b.archiveUri=b.archiveUri.replace(id,'not-the-marker');assert.throws(()=>readGoogleAcademyResult(resultUri,expected,read,archive),/ARCHIVE_BINDING/);
+});

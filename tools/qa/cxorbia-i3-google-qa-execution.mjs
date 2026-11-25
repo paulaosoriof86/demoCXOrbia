@@ -1,5 +1,8 @@
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const bucket = 'cxorbia-backend-dev_cloudbuild';
 const repository = 'paulaosoriof86/demoCXOrbia';
@@ -9,6 +12,8 @@ const signer = 'firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.
 const sha = /^[a-f0-9]{40}$/;
 const objectUri = /^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})\/(start|result)\.json#([1-9]\d{7,19})$/;
 const runnerFiles = ['tools/qa/cxorbia-i3-finance-ui-readonly.mjs','tools/qa/cxorbia-i3-google-qa-execution.mjs'];
+export const academyJob='i3-run2382-academy-b7-isolated-dev-qa';
+export const academyAbsenceScope='docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json';
 const readCommand = (cmd,args) => execFileSync(cmd,args,{encoding:'utf8',timeout:45000,maxBuffer:3*1024*1024});
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -40,7 +45,9 @@ export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readComm
   need(!env.GITHUB_RUN_ID&&!env.GITHUB_ACTIONS,'AMBIGUOUS_GOOGLE_QA_EXECUTION');
   const control=read('git',['rev-parse','HEAD']).trim();
   const start=verifyStart(env.CXORBIA_GOOGLE_QA_START,job,sourceSha,sourceTree,control,read);
-  for(const file of runnerFiles){
+  const files=job===academyJob?['tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs',runnerFiles[1],academyAbsenceScope]:runnerFiles;
+  need(job===academyJob||job==='i3-finance-focal-reproof','GOOGLE_QA_UNREGISTERED_JOB');
+  for(const file of files){
     need(read('git',['hash-object',file]).trim()===read('git',['rev-parse',start.transportSha+':'+file]).trim(),'GOOGLE_QA_TRANSPORT_BLOB');
   }
   return start;
@@ -98,4 +105,42 @@ export function readGoogleFinanceResult(uri,expected,read=readCommand){
     controlHead:start.controlSha,entry:'finance-ui-readonly.json',resultUri:uri,resultGeneration:result.generation,
      bundleSha256:result.sha256,resultSha256:bundle.resultSha256,encryptedPdfEvidence:readEncryptedPdfEvidence(bundle,raw,result.id,read)};
   return {resultText,identityReadback:{entry:'identity-live-readback.json',resultUri:uri,bundleSha256:result.sha256,text:sealText},transport};
+}
+
+function readAcademyArchive(uri,digest){
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-d08-readback-'));
+  try{
+    const zip=path.join(dir,'evidence.zip');
+    execFileSync('gcloud',['storage','cp',uri,zip],{stdio:'pipe',timeout:120000});
+    need(hash(fs.readFileSync(zip))===digest,'GOOGLE_D08_ARCHIVE_HASH');
+    const names=execFileSync('unzip',['-Z1',zip],{encoding:'utf8'}).trim().split('\n');
+    need(names.filter(n=>n==='result.json').length===1&&new Set(names).size===names.length&&
+      names.every(n=>n==='result.json'||/^[\w-]+\.png$/.test(n)),'GOOGLE_D08_ARCHIVE_ENTRIES');
+    const text=execFileSync('unzip',['-p',zip,'result.json'],{encoding:'utf8',maxBuffer:8*1024*1024});
+    for(const row of JSON.parse(text).visualCaptureJournal||[]){
+      if(row.state!=='FULFILLED')continue;
+      need(names.includes(row.path)&&/^[\w-]+\.png$/.test(row.path),'GOOGLE_D08_CAPTURE_ENTRY');
+      const png=execFileSync('unzip',['-p',zip,row.path],{maxBuffer:16*1024*1024});
+      need(hash(png)===row.imageSha256,'GOOGLE_D08_CAPTURE_HASH');
+    }
+    return text;
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+}
+
+export function readGoogleAcademyResult(uri,expected,read=readCommand,readArchive=readAcademyArchive){
+  const result=readObject(uri,'result',read),bundle=result.contents;
+  need(bundle.schemaVersion==='cxorbia.i3.google-d08-result.v1'&&Number.isInteger(bundle.exitCode)&&bundle.exitCode>=0&&bundle.exitCode<=255,'GOOGLE_D08_RESULT_SCHEMA');
+  const start=verifyStart(bundle.startUri,academyJob,expected.sourceSha,expected.sourceTree,expected.controlSha,read);
+  need(objectUri.exec(start.startUri)[1]===result.id&&expected.transportSha===start.transportSha,'GOOGLE_D08_RESULT_PRODUCER');
+  const prefix='gs://'+bucket+'/cxorbia-i3-qa/'+result.id+'/evidence.zip#';
+  need(typeof bundle.archiveUri==='string'&&bundle.archiveUri.startsWith(prefix)&&/^[1-9]\d{7,19}$/.test(bundle.archiveUri.slice(prefix.length))&&
+    /^[a-f0-9]{64}$/.test(bundle.archiveSha256),'GOOGLE_D08_ARCHIVE_BINDING');
+  const text=readArchive(bundle.archiveUri,bundle.archiveSha256),raw=JSON.parse(text);
+  need(hash(text)===bundle.resultSha256&&raw.schemaVersion==='cxorbia.i3.d08-ui-provider-new-session.v1'&&raw.production===false&&
+    Object.entries(start).every(([k,v])=>raw.externalExecution?.[k]===v)&&raw.runId===start.runId&&raw.runAttempt===start.runAttempt&&
+    raw.controlSha===start.controlSha&&['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>raw[k]===expected[k]),'GOOGLE_D08_RESULT_IDENTITY');
+  const transport={...start,resultRef:bundle.archiveUri,resultUri:uri,resultGeneration:result.generation,bundleSha256:result.sha256,
+    archiveUri:bundle.archiveUri,archiveSha256:bundle.archiveSha256,archiveVerified:true,entry:'result.json',resultSha256:bundle.resultSha256,
+    jobName:academyJob,jobConclusion:bundle.exitCode===0?'success':'failure',controlHead:start.controlSha};
+  return {text,transport};
 }

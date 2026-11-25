@@ -50,9 +50,24 @@ export function normalizeD08Result({ resultText, transport, request, baseContrac
   need(raw.production === false && raw.fullDomain === false && raw.phaseAComplete === false && raw.hrIndependent === true && raw.periodId === null, 'RESULT_SCOPE');
   need(!raw.error && !raw.postflightError && !raw.interceptionError && raw.productionIndexUnchanged === true, 'RESULT_FAILURE');
   need(transport && String(raw.runId) === String(transport.runId) && String(raw.runAttempt) === String(transport.runAttempt), 'RUN_ATTEMPT');
-  need(/^\d+$/.test(String(transport.jobId)) && /^\d+$/.test(String(transport.artifactId)) && SHA.test(transport.controlHead), 'TRANSPORT_IDENTITY');
+  const google=transport.provider==='GOOGLE_CLOUD_SHELL';
+  if(google){
+    const match=/^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9-]{36})\/start\.json#([1-9]\d{7,19})$/.exec(transport.startUri);
+    const base=match&&transport.startUri.split('/start.json#')[0];
+    need(match&&match[2]===transport.startGeneration&&match[2]===raw.runId&&
+      transport.resultUri===base+'/result.json#'+transport.resultGeneration&&/^[1-9]\d{7,19}$/.test(transport.resultGeneration)&&
+      transport.archiveUri?.startsWith(base+'/evidence.zip#')&&/^[1-9]\d{7,19}$/.test(transport.archiveUri.split('#')[1])&&
+      transport.resultRef===transport.archiveUri&&transport.archiveVerified===true&&HASH.test(transport.archiveSha256)&&
+      HASH.test(transport.bundleSha256)&&HASH.test(transport.startSha256)&&transport.resultSha256===rawHash&&
+      SHA.test(transport.transportSha)&&SHA.test(transport.controlHead)&&raw.controlSha===transport.controlHead&&
+      raw.externalExecution?.startUri===transport.startUri&&raw.externalExecution?.transportSha===transport.transportSha&&
+      raw.priorAbsence?.status==='VERIFIED_ABSENT'&&raw.priorAbsence?.writes===0&&
+      transport.jobId===undefined&&transport.artifactId===undefined,'GOOGLE_TRANSPORT_IDENTITY');
+  }else{
+    need(!raw.externalExecution&&/^\d+$/.test(String(transport.jobId))&&/^\d+$/.test(String(transport.artifactId))&&SHA.test(transport.controlHead),'TRANSPORT_IDENTITY');
+    need(/^sha256:[a-f0-9]{64}$/.test(transport.artifactDigest)&&transport.verifiedArchiveDigest===transport.artifactDigest,'ARCHIVE_DIGEST');
+  }
   need(transport.jobName === 'i3-run2382-academy-b7-isolated-dev-qa' && transport.jobConclusion === 'success', 'PRODUCER_JOB');
-  need(/^sha256:[a-f0-9]{64}$/.test(transport.artifactDigest) && transport.verifiedArchiveDigest === transport.artifactDigest, 'ARCHIVE_DIGEST');
   need(transport.resultRef && (!transport.resultSha256 || transport.resultSha256 === rawHash), 'RESULT_HASH');
   need(request?.schemaVersion === 'cxorbia.i3.d08-ui-qa-request.v1' && request.authorization === 'PAULA_AUTHORIZED_D08_DEV_ONLY' && request.production === false && request.hrIndependent === true, 'REQUEST_AUTHORITY');
   const identityKeys = ['sourceSha', 'sourceTree', 'runtimeRevision', 'runtimeDigest', 'hostingVersion'];

@@ -4,6 +4,19 @@ set -Eeuo pipefail
 shopt -s inherit_errexit
 umask 077
 : "${CXORBIA_TRANSPORT_SHA:?required exact transport commit}"
+put() {
+  local src="$1" dest="$2" gen
+  gcloud storage cp --if-generation-match=0 "$src" "$dest" >&2 || return
+  gen="$(gcloud storage objects describe "$dest" --raw --format='value(generation)')" || return
+  [[ "$gen" =~ ^[1-9][0-9]+$ ]] || return 1
+  gcloud storage cat "$dest#$gen" | cmp -s "$src" - || return
+  printf '%s#%s\n' "$dest" "$gen"
+}
+if [[ "${CXORBIA_GOOGLE_QA_JOB:-i3-finance-focal-reproof}" == i3-run2382-academy-b7-isolated-dev-qa ]]; then
+  source tools/qa/cxorbia-i3-d08-google-transport.sh
+  exit
+fi
+
 export PROJECT=cxorbia-backend-dev SERVICE=cxorbia-live-hr-dev REGION=us-central1
 export GCLOUD_PROJECT="$PROJECT" GOOGLE_CLOUD_QUOTA_PROJECT="$PROJECT"
 export HOSTING_SITE="$PROJECT" HOSTING_URL="https://$PROJECT.web.app"
@@ -45,14 +58,6 @@ uuid="$(python3 -c 'import uuid;print(uuid.uuid4())')"
 prefix="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/$uuid"
 jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg control "$producer" --arg transport "$CXORBIA_TRANSPORT_SHA" \
   '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:"recovery/cxorbia-phase-a-20260831",job:"i3-finance-focal-reproof",attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport}' > "$FINAL_FOCAL_OUT/start.json"
-put() {
-  local src="$1" dest="$2" gen
-  gcloud storage cp --if-generation-match=0 "$src" "$dest" >&2 || return
-  gen="$(gcloud storage objects describe "$dest" --raw --format='value(generation)')" || return
-  [[ "$gen" =~ ^[1-9][0-9]+$ ]] || return 1
-  gcloud storage cat "$dest#$gen" | cmp -s "$src" - || return
-  printf '%s#%s\n' "$dest" "$gen"
-}
 export CXORBIA_GOOGLE_QA_START
 CXORBIA_GOOGLE_QA_START="$(put "$FINAL_FOCAL_OUT/start.json" "$prefix/start.json")"
 printf 'START %s\n' "$CXORBIA_GOOGLE_QA_START"
