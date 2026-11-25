@@ -10,7 +10,13 @@ import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256} from './cxorbia-i3-current-
 const repo='/repos/paulaosoriof86/demoCXOrbia',branch='recovery/cxorbia-phase-a-20260831',root=path.resolve(import.meta.dirname,'../..');
 const buildId='56b76a83-3e5d-4957-99aa-2521a9c51845',location='us-central1',project='cxorbia-backend-dev',bucket=project+'_cloudbuild';
 const digest=x=>createHash('sha1').update(x).digest('hex');
-const read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
+// Replay the first real Google producer while its request is still pending.
+const producerCommit='0d4577882ce86d16ca2711007598fa4c17e49802';
+const fixtureBytes=new Map();
+function read(file){
+ if(!fixtureBytes.has(file))fixtureBytes.set(file,execFileSync('git',['show',producerCommit+':'+file],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024}));
+ return JSON.parse(fixtureBytes.get(file));
+}
 
 // A full in-memory Git object/ref service exercises the real loader, projector,
 // writer and readback. No HTTP, gcloud, Auth, Firestore or browser is invoked.

@@ -5,7 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
 import {executionProviderOf} from './cxorbia-i3-current-control-projection.mjs';
-import {hasExactExecutionSuccessor,validateSealedExecutionAuthority} from './cxorbia-i3-current-authority-alias-guard.mjs';
+import {nativeGitRead,hasExactExecutionSuccessor,validateSealedExecutionAuthority} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const DESCRIPTOR = 'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const POINTER = 'CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
@@ -15,7 +15,7 @@ const EXPECTED_BRANCH = 'recovery/cxorbia-phase-a-20260831';
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
 
 export function hasVerifiedHostingAssets(receipt,previousSourceSha,
-  gitRead=args=>execFileSync('git',args,{encoding:'utf8'})){
+  gitRead=nativeGitRead){
   try{
     const assets=Object.entries(receipt.servedSha256||{});
     if(assets.length<19||receipt.verifiedServedAssetCount!==assets.length)return false;
@@ -28,7 +28,7 @@ export function hasVerifiedHostingAssets(receipt,previousSourceSha,
 }
 
 export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,gitBlob,
-  gitRead=args=>execFileSync('git',args,{encoding:'utf8'}),
+  gitRead=nativeGitRead,
   gitAncestor=(before,after)=>{try{execFileSync('git',['merge-base','--is-ancestor',before,after],{stdio:'ignore'});return true;}catch{return false;}}}){
   const pending=d.pendingDevSuccessor,other=p.pendingDevSuccessor;
   if(!pending&&!other)return {present:false,pass:false};
@@ -146,7 +146,7 @@ export function readDevProviderReceipts(proofDir = 'docs/checkpoints') {
 }
 
 export function validateOperationalExcelReceipt({descriptor:d,gitBlob,pendingDev,
-  gitRead=args=>execFileSync('git',args,{encoding:'utf8'})}) {
+  gitRead=nativeGitRead}) {
   const op=d.currentF2OperationalExcel,failures=[];
   if(!op)return {present:false,pass:true,failures};
   const check=(ok,code)=>{if(!ok)failures.push(code);};

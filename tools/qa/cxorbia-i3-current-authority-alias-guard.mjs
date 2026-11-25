@@ -3,7 +3,8 @@ import {execFileSync} from 'node:child_process';
 import {isDeepStrictEqual} from 'node:util';
 import {validateProjectionRegistry,executionProviderOf,DESCRIPTOR} from './cxorbia-i3-current-control-projection.mjs';
 
-const nativeGitRead=args=>execFileSync('git',args,{encoding:'utf8'});
+// Producer descriptors can exceed Node's default 1 MiB subprocess output limit.
+export const nativeGitRead=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024});
 const executionIdentity=value=>({provider:executionProviderOf(value),runId:String(value?.runId),runAttempt:Number(value?.runAttempt||value?.executionBinding?.runAttempt||1)});
 const sha40=value=>/^[a-f0-9]{40}$/.test(String(value||''));
 const sha64=value=>/^[a-f0-9]{64}$/.test(String(value||''));

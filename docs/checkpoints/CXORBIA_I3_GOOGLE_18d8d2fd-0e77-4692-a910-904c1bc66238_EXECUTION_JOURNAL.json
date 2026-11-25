@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "iteration": "I3",
+  "state": "HOLD",
+  "executionProvider": "GOOGLE_CLOUD_BUILD",
+  "runId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+  "runAttempt": 1,
+  "controlHead": "0d4577882ce86d16ca2711007598fa4c17e49802",
+  "observedAt": "2026-11-25T18:51:34.093439Z",
+  "workflowStatus": "completed",
+  "workflowConclusion": "success",
+  "nativeStep": {
+    "stepId": "vrm154-156-dev-materialization",
+    "conclusion": "success",
+    "startedAt": "2026-11-25T18:47:03.838987175Z",
+    "completedAt": "2026-11-25T18:51:34.093439Z"
+  },
+  "executionBinding": {
+    "executionProvider": "GOOGLE_CLOUD_BUILD",
+    "runId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+    "runAttempt": 1,
+    "runNumber": null,
+    "project": "cxorbia-backend-dev",
+    "projectNumber": "87461567267",
+    "projectMetadataSha256": "ab08f4058a7f2bc002603cfd6230adce716650b6a59f58d3968af6e2e9a7b661",
+    "location": "global",
+    "resourceName": "projects/87461567267/locations/global/builds/18d8d2fd-0e77-4692-a910-904c1bc66238",
+    "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+    "stepId": "vrm154-156-dev-materialization",
+    "jobConclusion": "success",
+    "workflow": {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "job": "vrm154-156-dev-materialization",
+      "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+      "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+    },
+    "nativeStepSha256": "f21e9e0d05a48c8634d8eac7eec00ed67791d2f69a6c6751183a52e30a7a71a9",
+    "producerControlHead": "0d4577882ce86d16ca2711007598fa4c17e49802",
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+    "request": {
+      "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+      "field": "pendingDevSuccessor",
+      "gitBlob": "2e70f9e25db21a3acf67a90890dae273adfa8a8b",
+      "sha256": "27eb853fb0bd7a6097fba9043ed31ba5fc123bceef812f824d2d962c79511b55"
+    },
+    "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "predecessorReceiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+    "predecessorExecution": {
+      "provider": "GITHUB_ACTIONS",
+      "runId": "45488581923",
+      "runAttempt": 1
+    },
+    "startedAt": "2026-11-25T18:47:03.838987175Z",
+    "completedAt": "2026-11-25T18:51:34.093439Z",
+    "buildMetadataSha256": "46d3a528c21f92e638dd83eb26557f8678b7972cea7c0cd7d259d90342ce6b00",
+    "nativeLogsSha256": "e3a4e06457db6b5211b559d3ccb9079ca163375d590adc6897e8a29107171261",
+    "sourceObject": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "name": "cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89.tgz",
+      "generation": "1795627936767064",
+      "size": 5959940,
+      "sha256": "867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/sources/235d6c28e72226f792514656fd5c47c8ba65cbee/867e16660a82741aa1cd1edef78cd9462e623c6242da77f6331a23840f3c6a89.tgz#1795627936767064"
+    },
+    "evidenceObject": {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "name": "cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip",
+      "generation": "1795632693578753",
+      "size": 5504,
+      "sha256": "1cc06ff7c9721421fb2864436b0812173a99af955c8ef6cc6546adaa8d98906a",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip#1795632693578753"
+    },
+    "artifactManifest": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/artifacts-18d8d2fd-0e77-4692-a910-904c1bc66238.json#1795632693747945",
+      "sha256": "3bf4386cc401353bd403b78238f6271c3865c7ab661c12c8c4b9e5fbab03c165"
+    },
+    "artifactDigest": "sha256:1cc06ff7c9721421fb2864436b0812173a99af955c8ef6cc6546adaa8d98906a",
+    "nativeBuildVerified": true,
+    "scope": "I3_PAIRED_DEV",
+    "production": false
+  },
+  "jobs": [],
+  "artifacts": [
+    {
+      "bucket": "cxorbia-backend-dev_cloudbuild",
+      "name": "cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip",
+      "generation": "1795632693578753",
+      "size": 5504,
+      "sha256": "1cc06ff7c9721421fb2864436b0812173a99af955c8ef6cc6546adaa8d98906a",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip#1795632693578753"
+    }
+  ],
+  "pendingTypedResults": [],
+  "outcome": "CONSUMED_EXACT_DEV_MATERIALIZATION",
+  "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+  "newDomainMatches": 0,
+  "production": false,
+  "productActionsPerformedByConsumer": 0
+}
