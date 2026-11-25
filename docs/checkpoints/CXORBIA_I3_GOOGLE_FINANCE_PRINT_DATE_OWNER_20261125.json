@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.proven-finance-print-date-owner.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "contract": "C09/C10 movement PDF retains the same date values visible in the source rows",
+  "owner": "app/modules/cliente-extra.js",
+  "method": "CX.reportKit.exportPDF",
+  "domain": "client-portal-reportkit",
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
+  "classification": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "F9Source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "approvedProductSource": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "controlHeadWhenReproduced": "05d055e91fe2c93de196e7a36de45cd225dbc519",
+  "identicalOwnerGitBlobAtF9ApprovedServedAndControl": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+  "liveOwnerReadback": {
+    "url": "https://cxorbia-backend-dev.web.app/modules/cliente-extra.js",
+    "bytes": 44738,
+    "sha256": "27d3cae704bbf28f5a5c9c230d2b31b0684619fa60ea506534a5830e7750242a"
+  },
+  "syntheticBefore": {
+    "reportSha256": "f9b8cc04ff0f2bb47c066710f108305ff9e36329a5e8ab7d69fd828638d4199d",
+    "chromium": "141.0.7390.37",
+    "pdfjs": "3.11.174",
+    "shortRows": {
+      "dom": true,
+      "pdf": true
+    },
+    "longRows": {
+      "dom": true,
+      "pdf": false,
+      "missingCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "dateDigitsRetainedAcrossWhitespace": true
+    }
+  },
+  "credit": {
+    "operationalFinanceExportVerified": false,
+    "newDomainMatches": 0,
+    "production": false
+  },
+  "syntheticAfter": {
+    "reportSha256": "dbb0d3a1281cd12fc85ae3c61e66c8120af77065d00c38cb08d00103e478c41d",
+    "ownerGitBlob": "b87de5036fab23c8f3f0633b0fd03f663ea4c755",
+    "ownerSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+    "shortRows": {
+      "dom": true,
+      "pdf": true,
+      "missingCells": []
+    },
+    "longRows": {
+      "dom": true,
+      "pdf": true,
+      "missingCells": []
+    },
+    "deployed": false
+  },
+  "actualFinanceSession": {
+    "result": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
+    "typedResultSha256": "aa5263edf329bfe8429b67a64214db7ddc48318ffc4e135d5cd5f80c812194b6",
+    "node": "24.22.3",
+    "session": "SESSION_1_AUTH",
+    "firebaseUserPresent": true,
+    "contextAuthenticated": true,
+    "role": "admin",
+    "authorityPresent": false,
+    "sourceBlocked": true,
+    "authenticatedHrHttp": [
+      200
+    ],
+    "hrOwnerError": null,
+    "independentAdminSessionsCompleted": 0,
+    "financialMutationRequestsDispatched": 0
+  }
+}

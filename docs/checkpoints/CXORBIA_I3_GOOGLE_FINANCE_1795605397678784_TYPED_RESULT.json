@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_UI_READONLY",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-core-ui-readonly.v1",
+    "decision": "HOLD_C09_C10_UI_READONLY",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/f72e358d-e29b-460f-a969-e46189656e19/start.json#1795605223282455",
+    "startGeneration": "1795605223282455",
+    "startSha256": "ff54ced61c00d89fd9ff2ec186c4f421c4a65800015c7a97a0152c7b2fb8c214",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/f72e358d-e29b-460f-a969-e46189656e19/result.json#1795605397678784",
+    "resultGeneration": "1795605397678784",
+    "bundleSha256": "2280e5c3de38a6d957dbe650111047dbda472744939e5b8871317b710ad5833c",
+    "resultSha256": "4140a40399ddbb6d530e7e3d787f93fc2408d231327ccb186918d4ced5a32168",
+    "entry": "finance-ui-readonly.json",
+    "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+    "transportSha": "05d055e91fe2c93de196e7a36de45cd225dbc519"
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": "ENVIRONMENT_FAILURE",
+  "failureCodes": [
+    "ENVIRONMENT_FAILURE:C09_C10_UI_UNCONFIRMED"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "sameArtifactReadback": {
+      "entry": "identity-live-readback.json",
+      "present": true,
+      "bindingExact": true,
+      "parseable": true,
+      "jobSuccessful": false,
+      "fieldsExact": true,
+      "noDeployment": true,
+      "readbackExact": true,
+      "sha256": "a81f26dada76e8c3d290b13dc6a1e45997f9cff23121005a005d8f3c4c57592d",
+      "verified": false
+    },
+    "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
+    "stage": "SESSION_1_AUTH",
+    "failureStage": "SESSION_1_AUTH",
+    "sessionAttempted": 1,
+    "activeSessionProgress": {
+      "auth": false,
+      "period": false,
+      "serverRows": false,
+      "dom": false,
+      "advancePair": false,
+      "movementExport": false,
+      "dashboard": false,
+      "finalRead": false
+    },
+    "failureUi": {
+      "available": true,
+      "firebaseUserPresent": true,
+      "contextAuthenticated": true,
+      "authorityApplied": false,
+      "expectedProjectSelected": false,
+      "expectedPeriodSelected": false,
+      "projectionLoaded": false,
+      "projectionKeyMatches": false,
+      "movExportPresent": false,
+      "finExportPresent": false,
+      "reportPreviewPresent": false,
+      "printTablePresent": false,
+      "route": "OTHER_OR_UNAVAILABLE",
+      "role": "admin",
+      "movementRowCount": 0,
+      "reportRowCount": 0
+    },
+    "currentAdminClaimsVerified": null,
+    "browserServerReadVerified": null,
+    "committedMetadataReceiptVerified": null,
+    "firstAdvanceUnchanged": null,
+    "secondMetadataExact": null,
+    "sameCashPeriod": null,
+    "newSessionParity": null,
+    "financialDocumentsStable": null,
+    "independentAdminSessions": 0,
+    "advanceCount": null,
+    "customTokenMints": 1,
+    "network": {
+      "automaticHrSuppressed": 0,
+      "unexpectedDenied": 3,
+      "allowedAuthRequests": 4,
+      "routeControlFailures": 0
+    },
+    "sessions": [],
+    "safety": {
+      "authIdentityOrClaimsWrites": 0,
+      "directFirestoreWrites": 0,
+      "providerCommandsExecuted": 0,
+      "financialMutationRequestsDispatched": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

@@ -27348,10 +27348,25 @@
         "decision": "RECORDED_TYPED_RESULT_HOLD",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T11:06:36.669Z"
+      },
+      {
+        "key": "GOOGLE_CLOUD_SHELL/1795605223282455",
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
+        "sha256": "aa5263edf329bfe8429b67a64214db7ddc48318ffc4e135d5cd5f80c812194b6",
+        "gitBlob": "e78c6fe7a1bff7fd4279d69a27940431ba92fdbc",
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+        "transportSha": "05d055e91fe2c93de196e7a36de45cd225dbc519",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/f72e358d-e29b-460f-a969-e46189656e19/start.json#1795605223282455",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/f72e358d-e29b-460f-a969-e46189656e19/result.json#1795605397678784",
+        "bundleSha256": "2280e5c3de38a6d957dbe650111047dbda472744939e5b8871317b710ad5833c",
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T11:16:37.678Z"
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T11:06:36.669Z"
+    "updatedAt": "2026-11-25T11:16:37.678Z"
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
