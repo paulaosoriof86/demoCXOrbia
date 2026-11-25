@@ -1,0 +1,309 @@
+✖ Google UUID materialization preserves the real Actions scan floor and both missing attempts (3.143186ms)
+✖ Google numeric generation is never substituted for the Actions cursor (0.425255ms)
+✖ external seal without a valid Actions cursor fails before the provider scan (0.523549ms)
+✖ Actions cursor attempt governs only the boundary Actions run after an external deployment (0.688091ms)
+✖ late Actions completion cannot replace the current Google execution by numeric ordering or clock (0.518932ms)
+✖ different external UUIDs require a predecessor transition instead of arrival order (0.346179ms)
+✖ the same provider execution cannot replay a divergent immutable journal outcome (0.317656ms)
+✖ legacy Actions keys stay byte-identical and Google identities have an explicit namespace (0.37426ms)
+✖ a UUID without a provider cannot become an Actions key (0.365566ms)
+✖ Actions drain excludes explicitly external entries and preserves their queue objects (0.755099ms)
+✖ external typed D08 evidence cannot be routed to the Actions run API (0.598108ms)
+✖ external producer evidence cannot acquire unadapted Actions-only scoped credit (0.94704ms)
+✖ divergent same-key scoped replay is rejected instead of selecting one by input order (0.508627ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 0
+ℹ fail 13
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.662709
+
+✖ failing tests:
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:13:1
+✖ Google UUID materialization preserves the real Actions scan floor and both missing attempts (3.143186ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   {
+  -     runAttempt: 1,
+  -     runId: 51
+  -   },
+  -   {
+  -     runAttempt: 2,
+  -     runId: 51
+  -   }
+  - ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:14:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ { runId: 51, runAttempt: 1 }, { runId: 51, runAttempt: 2 } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:16:1
+✖ Google numeric generation is never substituted for the Actions cursor (0.425255ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 2
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:18:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:20:1
+✖ external seal without a valid Actions cursor fails before the provider scan (0.523549ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:23:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /SOURCE_FAILURE|MAPPING_FAILURE/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:26:1
+✖ Actions cursor attempt governs only the boundary Actions run after an external deployment (0.688091ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   {
+  -     runAttempt: 2,
+  -     runId: 51
+  -   }
+  - ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:29:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ { runId: 51, runAttempt: 2 } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:36:1
+✖ late Actions completion cannot replace the current Google execution by numeric ordering or clock (0.518932ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:38:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:40:1
+✖ different external UUIDs require a predecessor transition instead of arrival order (0.346179ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:42:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:44:1
+✖ the same provider execution cannot replay a divergent immutable journal outcome (0.317656ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:46:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /SOURCE_FAILURE/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:48:1
+✖ legacy Actions keys stay byte-identical and Google identities have an explicit namespace (0.37426ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '56b76a83-3e5d-4957-99aa-2521a9c51845/1/qa-step'
+  - 'GOOGLE_CLOUD_BUILD/56b76a83-3e5d-4957-99aa-2521a9c51845/1/qa-step'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:51:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '56b76a83-3e5d-4957-99aa-2521a9c51845/1/qa-step',
+    expected: 'GOOGLE_CLOUD_BUILD/56b76a83-3e5d-4957-99aa-2521a9c51845/1/qa-step',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:54:1
+✖ a UUID without a provider cannot become an Actions key (0.365566ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:55:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /SOURCE_FAILURE|MAPPING_FAILURE/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:57:1
+✖ Actions drain excludes explicitly external entries and preserves their queue objects (0.755099ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      {
+        runAttempt: 1,
+        runId: 51
+      },
+  +   {
+  +     runAttempt: 1,
+  +     runId: NaN
+  +   },
+  +   {
+  +     runAttempt: NaN,
+  +     runId: NaN
+  +   }
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:59:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { runId: 51, runAttempt: 1 }, { runId: NaN, runAttempt: 1 }, { runId: NaN, runAttempt: NaN } ],
+    expected: [ { runId: 51, runAttempt: 1 } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:61:1
+✖ external typed D08 evidence cannot be routed to the Actions run API (0.598108ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     runAttempt: 1,
+  +     runId: NaN
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:63:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { runId: NaN, runAttempt: 1 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:71:1
+✖ external producer evidence cannot acquire unadapted Actions-only scoped credit (0.94704ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:73:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tools/qa/cxorbia-i3-provider-consumer.test.mjs:75:1
+✖ divergent same-key scoped replay is rejected instead of selecting one by input order (0.508627ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///workspace/scratch/77c63eb013cc/mechanism-work/tools/qa/cxorbia-i3-provider-consumer.test.mjs:77:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /SOURCE_FAILURE|MAPPING_FAILURE/,
+    operator: 'throws',
+    diff: 'simple'
+  }

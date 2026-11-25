@@ -16,6 +16,113 @@ export const academyJob='i3-run2382-academy-b7-isolated-dev-qa';
 export const academyAbsenceScope='docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json';
 const readCommand = (cmd,args) => execFileSync(cmd,args,{encoding:'utf8',timeout:45000,maxBuffer:3*1024*1024});
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+const verifiedPairedExecutions=new WeakSet();
+export const isVerifiedGooglePairedExecution=value=>verifiedPairedExecutions.has(value);
+const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
+const deepFreeze=value=>{if(value&&typeof value==='object'){for(const child of Object.values(value))deepFreeze(child);Object.freeze(value);}return value;};
+function nativeMd5(row){
+ const keys=['file_hash','fileHash'].filter(k=>row[k]!==undefined);
+ need(keys.length===1,'GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+ let value=row[keys[0]];
+ for(let depth=0;depth<3;depth++){
+  const entries=Array.isArray(value)?value:[value];need(entries.length===1,'GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+  const item=entries[0];need(item&&typeof item==='object','GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+  if(item.type!==undefined||item.value!==undefined){
+   need(JSON.stringify(Object.keys(item).sort())===JSON.stringify(['type','value'])&&[2,'MD5'].includes(item.type)&&typeof item.value==='string','GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+   if(/^[a-f0-9]{32}$/.test(item.value))return item.value;
+   const digest=/^[A-Za-z0-9+/]{32}$/.test(item.value)?Buffer.from(item.value,'base64').toString('utf8'):item.value;
+   need(/^[A-Za-z0-9+/]{22}==$/.test(digest)&&Buffer.from(digest,'base64').length===16&&Buffer.from(digest,'base64').toString('base64')===digest,'GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+   return Buffer.from(digest,'base64').toString('hex');
+  }
+  const inner=['file_hash','fileHash'].filter(k=>item[k]!==undefined);
+  need(inner.length===1&&Object.keys(item).length===1,'GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');value=item[inner[0]];
+ }
+ throw Error('SOURCE_FAILURE:GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+}
+function executableStep(value){
+ const fields=['name','args','env','id','dir','entrypoint','secretEnv','volumes','waitFor','timeout','script','automapSubstitutions','allowFailure','allowExitCodes'];
+ const runtime=['timing','pullTiming','status','exitCode'];
+ need(value&&Object.keys(value).every(k=>fields.includes(k)||runtime.includes(k)),'GOOGLE_PAIRED_NATIVE_STEP_CONFIG');
+ need(typeof value.name==='string'&&value.name.length>0&&!value.allowFailure&&!value.allowExitCodes?.length&&!value.automapSubstitutions&&!value.secretEnv?.length&&!value.volumes?.length,'GOOGLE_PAIRED_NATIVE_STEP_CONFIG');
+ return canonical(Object.fromEntries(fields.filter(k=>Object.hasOwn(value,k)&&value[k]!==false&&value[k]!==''&&!(Array.isArray(value[k])&&value[k].length===0)).map(k=>[k,value[k]])));
+}
+
+// Native Cloud Build transport for the SAME paired DEV evidence ZIP. No build,
+// deploy, provider write, generated Actions ID or new certificate is produced.
+// Expected pins are read from the immutable producer request by the consumer.
+export function readGooglePairedArchive({buildId,location,expected},read=(cmd,args)=>execFileSync(cmd,args,{timeout:45000,maxBuffer:256*1024*1024})){
+ const idPattern=/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
+ need(idPattern.test(buildId)&&/^[a-z][a-z0-9-]+$/.test(location),'GOOGLE_PAIRED_EXECUTION_ID');
+ need(expected&&['controlSha','sourceSha','sourceTree','predecessorReceiptBlob'].every(k=>sha.test(expected[k]||''))&&
+  /^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(expected.predecessorReceiptPath||'')&&
+  expected.request?.path==='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'&&expected.request?.field==='pendingDevSuccessor'&&sha.test(expected.request?.gitBlob||'')&&
+  /^[a-f0-9]{64}$/.test(expected.request?.sha256||'')&&/^[A-Za-z0-9_-]+$/.test(expected.stepId||'')&&
+  expected.workflow?.path==='.github/workflows/cxorbia-recovery-i3-dev-certification.yml'&&expected.workflow?.job==='vrm154-156-dev-materialization'&&sha.test(expected.workflow?.gitBlob||'')&&/^[a-f0-9]{64}$/.test(expected.workflow?.sha256||'')&&
+  expected.step?.id===expected.stepId&&
+  /^projects\/(?:cxorbia-backend-dev|\d+)\/serviceAccounts\/[A-Za-z0-9._-]+@(?:cxorbia-backend-dev\.iam\.gserviceaccount\.com|cloudbuild\.gserviceaccount\.com|developer\.gserviceaccount\.com)$/.test(expected.serviceAccount||''),'GOOGLE_PAIRED_EXPECTED_BINDING');
+ need(['GITHUB_ACTIONS','GOOGLE_CLOUD_BUILD'].includes(expected.predecessorExecution?.provider)&&typeof expected.predecessorExecution?.runId==='string'&&expected.predecessorExecution.runId.length>0&&Number.isSafeInteger(expected.predecessorExecution.runAttempt)&&expected.predecessorExecution.runAttempt>0,'GOOGLE_PAIRED_PREDECESSOR_EXECUTION');
+ const buildBytes=read('gcloud',['builds','describe',buildId,'--project='+project,'--region='+location,'--format=json']);
+ const build=JSON.parse(String(buildBytes)),resource=build.name,idResource=`projects/${project}/locations/${location}/builds/${buildId}`;
+ let projectNumberBinding={};
+ if(resource!==idResource){
+  const projectBytes=read('gcloud',['projects','describe',project,'--format=json']),projectMeta=JSON.parse(String(projectBytes));
+  need(projectMeta.projectId===project&&/^[1-9]\d+$/.test(String(projectMeta.projectNumber))&&resource===`projects/${projectMeta.projectNumber}/locations/${location}/builds/${buildId}`,'GOOGLE_PAIRED_NATIVE_BUILD_RESOURCE');
+  projectNumberBinding={projectNumber:String(projectMeta.projectNumber),projectMetadataSha256:hash(projectBytes)};
+ }
+ need(build.id===buildId&&build.projectId===project&&build.status==='SUCCESS'&&build.serviceAccount===expected.serviceAccount,'GOOGLE_PAIRED_NATIVE_BUILD');
+ const started=Date.parse(build.startTime),ended=Date.parse(build.finishTime);
+ need(Number.isFinite(started)&&Number.isFinite(ended)&&ended>=started,'GOOGLE_PAIRED_NATIVE_WINDOW');
+ const steps=(build.steps||[]).filter(x=>x.id===expected.stepId),step=steps[0];
+ need(build.steps.length===1&&steps.length===1&&step.status==='SUCCESS'&&(step.exitCode===undefined||step.exitCode===0)&&Date.parse(step.timing?.startTime)>=started&&Date.parse(step.timing?.endTime)<=ended&&Date.parse(step.timing?.endTime)>Date.parse(step.timing?.startTime),'GOOGLE_PAIRED_NATIVE_STEP');
+ need(JSON.stringify(executableStep(step))===JSON.stringify(executableStep(expected.step))&&!build.options?.env?.length&&!build.options?.secretEnv?.length&&!build.options?.volumes?.length&&!build.options?.automapSubstitutions&&!build.options?.dynamicSubstitutions&&!build.options?.pool?.name&&!build.secrets?.length&&!build.availableSecrets,'GOOGLE_PAIRED_NATIVE_STEP_CONFIG');
+ const substitutions={_CXORBIA_SCOPE:'I3_PAIRED_DEV',_CXORBIA_CONTROL_SHA:expected.controlSha,_CXORBIA_SOURCE_SHA:expected.sourceSha,_CXORBIA_SOURCE_TREE:expected.sourceTree,_CXORBIA_REQUEST_BLOB:expected.request.gitBlob,_CXORBIA_PREDECESSOR_BLOB:expected.predecessorReceiptBlob};
+ need(Object.entries(substitutions).every(([k,v])=>build.substitutions?.[k]===v),'GOOGLE_PAIRED_NATIVE_SCOPE');
+ const object=(pin,{withinBuild=false,source=false}={})=>{
+  need(pin&&pin.bucket===bucket&&typeof pin.name==='string'&&!pin.name.startsWith('/')&&!pin.name.split('/').includes('..')&&!/[#?\\\r\n]/.test(pin.name)&&/^[1-9]\d{7,19}$/.test(String(pin.generation))&&Number.isSafeInteger(Number(pin.size))&&Number(pin.size)>0&&Number(pin.size)<=256*1024*1024&&/^[a-f0-9]{64}$/.test(pin.sha256||''),'GOOGLE_PAIRED_OBJECT_PIN');
+  const uri=`gs://${pin.bucket}/${pin.name}#${pin.generation}`,metaBytes=read('gcloud',['storage','objects','describe',uri,'--raw','--format=json']),meta=JSON.parse(String(metaBytes));
+  need(meta.bucket===pin.bucket&&meta.name===pin.name&&String(meta.generation)===String(pin.generation)&&Number(meta.size)===Number(pin.size),'GOOGLE_PAIRED_OBJECT_METADATA');
+  const created=Date.parse(meta.timeCreated);
+  need(Number.isFinite(created)&&(!withinBuild||(created>=started&&created<=ended+60000))&&(!source||created<=started),'GOOGLE_PAIRED_OBJECT_WINDOW');
+  const bytes=read('gcloud',['storage','cat',uri]);
+  need(Buffer.byteLength(bytes)===Number(pin.size)&&hash(bytes)===pin.sha256,'GOOGLE_PAIRED_OBJECT_BYTES');
+  return {bytes,uri,meta,pin:{...pin,generation:String(pin.generation),size:Number(pin.size)}};
+ };
+ const resolved=build.sourceProvenance?.resolvedStorageSource;
+ need(resolved&&resolved.bucket===expected.sourceObject?.bucket&&resolved.object===expected.sourceObject?.name&&String(resolved.generation)===String(expected.sourceObject?.generation),'GOOGLE_PAIRED_RESOLVED_SOURCE');
+ const source=object(expected.sourceObject,{source:true}),archive=object(expected.evidenceObject,{withinBuild:true});
+ const manifestBase=build.results?.artifactManifest;
+ need(typeof manifestBase==='string'&&manifestBase.startsWith('gs://'+bucket+'/')&&manifestBase.split('#')[0].endsWith('/artifacts-'+buildId+'.json'),'GOOGLE_PAIRED_NATIVE_MANIFEST');
+ const manifestGeneration=manifestBase.split('#')[1];
+ need(manifestBase.split('#').length<=2&&(!manifestGeneration||/^[1-9]\d{7,19}$/.test(manifestGeneration)),'GOOGLE_PAIRED_NATIVE_MANIFEST');
+ const manifestMeta=JSON.parse(String(read('gcloud',['storage','objects','describe',manifestBase,'--raw','--format=json'])));
+ need(manifestMeta.bucket===bucket&&manifestBase.split('#')[0]==='gs://'+bucket+'/'+manifestMeta.name&&/^[1-9]\d{7,19}$/.test(String(manifestMeta.generation))&&(!manifestGeneration||manifestGeneration===String(manifestMeta.generation))&&Date.parse(manifestMeta.timeCreated)>=started&&Date.parse(manifestMeta.timeCreated)<=ended+60000,'GOOGLE_PAIRED_MANIFEST_METADATA');
+ const manifestUri=manifestBase.split('#')[0]+'#'+manifestMeta.generation,manifestBytes=read('gcloud',['storage','cat',manifestUri]);
+ need(Number.isSafeInteger(Number(manifestMeta.size))&&Number(manifestMeta.size)>0&&Number(manifestMeta.size)===Buffer.byteLength(manifestBytes),'GOOGLE_PAIRED_MANIFEST_BYTES');
+ const manifestText=String(manifestBytes).trim();
+ let manifest;try{manifest=JSON.parse(manifestText);if(!Array.isArray(manifest))manifest=[manifest];}catch{manifest=manifestText.split('\n').filter(Boolean).map(x=>JSON.parse(x));}
+ const uploaded=manifest.filter(x=>x.location===archive.uri);
+ need(uploaded.length===1,'GOOGLE_PAIRED_ARCHIVE_NOT_NATIVE_ARTIFACT');
+ need(nativeMd5(uploaded[0])===createHash('md5').update(archive.bytes).digest('hex'),'GOOGLE_PAIRED_NATIVE_ARTIFACT_HASH');
+ const logs=read('gcloud',['builds','log',buildId,'--project='+project,'--region='+location]);
+ need(Buffer.byteLength(logs)>0,'GOOGLE_PAIRED_NATIVE_LOGS_EMPTY');
+ const folder=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-google-paired-')),zip=path.join(folder,'evidence.zip'),out=path.join(folder,'entries');
+ try{
+  fs.writeFileSync(zip,archive.bytes);fs.mkdirSync(out);
+  execFileSync('python3',['-c',`import pathlib,stat,sys,zipfile
+z=zipfile.ZipFile(sys.argv[1]);root=pathlib.Path(sys.argv[2]);seen=set();total=0
+for i in z.infolist():
+ p=pathlib.PurePosixPath(i.filename)
+ if p.is_absolute() or '..' in p.parts or ':' in i.filename or '\\\\' in i.filename or i.filename in seen or stat.S_ISLNK(i.external_attr>>16): raise RuntimeError('SOURCE_FAILURE:GOOGLE_PAIRED_UNSAFE_ZIP')
+ seen.add(i.filename);total+=i.file_size
+ if total>128*1024*1024: raise RuntimeError('SOURCE_FAILURE:GOOGLE_PAIRED_ZIP_LIMIT')
+ if i.filename.endswith('.json') and not i.is_dir():
+  dst=root/i.filename;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(z.read(i))
+`,zip,out],{stdio:['ignore','pipe','pipe'],timeout:45000});
+  const externalExecution=deepFreeze({executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,runAttempt:1,runNumber:null,project,...projectNumberBinding,location,resourceName:resource,serviceAccount:build.serviceAccount,stepId:step.id,jobConclusion:'success',workflow:structuredClone(expected.workflow),nativeStepSha256:hash(JSON.stringify(executableStep(step))),producerControlHead:expected.controlSha,sourceSha:expected.sourceSha,sourceTree:expected.sourceTree,request:structuredClone(expected.request),predecessorReceiptPath:expected.predecessorReceiptPath,predecessorReceiptBlob:expected.predecessorReceiptBlob,predecessorExecution:structuredClone(expected.predecessorExecution),startedAt:build.startTime,completedAt:build.finishTime,buildMetadataSha256:hash(buildBytes),nativeLogsSha256:hash(logs),sourceObject:{...source.pin,uri:source.uri},evidenceObject:{...archive.pin,uri:archive.uri},artifactManifest:{uri:manifestUri,sha256:hash(manifestBytes)},artifactDigest:'sha256:'+archive.pin.sha256,nativeBuildVerified:true,scope:'I3_PAIRED_DEV',production:false});
+  verifiedPairedExecutions.add(externalExecution);
+  return {folder:out,digest:externalExecution.artifactDigest,externalExecution,cleanup:()=>fs.rmSync(folder,{recursive:true,force:true})};
+ }catch(error){fs.rmSync(folder,{recursive:true,force:true});throw error;}
+}
 
 function need(condition,code){
   if(!condition)throw Error('SOURCE_FAILURE:'+code);
@@ -106,6 +213,7 @@ export function readGoogleFinanceResult(uri,expected,read=readCommand){
      bundleSha256:result.sha256,resultSha256:bundle.resultSha256,encryptedPdfEvidence:readEncryptedPdfEvidence(bundle,raw,result.id,read)};
   return {resultText,identityReadback:{entry:'identity-live-readback.json',resultUri:uri,bundleSha256:result.sha256,text:sealText},transport};
 }
+
 
 function readAcademyArchive(uri,digest){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-d08-readback-'));

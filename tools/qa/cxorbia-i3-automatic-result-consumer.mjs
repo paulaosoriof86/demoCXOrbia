@@ -3,12 +3,12 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved,projectCurrentResidualNextAction,executionProviderOf,actionsCursorOf} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
-import {readGoogleAcademyResult} from './cxorbia-i3-google-qa-execution.mjs';
 import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
 import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
+import {readGooglePairedArchive,readGoogleAcademyResult} from './cxorbia-i3-google-qa-execution.mjs';
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
@@ -93,8 +93,32 @@ export function selectTypedArtifact({run,job,artifacts}){
   Date.parse(a.created_at)>=Date.parse(job.started_at)&&Date.parse(a.created_at)<=Date.parse(job.completed_at)+60000);
  must(found.length===1,'SOURCE_FAILURE:TYPED_ARTIFACT_MISSING_OR_AMBIGUOUS');return found[0];
 }
-export const typedResultKey=x=>`${x.runId}/${x.runAttempt}/${x.jobId}`;
-export function pendingTypedRuns(queue=[]){return [...new Map(queue.filter(x=>TYPED_JOBS[x.name]||x.name===CONTROL_AUTHORITY).map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];}
+const actionsNumber=(value,field)=>{const text=String(value??'');must(/^[1-9]\d*$/.test(text)&&Number.isSafeInteger(Number(text)),'SOURCE_FAILURE:ACTIONS_'+field+'_IDENTITY');return Number(text);};
+const executionAttempt=value=>actionsNumber(value,'ATTEMPT');
+const externalRunId=value=>{const text=String(value??'');must(/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(text),'SOURCE_FAILURE:GOOGLE_BUILD_EXECUTION_IDENTITY');return text;};
+export function typedResultKey(x){
+ const provider=executionProviderOf(x);
+ if(provider==='GITHUB_ACTIONS'){
+  actionsNumber(x.runId,'RUN');executionAttempt(x.runAttempt);actionsNumber(x.jobId,'JOB');
+  return `${x.runId}/${x.runAttempt}/${x.jobId}`;
+ }
+ if(provider==='GOOGLE_CLOUD_SHELL'){
+  const generation=String(x.startGeneration??x.runId??x.key?.match(/^GOOGLE_CLOUD_SHELL\/([1-9]\d*)$/)?.[1]??'');
+  must(/^[1-9]\d{7,19}$/.test(generation),'SOURCE_FAILURE:GOOGLE_SHELL_EXECUTION_IDENTITY');
+  const key=provider+'/'+generation;must(!x.key||x.key===key,'SOURCE_FAILURE:GOOGLE_SHELL_INDEX_KEY');return key;
+ }
+ const id=externalRunId(x.runId),attempt=executionAttempt(x.runAttempt),step=String(x.jobId??x.stepId??'');
+ must(/^[A-Za-z0-9_-]+$/.test(step),'SOURCE_FAILURE:GOOGLE_BUILD_STEP_IDENTITY');
+ return `${provider}/${id}/${attempt}/${step}`;
+}
+export function pendingTypedRuns(queue=[]){
+ return [...new Map(queue.filter(x=>(TYPED_JOBS[x.name]||x.name===CONTROL_AUTHORITY)&&executionProviderOf(x)==='GITHUB_ACTIONS')
+  .map(x=>{const runId=actionsNumber(x.runId,'RUN'),runAttempt=executionAttempt(x.runAttempt);return [`${runId}/${runAttempt}`,{runId,runAttempt}];})).values()];
+}
+export function pendingExternalTypedResults(queue=[]){
+ return queue.filter(x=>(TYPED_JOBS[x.name]||x.name===CONTROL_AUTHORITY)&&executionProviderOf(x)!=='GITHUB_ACTIONS')
+  .map(x=>({key:typedResultKey(x),executionProvider:executionProviderOf(x)}));
+}
 
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 export function pendingSatisfiedRequestRuns(controls){
@@ -102,7 +126,8 @@ export function pendingSatisfiedRequestRuns(controls){
  if(!request)return [];
  return [...new Map((controls.pointer.currentFunctionalEvidenceIndex?.results||[])
   .filter(x=>(x.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'||x.kind==='D08_RECOVERY'&&x.producerDecision==='PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP')&&(!x.requestBinding||(x.requestBinding.path===request.path&&x.requestBinding.gitBlob===request.gitBlob)))
-  .map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];
+  .filter(x=>executionProviderOf(x)==='GITHUB_ACTIONS')
+  .map(x=>{const runId=actionsNumber(x.runId,'RUN'),runAttempt=executionAttempt(x.runAttempt);return [`${runId}/${runAttempt}`,{runId,runAttempt}];})).values()];
 }
 
 // The producer commit retains its immutable request. Only the exact satisfied
@@ -202,6 +227,7 @@ export async function summarizeGoogleAcademyResult({uri,expectedIdentity},read,r
  const blobs=new Map([pointer.currentD08UiQaRequest.path,pointer.currentD08ScopedAuthority.path].map(p=>[p,gitBlob(readBytes(p))]));
  return normalizeD08Artifact({text,transport,producer:{pointer,matrix,blobs,readFile,readBytes}});
 }
+
 const FINANCE_JOB='i3-finance-focal-reproof';
 const FINANCE_DEPENDENCIES='Run bash tools/qa/cxorbia-i3-finance-dependencies.sh';
 const FINANCE_EXECUTE='Run bash tools/qa/cxorbia-i3-finance-focal-execute.sh';
@@ -255,7 +281,7 @@ export function makeFinanceNotExecutedReceipt({run,job,journal,artifacts,now}){
 export function retireRecordedControlQueue({queue,run,jobs,journal,journalPath,journalBlob,now}){
  const next=new Map(queue),retired=[],failures=[];
  for(const [key,item]of queue){
-  if(item.name!==CONTROL_AUTHORITY||String(item.runId)!==String(run.id)||String(item.runAttempt)!==String(run.run_attempt))continue;
+  if(item.name!==CONTROL_AUTHORITY||executionProviderOf(item)!=='GITHUB_ACTIONS'||String(item.runId)!==String(run.id)||String(item.runAttempt)!==String(run.run_attempt))continue;
   try{
    must(key===typedResultKey(item)&&item.controlHead===run.head_sha&&item.journalPath===journalFile(run)&&journalPath===item.journalPath&&item.journalBlob===journalBlob&&journalBlob===gitBlob(jsonBytes(journal)),'SOURCE_FAILURE:CONTROL_QUEUE_JOURNAL_BINDING');
    const matches=jobs.filter(j=>j.id===item.jobId&&j.name===CONTROL_AUTHORITY);
@@ -290,7 +316,7 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
    const text=await controls.readBytes(old.path);
    must(gitBlob(text)===old.gitBlob&&sha256(text)===old.sha256,'SOURCE_FAILURE:TYPED_INDEX_RECEIPT_HASH');
    const saved=JSON.parse(text),proof=saved.provenance||saved.evidence;
-   must(String(proof?.runId)===String(run.id)&&String(proof?.runAttempt)===String(run.run_attempt)&&String(proof?.jobId)===String(job.id)&&proof?.controlHead===run.head_sha,'SOURCE_FAILURE:TYPED_INDEX_IDENTITY');
+   must(executionProviderOf(old)==='GITHUB_ACTIONS'&&executionProviderOf(proof)==='GITHUB_ACTIONS'&&String(proof?.runId)===String(run.id)&&String(proof?.runAttempt)===String(run.run_attempt)&&String(proof?.jobId)===String(job.id)&&proof?.controlHead===run.head_sha,'SOURCE_FAILURE:TYPED_INDEX_IDENTITY');
    must(String(proof.artifactId)===String(old.artifactId)&&proof.artifactDigest===old.artifactDigest,'SOURCE_FAILURE:TYPED_INDEX_ARTIFACT_IDENTITY');
    if(saved.kind==='FINANCE_NOT_EXECUTED'){
     must(old.artifactId===null&&old.artifactDigest===null&&saved.artifact===null,'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_NULL_ARTIFACT');
@@ -370,6 +396,7 @@ export async function readScopedIndexResults({api,token,index,controls,files,dow
   if(!['A08_RESIDUAL','FINANCE_METADATA','F3_RUN2782_RECOVERY'].includes(kind))continue;
   let item=verifiedTypedReceipt(entry,savedBytes,{gitBlob,sha256});
   if(item.result.kind==='A08_RESIDUAL'&&!Object.hasOwn(item.result.observations||{},'acceptedClauseRefs')){
+   must(executionProviderOf(entry)==='GITHUB_ACTIONS','SOURCE_FAILURE:A08_EXTERNAL_NORMALIZATION_UNSUPPORTED');
    const old={path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},saved=item.result,proof=saved.provenance;
    must(entry.ownerReceiptCount===0&&/^docs\/checkpoints\/CXORBIA_I3_RUN\d+_ATTEMPT\d+_JOB\d+_TYPED_RESULT\.json$/.test(old.path),'SOURCE_FAILURE:A08_NORMALIZATION_ORIGIN');
    const artifact=await api(`/repos/${REPO}/actions/artifacts/${entry.artifactId}`);
@@ -459,7 +486,113 @@ async function loadControls(api,head){
  const [descriptor,pointer]=await Promise.all([load(DESCRIPTOR),load(POINTER)]);
  must(JSON.stringify(descriptor.currentFunctionalEvidenceIndex||null)===JSON.stringify(pointer.currentFunctionalEvidenceIndex||null),'MAPPING_FAILURE:TYPED_INDEX_CONTROL_DESYNC');
  const [ledger,matrix]=await Promise.all([load(descriptor.findingsLedgerPath),load(descriptor.moduleTruthPath)]);
- return {descriptor,pointer,ledger,matrix,blobs,readFile:load,readBytes:bytes};
+ return {head,descriptor,pointer,ledger,matrix,blobs,readFile:load,readBytes:bytes};
+}
+
+const pairedExecutionIdentity=value=>({provider:executionProviderOf(value),runId:String(value.runId),runAttempt:Number(value.runAttempt||1)});
+function pairedProducerBinding(producer,descriptorBytes){
+ const d=producer.descriptor,p=producer.pointer,q=d.pendingDevSuccessor,seal=d.postDeployRunSeal;
+ must(q&&JSON.stringify(q)===JSON.stringify(p.pendingDevSuccessor)&&q.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&q.scope==='RUNTIME_AND_HOSTING'&&
+  q.sourceSha===d.productSourceSha&&q.sourceTree===d.productSourceTree&&q.production===false&&q.devPublished===false,'SOURCE_FAILURE:PAIRED_PRODUCER_REQUEST');
+ must(JSON.stringify(q.servingRuntimeSeal)===JSON.stringify(seal)&&JSON.stringify(q.servingPairedMaterialization)===JSON.stringify(d.currentMaterialization)&&
+  JSON.stringify(d.currentMaterialization)===JSON.stringify(p.currentMaterialization),'SOURCE_FAILURE:PAIRED_PRODUCER_PREDECESSOR');
+ must(gitBlob(descriptorBytes)===producer.blobs.get(DESCRIPTOR)&&JSON.stringify(JSON.parse(descriptorBytes))===JSON.stringify(d),'SOURCE_FAILURE:PAIRED_PRODUCER_DESCRIPTOR_BYTES');
+ return {request:{path:DESCRIPTOR,field:'pendingDevSuccessor',gitBlob:gitBlob(descriptorBytes),sha256:sha256(descriptorBytes)},
+  predecessorReceiptPath:seal.receiptPath,predecessorReceiptBlob:seal.receiptBlob,predecessorExecution:pairedExecutionIdentity(d.currentMaterialization)};
+}
+
+// A genuine executor return is causal only when its immutable producer already
+// contains the exact current execution journal. Run numbers and clocks cannot
+// establish that relationship across providers.
+export async function automationSuccessionFromProducer({producer,controls}){
+ const current=controls.descriptor.currentAutomationReceipt,prior=producer.descriptor.currentAutomationReceipt;
+ must(/^[a-f0-9]{40}$/.test(controls.head||'')&&JSON.stringify(current||null)===JSON.stringify(controls.pointer.currentAutomationReceipt||null),
+  'SOURCE_FAILURE:AUTOMATION_SUCCESSION_CURRENT_CONTROL');
+ must(JSON.stringify(prior||null)===JSON.stringify(producer.pointer.currentAutomationReceipt||null),'SOURCE_FAILURE:AUTOMATION_SUCCESSION_PRODUCER_CONTROL');
+ if(!current||!prior||prior.path!==current.path||prior.gitBlob!==current.gitBlob||
+  JSON.stringify(pairedExecutionIdentity(prior))!==JSON.stringify(pairedExecutionIdentity(current)))return null;
+ must(producer.blobs.get(prior.path)===prior.gitBlob,'SOURCE_FAILURE:AUTOMATION_SUCCESSION_PRODUCER_JOURNAL');
+ const bytes=await producer.readBytes(prior.path),journal=JSON.parse(bytes);
+ must(gitBlob(bytes)===prior.gitBlob&&journal.schemaVersion==='cxorbia.i3.automatic-execution-journal.v1'&&journal.repository===REPO&&
+  JSON.stringify(pairedExecutionIdentity(journal))===JSON.stringify(pairedExecutionIdentity(prior))&&journal.production===false&&journal.productActionsPerformedByConsumer===0,
+  'SOURCE_FAILURE:AUTOMATION_SUCCESSION_JOURNAL_IDENTITY');
+ return {expectedControlHead:controls.head,predecessorReceiptPath:prior.path,predecessorReceiptBlob:prior.gitBlob,predecessorExecution:pairedExecutionIdentity(prior)};
+}
+
+// Google supplies the same paired DEV evidence to the existing projector and
+// CAS writer. This entry point reads native evidence only: it never builds,
+// deploys, signs, reads HR or creates an Actions identity.
+export async function consumeGoogleMaterialization({api,buildId,location,expected,readNative,now=new Date().toISOString(),dryRun=false,
+ producerLoader=loadControls,archiveReader=readGooglePairedArchive,assetReader=sourceAssetHashes,treeReader=source=>git('rev-parse',`${source}^{tree}`)}){
+ const root=`/repos/${REPO}`;
+ must(expected&&/^[a-f0-9]{40}$/.test(expected.controlSha||''),'SOURCE_FAILURE:GOOGLE_PRODUCER_CONTROL');
+ const [ref,producer]=await Promise.all([api(`${root}/git/ref/heads/${BRANCH}`),producerLoader(api,expected.controlSha)]);
+ must(producer.head===expected.controlSha,'SOURCE_FAILURE:GOOGLE_PRODUCER_HEAD');
+ const head=ref.object.sha,controls=await producerLoader(api,head),binding=pairedProducerBinding(producer,await producer.readBytes(DESCRIPTOR));
+ must(controls.head===head&&expected.sourceSha===producer.descriptor.productSourceSha&&expected.sourceTree===producer.descriptor.productSourceTree&&
+  ['request','predecessorReceiptPath','predecessorReceiptBlob','predecessorExecution'].every(k=>JSON.stringify(canonical(expected[k]))===JSON.stringify(canonical(binding[k]))),'SOURCE_FAILURE:GOOGLE_PRODUCER_EXPECTED_BINDING');
+ const config=producer.descriptor.pendingDevSuccessor.pairedCloudBuild;
+ must(config&&config.location===location&&config.serviceAccount===expected.serviceAccount&&config.step?.id===expected.stepId&&
+  JSON.stringify(canonical(config.step))===JSON.stringify(canonical(expected.step))&&JSON.stringify(canonical(config.workflow))===JSON.stringify(canonical(expected.workflow))&&
+  JSON.stringify(canonical(config.sourceObject))===JSON.stringify(canonical(expected.sourceObject)),
+  'SOURCE_FAILURE:GOOGLE_PAIRED_CONFIGURATION_UNPROVEN');
+ must(config.workflow?.path===`.github/workflows/${WORKFLOW}`&&config.workflow.job===PRODUCER,'SOURCE_FAILURE:GOOGLE_PAIRED_WORKFLOW_SCOPE');
+ const workflowBytes=await producer.readBytes(config.workflow.path);
+ must(gitBlob(workflowBytes)===config.workflow.gitBlob&&sha256(workflowBytes)===config.workflow.sha256&&producer.blobs.get(config.workflow.path)===config.workflow.gitBlob&&
+  new RegExp('^  '+PRODUCER+':\\s*$','m').test(workflowBytes),'SOURCE_FAILURE:GOOGLE_PAIRED_WORKFLOW_BINDING');
+ const lineage=await api(`${root}/compare/${expected.controlSha}...${head}`);
+ must(['ahead','identical'].includes(lineage.status)&&lineage.merge_base_commit?.sha===expected.controlSha,'SOURCE_FAILURE:GOOGLE_PRODUCER_NOT_CANONICAL_ANCESTOR');
+ const pending=await pendingRuns({api,descriptor:controls.descriptor,knownPaths:controls.blobs,readJournal:controls.readFile});
+ must(!pending.length,`MAPPING_FAILURE:UNCONSUMED_COMPLETED_RUNS:${pending.map(x=>x.runId+'/'+x.runAttempt).join(',')}`);
+ let archive;
+ try{
+  archive=await archiveReader({buildId,location,expected},readNative);
+  const result=readJson(path.join(archive.folder,'result.json')),hrWindowFile=path.join(archive.folder,'hr-window-readback.json'),mailboxFile=path.join(archive.folder,'mailbox-environment-readback.json');
+  must(result.sourceSha===expected.sourceSha&&result.sourceTree===expected.sourceTree&&treeReader(result.sourceSha)===result.sourceTree,'SOURCE_FAILURE:GOOGLE_PRODUCT_TREE');
+  const bundle=makeMaterializationReceipt({externalExecution:archive.externalExecution,result,
+   hrResult:readJson(path.join(archive.folder,'hr-after/result.json')),hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,
+   requireHrWindow:producer.descriptor.pendingDevSuccessor.hrPeriodWindowRequired===true,
+   mailbox:fs.existsSync(mailboxFile)?readJson(mailboxFile):null,sourceAssets:assetReader(result,expected.controlSha),verifiedArchiveDigest:archive.digest});
+  const existing=controls.blobs.get(bundle.receiptPath);
+  if(existing){
+   const bytes=await controls.readBytes(bundle.receiptPath),saved=JSON.parse(bytes);
+   must(gitBlob(bytes)===existing,'SOURCE_FAILURE:GOOGLE_EXISTING_RECEIPT_BYTES');
+   bundle.receipt.succession.expectedControlHead=saved.succession?.expectedControlHead;
+   must(jsonBytes(bundle.receipt)===bytes,'SOURCE_FAILURE:REPLAY_RECEIPT_CHANGED');
+   if(controls.descriptor.postDeployRunSeal?.receiptPath===bundle.receiptPath)
+    must(controls.descriptor.postDeployRunSeal.receiptBlob===existing,'SOURCE_FAILURE:GOOGLE_EXISTING_RECEIPT_SEAL');
+   return {decision:'NOOP_ALREADY_CONSUMED',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,head,receiptPath:bundle.receiptPath,productActions:0};
+  }
+  bundle.receipt.succession.expectedControlHead=head;
+  const date=now.slice(0,10),compact=date.replaceAll('-',''),ledgerNumber=Number(controls.descriptor.findingsLedgerPath.match(/FULL_V(\d+)_/)[1])+1;
+  const matrixPath=`RECOVERY-I3-MODULE-TRUTH-MATRIX-${compact}-V${Number(controls.matrix.version.slice(1))+1}.json`,ledgerPath=`CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V${ledgerNumber}_${date}.json`;
+  const projected=projectMaterialization(controls,{...bundle,now,matrixPath,ledgerPath});
+  must(!projected.noop,'SOURCE_FAILURE:GOOGLE_UNRECORDED_NOOP');
+  projected.ledger.schemaVersion=`cxorbia.i3.canonical-cumulative-findings-ledger.full.v${ledgerNumber}`;
+  const execution=archive.externalExecution,journalPath=`docs/checkpoints/CXORBIA_I3_GOOGLE_${buildId}_EXECUTION_JOURNAL.json`;
+  const journal={schemaVersion:'cxorbia.i3.automatic-execution-journal.v1',repository:REPO,iteration:'I3',state:'HOLD',executionProvider:'GOOGLE_CLOUD_BUILD',
+   runId:buildId,runAttempt:1,controlHead:expected.controlSha,observedAt:execution.completedAt,workflowStatus:'completed',workflowConclusion:'success',
+   nativeStep:{stepId:execution.stepId,conclusion:'success',startedAt:execution.startedAt,completedAt:execution.completedAt},
+   executionBinding:execution,jobs:[],artifacts:[execution.evidenceObject],pendingTypedResults:[],outcome:'CONSUMED_EXACT_DEV_MATERIALIZATION',
+   materializationReceiptPath:bundle.receiptPath,newDomainMatches:0,production:false,productActionsPerformedByConsumer:0};
+  const journalBytes=jsonBytes(journal),event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(journalBytes),executionProvider:'GOOGLE_CLOUD_BUILD',
+   runId:buildId,runAttempt:1,outcome:journal.outcome,pendingTypedResults:[],materializationReceiptPath:bundle.receiptPath,production:false};
+  const current=controls.descriptor.currentAutomationReceipt;
+  must(JSON.stringify(current||null)===JSON.stringify(controls.pointer.currentAutomationReceipt||null),'MAPPING_FAILURE:AUTOMATION_RECEIPT_CONTROL_DESYNC');
+  if(current){
+   event.succession=await automationSuccessionFromProducer({producer,controls});
+   must(event.succession,'SOURCE_FAILURE:GOOGLE_AUTOMATION_PREDECESSOR_CHANGED');
+  }
+  const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[typedResultKey(x),x]));
+  const automation=projectCurrentAutomationReceipt({current,event,queue,journalExists:false,expectedControlHead:head});
+  must(automation.changed,'SOURCE_FAILURE:GOOGLE_AUTOMATION_TRANSITION_NOT_INCORPORATED');
+  for(const key of ['descriptor','pointer'])projected[key].currentAutomationReceipt=structuredClone(automation.receipt);
+  const files=bindControlPaths(projected,{matrixPath,ledgerPath});files.set(journalPath,journalBytes);
+  const check=validateCurrentAuthorityAliases(projected);must(check.pass,'MAPPING_FAILURE:GOOGLE_PROJECTED_CONTROLS:'+check.failures.join(','));
+  if(dryRun)return {decision:'DRY_RUN_GOOGLE_RECEIPT_VALIDATED',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,head,receiptPath:bundle.receiptPath,files,productActions:0};
+  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist Google Cloud Build ${buildId} exact DEV receipt [i3-auto-receipt]`});
+  return {decision:'CONSUMED_EXACT_DEV_MATERIALIZATION',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,receiptPath:bundle.receiptPath,...saved,productActions:0};
+ }finally{archive?.cleanup();}
 }
 
 export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now=new Date().toISOString()}){
@@ -478,10 +611,21 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
   try{
    const result=readJson(path.join(download.folder,'result.json'));
    const runDescriptor=JSON.parse(git('show',`${run.head_sha}:${DESCRIPTOR}`));
+   let succession,canPromote=true;
+   if(executionProviderOf(controls.descriptor.currentMaterialization)!=='GITHUB_ACTIONS'){
+    const sourceSeal=runDescriptor.postDeployRunSeal,currentSeal=controls.descriptor.postDeployRunSeal;
+    canPromote=executionProviderOf(runDescriptor.currentMaterialization)!=='GITHUB_ACTIONS'&&Boolean(runDescriptor.pendingDevSuccessor)&&
+     sourceSeal?.receiptPath===currentSeal?.receiptPath&&sourceSeal?.receiptBlob===currentSeal?.receiptBlob;
+    if(canPromote){
+     const producer=await loadControls(api,run.head_sha),binding=pairedProducerBinding(producer,await producer.readBytes(DESCRIPTOR));
+     succession={expectedControlHead:head,predecessorReceiptPath:binding.predecessorReceiptPath,predecessorReceiptBlob:binding.predecessorReceiptBlob,
+      predecessorExecution:binding.predecessorExecution,executionBinding:{producerControlHead:run.head_sha,...binding}};
+    }
+   }
    const hrWindowFile=path.join(download.folder,'hr-window-readback.json');
-   const bundle=makeMaterializationReceipt({run,job:paired,artifact,result,hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,requireHrWindow:runDescriptor.pendingDevSuccessor?.hrPeriodWindowRequired===true,hrResult:readJson(path.join(download.folder,'hr-after/result.json')),mailbox:fs.existsSync(path.join(download.folder,'mailbox-environment-readback.json'))?readJson(path.join(download.folder,'mailbox-environment-readback.json')):null,sourceAssets:sourceAssetHashes(result,run.head_sha),verifiedArchiveDigest:download.digest});
+   const bundle=makeMaterializationReceipt({run,job:paired,artifact,succession,result,hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,requireHrWindow:runDescriptor.pendingDevSuccessor?.hrPeriodWindowRequired===true,hrResult:readJson(path.join(download.folder,'hr-after/result.json')),mailbox:fs.existsSync(path.join(download.folder,'mailbox-environment-readback.json'))?readJson(path.join(download.folder,'mailbox-environment-readback.json')):null,sourceAssets:sourceAssetHashes(result,run.head_sha),verifiedArchiveDigest:download.digest});
    must(git('rev-parse',`${result.sourceSha}^{tree}`)===result.sourceTree,'SOURCE_FAILURE:PRODUCT_TREE_MISMATCH');
-   if(result.sourceSha!==controls.descriptor.productSourceSha||result.sourceTree!==controls.descriptor.productSourceTree){
+   if(!canPromote||result.sourceSha!==controls.descriptor.productSourceSha||result.sourceTree!==controls.descriptor.productSourceTree){
     files.set(bundle.receiptPath,jsonBytes(bundle.receipt));outcome='RECORDED_HISTORICAL_SOURCE_RESULT_NO_CURRENT_PROMOTION';
    }else{
     const date=now.slice(0,10),compact=date.replaceAll('-','');
@@ -500,7 +644,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  }else if(!journalExists&&paired){outcome='HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED';}
  if(!journalExists){journal.outcome=outcome;journal.materializationReceiptPath=materialization;
   journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER,CONTROL_AUTHORITY].includes(j.name)&&j.conclusion!=='skipped').map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));}
- const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[`${x.runId}/${x.runAttempt}/${x.jobId}`,x]));
+ const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[typedResultKey(x),x]));
  for(const x of journal.pendingTypedResults.filter(x=>x.name!==CONTROL_AUTHORITY))queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
  const controlQueue=retireRecordedControlQueue({queue,run,jobs,journal,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),now});
  const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...controlQueue.queue.values()]}};
@@ -511,7 +655,15 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  catch(error){typed.failures.push({key:`${run.id}/${run.run_attempt}/scoped-clauses`,runId:run.id,runAttempt:run.run_attempt,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED',observedAt:now});}
  typed.index=scoped.index;
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
- const automation=new Map([[DESCRIPTOR,'descriptor'],[POINTER,'pointer']].map(([file,key])=>[file,projectCurrentAutomationReceipt({current:(files.has(file)?JSON.parse(files.get(file)):controls[key]).currentAutomationReceipt,event,queue:typed.queue,journalExists})]));
+ if(!journalExists&&controls.descriptor.currentAutomationReceipt&&executionProviderOf(controls.descriptor.currentAutomationReceipt)!=='GITHUB_ACTIONS'){
+  const producer=await loadControls(api,run.head_sha),succession=await automationSuccessionFromProducer({producer,controls});
+  if(succession){
+   const lineage=await api(`${root}/compare/${run.head_sha}...${head}`);
+   must(['ahead','identical'].includes(lineage.status)&&lineage.merge_base_commit?.sha===run.head_sha,'SOURCE_FAILURE:AUTOMATION_SUCCESSION_PRODUCER_LINEAGE');
+   event.executionProvider='GITHUB_ACTIONS';event.succession=succession;
+  }
+ }
+ const automation=new Map([[DESCRIPTOR,'descriptor'],[POINTER,'pointer']].map(([file,key])=>[file,projectCurrentAutomationReceipt({current:(files.has(file)?JSON.parse(files.get(file)):controls[key]).currentAutomationReceipt,event,queue:typed.queue,journalExists,expectedControlHead:head})]));
  const automationChanged=[...automation.values()].some(x=>x.changed);
  if(journalExists&&!automationChanged&&!typed.incorporated.length&&!typed.failures.length&&!typed.requestsReconciled&&!scoped.changed&&JSON.stringify([...typed.queue.values()])===JSON.stringify(controls.pointer.currentResultIncorporationQueue||[]))return {decision:'NOOP_ALREADY_CONSUMED',runId,head};
  for(const [file,key]of [[DESCRIPTOR,'descriptor'],[POINTER,'pointer']]){
@@ -530,12 +682,34 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
 // The immutable journal records what needed incorporation when a run ended.
 // The live receipt records only the work still in the effective queue. Draining
 // an older journal must not replace a newer live receipt or change history.
-export function projectCurrentAutomationReceipt({current,event,queue,journalExists}){
- const sameAttempt=current&&String(current.runId)===String(event.runId)&&String(current.runAttempt)===String(event.runAttempt);
- if(sameAttempt)must(current.path===event.path&&current.gitBlob===event.gitBlob,'SOURCE_FAILURE:CURRENT_AUTOMATION_JOURNAL_BINDING');
- const newer=current&&(Number(current.runId)>Number(event.runId)||(String(current.runId)===String(event.runId)&&Number(current.runAttempt)>Number(event.runAttempt)));
+export function projectCurrentAutomationReceipt({current,event,queue,journalExists,expectedControlHead}){
+ const identity=value=>{
+  const provider=executionProviderOf(value),runAttempt=executionAttempt(value.runAttempt);
+  const runId=provider==='GITHUB_ACTIONS'?String(actionsNumber(value.runId,'RUN')):provider==='GOOGLE_CLOUD_BUILD'?externalRunId(value.runId):String(value.runId??value.startGeneration??'');
+  if(provider==='GOOGLE_CLOUD_SHELL')must(/^[1-9]\d{7,19}$/.test(runId),'SOURCE_FAILURE:GOOGLE_SHELL_EXECUTION_IDENTITY');
+  return {provider,runId,runAttempt};
+ };
+ const next=identity(event),prior=current?identity(current):null;
+ const sameAttempt=prior&&prior.provider===next.provider&&prior.runId===next.runId&&prior.runAttempt===next.runAttempt;
+ if(sameAttempt){
+  must(current.path===event.path&&current.gitBlob===event.gitBlob,'SOURCE_FAILURE:CURRENT_AUTOMATION_JOURNAL_BINDING');
+  // pendingTypedResults is the sole mutable projection of an immutable event.
+  for(const key of Object.keys(event).filter(k=>!['pendingTypedResults','executionProvider','provider','runId','runAttempt'].includes(k)))
+   must(JSON.stringify(current[key])===JSON.stringify(event[key]),'SOURCE_FAILURE:CURRENT_AUTOMATION_REPLAY_CHANGED');
+ }
+ const needsSuccession=prior&&!sameAttempt&&(prior.provider!==next.provider||next.provider!=='GITHUB_ACTIONS');
+ if(needsSuccession){
+  if(!event.succession)return {receipt:structuredClone(current),changed:false};
+  const s=event.succession;
+  must(/^[a-f0-9]{40}$/.test(expectedControlHead||'')&&s.expectedControlHead===expectedControlHead&&
+   s.predecessorReceiptPath===current.path&&s.predecessorReceiptBlob===current.gitBlob&&
+   s.predecessorExecution?.provider===prior.provider&&String(s.predecessorExecution.runId)===prior.runId&&
+   Number(s.predecessorExecution.runAttempt)===prior.runAttempt,'SOURCE_FAILURE:AUTOMATION_SUCCESSION_PREDECESSOR');
+ }
+ const newer=prior&&next.provider===prior.provider&&next.provider==='GITHUB_ACTIONS'&&
+  (BigInt(prior.runId)>BigInt(next.runId)||(prior.runId===next.runId&&prior.runAttempt>next.runAttempt));
  if(current&&(newer||(journalExists&&!sameAttempt)))return {receipt:structuredClone(current),changed:false};
- const receipt={...(sameAttempt?current:{}),...event,pendingTypedResults:(event.pendingTypedResults||[]).filter(x=>queue.has(typedResultKey({runId:event.runId,runAttempt:event.runAttempt,jobId:x.jobId})))};
+ const receipt={...(sameAttempt?current:{}),...event,pendingTypedResults:(event.pendingTypedResults||[]).filter(x=>queue.has(typedResultKey({...x,executionProvider:next.provider,runId:event.runId,runAttempt:event.runAttempt,jobId:x.jobId})))};
  return {receipt,changed:JSON.stringify(receipt)!==JSON.stringify(current)};
 }
 
@@ -544,21 +718,23 @@ export function validateConsumedJournal(journal,run,attempt){
  must(journal?.schemaVersion==='cxorbia.i3.automatic-execution-journal.v1'&&journal.repository===REPO&&journal.runId===run.id&&journal.runAttempt===attempt&&journal.controlHead===run.head_sha&&['RECORDED_EXECUTION_NO_PRODUCT_PROMOTION','RECORDED_HISTORICAL_SOURCE_RESULT_NO_CURRENT_PROMOTION','CONSUMED_EXACT_DEV_MATERIALIZATION','NOOP_MATERIALIZATION_ALREADY_INCORPORATED','HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED'].includes(journal.outcome)&&journal.production===false&&journal.productActionsPerformedByConsumer===0,'MAPPING_FAILURE:CONSUMED_JOURNAL_IDENTITY');
 }
 
-export async function pendingRuns({api,currentRunId,currentRunAttempt=1,descriptor,knownPaths,readJournal}){
- const floor=Number(descriptor.postDeployRunSeal?.runId||0),root=`/repos/${REPO}`,runs=[];
+export async function pendingRuns({api,currentRunId=null,currentRunAttempt=1,descriptor,knownPaths,readJournal}){
+ const cursor=actionsCursorOf(descriptor),floor=Number(cursor.runId),root=`/repos/${REPO}`,runs=[];
+ const currentId=currentRunId===null?null:actionsNumber(currentRunId,'RUN'),currentAttempt=executionAttempt(currentRunAttempt);
  for(let page=1;page<=100;page++){
   const data=await api(`${root}/actions/workflows/${WORKFLOW}/runs?branch=${encodeURIComponent(BRANCH)}&per_page=100&page=${page}`),batch=data.workflow_runs||[];
+  for(const run of batch){actionsNumber(run.id,'RUN');executionAttempt(run.run_attempt);}
   runs.push(...batch.filter(r=>r.id>=floor));
   if(batch.length<100||batch.some(r=>r.id<floor))break;
   if(page===100)throw new Error('PROVIDER_FAILURE:RECOVERY_RUN_SCAN_LIMIT');
  }
  const pending=[];
  for(const run of runs.sort((a,b)=>a.id-b.id))for(let attempt=1;attempt<=run.run_attempt;attempt++){
-  if(run.id===Number(currentRunId)&&attempt>=Number(currentRunAttempt))continue;
+  if(run.id===currentId&&attempt>=currentAttempt)continue;
   if(run.status!=='completed'&&attempt===run.run_attempt)continue;
   const journal=`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${attempt}_EXECUTION_JOURNAL.json`;
   if(knownPaths.has(journal)){must(typeof readJournal==='function','MAPPING_FAILURE:JOURNAL_READER_REQUIRED');validateConsumedJournal(await readJournal(journal),run,attempt);continue;}
-  if(run.id===Number(descriptor.postDeployRunSeal?.runId)&&attempt<=Number(descriptor.currentMaterialization?.runAttempt||1))continue;
+  if(run.id===floor&&attempt<=cursor.runAttempt)continue;
   const jobs=await pages(api,`${root}/actions/runs/${run.id}/attempts/${attempt}/jobs`,'jobs');
   // A control-only execution also needs a durable journal when its finalizer
   // was interrupted. Recording its result never promotes product evidence.
@@ -572,7 +748,12 @@ async function main(){
  const token=process.env.GH_TOKEN||process.env.GITHUB_TOKEN,api=createApi({token}),root=`/repos/${REPO}`;
  const ref=await api(`${root}/git/ref/heads/${BRANCH}`),controls=await loadControls(api,ref.object.sha);
  const pending=await pendingRuns({api,currentRunId:process.env.GITHUB_RUN_ID,currentRunAttempt:process.env.GITHUB_RUN_ATTEMPT,descriptor:controls.descriptor,knownPaths:controls.blobs,readJournal:controls.readFile});
- if(process.argv.includes('--preflight')){must(!pending.length,`MAPPING_FAILURE:UNCONSUMED_COMPLETED_RUNS:${pending.map(p=>p.runId+'/'+p.runAttempt).join(',')}`);console.log(jsonBytes({decision:'PASS_NO_UNCONSUMED_EXECUTION',hrReads:0,builds:0,deploys:0}));return;}
+ if(process.argv.includes('--preflight')){
+  must(!pending.length,`MAPPING_FAILURE:UNCONSUMED_COMPLETED_RUNS:${pending.map(p=>p.runId+'/'+p.runAttempt).join(',')}`);
+  const externalPending=pendingExternalTypedResults(controls.pointer.currentResultIncorporationQueue);
+  must(!externalPending.length,`MAPPING_FAILURE:EXTERNAL_TYPED_RESULTS_REQUIRE_NATIVE_INCORPORATION:${externalPending.map(x=>x.key).join(',')}`);
+  console.log(jsonBytes({decision:'PASS_NO_UNCONSUMED_EXECUTION',hrReads:0,builds:0,deploys:0}));return;
+ }
  must(process.argv.includes('--consume-current-run'),'SOURCE_FAILURE:UNSUPPORTED_CONSUMER_MODE');
  const drain=[...new Map([...pending,...pendingTypedRuns(controls.pointer.currentResultIncorporationQueue),...pendingSatisfiedRequestRuns(controls)].map(x=>[x.runId+'/'+x.runAttempt,x])).values()];
  for(const item of drain)console.log(jsonBytes(await consumeRun({api,token,...item})));

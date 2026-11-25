@@ -1,0 +1,77 @@
+{
+  "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "productSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "productSourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "predecessorProductSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "findingCount": 378,
+  "nextFindingId": "VRM-379",
+  "postCandidateProductDrift": false,
+  "historicalSourceSpecificJobsDisabled": 8,
+  "proofScope": "CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION",
+  "continuityReadback": {
+    "pass": true,
+    "failures": [],
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V407.json",
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "classificationCounts": {
+      "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
+      "MATCH": 6,
+      "SOURCE_FIXED_DEV_MATERIALIZED_FOCAL_LIVE_E2E_PASS_PENDING_HUMAN": 1,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_AUTHENTICATED_ADMIN_SHOPPER_E2E": 1,
+      "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
+      "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
+    },
+    "domainCount": 21,
+    "status": "CONTROL_CONTINUITY_ONLY_NOT_I3_CERTIFICATION"
+  },
+  "moduleTruthReadback": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V407.json",
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "expectedSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceAligned": true,
+    "domainCount": 21,
+    "uniqueDomainCount": 21,
+    "phaseAComplete": false,
+    "allModulesMatch": false,
+    "terminalAcceptance": false,
+    "scope": "CONTROL_DIAGNOSTIC_ONLY_NOT_CERTIFICATION"
+  },
+  "moduleRegistryReadback": {
+    "path": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
+    "domainCount": 20,
+    "targetDomainCount": 21,
+    "coverageAligned": false,
+    "historicalSubsetValid": true,
+    "frozenHistoricalBaselineNotFinalAuthority": true
+  },
+  "moduleBlobReadback": {
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "domainCount": 21,
+    "ownerCount": 111,
+    "sourceFileCount": 170,
+    "ownerMismatches": [],
+    "sourceFileMismatches": [],
+    "pass": true,
+    "scope": "EXACT_SOURCE_GIT_BLOBS_ONLY_NO_HUMAN_VISUAL_OR_PROVIDER_E2E"
+  },
+  "workflowLedgerReadback": {
+    "declaredPath": "",
+    "descriptorPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V734_2026-11-25.json",
+    "aligned": true,
+    "activelyConsumed": false,
+    "scope": "HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY"
+  },
+  "postDeploySealReadback": {
+    "pass": true,
+    "runId": 45488581923,
+    "runNumber": 2780,
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+    "terminalReady": false,
+    "production": false
+  },
+  "terminalReleaseEligible": false,
+  "production": false
+}

@@ -89,7 +89,7 @@ function mockedGitApi({initialFiles,run,jobs,artifacts}){
 }
 function consumeFixture(capture=FINANCE_CAPTURE,{existingJournal=true,currentNextAction=true}={}){
  const f=fixture(capture),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[]},matrixPath='RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V999.json',ledgerPath='CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V999_2026-11-24.json';
- const previous={runId:999999999,marker:'keep-current'},pointer={currentFunctionalEvidenceIndex:index,currentResultIncorporationQueue:existingJournal?[...f.queue.values()]:[],currentAutomationReceipt:previous,phaseAHumanAcceptanceCurrent20261111:{B4:true,B5:true,B6:true,B7:true},production:'DO_NOT_TOUCH',authorizationI4:false};
+ const previous={runId:999999999,runAttempt:1,marker:'keep-current'},pointer={currentFunctionalEvidenceIndex:index,currentResultIncorporationQueue:existingJournal?[...f.queue.values()]:[],currentAutomationReceipt:previous,phaseAHumanAcceptanceCurrent20261111:{B4:true,B5:true,B6:true,B7:true},production:'DO_NOT_TOUCH',authorizationI4:false};
  const descriptor={moduleTruthPath:matrixPath,findingsLedgerPath:ledgerPath,currentFunctionalEvidenceIndex:index,currentAutomationReceipt:previous,currentC3PreterminalAudit:{marker:'historical'},production:'DO_NOT_TOUCH'};
  // These focused queue fixtures begin with an already-current action. They do
  // not claim the complete schema required for a matrix/ledger successor.

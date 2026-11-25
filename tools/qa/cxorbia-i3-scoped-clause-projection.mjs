@@ -2,6 +2,7 @@
 // receipts, changes MATCH, certifies a domain, or executes product operations.
 import {createHash} from 'node:crypto';
 import {A08_GT_CURRENT_PROVIDER_MODE,validA08GtPasswordScope} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {executionProviderOf} from './cxorbia-i3-current-control-projection.mjs';
 export const FINANCE_METADATA_SCOPE_PATH='docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json';
 const HN='shopper_hn_3b3c2f5cc1',GT='shopper_gt_a092a0647f',SHP='shp-3669abbb015a';
 const PASSWORD_ID='A08.password.'+HN;
@@ -23,7 +24,7 @@ function exactGtIdentity(identity){
   /^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/.test(identity?.hostingVersion||'');
 }
 function gtPasswordRef(proof,transport,identity){
- if(transport?.provider||!['runId','runAttempt','jobId','artifactId'].every(k=>/^[1-9][0-9]*$/.test(String(transport?.[k]||'')))||
+ if(transport?.provider||executionProviderOf(transport)!=='GITHUB_ACTIONS'||!['runId','runAttempt','jobId','artifactId'].every(k=>/^[1-9][0-9]*$/.test(String(transport?.[k]||'')))||
   !/^sha256:[a-f0-9]{64}$/.test(transport?.artifactDigest||'')||!/^[a-f0-9]{40}$/.test(transport?.controlHead||'')||
   transport.entry!=='result.json'||typeof proof?.evidenceSha256!=='string'||!/^[a-f0-9]{64}$/.test(proof.evidenceSha256)||!exactGtIdentity(identity))return null;
  return {clauseId:GT_PASSWORD_ID,caseId:GT,acceptedScope:'ORDINARY_PASSWORD_HR_RESTORE_LOGOUT_RELOGIN',evidence:{
@@ -61,7 +62,7 @@ function validGtRef(ref,{result,entry}){
 export function publicA08ClauseRefs(raw,transport){
  const preserved=Array.isArray(raw.preservedEvidence)?raw.preservedEvidence:[];
  const passwords=Array.isArray(raw.passwordProofs)?raw.passwordProofs:[];
- const directHn=String(transport.runId)===HN_PROOF.runId&&String(transport.runAttempt)===HN_PROOF.runAttempt&&String(transport.jobId)===HN_PROOF.jobId&&String(transport.artifactId)===HN_PROOF.artifactId&&transport.artifactDigest===HN_PROOF.artifactDigest&&passwords.some(x=>x?.shopperId===HN&&x.pass===true&&x.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&x.evidenceSha256===HN_PROOF.entrySha256&&x.customTokenCountsAsPasswordProof===false);
+ const directHn=executionProviderOf(transport)==='GITHUB_ACTIONS'&&String(transport.runId)===HN_PROOF.runId&&String(transport.runAttempt)===HN_PROOF.runAttempt&&String(transport.jobId)===HN_PROOF.jobId&&String(transport.artifactId)===HN_PROOF.artifactId&&transport.artifactDigest===HN_PROOF.artifactDigest&&passwords.some(x=>x?.shopperId===HN&&x.pass===true&&x.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&x.evidenceSha256===HN_PROOF.entrySha256&&x.customTokenCountsAsPasswordProof===false);
  const preservedHn=preserved.some(x=>x?.credit==='HISTORICAL_HN_PASSWORD_LIFECYCLE_PASS_PRESERVED_NOT_REEXECUTED'&&['runId','runAttempt','jobId','artifactId'].every(k=>String(x[k])===HN_PROOF[k])&&'sha256:'+x.artifactSha256===HN_PROOF.artifactDigest&&x.entry===HN_PROOF.entry&&x.entrySha256===HN_PROOF.entrySha256&&x.currentRunLoginAttempts===0);
  const preservedApi=preserved.some(x=>x?.credit==='HISTORICAL_API_DENIALS_4_OF_4_PRESERVED_NOT_REEXECUTED'&&Number(x.runNumber)===API_PROOF.runNumber&&String(x.artifactId)===API_PROOF.artifactId&&'sha256:'+x.artifactSha256===API_PROOF.artifactDigest&&x.currentRunApiCalls===0);
  const gt=raw.gate==='HOLD'&&raw.fullA08Certified===false&&raw.newDomainMatches===0&&raw.decision==='HOLD_I3_A08_RESIDUAL_READONLY'&&
@@ -76,7 +77,22 @@ export function publicA08ClauseRefs(raw,transport){
 export function verifiedTypedReceipt(entry,bytes,{gitBlob,sha256}){
  must(gitBlob(bytes)===entry.gitBlob&&sha256(bytes)===entry.sha256,'INDEX_RECEIPT_HASH');
  const result=JSON.parse(bytes),proof=result.provenance||result.evidence;
- must(proof&&['runId','runAttempt','jobId','artifactId'].every(k=>String(proof[k])===String(entry[k]))&&proof.controlHead===entry.controlHead&&proof.artifactDigest===entry.artifactDigest,'INDEX_RECEIPT_IDENTITY');
+ const provider=executionProviderOf(entry);
+ must(proof&&executionProviderOf(proof)===provider,'INDEX_RECEIPT_PROVIDER');
+ if(provider==='GITHUB_ACTIONS'){
+  must(['runId','runAttempt','jobId','artifactId'].every(k=>String(proof[k])===String(entry[k]))&&proof.controlHead===entry.controlHead&&proof.artifactDigest===entry.artifactDigest,'INDEX_RECEIPT_IDENTITY');
+ }else{
+  // This is the already supported native Google Finance transport. It does
+  // not borrow numeric Actions artifact/job fields or certify scoped owners.
+  must(provider==='GOOGLE_CLOUD_SHELL'&&result.kind==='FINANCE_UI_READONLY','EXTERNAL_TYPED_SCOPE_UNSUPPORTED');
+  const object=/^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9-]{36})\/(start|result)\.json#([1-9]\d{7,19})$/;
+  const start=object.exec(proof.startUri||''),end=object.exec(proof.resultUri||'');
+  must(/^[1-9]\d{7,19}$/.test(String(proof.startGeneration||''))&&entry.key===provider+'/'+proof.startGeneration&&
+   ['startUri','resultUri','bundleSha256','controlHead','transportSha'].every(k=>typeof entry[k]==='string'&&entry[k]===proof[k])&&
+   start&&end&&start[1]===end[1]&&start[2]==='start'&&end[2]==='result'&&start[3]===proof.startGeneration&&end[3]===proof.resultGeneration&&
+   /^[a-f0-9]{64}$/.test(proof.bundleSha256)&&/^[a-f0-9]{40}$/.test(proof.controlHead)&&/^[a-f0-9]{40}$/.test(proof.transportSha),'INDEX_EXTERNAL_RECEIPT_IDENTITY');
+  must(['runId','runAttempt','jobId','artifactId','artifactDigest'].every(k=>!Object.hasOwn(entry,k)),'INDEX_EXTERNAL_ACTIONS_IDENTITY');
+ }
  must(result.production===false&&Array.isArray(result.ownerSpecificReceipts)&&result.ownerSpecificReceipts.length===entry.ownerReceiptCount,'INDEX_RECEIPT_SCOPE');
  return {entry,result};
 }
@@ -104,7 +120,29 @@ export function completedExecutionTaskIds(verified){
 
 export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}){
  const credit=new Map();
- for(const {entry,result}of [...verified].sort((a,b)=>Number(a.entry.runId)-Number(b.entry.runId)||Number(a.entry.jobId)-Number(b.entry.jobId))){
+ const unique=new Map();
+ for(const item of verified){
+  const key=item.entry.key;must(typeof key==='string'&&key.length>0,'INDEX_KEY_MISSING');
+  const previous=unique.get(key);
+  must(!previous||canonicalSha256(previous)===canonicalSha256(item),'INDEX_REPLAY_CHANGED');
+  if(!previous)unique.set(key,item);
+ }
+ // A stable provider grouping is not a temporal ordering. Only Actions has
+ // ordered run/job integers; Google UUIDs and generations belong to their own
+ // namespaces and cannot supersede or acquire Actions-specific owner credit.
+ const ordered=[...unique.values()].sort((a,b)=>{
+  const ap=executionProviderOf(a.entry),bp=executionProviderOf(b.entry);
+  if(ap!==bp)return ap<bp?-1:1;
+  if(ap==='GITHUB_ACTIONS')for(const key of ['runId','runAttempt','jobId']){
+   const av=String(a.entry[key]??(key==='runAttempt'?1:'')),bv=String(b.entry[key]??(key==='runAttempt'?1:''));
+   must(/^[1-9]\d*$/.test(av)&&/^[1-9]\d*$/.test(bv),'ACTIONS_IDENTITY');
+   if(BigInt(av)!==BigInt(bv))return BigInt(av)<BigInt(bv)?-1:1;
+  }
+  return a.entry.key<b.entry.key?-1:a.entry.key>b.entry.key?1:0;
+ });
+ for(const {entry,result}of ordered){
+  if(executionProviderOf(entry)!=='GITHUB_ACTIONS')continue;
+  must(!entry.key.startsWith('GOOGLE_'),'INDEX_PROVIDER_NAMESPACE');
   if(result.state!=='HOLD'||result.fullDomain!==false||result.newDomainMatches!==0||result.production!==false||result.ownerSpecificReceipts.length!==0)continue;
   if(result.kind==='A08_RESIDUAL')for(const ref of result.observations?.acceptedClauseRefs||[]){
    must(validRef(ref)||validGtRef(ref,{result,entry}),'A08_REFERENCE_NOT_EXACT');

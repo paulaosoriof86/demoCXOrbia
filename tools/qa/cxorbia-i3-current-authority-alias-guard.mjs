@@ -1,8 +1,112 @@
-import {validateProjectionRegistry} from './cxorbia-i3-current-control-projection.mjs';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {isDeepStrictEqual} from 'node:util';
+import {validateProjectionRegistry,executionProviderOf,DESCRIPTOR} from './cxorbia-i3-current-control-projection.mjs';
+
+const nativeGitRead=args=>execFileSync('git',args,{encoding:'utf8'});
+const executionIdentity=value=>({provider:executionProviderOf(value),runId:String(value?.runId),runAttempt:Number(value?.runAttempt||value?.executionBinding?.runAttempt||1)});
+const sha40=value=>/^[a-f0-9]{40}$/.test(String(value||''));
+const sha64=value=>/^[a-f0-9]{64}$/.test(String(value||''));
+const checkpoint=value=>/^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(String(value||''));
+const bytesHash=(algorithm,raw)=>createHash(algorithm).update(raw).digest('hex');
+const contentBlob=raw=>createHash('sha1').update(`blob ${Buffer.byteLength(raw)}\0`).update(raw).digest('hex');
+const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
+
+// This is the persisted binding check, not a replacement for native admission.
+// The ingestion reader verifies Cloud Build/GCS bytes before creating a receipt;
+// guards preserve that complete binding and its immutable producer request.
+export function hasNativeGoogleExecutionBinding(value){
+ const b=value?.executionBinding,object=pin=>pin&&pin.bucket==='cxorbia-backend-dev_cloudbuild'&&
+  typeof pin.name==='string'&&pin.name.length>0&&!pin.name.startsWith('/')&&!pin.name.split('/').includes('..')&&!/[#?\\\r\n]/.test(pin.name)&&
+  /^[1-9]\d{7,19}$/.test(String(pin.generation))&&Number.isSafeInteger(pin.size)&&pin.size>0&&sha64(pin.sha256)&&
+  pin.uri===`gs://${pin.bucket}/${pin.name}#${pin.generation}`;
+ return value?.executionProvider==='GOOGLE_CLOUD_BUILD'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(value.runId||'')&&
+  ['jobId','artifactId','workflowRunId'].every(k=>value[k]===undefined)&&value.runNumber==null&&
+  b?.executionProvider===value.executionProvider&&b.runId===value.runId&&b.runAttempt===1&&Number(value.runAttempt||1)===1&&
+  b.project==='cxorbia-backend-dev'&&/^[a-z][a-z0-9-]+$/.test(b.location||'')&&
+  (b.resourceName===`projects/${b.project}/locations/${b.location}/builds/${b.runId}`||
+   /^[1-9]\d+$/.test(b.projectNumber||'')&&sha64(b.projectMetadataSha256)&&b.resourceName===`projects/${b.projectNumber}/locations/${b.location}/builds/${b.runId}`)&&
+  /^projects\/(?:cxorbia-backend-dev|\d+)\/serviceAccounts\/[A-Za-z0-9._-]+@(?:cxorbia-backend-dev\.iam\.gserviceaccount\.com|cloudbuild\.gserviceaccount\.com|developer\.gserviceaccount\.com)$/.test(b.serviceAccount||'')&&
+  /^[A-Za-z0-9_-]+$/.test(b.stepId||'')&&b.jobConclusion==='success'&&b.nativeBuildVerified===true&&
+  b.scope==='I3_PAIRED_DEV'&&b.production===false&&sha40(b.producerControlHead)&&
+  sha40(b.sourceSha)&&sha40(b.sourceTree)&&b.sourceSha===value.sourceSha&&b.sourceTree===value.sourceTree&&
+  b.request?.path===DESCRIPTOR&&b.request.field==='pendingDevSuccessor'&&sha40(b.request.gitBlob)&&sha64(b.request.sha256)&&
+  b.workflow?.path==='.github/workflows/cxorbia-recovery-i3-dev-certification.yml'&&b.workflow.job==='vrm154-156-dev-materialization'&&
+  sha40(b.workflow.gitBlob)&&sha64(b.workflow.sha256)&&sha64(b.nativeStepSha256)&&
+  checkpoint(b.predecessorReceiptPath)&&sha40(b.predecessorReceiptBlob)&&
+  ['GITHUB_ACTIONS','GOOGLE_CLOUD_BUILD'].includes(b.predecessorExecution?.provider)&&typeof b.predecessorExecution.runId==='string'&&
+  Number.isSafeInteger(b.predecessorExecution.runAttempt)&&b.predecessorExecution.runAttempt>0&&
+  Number.isFinite(Date.parse(b.startedAt))&&Date.parse(b.completedAt)>=Date.parse(b.startedAt)&&
+  sha64(b.buildMetadataSha256)&&sha64(b.nativeLogsSha256)&&object(b.sourceObject)&&object(b.evidenceObject)&&
+  b.artifactManifest?.uri?.startsWith('gs://cxorbia-backend-dev_cloudbuild/')&&
+  b.artifactManifest.uri.includes('/artifacts-'+b.runId+'.json#')&&/#[1-9]\d{7,19}$/.test(b.artifactManifest.uri)&&sha64(b.artifactManifest.sha256)&&
+  b.artifactDigest==='sha256:'+b.evidenceObject.sha256&&value.artifactDigest===b.artifactDigest;
+}
+
+export function hasExactExecutionSuccessor({candidate,receipt=candidate,seal,gitRead=nativeGitRead}){
+ try{
+  const next=executionIdentity(candidate),prior=executionIdentity(seal);
+  if(next.provider==='GITHUB_ACTIONS'&&prior.provider==='GITHUB_ACTIONS')return Number.isSafeInteger(Number(next.runId))&&
+   Number.isSafeInteger(Number(prior.runId))&&Number(next.runId)>Number(prior.runId);
+  if(!hasNativeGoogleExecutionBinding(candidate))return false;
+  const s=receipt.succession,b=candidate.executionBinding;
+  if(!s||!sha40(s.expectedControlHead)||!isDeepStrictEqual(s.predecessorExecution,prior)||isDeepStrictEqual(next,prior)||
+    s.predecessorReceiptPath!==seal.receiptPath||s.predecessorReceiptBlob!==seal.receiptBlob||
+    b.predecessorReceiptPath!==s.predecessorReceiptPath||b.predecessorReceiptBlob!==s.predecessorReceiptBlob||
+    !isDeepStrictEqual(b.predecessorExecution,s.predecessorExecution))return false;
+  const raw=gitRead(['show',b.producerControlHead+':'+b.request.path]);
+  if(contentBlob(raw)!==b.request.gitBlob||bytesHash('sha256',raw)!==b.request.sha256)return false;
+  const producer=JSON.parse(String(raw)),predecessorRaw=gitRead(['show',b.producerControlHead+':'+b.predecessorReceiptPath]);
+  if(contentBlob(predecessorRaw)!==b.predecessorReceiptBlob||
+    producer.postDeployRunSeal?.receiptPath!==b.predecessorReceiptPath||producer.postDeployRunSeal?.receiptBlob!==b.predecessorReceiptBlob||
+    !isDeepStrictEqual(executionIdentity(producer.currentMaterialization),prior)||
+    !isDeepStrictEqual(JSON.parse(String(predecessorRaw)).materialization,producer.currentMaterialization)||
+    producer.productSourceSha!==candidate.sourceSha||(producer.productSourceTree||producer.productTreeAuthority)!==candidate.sourceTree)return false;
+  const config=producer.pendingDevSuccessor?.pairedCloudBuild,workflowRaw=gitRead(['show',b.producerControlHead+':'+b.workflow.path]);
+  if(!config||config.location!==b.location||config.serviceAccount!==b.serviceAccount||config.step?.id!==b.stepId||
+    !isDeepStrictEqual(config.workflow,b.workflow)||contentBlob(workflowRaw)!==b.workflow.gitBlob||bytesHash('sha256',workflowRaw)!==b.workflow.sha256)return false;
+  if(!['bucket','name','generation','size','sha256'].every(k=>config.sourceObject?.[k]===b.sourceObject[k]))return false;
+  const fields=['name','args','env','id','dir','entrypoint','secretEnv','volumes','waitFor','timeout','script','automapSubstitutions','allowFailure','allowExitCodes'];
+  const step=canonical(Object.fromEntries(fields.filter(k=>Object.hasOwn(config.step,k)&&config.step[k]!==false&&config.step[k]!==''&&!(Array.isArray(config.step[k])&&config.step[k].length===0)).map(k=>[k,config.step[k]])));
+  if(bytesHash('sha256',JSON.stringify(step))!==b.nativeStepSha256)return false;
+  // CAS is about the exact control/predecessor, never about a later timestamp.
+  const atCas=JSON.parse(String(gitRead(['show',s.expectedControlHead+':'+b.request.path])));
+  if(atCas.productSourceSha!==candidate.sourceSha||(atCas.productSourceTree||atCas.productTreeAuthority)!==candidate.sourceTree||
+    atCas.postDeployRunSeal?.receiptPath!==seal.receiptPath||atCas.postDeployRunSeal?.receiptBlob!==seal.receiptBlob||
+    !isDeepStrictEqual(executionIdentity(atCas.currentMaterialization),prior))return false;
+  gitRead(['merge-base','--is-ancestor',b.producerControlHead,s.expectedControlHead]);
+  gitRead(['merge-base','--is-ancestor',s.expectedControlHead,'HEAD']);
+  return true;
+ }catch{return false;}
+}
+
+export function validateSealedExecutionAuthority({seal,receipt,aliases=[],gitRead=nativeGitRead}){
+ const failures=[],check=(ok,code)=>{if(!ok)failures.push(code);};
+ try{
+  const materialization=receipt?.materialization,provider=executionProviderOf(seal);
+  for(const value of [materialization,...aliases])check(Boolean(value)&&executionProviderOf(value)===provider&&
+   String(value.runId)===String(seal.runId)&&isDeepStrictEqual(value.executionBinding,seal.executionBinding)&&
+   (provider!=='GOOGLE_CLOUD_BUILD'||Number(value.runAttempt||1)===1&&value.runNumber===null),'POSTDEPLOY_EXECUTION_BINDING_DESYNC');
+  if(provider==='GOOGLE_CLOUD_BUILD'){
+   check(receipt.executionProvider===provider&&isDeepStrictEqual(receipt.executionBinding,seal.executionBinding)&&
+    receipt.runId===materialization?.runId&&receipt.runAttempt===1&&receipt.runNumber===null&&
+    ['jobId','artifactId','workflowRunId'].every(k=>receipt[k]===undefined)&&hasNativeGoogleExecutionBinding(materialization),'POSTDEPLOY_GOOGLE_NATIVE_BINDING');
+   const b=materialization?.executionBinding||{};
+   check(hasExactExecutionSuccessor({candidate:materialization,receipt,seal:{...b.predecessorExecution,executionProvider:b.predecessorExecution?.provider,
+    receiptPath:b.predecessorReceiptPath,receiptBlob:b.predecessorReceiptBlob},gitRead}),'POSTDEPLOY_GOOGLE_CAUSAL_BINDING');
+   const producer=JSON.parse(String(gitRead(['show',b.producerControlHead+':'+b.request.path]))),pending=producer.pendingDevSuccessor;
+   check(pending?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&pending.scope==='RUNTIME_AND_HOSTING'&&
+    pending.sourceSha===materialization.sourceSha&&pending.sourceTree===materialization.sourceTree&&pending.production===false&&pending.devPublished===false&&
+    isDeepStrictEqual(pending.servingRuntimeSeal,producer.postDeployRunSeal)&&isDeepStrictEqual(pending.servingPairedMaterialization,producer.currentMaterialization),
+    'POSTDEPLOY_GOOGLE_PRODUCER_REQUEST');
+  }else check(provider==='GITHUB_ACTIONS','POSTDEPLOY_EXECUTION_PROVIDER_UNSUPPORTED');
+ }catch{check(false,'POSTDEPLOY_EXECUTION_BINDING_UNREADABLE');}
+ return {pass:failures.length===0,failures};
+}
 /* Current control-plane compatibility aliases must not contradict the canonical
    descriptor-selected ledger and DEV seal. Historical nested evidence is immutable;
    only explicitly current top-level fields are compared here. */
-export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:m}){
+export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:m,gitRead=nativeGitRead}){
   const failures=[];
   const check=(condition,code)=>{if(!condition)failures.push(code);};
   const ids=Object.keys(l?.findings||{}).sort();
@@ -225,7 +329,17 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
       for(const mod of m.modules||[]){
         if(!/HR_FAILED/.test(String(mod.currentDevStage||'')))continue;
         const residual=mod.currentResidualEvidence||{};
-        check(Number(residual.runId)>Number(seal.runId)&&residual.sourceSha===source&&
+        const predecessor={...seal,receiptPath:postDeploy.receiptPath,receiptBlob:postDeploy.receiptBlob};
+        let later=hasExactExecutionSuccessor({candidate:residual,seal:predecessor,gitRead});
+        if(later&&executionProviderOf(residual)!=='GITHUB_ACTIONS'){
+          try{
+            const raw=gitRead(['show','HEAD:'+(residual.receiptPath||residual.path)]),proof=JSON.parse(String(raw));
+            later=checkpoint(residual.receiptPath||residual.path)&&residual.production===false&&proof.production===false&&contentBlob(raw)===(residual.receiptBlob||residual.gitBlob)&&
+              ['runId','sourceSha','sourceTree','classification','state'].every(k=>proof[k]===residual[k])&&
+              isDeepStrictEqual(proof.executionBinding,residual.executionBinding)&&isDeepStrictEqual(proof.succession,residual.succession);
+          }catch{later=false;}
+        }
+        check(later&&residual.sourceSha===source&&
           ['PROVIDER_FAILURE','ENVIRONMENT_FAILURE','AUTH_FAILURE'].includes(residual.classification)&&
           ['HOLD','NO_GO'].includes(residual.state),'CURRENT_MODULE_HR_FAILURE_WITHOUT_NEWER_EVIDENCE');
       }

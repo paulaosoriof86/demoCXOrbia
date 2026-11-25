@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {isVerifiedGooglePairedExecution} from './cxorbia-i3-google-qa-execution.mjs';
 
 export const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 export const POINTER='CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
@@ -12,8 +13,52 @@ const clone=x=>structuredClone(x);
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const must=(ok,code)=>{if(!ok)throw new Error(code);};
 
+// Technical executors and the HR provider are different identities. Legacy
+// untagged receipts are Actions; a tagged foreign execution is never numeric.
+export function executionProviderOf(value={}){
+ const supported=['GITHUB_ACTIONS','GOOGLE_CLOUD_BUILD','GOOGLE_CLOUD_SHELL'];
+ must(value.executionProvider===undefined||!supported.includes(value.provider)||value.executionProvider===value.provider,'SOURCE_FAILURE:CONFLICTING_EXECUTION_PROVIDER');
+ const provider=value.executionProvider??(supported.includes(value.provider)?value.provider:'GITHUB_ACTIONS');
+ must(supported.includes(provider),'SOURCE_FAILURE:UNKNOWN_EXECUTION_PROVIDER');
+ return provider;
+}
+export function actionsCursorOf(descriptor){
+ const explicit=descriptor.actionsScanCursor;
+ if(explicit){
+  must(explicit.provider==='GITHUB_ACTIONS'&&/^[1-9]\d*$/.test(String(explicit.runId))&&Number.isSafeInteger(Number(explicit.runId))&&Number.isSafeInteger(Number(explicit.runAttempt))&&Number(explicit.runAttempt)>0,'SOURCE_FAILURE:INVALID_ACTIONS_SCAN_CURSOR');
+  return {provider:'GITHUB_ACTIONS',runId:String(explicit.runId),runAttempt:Number(explicit.runAttempt)};
+ }
+ const seal=descriptor.postDeployRunSeal;
+ if(!seal)return {provider:'GITHUB_ACTIONS',runId:'0',runAttempt:1};
+ must(executionProviderOf(seal)==='GITHUB_ACTIONS'&&/^[1-9]\d*$/.test(String(seal.runId))&&Number.isSafeInteger(Number(seal.runId)),'SOURCE_FAILURE:EXTERNAL_MATERIALIZATION_REQUIRES_ACTIONS_CURSOR');
+ const attempt=Number(descriptor.currentMaterialization?.runAttempt||seal.runAttempt||1);
+ must(Number.isSafeInteger(attempt)&&attempt>0,'SOURCE_FAILURE:INVALID_ACTIONS_SCAN_CURSOR');
+ return {provider:'GITHUB_ACTIONS',runId:String(seal.runId),runAttempt:attempt};
+}
+const executionIdentity=value=>({provider:executionProviderOf(value),runId:String(value.runId),runAttempt:Number(value.runAttempt||1)});
+
+function assertMaterializationSuccession(input,receipt){
+ const current=input.descriptor.currentMaterialization,provider=executionProviderOf(receipt.materialization);
+ must(['GITHUB_ACTIONS','GOOGLE_CLOUD_BUILD'].includes(provider),'SOURCE_FAILURE:UNSUPPORTED_MATERIALIZATION_PROVIDER');
+ must(Number.isSafeInteger(Number(receipt.materialization.runAttempt))&&Number(receipt.materialization.runAttempt)>0,'SOURCE_FAILURE:INVALID_EXECUTION_ATTEMPT');
+ if(provider==='GITHUB_ACTIONS')must(/^[1-9]\d*$/.test(String(receipt.materialization.runId))&&Number.isSafeInteger(Number(receipt.materialization.runId)),'SOURCE_FAILURE:INVALID_ACTIONS_EXECUTION_ID');
+ else must(/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(receipt.materialization.runId)&&receipt.materialization.runNumber===null,'SOURCE_FAILURE:INVALID_GOOGLE_EXECUTION_ID');
+ if(provider==='GITHUB_ACTIONS'&&(!current||executionProviderOf(current)==='GITHUB_ACTIONS')){
+  must(Number(receipt.materialization.runId)>Number(current?.runId||0)||(String(receipt.materialization.runId)===String(current?.runId)&&Number(receipt.materialization.runAttempt)>=Number(current.runAttempt||1)),'SOURCE_FAILURE:OUT_OF_ORDER_MATERIALIZATION');
+  return;
+ }
+ const next=receipt.succession,seal=input.descriptor.postDeployRunSeal;
+ must(next&&/^[a-f0-9]{40}$/.test(input.head||'')&&next.expectedControlHead===input.head,'SOURCE_FAILURE:EXTERNAL_SUCCESSION_CONTROL_HEAD');
+ must(next.predecessorReceiptPath===seal?.receiptPath&&next.predecessorReceiptBlob===seal?.receiptBlob&&same(next.predecessorExecution,executionIdentity(current)),'SOURCE_FAILURE:EXTERNAL_SUCCESSION_PREDECESSOR');
+ must(!same(executionIdentity(current),executionIdentity(receipt.materialization)),'SOURCE_FAILURE:REPLAY_RECEIPT_CHANGED');
+ const binding=receipt.executionBinding;
+ must(/^[a-f0-9]{40}$/.test(binding?.producerControlHead||'')&&binding.request?.path===DESCRIPTOR&&binding.request?.field==='pendingDevSuccessor'&&/^[a-f0-9]{40}$/.test(binding.request?.gitBlob||'')&&/^[a-f0-9]{64}$/.test(binding.request?.sha256||'')&&binding.predecessorReceiptPath===next.predecessorReceiptPath&&binding.predecessorReceiptBlob===next.predecessorReceiptBlob&&same(binding.predecessorExecution,next.predecessorExecution)&&same(binding,receipt.materialization.executionBinding),'SOURCE_FAILURE:EXTERNAL_SUCCESSION_REQUEST');
+}
+
 // Enumerated active compatibility paths only. No recursive prefix rewriting.
 export const REGISTRY={
+ executionIdentity:['executionProvider','executionBinding'],
+ executionCursors:['actionsScanCursor'],
  materialization:['currentMaterialization','currentDevMaterialization','lastDevMaterialization','latestDevMaterialization','latestDev'],
  execution:['currentExecutionReceipt','lastExecutionReceipt','latestExecutionReceipt'],
  obsolete:['currentAuthorityAliasPrevention','currentControlStatusCompatibilityRepair','currentHarnessOnlyCorrection','currentSessionProofPackage','currentSessionProofRequest','currentSourceReproof','currentSourceSuccessor419','devCertification','humanVisualCheckpointState','lastModuleTruthAttempt','lastSourceFix','lastSourceProof','latestFocalSourceFix','latestSourceSuccessor','sourceReproof','currentB14ToolboxStatus','currentB14ExecutionPrerequisite','currentF3EnvironmentReadback','planChoque20261113','currentA08ResidualQaExecution'],
@@ -35,7 +80,13 @@ export function assertPreserved(before,after){
  must(after.descriptor.production==='DO_NOT_TOUCH'&&after.pointer.production==='DO_NOT_TOUCH'&&after.pointer.authorizationI4!==true,'RELEASE_COMPOSITION_FAILURE:PRODUCTION_AUTHORITY_CHANGED');
 }
 
-export function makeMaterializationReceipt({run,job,artifact,result,hrResult,mailbox,hrWindow,requireHrWindow=false,sourceAssets,verifiedArchiveDigest}){
+export function makeMaterializationReceipt({run,job,artifact,externalExecution,result,hrResult,mailbox,hrWindow,requireHrWindow=false,sourceAssets,verifiedArchiveDigest,succession}){
+ const google=externalExecution!==undefined;
+ if(google){
+  must(!run&&!job&&!artifact&&isVerifiedGooglePairedExecution(externalExecution),'SOURCE_FAILURE:GOOGLE_NATIVE_PROVENANCE_REQUIRED');
+  must(externalExecution.artifactDigest===verifiedArchiveDigest&&externalExecution.sourceSha===result.sourceSha&&externalExecution.sourceTree===result.sourceTree,'SOURCE_FAILURE:GOOGLE_PAIRED_SOURCE_OR_ARCHIVE');
+  must(result.executionProvider==='GOOGLE_CLOUD_BUILD'&&result.runId===externalExecution.runId&&result.runAttempt===1&&['workflowRunId','jobId','artifactId'].every(k=>!Object.hasOwn(result,k)),'SOURCE_FAILURE:GOOGLE_PAIRED_RESULT_EXECUTION');
+ }else{
  must(job.conclusion==='success'&&job.run_id===run.id,'ENVIRONMENT_FAILURE:PRODUCER_NOT_SUCCESS');
  must(run.head_branch==='recovery/cxorbia-phase-a-20260831','SOURCE_FAILURE:WRONG_BRANCH');
  must(run.path==='.github/workflows/cxorbia-recovery-i3-dev-certification.yml','SOURCE_FAILURE:WRONG_WORKFLOW');
@@ -47,6 +98,9 @@ export function makeMaterializationReceipt({run,job,artifact,result,hrResult,mai
  const expected=`cxorbia-vrm154-156-dev-materialization-${run.id}-${run.run_attempt}`;
  const legacy=`cxorbia-vrm154-156-dev-materialization-${run.id}`;
  must(artifact.name===expected||(run.run_attempt===1&&artifact.name===legacy),'SOURCE_FAILURE:ARTIFACT_NAME_ATTEMPT');
+ }
+ const id=google?externalExecution.runId:run.id,attempt=google?externalExecution.runAttempt:run.run_attempt;
+ const executionMatches=value=>google?value.executionProvider==='GOOGLE_CLOUD_BUILD'&&String(value.runId)===id&&Number(value.runAttempt)===attempt:Number(value.runId)===id;
  must(/^PASS/.test(result.decision)&&result.production===false&&result.productionUnchanged===true,'RELEASE_COMPOSITION_FAILURE:INCOMPLETE_PAIRED_RESULT');
  must(result.sourceHostedExact===true&&result.runtimeTrafficExact===true&&result.scenarioDimensionsProven===true,'RELEASE_COMPOSITION_FAILURE:MISSING_LIVE_READBACK');
  must(/^[a-f0-9]{40}$/.test(result.sourceSha)&&/^[a-f0-9]{40}$/.test(result.sourceTree),'SOURCE_FAILURE:PRODUCT_IDENTITY');
@@ -60,19 +114,23 @@ export function makeMaterializationReceipt({run,job,artifact,result,hrResult,mai
   must(sourceAssets[path]===digest,`RELEASE_COMPOSITION_FAILURE:SERVED_ASSET:${path}`);
  }
  must(hrResult?.decision==='PASS_EXCEL_CANONICAL_ID_READONLY'||hrResult?.decision==='PASS_HR_DURABLE_REVISION_READONLY','SOURCE_FAILURE:MISSING_HR_READBACK');
- must(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>hrResult[k]===result[k])&&Number(hrResult.runId)===run.id&&hrResult.revision===result.hrRevision&&hrResult.production===false&&hrResult.fullDomain===false&&['firestoreWrites','authWrites','hrWrites','commandPosts'].every(k=>hrResult[k]===0),'SOURCE_FAILURE:HR_READBACK_IDENTITY_OR_SCOPE');
+ must(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>hrResult[k]===result[k])&&executionMatches(hrResult)&&hrResult.revision===result.hrRevision&&hrResult.production===false&&hrResult.fullDomain===false&&['firestoreWrites','authWrites','hrWrites','commandPosts'].every(k=>hrResult[k]===0),'SOURCE_FAILURE:HR_READBACK_IDENTITY_OR_SCOPE');
  must(result.hrWrites===0&&result.firestoreRulesDeploys===0&&result.storageRulesDeploys===0,'RELEASE_COMPOSITION_FAILURE:UNEXPECTED_WRITE');
  if(requireHrWindow)must(Boolean(hrWindow),'SOURCE_FAILURE:HR_WINDOW_REQUIRED');
  if(hrWindow){
   must(hrWindow.decision==='PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ'&&hrWindow.schemaVersion==='cxorbia.i3.hr-period-window-dev.v1'&&
-   ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>hrWindow[k]===result[k])&&Number(hrWindow.runId)===run.id&&hrWindow.runAttempt===run.run_attempt&&hrWindow.revision===result.hrRevision,'SOURCE_FAILURE:HR_WINDOW_IDENTITY');
+   ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>hrWindow[k]===result[k])&&executionMatches(hrWindow)&&hrWindow.runAttempt===attempt&&hrWindow.revision===result.hrRevision,'SOURCE_FAILURE:HR_WINDOW_IDENTITY');
   must(hrWindow.production===false&&hrWindow.fullDomain===false&&hrWindow.authenticatedUiCertified===false&&['firestoreWrites','authWrites','hrWrites','commandPosts','operationalImports'].every(k=>hrWindow[k]===0),'SOURCE_FAILURE:HR_WINDOW_SCOPE');
   must(hrWindow.rolling?.mode==='rolling_window'&&hrWindow.returned?.mode==='rolling_window'&&same(hrWindow.rolling.periodIds,hrWindow.returned.periodIds)&&hrWindow.returned.revision===result.hrRevision&&hrWindow.rolling.periodIds.length<=3&&hrWindow.rolling.periodIds.length>0&&hrWindow.explicit?.mode==='explicit_period'&&hrWindow.explicit.periodIds.length===1&&!hrWindow.rolling.periodIds.includes(hrWindow.explicit.periodIds[0])&&hrWindow.history?.externalReadCurrent===false&&hrWindow.history.available===true&&hrWindow.history.originalSeedVisits===836&&hrWindow.history.periods>=19,'SOURCE_FAILURE:HR_WINDOW_INCOMPLETE');
  }
- const receiptPath=`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${run.run_attempt}_AUTOMATIC_DEV_RECEIPT.json`;
+ const receiptPath=google?`docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_${id}_AUTOMATIC_DEV_RECEIPT.json`:`docs/checkpoints/CXORBIA_I3_RUN${id}_ATTEMPT${attempt}_AUTOMATIC_DEV_RECEIPT.json`;
  const materialization={...result};delete materialization.servedSha256;
- Object.assign(materialization,{runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,jobId:job.id,jobConclusion:job.conclusion,controlHeadAtDeploy:run.head_sha,artifactId:artifact.id,artifactDigest:artifact.digest,artifactDigestType:'GITHUB_ACTIONS_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR',materializationReceiptPath:receiptPath,hrLiveVerified:true,state:'PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING',humanAcceptance:'B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL',fullTaskClosed:false});
- return {receiptPath,receipt:{schemaVersion:'cxorbia.i3.current-source-dev-materialization.v1',kind:'EXACT_PAIRED_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE',iteration:'I3',state:'HOLD',source:{sha:result.sourceSha,tree:result.sourceTree},sourceSha:result.sourceSha,sourceTree:result.sourceTree,workflowRunId:run.id,runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,jobId:job.id,jobConclusion:job.conclusion,artifactId:artifact.id,artifactDigest:artifact.digest,archiveDigestVerified:true,observedAt:job.completed_at,decision:result.decision,materialization,servedSha256:result.servedSha256,verifiedServedAssetCount:assets.length,sourceHostedExact:true,productionUnchanged:true,production:false,i4Authorized:false,phaseAComplete:false,terminalCertified:false,newDomainMatches:0,hrReadback:hrResult,hrPeriodWindow:hrWindow||null,mailboxEnvironment:mailbox||null,scope:'DEV_MATERIALIZATION_ONLY_NO_DOMAIN_OR_HUMAN_PROMOTION'}};
+ const identity=google?{executionProvider:'GOOGLE_CLOUD_BUILD',runId:id,runNumber:null,runAttempt:attempt,jobConclusion:'success',executionBinding:clone(externalExecution)}:{workflowRunId:run.id,runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,jobId:job.id,jobConclusion:job.conclusion,artifactId:artifact.id};
+ Object.assign(materialization,{...identity,controlHeadAtDeploy:google?externalExecution.producerControlHead:run.head_sha,artifactDigest:verifiedArchiveDigest,artifactDigestType:google?'GOOGLE_CLOUD_BUILD_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR':'GITHUB_ACTIONS_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR',materializationReceiptPath:receiptPath,hrLiveVerified:true,state:'PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING',humanAcceptance:'B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL',fullTaskClosed:false});
+ const receipt={schemaVersion:'cxorbia.i3.current-source-dev-materialization.v1',kind:'EXACT_PAIRED_DEV_ACK_NOT_FUNCTIONAL_CERTIFICATE',iteration:'I3',state:'HOLD',source:{sha:result.sourceSha,tree:result.sourceTree},sourceSha:result.sourceSha,sourceTree:result.sourceTree,...identity,artifactDigest:verifiedArchiveDigest,archiveDigestVerified:true,observedAt:google?externalExecution.completedAt:job.completed_at,decision:result.decision,materialization,servedSha256:result.servedSha256,verifiedServedAssetCount:assets.length,sourceHostedExact:true,productionUnchanged:true,production:false,i4Authorized:false,phaseAComplete:false,terminalCertified:false,newDomainMatches:0,hrReadback:hrResult,hrPeriodWindow:hrWindow||null,mailboxEnvironment:mailbox||null,scope:'DEV_MATERIALIZATION_ONLY_NO_DOMAIN_OR_HUMAN_PROMOTION'};
+ if(google)receipt.succession={predecessorReceiptPath:externalExecution.predecessorReceiptPath,predecessorReceiptBlob:externalExecution.predecessorReceiptBlob,predecessorExecution:clone(externalExecution.predecessorExecution)};
+ else if(succession){receipt.succession=clone(succession);receipt.executionBinding=clone(succession.executionBinding);materialization.executionBinding=clone(succession.executionBinding);materialization.executionProvider='GITHUB_ACTIONS';receipt.executionProvider='GITHUB_ACTIONS';}
+ return {receiptPath,receipt};
 }
 
 function oldResidual(mod,archive){(archive.modules||={})[mod.domain]={actionRequired:mod.actionRequired,currentResidualClauses:clone(mod.currentResidualClauses)};}
@@ -157,8 +215,11 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  const r=receipt.materialization,blob=gitBlob(jsonBytes(receipt));
  const nextAction=receipt.hrPeriodWindow?NEXT.replace('Complete the authorized previous/current/next HR reading window without discarding confirmed history; prove', 'The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove'):NEXT;
  must(r.sourceSha===d.productSourceSha&&r.sourceTree===d.productSourceTree,'SOURCE_FAILURE:RESULT_IS_NOT_CURRENT_PRODUCT');
- must(Number(r.runId)>Number(d.currentMaterialization?.runId||0)||(Number(r.runId)===Number(d.currentMaterialization?.runId||0)&&Number(r.runAttempt)>=Number(d.currentMaterialization?.runAttempt||1)),'SOURCE_FAILURE:OUT_OF_ORDER_MATERIALIZATION');
- if(d.postDeployRunSeal?.receiptPath===receiptPath){must(d.postDeployRunSeal.receiptBlob===blob,'SOURCE_FAILURE:REPLAY_RECEIPT_CHANGED');return {noop:true,...out};}
+ if(d.postDeployRunSeal?.receiptPath===receiptPath){must(same(executionIdentity(d.currentMaterialization),executionIdentity(r)),'SOURCE_FAILURE:OUT_OF_ORDER_MATERIALIZATION');must(d.postDeployRunSeal.receiptBlob===blob,'SOURCE_FAILURE:REPLAY_RECEIPT_CHANGED');return {noop:true,...out};}
+ assertMaterializationSuccession(input,receipt);
+ const executionProvider=executionProviderOf(r),previousActionsCursor=actionsCursorOf(d);
+ const actionsScanCursor=executionProvider==='GITHUB_ACTIONS'?{provider:'GITHUB_ACTIONS',runId:String(r.runId),runAttempt:Number(r.runAttempt)}:previousActionsCursor;
+ const technical=Object.fromEntries(REGISTRY.executionIdentity.filter(k=>Object.hasOwn(r,k)).map(k=>[k,clone(r[k])]));
  const archived={schemaVersion:'cxorbia.i3.active-alias-migration.v1',reason:'Historical active aliases are archived verbatim; operational projection is derived from exact receipt.',observedAt:now,controls:{}};
  const c3=d.currentC3PreterminalAudit;
  const seal={schemaVersion:'cxorbia.i3.postdeploy-consistency-seal.v1',mode:'CURRENT_SOURCE_SERVING',...Object.fromEntries(['runId','runNumber','sourceSha','sourceTree','artifactDigest','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','firestoreRuleset','hrRevision'].map(k=>[k,r[k]])),receiptPath,receiptBlob:blob,liveE2e:'EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING',hrLiveVerified:true,certifiable:false,humanAcceptance:'B4_B5_B6_B7_PASS_PRESERVED',gate20:'HOLD',gate21:'HOLD',production:false};
@@ -166,8 +227,11 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  const preC3={state:'DEV_RUNTIME_AND_HOSTING_VERIFIED_C3_PENDING',...Object.fromEntries(['sourceSha','sourceTree','hostingVersion','hostingRelease','runtimeRevision','runtimeDigest','runId','runNumber'].map(k=>[k,r[k]])),previousC3SourceSha:c3.sourceSha,previousC3SourceTree:c3.sourceTree,previousHostingVersion:c3.hostingVersion,previousRuntimeRevision:c3.runtimeRevision,receiptPath,receiptBlob:blob,production:false,scope:'CURRENT_PAIRED_DEV_VERIFIED_PRIOR_C3_HISTORICAL_CURRENT_C3_PENDING'};
  const serving={path:receiptPath,gitBlob:blob,receiptPath,receiptBlob:blob,...Object.fromEntries(['sourceSha','sourceTree','runId','runtimeRevision','runtimeDigest','hostingVersion'].map(k=>[k,r[k]])),scope:'EXACT_DEV_MATERIALIZATION_NOT_FUNCTIONAL_OR_HUMAN_CERTIFICATE'};
  const binding={...serving,materializationRunId:r.runId,observedRunId:r.runId,hrRevision:r.hrRevision,provider:'excel_online',production:false,runtimeProjectBindingResolutionProven:true,b14Closed:false};
+ for(const alias of [seal,execution,preC3,serving,binding])Object.assign(alias,clone(technical));
  for(const [name,o]of Object.entries(out)){
   const old=archived.controls[name]={};
+  if(o.actionsScanCursor)old.actionsScanCursor=clone(o.actionsScanCursor);
+  o.actionsScanCursor=clone(actionsScanCursor);
   if(Object.hasOwn(o,'asOf')){old.asOf=o.asOf;o.asOf=now;}
   for(const k of [...REGISTRY.materialization,...REGISTRY.execution,'nextPlannedBlock','activeAuthoritySemantics','lastModuleTruthProof','i3Q2HostingReleaseC3Pending'])if(Object.hasOwn(o,k))old[k]=clone(o[k]);
   archiveActive(o,[...REGISTRY.obsolete,...REGISTRY.completedPending],old);
@@ -178,7 +242,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   if(receipt.hrPeriodWindow)o.currentHrPeriodWindow={...clone(receipt.hrPeriodWindow),receiptPath,receiptBlob:blob,scope:'READ_WINDOW_AND_HISTORY_ONLY_NO_DOMAIN_PROMOTION'};
   // A fresh paired HR read is its own fact; do not relabel an old F2 config-write receipt.
   if(o.currentF2OperationalExcel){old.currentF2OperationalExcel=o.currentF2OperationalExcel;delete o.currentF2OperationalExcel;}
-  o.lastHrObservation={runId:r.runId,sourceSha:r.sourceSha,sourceTree:r.sourceTree,hrRevision:r.hrRevision,receiptPath,receiptBlob:blob,provider:'excel_online',production:false,kind:'EXACT_PAIRED_READONLY_HR_OBSERVATION'};
+  o.lastHrObservation={runId:r.runId,...clone(technical),sourceSha:r.sourceSha,sourceTree:r.sourceTree,hrRevision:r.hrRevision,receiptPath,receiptBlob:blob,provider:'excel_online',production:false,kind:'EXACT_PAIRED_READONLY_HR_OBSERVATION'};
   o.lastModuleTruthProof=clone(c3);o.c3PreterminalProof=clone(c3);o.currentC3PreterminalAudit=clone(c3);
   if(o.canonicalFunctionalCandidate){old.canonicalFunctionalCandidateMaterialization=clone(o.canonicalFunctionalCandidate.currentMaterialization);Object.assign(o.canonicalFunctionalCandidate,{state:'RUNTIME_AND_HOSTING_DEV_MATERIALIZED_FUNCTIONAL_C3_PENDING',currentMaterialization:clone(r),nextExactAction:nextAction,exactNextAction:nextAction});}
   if(o.currentMailboxEnvironmentHold&&receipt.mailboxEnvironment){old.currentMailboxEnvironmentHold=clone(o.currentMailboxEnvironmentHold);Object.assign(o.currentMailboxEnvironmentHold,{runtimeRevision:r.runtimeRevision,observedRunId:r.runId,reason:receipt.mailboxEnvironment.secretMetadataOutcome==='PERMISSION_DENIED'?'Mailbox key metadata lookup was denied; key existence is not established. Retain E08 functional HOLD.':'Mailbox environment observation only; authenticated functional E08 proof remains required.',secretMetadataOutcome:receipt.mailboxEnvironment.secretMetadataOutcome,mailboxEnabled:receipt.mailboxEnvironment.mailboxEnabled,sendEnabled:receipt.mailboxEnvironment.sendEnabled,receiptPath,receiptBlob:blob});}
@@ -226,6 +290,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  const archivePath=`docs/checkpoints/CXORBIA_I3_RUN${r.runId}_ATTEMPT${r.runAttempt}_ACTIVE_ALIAS_HISTORY.json`;
  for(const o of [d,p,l,m])o.activeAliasHistory={path:archivePath,gitBlob:gitBlob(jsonBytes(archived)),semantics:'IMMUTABLE_SUPERSEDED_ACTIVE_HEADERS_NOT_EXECUTION_AUTHORITY'};
  const projection={schemaVersion:PROJECTION_SCHEMA,receiptPath,receiptBlob:blob,runId:r.runId,runAttempt:r.runAttempt,sourceSha:r.sourceSha,sourceTree:r.sourceTree,historicalC3SourceSha:c3.sourceSha,currentSourceC3Certified:false,domainPromotion:false,production:false};
+ Object.assign(projection,clone(technical));
  for(const o of [d,p,l,m])o.currentControlProjection=clone(projection);
  projectCurrentResidualNextAction(out,{completedTaskIds:input.pointer.nextPlannedBlock?.completedTaskIds||[]});
  assertPreserved(input,out);
@@ -262,6 +327,11 @@ export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matr
  if(!d.currentControlProjection)return {pass:true,failures:[]};
  const seal=d.postDeployRunSeal,materialization=d.currentMaterialization,c3=d.currentC3PreterminalAudit;
  for(const [name,o]of Object.entries({descriptor:d,pointer:p,ledger:l,matrix:m})){
+  for(const key of REGISTRY.executionCursors)if(d[key]||o[key])check(same(o[key],d[key]),name+'.'+key);
+  for(const key of REGISTRY.executionIdentity){
+   check(same(o.postDeployRunSeal?.[key],materialization[key]),name+'.postDeployRunSeal.'+key);
+   check(same(o.currentControlProjection?.[key],materialization[key]),name+'.currentControlProjection.'+key);
+  }
   check(same(o.currentControlProjection,d.currentControlProjection),name+'.currentControlProjection');
   for(const key of REGISTRY.materialization)if(Object.hasOwn(o,key))check(same(o[key],materialization),name+'.'+key);
   for(const key of REGISTRY.execution)check(same(o[key],d.currentExecutionReceipt),name+'.'+key);

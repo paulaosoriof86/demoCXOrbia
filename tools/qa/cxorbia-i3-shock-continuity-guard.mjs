@@ -3,6 +3,9 @@ import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {isDeepStrictEqual} from 'node:util';
+import {executionProviderOf} from './cxorbia-i3-current-control-projection.mjs';
+import {hasExactExecutionSuccessor,validateSealedExecutionAuthority} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const DESCRIPTOR = 'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const POINTER = 'CXORBIA_RECOVERY_EXECUTION_CURRENT.json';
@@ -25,7 +28,7 @@ export function hasVerifiedHostingAssets(receipt,previousSourceSha,
 }
 
 export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,gitBlob,
-  gitRead=args=>execFileSync('git',args,{encoding:'utf8'}).trim(),
+  gitRead=args=>execFileSync('git',args,{encoding:'utf8'}),
   gitAncestor=(before,after)=>{try{execFileSync('git',['merge-base','--is-ancestor',before,after],{stdio:'ignore'});return true;}catch{return false;}}}){
   const pending=d.pendingDevSuccessor,other=p.pendingDevSuccessor;
   if(!pending&&!other)return {present:false,pass:false};
@@ -34,7 +37,7 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
       pending.state!=='P0_PROVEN_PENDING_DEV_MATERIALIZATION'||
       !['RUNTIME_AND_HOSTING','HOSTING_ONLY'].includes(pending.scope)||
       pending.sourceSha!==d.productSourceSha||pending.sourceSha!==m.productSource?.sha||
-      pending.sourceTree!==d.productTreeAuthority||gitRead(['rev-parse',pending.sourceSha+'^{tree}'])!==pending.sourceTree||
+      pending.sourceTree!==d.productTreeAuthority||gitRead(['rev-parse',pending.sourceSha+'^{tree}']).trim()!==pending.sourceTree||
       !gitAncestor(pending.predecessorProductSourceSha,pending.sourceSha)||pending.predecessorProductSourceSha===pending.sourceSha||
       pending.devPublished!==false||pending.production!==false||pending.rulesDeploys!==0||pending.storageRulesDeploys!==0||
       m.productSource?.authorityState!==(pending.scope==='HOSTING_ONLY'
@@ -58,8 +61,12 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
       const receipt=JSON.parse(gitRead(['show','HEAD:'+seal.receiptPath]));
       if(receipt.source?.sha!==paired.sourceSha||receipt.source?.tree!==paired.sourceTree||
         JSON.stringify(receipt.materialization)!==JSON.stringify(paired)||paired.production!==false||
-        ['sourceSha','sourceTree','runId','runNumber','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','artifactDigest']
+        ['sourceSha','sourceTree','runId','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','artifactDigest']
           .some(key=>!paired[key]||paired[key]!==seal[key]))return {present:true,pass:false};
+      if(executionProviderOf(paired)==='GITHUB_ACTIONS'){
+        if(!paired.runNumber||paired.runNumber!==seal.runNumber)return {present:true,pass:false};
+      }else if(paired.runNumber!==null||seal.runNumber!==null||
+        !validateSealedExecutionAuthority({seal,receipt,aliases:[p.postDeployRunSeal,p.currentDevMaterialization],gitRead}).pass)return {present:true,pass:false};
     }
     if(!pending.proofReceiptPath||gitBlob(pending.proofReceiptPath)!==pending.proofReceiptBlob)return {present:true,pass:false};
     const proof=JSON.parse(gitRead(['show','HEAD:'+pending.proofReceiptPath]));
@@ -94,11 +101,11 @@ export function classifyModules(matrix) {
 // This witness is intentionally independent of the descriptor and pointer.
 // RUN2382 already proved the active product source served in DEV while both
 // control JSONs still pointed at RUN2322 and therefore agreed falsely.
-export function findNewerDevProviderReceipt({sourceSha, sealedRunId, receipts}) {
+export function findNewerDevProviderReceipt({sourceSha, sealedRunId, sealedExecution, receipts,gitRead}) {
   return receipts.find(({path: receiptPath, value: r}) => {
     const f2 = r?.schemaVersion === 'cxorbia.i3.f2.operational-excel-dev-pass-continuity.v1';
     const provider = r?.providerReceipt || r?.materialization || (f2 ? r?.devMaterialization : null);
-    const runId = Number(r?.workflowRunId || provider?.runId || 0);
+    const execution={...provider,runId:r?.workflowRunId||provider?.runId||0};
     const source = r?.productSourceSha || r?.source?.sha || provider?.sourceSha;
     const passed = /^PASS/.test(String(provider?.decision || r?.decision || ''));
     // This witness can only fail a stale seal, never promote a certificate.
@@ -106,7 +113,15 @@ export function findNewerDevProviderReceipt({sourceSha, sealedRunId, receipts}) 
       r?.state === 'HOLD' && r?.safety?.production === 'DO_NOT_TOUCH' &&
       r?.safety?.i4Authorized === false && provider?.sourceHostedExact === true &&
       provider?.runtimeTrafficExact === true);
-    return source === sourceSha && runId > Number(sealedRunId || 0) &&
+    const successor=hasExactExecutionSuccessor({candidate:execution,receipt:r,seal:sealedExecution||{runId:sealedRunId||0},gitRead});
+    if(successor&&executionProviderOf(execution)!=='GITHUB_ACTIONS'){
+      try{
+        const read=gitRead||(args=>execFileSync('git',args,{encoding:'utf8'}));
+        if(source!==provider.sourceSha||r.source?.tree!==provider.sourceTree||r.executionProvider!==execution.executionProvider||
+          !isDeepStrictEqual(r.executionBinding,provider.executionBinding)||!isDeepStrictEqual(JSON.parse(String(read(['show','HEAD:'+receiptPath]))),r))return false;
+      }catch{return false;}
+    }
+    return source === sourceSha && successor &&
       passed && devOnly &&
       Boolean(provider?.runtimeRevision && provider?.hostingVersion &&
         provider?.hostingRelease) && Boolean(receiptPath);
@@ -320,7 +335,7 @@ export function validateShockContinuity({descriptor: d, pointer: p, matrix: m, g
   // witness: two stale current pointers must never pass by agreeing together.
   const providerReceipts = readDevProviderReceipts();
   const newerServedWitness = findNewerDevProviderReceipt({
-    sourceSha: d.productSourceSha, sealedRunId: seal.runId, receipts: providerReceipts,
+    sourceSha: d.productSourceSha, sealedRunId: seal.runId, sealedExecution:seal,receipts: providerReceipts,gitRead,
   });
   check(!newerServedWitness, 'MAPPING_FAILURE:PROVEN_DEV_RECEIPT_NEWER_THAN_SEAL');
   const operationalReceipt=validateOperationalExcelReceipt({descriptor:d,gitBlob,gitRead,pendingDev});

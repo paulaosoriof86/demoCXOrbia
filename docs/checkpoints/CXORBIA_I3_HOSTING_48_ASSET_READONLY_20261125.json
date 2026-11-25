@@ -1,0 +1,395 @@
+{
+  "observedAt": "2026-11-25T16:34:08.297211+00:00",
+  "scope": "PUBLIC_HOSTING_STATIC_BYTES_READONLY_NOT_RUNTIME_OR_FUNCTIONAL_CERTIFICATION",
+  "sourceReceipt": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+  "recordedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "count": 48,
+  "matches": 48,
+  "providerWrites": 0,
+  "results": [
+    {
+      "path": "core/data.js",
+      "status": 200,
+      "bytes": 61816,
+      "expectedSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+      "actualSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+      "matches": true
+    },
+    {
+      "path": "core/router.js",
+      "status": 200,
+      "bytes": 36142,
+      "expectedSha256": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+      "actualSha256": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+      "matches": true
+    },
+    {
+      "path": "core/tya-phase-a-source-safe-preview.js",
+      "status": 200,
+      "bytes": 10898,
+      "expectedSha256": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+      "actualSha256": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-live-source-inplace-apply.js",
+      "status": 200,
+      "bytes": 23760,
+      "expectedSha256": "708a9a44da97b28e23dd3c5d9ddf806cc9f1066c3a5b216e4c9aee28d91cdf45",
+      "actualSha256": "708a9a44da97b28e23dd3c5d9ddf806cc9f1066c3a5b216e4c9aee28d91cdf45",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-cumulative-read-model-v2.js",
+      "status": 200,
+      "bytes": 43963,
+      "expectedSha256": "a2eb856f4510bc58ca9d4cca20a688655de091c12f94e7be2328160a266e00c3",
+      "actualSha256": "a2eb856f4510bc58ca9d4cca20a688655de091c12f94e7be2328160a266e00c3",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-canonical-finance-read-model-v2.js",
+      "status": 200,
+      "bytes": 16261,
+      "expectedSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+      "actualSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-canonical-shopper-portal-v2.js",
+      "status": 200,
+      "bytes": 32049,
+      "expectedSha256": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+      "actualSha256": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "status": 200,
+      "bytes": 44551,
+      "expectedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+      "actualSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+      "matches": true
+    },
+    {
+      "path": "data/tya-hr-source-safe-periods.js",
+      "status": 200,
+      "bytes": 816867,
+      "expectedSha256": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+      "actualSha256": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+      "matches": true
+    },
+    {
+      "path": "modules/midia.js",
+      "status": 200,
+      "bytes": 23044,
+      "expectedSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+      "actualSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+      "matches": true
+    },
+    {
+      "path": "modules/misvisitas.js",
+      "status": 200,
+      "bytes": 43172,
+      "expectedSha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+      "actualSha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+      "matches": true
+    },
+    {
+      "path": "modules/visita-detalle.js",
+      "status": 200,
+      "bytes": 16651,
+      "expectedSha256": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+      "actualSha256": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+      "matches": true
+    },
+    {
+      "path": "modules/shoppers.js",
+      "status": 200,
+      "bytes": 69527,
+      "expectedSha256": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+      "actualSha256": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+      "matches": true
+    },
+    {
+      "path": "modules/postulaciones.js",
+      "status": 200,
+      "bytes": 105725,
+      "expectedSha256": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+      "actualSha256": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+      "matches": true
+    },
+    {
+      "path": "modules/beneficios.js",
+      "status": 200,
+      "bytes": 20826,
+      "expectedSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+      "actualSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+      "matches": true
+    },
+    {
+      "path": "modules/cert.js",
+      "status": 200,
+      "bytes": 76346,
+      "expectedSha256": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+      "actualSha256": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+      "matches": true
+    },
+    {
+      "path": "modules/academia.js",
+      "status": 200,
+      "bytes": 317092,
+      "expectedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+      "actualSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+      "matches": true
+    },
+    {
+      "path": "styles/layout.css",
+      "status": 200,
+      "bytes": 49881,
+      "expectedSha256": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+      "actualSha256": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+      "status": 200,
+      "bytes": 27153,
+      "expectedSha256": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+      "actualSha256": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+      "matches": true
+    },
+    {
+      "path": "adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "status": 200,
+      "bytes": 42983,
+      "expectedSha256": "5aa353b5b7c568d6aff07c1a6898d488e408d018cda0bc7d6ae91c83520f1b28",
+      "actualSha256": "5aa353b5b7c568d6aff07c1a6898d488e408d018cda0bc7d6ae91c83520f1b28",
+      "matches": true
+    },
+    {
+      "path": "index-backend-dev.html",
+      "status": 200,
+      "bytes": 14209,
+      "expectedSha256": "abca0b5d21fbdc1949047b71f43c0ac0298f19b652c63305a1cd3d946e17b93e",
+      "actualSha256": "abca0b5d21fbdc1949047b71f43c0ac0298f19b652c63305a1cd3d946e17b93e",
+      "matches": true
+    },
+    {
+      "path": "core/backend-firebase.js",
+      "status": 200,
+      "bytes": 32049,
+      "expectedSha256": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+      "actualSha256": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+      "matches": true
+    },
+    {
+      "path": "adapters/tya-live-source-refresh-watch-v2.js",
+      "status": 200,
+      "bytes": 20876,
+      "expectedSha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+      "actualSha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+      "matches": true
+    },
+    {
+      "path": "modules/hr-source.js",
+      "status": 200,
+      "bytes": 33656,
+      "expectedSha256": "4c32d7e647c58fec4e747278961d863dbc35ba401e8769b6343aafef98284d44",
+      "actualSha256": "4c32d7e647c58fec4e747278961d863dbc35ba401e8769b6343aafef98284d44",
+      "matches": true
+    },
+    {
+      "path": "modules/clientes.js",
+      "status": 200,
+      "bytes": 21351,
+      "expectedSha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+      "actualSha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+      "matches": true
+    },
+    {
+      "path": "modules/historico.js",
+      "status": 200,
+      "bytes": 10061,
+      "expectedSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+      "actualSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+      "matches": true
+    },
+    {
+      "path": "modules/visitas.js",
+      "status": 200,
+      "bytes": 59309,
+      "expectedSha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+      "actualSha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+      "matches": true
+    },
+    {
+      "path": "modules/cuestionario-shopper.js",
+      "status": 200,
+      "bytes": 11858,
+      "expectedSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+      "actualSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+      "matches": true
+    },
+    {
+      "path": "core/backend-certifications.js",
+      "status": 200,
+      "bytes": 16019,
+      "expectedSha256": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+      "actualSha256": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+      "matches": true
+    },
+    {
+      "path": "core/finanzas-core.js",
+      "status": 200,
+      "bytes": 19478,
+      "expectedSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+      "actualSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+      "matches": true
+    },
+    {
+      "path": "modules/marca.js",
+      "status": 200,
+      "bytes": 16309,
+      "expectedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+      "actualSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+      "matches": true
+    },
+    {
+      "path": "modules/administrabilidad.js",
+      "status": 200,
+      "bytes": 18787,
+      "expectedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+      "actualSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+      "matches": true
+    },
+    {
+      "path": "modules/configuracion.js",
+      "status": 200,
+      "bytes": 80296,
+      "expectedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+      "actualSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+      "matches": true
+    },
+    {
+      "path": "modules/cliente-insights.js",
+      "status": 200,
+      "bytes": 20572,
+      "expectedSha256": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+      "actualSha256": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+      "matches": true
+    },
+    {
+      "path": "adapters/cxorbia-command-adapter-v1.js",
+      "status": 200,
+      "bytes": 11569,
+      "expectedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+      "actualSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+      "matches": true
+    },
+    {
+      "path": "core/backend-bulletins.js",
+      "status": 200,
+      "bytes": 23183,
+      "expectedSha256": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+      "actualSha256": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+      "matches": true
+    },
+    {
+      "path": "sw.js",
+      "status": 200,
+      "bytes": 4938,
+      "expectedSha256": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+      "actualSha256": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+      "matches": true
+    },
+    {
+      "path": "core/notif.js",
+      "status": 200,
+      "bytes": 8333,
+      "expectedSha256": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+      "actualSha256": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+      "matches": true
+    },
+    {
+      "path": "modules/dashboard.js",
+      "status": 200,
+      "bytes": 54871,
+      "expectedSha256": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d",
+      "actualSha256": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d",
+      "matches": true
+    },
+    {
+      "path": "modules/proyectos.js",
+      "status": 200,
+      "bytes": 23249,
+      "expectedSha256": "a89dbe6a8c1b8305c3f7644d500bbcc6bfbc99db0b6420f2a7a5a226827f6db9",
+      "actualSha256": "a89dbe6a8c1b8305c3f7644d500bbcc6bfbc99db0b6420f2a7a5a226827f6db9",
+      "matches": true
+    },
+    {
+      "path": "modules/proyecto-wizard.js",
+      "status": 200,
+      "bytes": 27216,
+      "expectedSha256": "e3697ab6edb72bfe8c4da67114e8fab3ab72cbcb9274a0bccf57ade8fa1df7c1",
+      "actualSha256": "e3697ab6edb72bfe8c4da67114e8fab3ab72cbcb9274a0bccf57ade8fa1df7c1",
+      "matches": true
+    },
+    {
+      "path": "core/backend-finance-benefits.js",
+      "status": 200,
+      "bytes": 8120,
+      "expectedSha256": "17c77d8678bd18a3dd76099832a2d57eff5da6650830ae1e3a22f6b63b60cb07",
+      "actualSha256": "17c77d8678bd18a3dd76099832a2d57eff5da6650830ae1e3a22f6b63b60cb07",
+      "matches": true
+    },
+    {
+      "path": "core/hr.js",
+      "status": 200,
+      "bytes": 11214,
+      "expectedSha256": "091c06ec7b2e8b4e24acd3655ba52abee861e193089efabab426cd751e325da6",
+      "actualSha256": "091c06ec7b2e8b4e24acd3655ba52abee861e193089efabab426cd751e325da6",
+      "matches": true
+    },
+    {
+      "path": "modules/correo.js",
+      "status": 200,
+      "bytes": 21998,
+      "expectedSha256": "f394803f461b37485f7e2b00760ce9ab6cdb5852e646f7e93e4d7e6d49d012b3",
+      "actualSha256": "f394803f461b37485f7e2b00760ce9ab6cdb5852e646f7e93e4d7e6d49d012b3",
+      "matches": true
+    },
+    {
+      "path": "modules/finanzas.js",
+      "status": 200,
+      "bytes": 169186,
+      "expectedSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+      "actualSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+      "matches": true
+    },
+    {
+      "path": "modules/integraciones.js",
+      "status": 200,
+      "bytes": 27004,
+      "expectedSha256": "c4eb245dd515978e1f86e7d03271b26884f0029c3de0b80e04ea20eac64beaa8",
+      "actualSha256": "c4eb245dd515978e1f86e7d03271b26884f0029c3de0b80e04ea20eac64beaa8",
+      "matches": true
+    },
+    {
+      "path": "modules/revision-admin.js",
+      "status": 200,
+      "bytes": 4078,
+      "expectedSha256": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd",
+      "actualSha256": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd",
+      "matches": true
+    },
+    {
+      "path": "core/data-source.js",
+      "status": 200,
+      "bytes": 9726,
+      "expectedSha256": "d07e1642269327ea76ef8d765f0a5e3e3278ab87c43ddc966ea7aef8732486dc",
+      "actualSha256": "d07e1642269327ea76ef8d765f0a5e3e3278ab87c43ddc966ea7aef8732486dc",
+      "matches": true
+    }
+  ]
+}

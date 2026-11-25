@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import {hasTerminalAcceptance} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {execFileSync} from 'node:child_process';
 import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
-import {validateCurrentAuthorityAliases,validateLatestExecutionSource} from './cxorbia-i3-current-authority-alias-guard.mjs';
+import {validateCurrentAuthorityAliases,validateLatestExecutionSource,validateSealedExecutionAuthority} from './cxorbia-i3-current-authority-alias-guard.mjs';
 
 const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
 const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
@@ -270,6 +270,8 @@ if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json'))
  // The VRM275 fallback is historical-only for the already certified RUN1812 seal.
  const matrixDev=matrix.latestDevMaterialization||matrix.vrm275DevReadback;
  const ledgerDev=l.latestDevMaterialization||l.findings?.['VRM-275']?.devMaterialization;
+ const executionAuthority=validateSealedExecutionAuthority({seal:s,receipt,aliases:[t,d.currentMaterialization,p.currentDevMaterialization,matrixDev,ledgerDev]});
+ if(!executionAuthority.pass)fail('RELEASE_COMPOSITION_FAILURE:POSTDEPLOY_SEAL_MISMATCH',executionAuthority.failures.join(','));
  same(matrixDev?.runId,s.runId,'matrixRun');
  same(ledgerDev?.runId,s.runId,'ledgerRun');
  same(ledgerDev?.sourceArtifactDigest||ledgerDev?.artifactDigest,s.artifactDigest,'ledgerArtifact');

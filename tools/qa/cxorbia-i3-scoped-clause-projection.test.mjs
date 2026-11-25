@@ -82,7 +82,13 @@ test('normalization rejects changed raw result and retains historical receipt',a
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const readFile=p=>fs.readFileSync(path.join(root,p),'utf8');
-function controlsFixture(){const descriptor=JSON.parse(readFile(DESCRIPTOR)),pointer=JSON.parse(readFile(POINTER));return {descriptor,pointer,matrix:JSON.parse(readFile(descriptor.moduleTruthPath)),ledger:JSON.parse(readFile(descriptor.findingsLedgerPath)),blobs:new Map(),readBytes:async p=>readFile(p)};}
+function controlsFixture(){
+ const descriptor=JSON.parse(readFile(DESCRIPTOR)),pointer=JSON.parse(readFile(POINTER));
+ // These cases exercise isolated Actions/scoped projections. A later live
+ // Finance follow-up is not part of their deliberately replaced test index.
+ for(const control of [descriptor,pointer])delete control.currentFinanceGoogleFollowup;
+ return {descriptor,pointer,matrix:JSON.parse(readFile(descriptor.moduleTruthPath)),ledger:JSON.parse(readFile(descriptor.findingsLedgerPath)),blobs:new Map(),readBytes:async p=>readFile(p)};
+}
 test('existing control binder can bind residual-only successor without fabricated execution receipt',()=>{const controls=controlsFixture(),out=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger});const files=bindControlPaths(out,{matrixPath:'RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V999.json',ledgerPath:'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V999_2026-11-25.json'});assert.equal(files.size,4);assert.equal(files.has(undefined),false);assertPreserved(controls,out);});
 test('consumer projects already indexed metadata with no provider or artifact download',async()=>{
  const controls=controlsFixture(),f=finance();
