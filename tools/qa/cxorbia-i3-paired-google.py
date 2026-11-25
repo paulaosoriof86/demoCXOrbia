@@ -128,6 +128,11 @@ def main():
                           "HOSTING_RELEASE_NAME","HOSTING_VERSION_NAME","HR_REVISION"},"UNKNOWN_JOB_OUTPUT")
             environment[k] = v
     preflight(head)
+    c3=d["currentC3PreterminalAudit"]["sourceSha"]
+    require(re.fullmatch(r"[a-f0-9]{40}",c3),"SOURCE_FAILURE:C3_AUTHORITY_SHA")
+    if subprocess.run(["git","cat-file","-e",c3+"^{commit}"],stderr=subprocess.DEVNULL).returncode:
+        subprocess.run(["git","fetch","--no-tags","--depth=1","-q","origin",c3],check=True)
+    require(output("git","rev-parse",c3+"^{commit}")==c3,"SOURCE_FAILURE:C3_AUTHORITY_OBJECT")
     subprocess.run(["node","tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs"],check=True)
     image = verified_image(describe(config["imageBuild"]["id"]),config,source,tree)
     def checkpoint(stage, details):
