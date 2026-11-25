@@ -97,9 +97,19 @@ function financeUiHrOwnerDiagnostic(value){
   const code=typeof value.ownerCode==='string'&&
     (codes.includes(value.ownerCode)||/^HR_LIVE_(REVISION_READBACK_)?HTTP_[1-5][0-9]{2}$/.test(value.ownerCode))?value.ownerCode:null;
   return {...booleans(value,['available','authorityPresent','applied','retryable','sourceReady','sourceBlocked','runtimeReady']),
+    ...(value.bootstrap?{bootstrap:financeBootstrapDiagnostic(value.bootstrap)}:{}),
     ownerCode:code,ownerErrorSha256:diagnosticHash(value.ownerErrorSha256),
     authenticatedHrHttp:Array.isArray(value.authenticatedHrHttp)?value.authenticatedHrHttp.slice(-8).map(x=>
       Number.isInteger(x)&&(x===0||x>=100&&x<=599)?x:null):null};
+}
+function financeBootstrapDiagnostic(value){
+  const codes=['NONE','PERMISSION_DENIED','UNAUTHENTICATED','UNAVAILABLE','FAILED_PRECONDITION','TIMEOUT','AUTH_SESSION_CHANGED','OTHER'];
+  const readCodes=[...codes,'CACHE_ONLY','SERVER_OK'];
+  return {...booleans(value,['lastStatePresent','sourceFirestore','authorizedStatePresent','actorMatches',
+    'bootAuthorized','bootBackendReady','bootDependenciesReady','bootExhausted']),
+    stateErrorCode:codes.includes(value.stateErrorCode)?value.stateErrorCode:null,
+    serverReads:Object.fromEntries(['projects','shoppers','periods','visits'].filter(key=>
+      readCodes.includes(value.serverReads?.[key])).map(key=>[key,value.serverReads[key]]))};
 }
 // Retain failure evidence for the next iteration without copying PDF text,
 // financial values, URLs, ciphertext, or arbitrary artifact paths. These are

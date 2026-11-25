@@ -48,7 +48,50 @@ export function financeHrOwnerCode(value){
   if(/^HR_LIVE_(REVISION_READBACK_)?HTTP_[1-5][0-9]{2}$/.test(error))return error;
   return error?'OTHER':'NO_OWNER_ERROR';
 }
-async function captureHrOwner(page){
+// Executed in the failing browser context. Sample only the original Admin
+// bootstrap collections, after checking the same actor, tenant and project.
+export async function financeBootstrapProbe({uid,tenantId,projectId,firebaseProject}){
+  const cx=window.CX,fb=window.firebase,last=window.CX_BACKEND_LAST_STATE;
+  const boot=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE,authorized=window.CX_BACKEND_AUTHORIZED_STATE;
+  const ctx=cx?.backendAuth?.context?.(),user=fb?.auth?.().currentUser;
+  const source=String(last?.source||window.CX_BACKEND_DATA_SOURCE||'');
+  const message=String(last?.error||'');
+  const classify=error=>{
+    const value=String(error||'');
+    if(!value)return 'NONE';
+    if(/permission-denied|missing or insufficient permissions/i.test(value))return 'PERMISSION_DENIED';
+    if(/unauthenticated|auth\/invalid-user-token/i.test(value))return 'UNAUTHENTICATED';
+    if(/unavailable|offline|could not reach cloud firestore/i.test(value))return 'UNAVAILABLE';
+    if(/failed-precondition/i.test(value))return 'FAILED_PRECONDITION';
+    if(/deadline-exceeded|timed? ?out/i.test(value))return 'TIMEOUT';
+    if(value==='AUTH_SESSION_CHANGED_DURING_BACKEND_READ')return 'AUTH_SESSION_CHANGED';
+    return 'OTHER';
+  };
+  const info={lastStatePresent:!!last,sourceFirestore:source==='firestore'||source.startsWith('firestore/'),
+    authorizedStatePresent:!!authorized,actorMatches:!!uid&&authorized?.principal?.actorUid===uid,
+    bootAuthorized:boot?.authorized??null,bootBackendReady:boot?.protectedBackendReady??null,
+    bootDependenciesReady:boot?.runtimeDependenciesReady??null,bootExhausted:boot?.exhausted??null,
+    stateErrorCode:classify(message),serverReads:{}};
+  if(!uid||user?.uid!==uid||ctx?.authenticated!==true||ctx.role!=='admin'||ctx.tenantId!==tenantId||
+    !Array.isArray(ctx.projectIds)||!ctx.projectIds.includes(projectId)||fb.app().options.projectId!==firebaseProject||
+    !boot||boot.protectedBackendReady===true)return info;
+  const names=cx.backend?.config?.collections||{},db=fb.firestore(fb.app());
+  const tenant=db.collection(names.tenants||'tenants').doc(tenantId);
+  const projects=tenant.collection(names.projects||'projects'),project=projects.doc(projectId);
+  const reads={projects,shoppers:tenant.collection(names.shoppers||'shoppers'),
+    periods:project.collection(names.periods||'periods'),visits:project.collection(names.visits||'visits')};
+  await Promise.all(Object.entries(reads).map(async ([key,query])=>{
+    let timer;
+    try{
+      const completed=query.limit(1).get({source:'server'}).then(s=>s.metadata.fromCache?'CACHE_ONLY':'SERVER_OK');
+      const deadline=new Promise(resolve=>{timer=setTimeout(()=>resolve('TIMEOUT'),10000);});
+      info.serverReads[key]=await Promise.race([completed,deadline]);
+    }catch(error){info.serverReads[key]=classify(error?.code||error?.message);}
+    finally{clearTimeout(timer);}
+  }));
+  return info;
+}
+async function captureHrOwner(page,identity){
   try{
     const state=await page.evaluate(()=>{
       const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY,src=window.CX?.dataSource;
@@ -60,7 +103,8 @@ async function captureHrOwner(page){
         authenticatedHrHttp:route.slice(-8).map(x=>Number(x.responseStatus)||0)};
     });
     const {ownerError,...publicState}=state;
-    return {...publicState,ownerCode:financeHrOwnerCode(ownerError),ownerErrorSha256:ownerError?hashBytes(Buffer.from(ownerError)):null};
+    const bootstrap=await page.evaluate(financeBootstrapProbe,identity).catch(()=>null);
+    return {...publicState,ownerCode:financeHrOwnerCode(ownerError),ownerErrorSha256:ownerError?hashBytes(Buffer.from(ownerError)):null,bootstrap};
   }catch{return {available:false};}
 }
 async function readLedger(tenant,projectId,FieldPath){
@@ -202,7 +246,7 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
         evidence.activeSessionProgress.finalRead=true;
         evidence.sessions.push({index:index+1,newContextEmpty:true,principalScopeSha256:principal.principalScopeSha256,exactCurrentAdminClaims:true,periodId:scope.cashPeriodId,hrRevisionObserved:observed.hrRevision,serverReadConfirmed:true,advancePairExact:true,firstAdvanceUnchanged:true,secondMetadataExact:true,rowCount:sourceRows.length,semanticRowsSha256:rowDataHash(sourceRows),domRowsSha256:digest(observed.rows),movementExport,dashboard});
         evidence.independentAdminSessions++;
-      }catch(error){evidence.failureUi=await failureUi(page,scope);evidence.hrOwnerDiagnostic=await captureHrOwner(page);throw error;}finally{stopGuard();await context.close();}
+      }catch(error){evidence.failureUi=await failureUi(page,scope);evidence.hrOwnerDiagnostic=await captureHrOwner(page,{uid:exact.actorUid,tenantId:scope.tenantId,projectId:scope.projectId,firebaseProject:project});throw error;}finally{stopGuard();await context.close();}
       need(evidence.network.unexpectedDenied===0&&evidence.network.routeControlFailures===0,'ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST');
     }
     const [a,b]=evidence.sessions;

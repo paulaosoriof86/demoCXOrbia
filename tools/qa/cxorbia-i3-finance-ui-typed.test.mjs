@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {incorporateTypedResults} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
-import {financeHrOwnerCode} from './cxorbia-i3-finance-ui-readonly.mjs';
+import {financeHrOwnerCode,financeBootstrapProbe} from './cxorbia-i3-finance-ui-readonly.mjs';
 const copy=x=>structuredClone(x);
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
 const identity={sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),runtimeRevision:'cxorbia-live-hr-dev-00391-8mg',runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/cxorbia-backend-dev/versions/511061474d07baca'};
@@ -201,6 +201,31 @@ test('HR owner failure survives typed recording without changing the primary cla
   assert.equal(d.authorityPresent,true);assert.equal(d.applied,false);assert.equal(d.runtimeReady,true);assert.equal(d.available,null);
   assert.equal(r.observations.independentAdminSessions,0);assert.deepEqual(r.observations.sessions,[]);assert.equal(r.decision,'RECORDED_TYPED_RESULT_HOLD');
   assert.equal(r.state,'HOLD');assert.equal(r.phaseAComplete,false);assert.equal(r.newDomainMatches,0);assert.deepEqual(r.ownerSpecificReceipts,[]);assert.doesNotMatch(JSON.stringify(r),/DO_NOT_STORE|private\.invalid/);
+});
+test('bootstrap probes only authenticated original Admin reads and exports fixed codes',async()=>{
+  const prior=global.window,queries=[];
+  const identity={uid:'synthetic',tenantId:'qa',projectId:'qa-project',firebaseProject:'qa-firebase'};
+  const ctx={authenticated:true,role:'admin',tenantId:identity.tenantId,projectIds:[identity.projectId]};
+  const ref=name=>({collection:ref,doc:ref,limit(n){assert.equal(n,1);return this;},
+    async get(options){assert.deepEqual(options,{source:'server'});queries.push(name);
+      if(name==='shoppers')throw Object.assign(Error('DO_NOT_STORE'),{code:'permission-denied'});
+      return {metadata:{fromCache:false}};}});
+  global.window={CX:{backendAuth:{context:()=>ctx}},firebase:{auth:()=>({currentUser:{uid:identity.uid}}),
+    app:()=>({options:{projectId:identity.firebaseProject}}),firestore:()=>ref('db')},
+    CX_PROTECTED_AUTH_HR_BOOT_RECONCILE:{authorized:true,protectedBackendReady:false},
+    CX_BACKEND_LAST_STATE:{source:'localStorage/demo',error:'Missing or insufficient permissions. DO_NOT_STORE'}};
+  try{
+    const wrong=await financeBootstrapProbe({...identity,uid:'other'});assert.deepEqual(wrong.serverReads,{});assert.deepEqual(queries,[]);
+    const b=await financeBootstrapProbe(identity);
+    assert.deepEqual(queries.sort(),['periods','projects','shoppers','visits']);
+    assert.equal(b.serverReads.shoppers,'PERMISSION_DENIED');assert.equal(b.serverReads.visits,'SERVER_OK');
+    assert.equal(b.stateErrorCode,'PERMISSION_DENIED');assert.doesNotMatch(JSON.stringify(b),/synthetic|DO_NOT_STORE/);
+    const f=hrOwnerFailureFixture();f.result.hrOwnerDiagnostic.bootstrap={...b,uid:'DO_NOT_STORE',
+      serverReads:{...b.serverReads,private:'DO_NOT_STORE',visits:'DO_NOT_STORE'}};
+    const result=summarize(f),d=result.observations.hrOwnerDiagnostic.bootstrap;
+    assert.equal(d.bootBackendReady,false);assert.equal(d.serverReads.shoppers,'PERMISSION_DENIED');
+    assert.equal(d.serverReads.visits,undefined);assert.equal(result.state,'HOLD');assert.doesNotMatch(JSON.stringify(d),/DO_NOT_STORE/);
+  }finally{if(prior===undefined)delete global.window;else global.window=prior;}
 });
 test('every supported producer HR owner code remains exact, including sanitized dynamic prefixes and HTTP boundaries',async t=>{
   const codes=['HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS','HR_LIVE_DUPLICATE_PERIOD_KEYS','HR_LIVE_NETWORK_FAILURE','HR_LIVE_NONEMPTY_REQUIRED','HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION','HR_LIVE_REVISION_PUBLICATION_MISMATCH','HR_LIVE_REVISION_READBACK_MISSING','HR_LIVE_REVISION_REQUIRED','HR_LIVE_SCOPE_MISMATCH','HR_LIVE_SOURCE_SAFE_REQUIRED','HR_LIVE_UNAVAILABLE','PROJECT_SCOPE_REQUIRED','CANONICAL_COMPOSER_V2_MISSING','CANONICAL_PERIOD_LOSS','CERTIFICATION_EVIDENCE_PROJECTOR_MISSING','BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED','BACKEND_REFRESH_READBACK_REVISION_MISMATCH','AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED','AUTH_FAILURE:SESSION_GENERATION_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SESSION_NO_LONGER_AUTHORIZED','AUTH_FAILURE:PROTECTED_STATE_PRINCIPAL_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH',
