@@ -689,7 +689,12 @@ export function projectCurrentAutomationReceipt({current,event,queue,journalExis
   if(provider==='GOOGLE_CLOUD_SHELL')must(/^[1-9]\d{7,19}$/.test(runId),'SOURCE_FAILURE:GOOGLE_SHELL_EXECUTION_IDENTITY');
   return {provider,runId,runAttempt};
  };
- const next=identity(event),prior=current?identity(current):null;
+ const next=identity(event);
+ // An older distinct Actions run may drain its queue while a legacy receipt
+ // has no attempt field. Its greater run ID is sufficient to retain it verbatim.
+ if(current&&current.runAttempt===undefined&&executionProviderOf(current)==='GITHUB_ACTIONS'&&next.provider==='GITHUB_ACTIONS'&&
+    actionsNumber(current.runId,'RUN')>Number(next.runId))return {receipt:structuredClone(current),changed:false};
+ const prior=current?identity(current):null;
  const sameAttempt=prior&&prior.provider===next.provider&&prior.runId===next.runId&&prior.runAttempt===next.runAttempt;
  if(sameAttempt){
   must(current.path===event.path&&current.gitBlob===event.gitBlob,'SOURCE_FAILURE:CURRENT_AUTOMATION_JOURNAL_BINDING');

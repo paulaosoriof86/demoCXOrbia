@@ -224,8 +224,8 @@
   "productSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
   "productTreeAuthority": "77b4de2c621560019ad043f22d90e75a508d2f79",
   "predecessorProductSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V735_2026-11-25.json",
-  "findingsLedgerExpectedGitBlob": "10878ae11700301ceb2c739f5892c0152ae4ed4f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V736_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "9f9840b2419db62802dfa056bbddef06e818d757",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,7 +244,7 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V408.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2960,7 +2960,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "6217984d69cdd28ffe589b49a10ea3fe4546047d",
+  "moduleTruthExpectedGitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -18364,12 +18364,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V408.json",
-      "gitBlob": "6217984d69cdd28ffe589b49a10ea3fe4546047d"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
+      "gitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V735_2026-11-25.json",
-      "gitBlob": "10878ae11700301ceb2c739f5892c0152ae4ed4f"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V736_2026-11-25.json",
+      "gitBlob": "9f9840b2419db62802dfa056bbddef06e818d757"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -36061,10 +36061,25 @@
         "decision": "RECORDED_TYPED_RESULT_HOLD",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T16:34:47.264Z"
+      },
+      {
+        "key": "GOOGLE_CLOUD_SHELL/1795625465105544",
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
+        "gitBlob": "ddacab0c6b92a510949119e5353f0cf9f7266aaf",
+        "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+        "transportSha": "99464bf97e76800a1150a763ccc2a3ad18d11fa9",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/b5d67945-7799-49e8-913e-6e147696eb74/start.json#1795625465105544",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/b5d67945-7799-49e8-913e-6e147696eb74/evidence.zip#1795625702166502",
+        "archiveSha256": "f65e945f3edb0c7c1fa9ace5a4d627a241b3aa91d3fb34fa5e309af0e42e0c96",
+        "decision": "RECORDED_D08_INCOMPLETE",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T16:55:02.230000+00:00"
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T16:34:47.264Z"
+    "updatedAt": "2026-11-25T16:55:02.230000+00:00"
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
@@ -36344,5 +36359,10 @@
     "receiptSha256": "7b4dde1ca89c40dc50bd0d3ca7dfb9cf19bade788247259ac07481050e210134",
     "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
     "nextAction": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write."
+  },
+  "currentD08GoogleFollowup": {
+    "resultKey": "GOOGLE_CLOUD_SHELL/1795625465105544",
+    "receiptSha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+    "nextAction": "On served 1691a76, the Admin course and authorized edit survived independent sessions and replay. The D08 Shopper fixture omitted its required UID fingerprint and claims digest. Rerun the authorized original D08 request with the repaired fixture and its unchanged product guard. Record the independent result and exact cleanup. Then publish paired source 235d6c28 and continue Finance and F3 on its real DEV receipt."
   }
 }

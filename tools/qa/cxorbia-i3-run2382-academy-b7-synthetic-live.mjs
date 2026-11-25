@@ -65,6 +65,12 @@ function academyUiQaPrimitives(){
   const same=(a,b)=>hash(a)===hash(b);
   const without=(o,keys)=>Object.fromEntries(Object.entries(o||{}).filter(([k])=>!keys.includes(k)));
   const progressKey=p=>hash([p.origin,p.audience,p.courseId,p.revision]);
+  function shopperFixtureMembership(uid,claims){
+    check(claims.role==='shopper'&&claims.authNamespace==='shopper'&&claims.shopperId===uid&&str(claims.tenantId)&&
+      Array.isArray(claims.projectIds)&&claims.projectIds.length>0,'AUTH_FAILURE:D08_SHOPPER_FIXTURE_SCOPE');
+    const canonical={authNamespace:'shopper',projectIds:[...new Set(claims.projectIds)].sort(),role:'shopper',shopperId:uid,tenantId:claims.tenantId};
+    return {providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+uid),claimsDigest:hash(JSON.stringify(canonical))};
+  }
   function describeCommand(c,identity,plan,spec){
     check(identity&&spec.identities.some(x=>x.uid===identity.uid),'AUTH_FAILURE:D08_UNPLANNED_ACTOR');
     check(c&&c.commandType===plan.type&&c.tenantId===spec.tenantId&&c.projectId===spec.projectId&&str(c.idempotencyKey)&&str(c.idempotencyKey).length<=250,'SOURCE_FAILURE:D08_COMMAND_SCOPE');
@@ -141,7 +147,7 @@ function academyUiQaPrimitives(){
     records.slice(1).forEach((r,i)=>{check(r.command.commandType==='academy.course.update'&&r.bundle.receipt.entityVersion===i+2&&r.command.expectedVersion===i+1,'PERSISTENCE_FAILURE:D08_DRAFT_VERSION_SEQUENCE');expected={...expected,...r.command.payload.patch,contentVersion:expected.contentVersion+1,version:expected.version+1,updatedBy:r.uid};});
     check(row&&same(without(row,['createdAt','updatedAt']),expected)&&Number.isFinite(Date.parse(row.createdAt))&&Number.isFinite(Date.parse(row.updatedAt)),'PERSISTENCE_FAILURE:D08_DRAFT_OWNERSHIP_OR_CONCURRENT_CHANGE');
   }
-  return {str,stable,hash,check,same,without,progressKey,describeCommand,verifyBundle,verifyMembership,verifyCourse};
+  return {str,stable,hash,check,same,without,progressKey,shopperFixtureMembership,describeCommand,verifyBundle,verifyMembership,verifyCourse};
 }
 
 // A raw browser command is not finished at headers. Keep the same abort handle
@@ -320,6 +326,23 @@ async function runAcademyUiQaSelfTest(){
   passed+=await d08DeadlineSelfTest();
   passed+=await d08ResponseLifetimeSelfTest();
   passed+=await d08CaptureFrameSelfTest();
+  // Exercise the served membership guard itself, including both rejection paths.
+  const {runInNewContext}=await import('node:vm');
+  const uid=identity.uid,ctx={authenticated:true,role:'shopper',authNamespace:'shopper',tenantId:'qaTenant',projectIds:['qaProject'],shopperId:uid};
+  const principal={currentUser:{uid},signOut:async()=>{}};
+  let membership={...ctx,active:true};
+  const ref={collection:()=>ref,doc:()=>ref,get:async()=>({exists:true,data:()=>membership})};
+  const root={CX:{backendAuth:{ensureAuthenticated:async()=>ctx}},firebase:{auth:()=>principal,firestore:()=>ref},crypto:crypto.webcrypto,TextEncoder};
+  runInNewContext(fs.readFileSync('app/adapters/cxorbia-shopper-membership-wiring-v1.js','utf8'),root);
+  const verify=()=>root.CX.backendAuth.verifyShopperMembership(ctx);
+  const assert=await import('node:assert/strict');
+  await assert.rejects(verify,/SHOPPER_MEMBERSHIP_UID_MISMATCH/);passed++;
+  Object.assign(membership,h.shopperFixtureMembership(uid,ctx));
+  assert.equal((await verify()).membershipVerified,true);passed++;
+  membership.claimsDigest=h.shopperFixtureMembership(uid,{...ctx,projectIds:['other']}).claimsDigest;
+  await assert.rejects(verify,/SHOPPER_MEMBERSHIP_CLAIMS_MISMATCH/);passed++;
+  assert.throws(()=>h.shopperFixtureMembership('other',ctx),/D08_SHOPPER_FIXTURE_SCOPE/);passed++;
+
   console.log(JSON.stringify({decision:'PASS_D08_QA_HELPER_OWNERSHIP_SELF_TEST',pass:passed,fail:0,writes:0}));
 }
 
@@ -674,7 +697,7 @@ async function runAcademyUiQa(){
       const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:identity.namespace,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08',...(identity.role==='shopper'?{shopperId:identity.uid,country}:{})};
       identity.expectedClaims=claims;identity.state='AUTH_CREATE_DISPATCHED';save();const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});identity.authIdentity=authIdentity(created);identity.state='CLAIMS_DISPATCHED';save();await auth.setCustomUserClaims(identity.uid,claims);
       const staff=identity.role==='admin'?{entitlementMode:'TYA_COMPLETE',claimsDigest:hash(JSON.stringify({authNamespace:'staff',projectIds:canonicalAdminProjects,role:'admin',tenantId})),providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+identity.uid)}:{};
-      identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff};identity.memberCreateDispatched=true;save();await awaited('fixture.member.create:'+identity.uid,()=>db.doc(identity.memberPath).create(identity.expectedMembership));
+      identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff,...(identity.role==='shopper'?h.shopperFixtureMembership(identity.uid,claims):{})};identity.memberCreateDispatched=true;save();await awaited('fixture.member.create:'+identity.uid,()=>db.doc(identity.memberPath).create(identity.expectedMembership));
       if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await awaited('fixture.profile.create:'+identity.uid,()=>db.doc(identity.profilePath).create(identity.expectedProfile));check(same((await readDoc(identity.profilePath,'fixture.profile.readback')).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
       check(same((await readDoc(identity.memberPath,'fixture.member.readback')).data(),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_READBACK');const actual=await auth.getUser(identity.uid);check(same(actual.customClaims,claims)&&same(authIdentity(actual),identity.authIdentity),'AUTH_FAILURE:D08_AUTH_READBACK');identity.state='CREATED_VERIFIED';save();
     }

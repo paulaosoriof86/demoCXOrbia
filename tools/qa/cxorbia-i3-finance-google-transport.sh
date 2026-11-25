@@ -5,11 +5,14 @@ shopt -s inherit_errexit
 umask 077
 : "${CXORBIA_TRANSPORT_SHA:?required exact transport commit}"
 put() {
-  local src="$1" dest="$2" gen
+  local src="$1" dest="$2" gen copy result=0
   gcloud storage cp --if-generation-match=0 "$src" "$dest" >&2 || return
   gen="$(gcloud storage objects describe "$dest" --raw --format='value(generation)')" || return
   [[ "$gen" =~ ^[1-9][0-9]+$ ]] || return 1
-  gcloud storage cat "$dest#$gen" | cmp -s "$src" - || return
+  copy=$(mktemp) || return
+  timeout 120 gcloud storage cp "$dest#$gen" "$copy" >&2 && cmp -s "$src" "$copy" || result=$?
+  rm -f "$copy"
+  [[ "$result" == 0 ]] || return "$result"
   printf '%s#%s\n' "$dest" "$gen"
 }
 if [[ "${CXORBIA_GOOGLE_QA_JOB:-i3-finance-focal-reproof}" == i3-run2382-academy-b7-isolated-dev-qa ]]; then

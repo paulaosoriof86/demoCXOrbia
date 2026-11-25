@@ -22,6 +22,14 @@
       "commit": "8b2f0cd48c1f69a009c6affb6ea590557d20c409",
       "passed": 202,
       "failed": 0
+    },
+    "d08FixtureRepair": {
+      "servedGuardBefore": "SHOPPER_MEMBERSHIP_UID_MISMATCH",
+      "correctedFixture": "membershipVerified",
+      "wrongClaims": "SHOPPER_MEMBERSHIP_CLAIMS_MISMATCH",
+      "ownershipHelperTests": 44,
+      "otherFocalTests": 99,
+      "failures": 0
     }
   },
   "confirmed": {
@@ -98,6 +106,71 @@
       "environmentFileSha256": "69d6350942c0cdb0a5d48e81be800e1db173e884c6c2fe08c414565d5985871e",
       "providerWrites": 0,
       "newRoleCycles": 0
+    },
+    "academyResults": [
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json"
+    ],
+    "currentAcademy": {
+      "decision": "HOLD",
+      "observedAt": "2026-11-25T16:55:02.230000+00:00",
+      "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+      "served": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "observations": {
+        "admin": {
+          "courseId": "a_fin_op",
+          "courseRevision": "ef7a65c588a992812ac946a05cadab38bd3fa356018297ac002af52cacd8f479",
+          "lessons": 4,
+          "evaluationQuestions": 3,
+          "uiCourse": true,
+          "uiContent": true,
+          "uiEvaluation": true,
+          "uiProgress": true,
+          "providerAck": true,
+          "durableReadback": true,
+          "independentNewSession": true,
+          "replayNoDuplicate": true
+        },
+        "authorizedAdminEdit": {
+          "providerAck": true,
+          "durableReadback": true,
+          "independentNewSession": true,
+          "replayNoDuplicate": true
+        },
+        "observedRoles": [
+          "admin"
+        ],
+        "requestsJournaled": 9,
+        "priorFixtureAbsent": true,
+        "cleanup": {
+          "ok": true,
+          "exactKnownPathsOnly": true,
+          "deletedDocuments": 25,
+          "deletedAuth": 4,
+          "remainingOwnedDocuments": 0,
+          "remainingOwnedAuth": 0,
+          "ownershipTransaction": true
+        },
+        "postflightExact": true,
+        "productionIndexUnchanged": true,
+        "safety": {
+          "hrWrites": 0,
+          "realLearnerWrites": 0,
+          "realCourseWrites": 0,
+          "realVisitsWritten": 0,
+          "paymentWrites": 0,
+          "emailCalls": 0,
+          "calendarCalls": 0,
+          "productionDeploys": 0
+        }
+      },
+      "archiveVerified": true,
+      "archiveSha256": "f65e945f3edb0c7c1fa9ace5a4d627a241b3aa91d3fb34fa5e309af0e42e0c96",
+      "verifiedScreenshots": 7,
+      "transportConclusion": "Original streaming archive read failed with IncompleteRead. Downloaded the same sealed generation to file, matched every byte and verified the screenshot hashes. The worker result is recorded directly from that archive.",
+      "classification": "MAPPING_FAILURE",
+      "failureCode": "SHOPPER_MEMBERSHIP_UID_MISMATCH",
+      "fixtureOwner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
+      "enforcingProduct": "app/adapters/cxorbia-shopper-membership-wiring-v1.js"
     }
   },
   "lastChromeConnection": {
@@ -109,7 +182,7 @@
   },
   "next": {
     "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
-    "academy": "Current D08 preflight passed on 1691. Bind a genuine Google start, the prior verified cleanup, this invocation's journal, and the typed result before running the authorized clean role fixture.",
+    "academy": "On served 1691a76, the Admin course and authorized edit survived independent sessions and replay. The D08 Shopper fixture omitted its required UID fingerprint and claims digest. Rerun the authorized original D08 request with the repaired fixture and its unchanged product guard. Record the independent result and exact cleanup. Then publish paired source 235d6c28 and continue Finance and F3 on its real DEV receipt.",
     "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },

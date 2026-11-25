@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.independent-held-archive.v1",
+  "provider": "GOOGLE_CLOUD_SHELL",
+  "state": "HOLD",
+  "decision": "HOLD",
+  "identity": {
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "controlSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/b5d67945-7799-49e8-913e-6e147696eb74/start.json#1795625465105544",
+    "startGeneration": "1795625465105544",
+    "startSha256": "cf9a980af56656f5177f5c471f4af8c0ccdd61ed07b72f886ba4585e9d69cc39",
+    "job": "i3-run2382-academy-b7-isolated-dev-qa",
+    "controlSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+    "transportSha": "99464bf97e76800a1150a763ccc2a3ad18d11fa9",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "runId": "1795625465105544",
+    "runAttempt": "1",
+    "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/b5d67945-7799-49e8-913e-6e147696eb74/evidence.zip#1795625702166502",
+    "archiveGeneration": "1795625702166502",
+    "archiveSize": 2688086,
+    "archiveSha256": "f65e945f3edb0c7c1fa9ace5a4d627a241b3aa91d3fb34fa5e309af0e42e0c96",
+    "resultEntry": "result.json",
+    "resultSha256": "cf543a2ded7b8cf35ec15310a0981c555d5b8faa4eece8990410ce15882a6b09",
+    "archivedAt": "2026-11-25T16:55:02.230000+00:00",
+    "verifiedScreenshots": 7
+  },
+  "observations": {
+    "admin": {
+      "courseId": "a_fin_op",
+      "courseRevision": "ef7a65c588a992812ac946a05cadab38bd3fa356018297ac002af52cacd8f479",
+      "lessons": 4,
+      "evaluationQuestions": 3,
+      "uiCourse": true,
+      "uiContent": true,
+      "uiEvaluation": true,
+      "uiProgress": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "independentNewSession": true,
+      "replayNoDuplicate": true
+    },
+    "authorizedAdminEdit": {
+      "providerAck": true,
+      "durableReadback": true,
+      "independentNewSession": true,
+      "replayNoDuplicate": true
+    },
+    "observedRoles": [
+      "admin"
+    ],
+    "requestsJournaled": 9,
+    "priorFixtureAbsent": true,
+    "cleanup": {
+      "ok": true,
+      "exactKnownPathsOnly": true,
+      "deletedDocuments": 25,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "ownershipTransaction": true
+    },
+    "postflightExact": true,
+    "productionIndexUnchanged": true,
+    "safety": {
+      "hrWrites": 0,
+      "realLearnerWrites": 0,
+      "realCourseWrites": 0,
+      "realVisitsWritten": 0,
+      "paymentWrites": 0,
+      "emailCalls": 0,
+      "calendarCalls": 0,
+      "productionDeploys": 0
+    }
+  },
+  "failureCode": "SHOPPER_MEMBERSHIP_UID_MISMATCH",
+  "classification": "MAPPING_FAILURE",
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "production": false
+}

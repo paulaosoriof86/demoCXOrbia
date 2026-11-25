@@ -36,7 +36,9 @@ CXORBIA_GOOGLE_QA_START=$(put "$dir/start.json" "$prefix/start.json")
 printf 'START %s\n' "$CXORBIA_GOOGLE_QA_START"
 status=0
 node "$runner" > "$dir/job.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$dir/worker-exit-code"
 if [[ "$status" == 0 ]]; then CXORBIA_I3_QA_SCOPE=D08_VERIFY node "$runner" >> "$dir/job.log" 2>&1 || status=$?; fi
+printf '%s\n' "$status" > "$dir/job-exit-code"
 test -s "$QA_OUT/result.json"
 python3 - "$QA_OUT" "$dir/evidence.zip" <<'PY'
 import pathlib, sys, zipfile
