@@ -35672,17 +35672,6 @@
   },
   "currentResultIncorporationQueue": [
     {
-      "jobId": 138885330821,
-      "name": "canonical-candidate-authority",
-      "conclusion": "failure",
-      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
-      "runId": 45518873588,
-      "runAttempt": 1,
-      "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_EXECUTION_JOURNAL.json",
-      "journalBlob": "7cf4a6b525b802e6d195f2ba0f60292ea1e10105",
-      "controlHead": "806f27e21333b5c27dd880e1fa558bb03f37134a"
-    },
-    {
       "jobId": 138889994810,
       "name": "i3-finance-focal-reproof",
       "conclusion": "failure",
@@ -36002,7 +35991,7 @@
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T00:44:39.032Z"
+    "updatedAt": "2026-11-25T01:02:27.683Z"
   },
   "currentTypedResultFailures": [
     {
