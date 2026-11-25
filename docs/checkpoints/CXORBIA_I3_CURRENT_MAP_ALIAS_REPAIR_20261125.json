@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "cxorbia.i3.current-map-alias-repair.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "baseControlSha": "74178f806a4d009d30ca66ee75dec92b03f7d3f4",
+  "findingId": "VRM-374",
+  "classification": "MAPPING_FAILURE",
+  "scope": "CURRENT_DOCUMENT_REFERENCE_SYNCHRONIZATION_ONLY",
+  "observedAt": "2026-11-25T19:35:04.813Z",
+  "beforeAliases": {
+    "matrix": {
+      "path": "docs/checkpoints/CXORBIA_I3_C_D_CUMULATIVE_EVIDENCE_MAP_20261125.json",
+      "gitBlob": "adb5aff6dd351791be05e28d76ffd2bb4f867bb5",
+      "sha256": "49edf4d348c47f3f44e7493e74996a52e1f3fb72d7e699fbf187c5422722dd55",
+      "taskCount": 18,
+      "scope": "DOCUMENTARY_CROSSWALK_NOT_FUNCTIONAL_RECEIPT",
+      "newFunctionalPasses": 0,
+      "production": false
+    },
+    "ledger": {
+      "path": "docs/checkpoints/CXORBIA_I3_C_D_CUMULATIVE_EVIDENCE_MAP_20261125.json",
+      "gitBlob": "adb5aff6dd351791be05e28d76ffd2bb4f867bb5",
+      "sha256": "49edf4d348c47f3f44e7493e74996a52e1f3fb72d7e699fbf187c5422722dd55",
+      "taskCount": 18,
+      "scope": "DOCUMENTARY_CROSSWALK_NOT_FUNCTIONAL_RECEIPT",
+      "newFunctionalPasses": 0,
+      "production": false
+    }
+  },
+  "currentMapAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_C_D_CUMULATIVE_EVIDENCE_MAP_20261125.json",
+    "gitBlob": "b13cd206172d442f9958dde0cffe7c4542f03f7a",
+    "sha256": "b40bfe3d5e83ce9ce6df54e7d7acc03c4f729f6b3d7f311bc84c19307cecaa0e",
+    "taskCount": 18,
+    "scope": "DOCUMENTARY_CROSSWALK_NOT_FUNCTIONAL_RECEIPT",
+    "newFunctionalPasses": 0,
+    "production": false
+  },
+  "repair": "bindControlPaths copies the current map reference to the four active controls before calculating dependent pins; validateProjectionRegistry rejects mismatched active references. Historical evidence is unchanged.",
+  "sourceOwners": [
+    {
+      "path": "tools/qa/cxorbia-i3-current-control-projection.mjs",
+      "gitBlob": "ec000b2fad4b9d13713723aca427ad66dde68b5e",
+      "sha256": "d09dd98acd083176fb4b07223e91e526110bd1a3ec2bf09538966091032b542f"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-current-evidence-map-alias.test.mjs",
+      "gitBlob": "99e8ef14b73ef32097931ff36a029332cbd3599d",
+      "sha256": "28da900e667c3320baf06c5a233aee9557cb44138caa3951b9bbf276ce9cce6c"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-scoped-clause-projection.test.mjs",
+      "gitBlob": "b185589df715070d9f183a2c6d870ee6f63505d5",
+      "sha256": "ad9c8a1050dc6f42dd7928c2fec1f995de7bd09b00f7c2e2039c3d95a41403a2"
+    }
+  ],
+  "verification": {
+    "focusedBefore": {
+      "pass": 0,
+      "fail": 2
+    },
+    "focusedAfter": {
+      "pass": 2,
+      "fail": 0
+    },
+    "integrated": {
+      "pass": 157,
+      "fail": 0,
+      "logPath": "docs/checkpoints/CXORBIA_I3_CURRENT_MAP_ALIAS_TESTS_20261125.tap",
+      "logSha256": "0c84b2792c4852dc347499124a88d0b1486fa46581ce545afe10a2890885a404"
+    },
+    "fixtureCorrection": "Two pure clause-consumer cases explicitly exclude the unrelated D08 producer followup; the twenty dedicated D08 binding tests remain unchanged.",
+    "guards": [
+      {
+        "pass": true,
+        "failures": []
+      },
+      {
+        "pass": true,
+        "failures": [],
+        "findingCount": 378,
+        "nextFindingId": "VRM-379",
+        "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V746_2026-11-25.json",
+        "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+        "devRunId": "18d8d2fd-0e77-4692-a910-904c1bc66238"
+      }
+    ],
+    "integrationRebase": {
+      "testCodeUnchanged": true,
+      "newWorkFinanceTypedReceiptPreserved": true,
+      "priorTestControlBase": "80bac9fae0c8788ce75fbe3086dfac449fa01798",
+      "rebaseControlHead": "74178f806a4d009d30ca66ee75dec92b03f7d3f4"
+    }
+  },
+  "parallelWorkPreserved": {
+    "commit": "74178f806a4d009d30ca66ee75dec92b03f7d3f4",
+    "request": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_REQUEST_20261125.json",
+      "gitBlob": "4cde63c252d559f89b621466f616c5b25a1c637f",
+      "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "pairedRunId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+      "production": false
+    },
+    "rootEquivalentD08Draft": "SUPERSEDED_BEFORE_PUBLICATION_BY_WORK_80bac9fa",
+    "duplicateRequestsPublished": 0,
+    "duplicateD08Runs": 0,
+    "finance": "HTTP1 diagnosis, genuine first-session exports and dashboard PDF investigation remain owned by Work"
+  },
+  "newFunctionalPasses": 0,
+  "newDomainMatches": 0,
+  "productSourceChanged": false,
+  "providerCalls": 0,
+  "providerWrites": 0,
+  "production": false
+}

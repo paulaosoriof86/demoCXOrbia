@@ -148,6 +148,8 @@ test('an Actions account lock preserves the Google DEV path, producer order and 
 });
 test('consumer repairs only stale next action via existing binder even without new clause credit or provider call',async()=>{
  const controls=controlsFixture(),before=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger}),files=new Map(),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[]};
+ // This empty-index fixture excludes the separate producer-bound D08 follow-up.
+ for(const c of [controls.descriptor,controls.pointer])delete c.currentD08GoogleFollowup;
  for(const c of [controls.descriptor,controls.pointer])c.nextExactAction=c.exactNextAction='stale completed operation';
  const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
  const got=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T03:00:00Z'});assert.equal(got.changed,true);assert.equal(got.nextActionChanged,true);assert.deepEqual(got.changedDomains,[]);
@@ -236,6 +238,8 @@ test('GT scoped receipt updates every existing nextAction without adding a new p
 });
 test('consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once',async()=>{
  const controls=controlsFixture(),item=gtVerified(),bytes=jsonBytes(item.result),files=new Map(),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[item.entry]};
+ // D08 producer admission has its own tests; this index contains only GT proof.
+ for(const c of [controls.descriptor,controls.pointer])delete c.currentD08GoogleFollowup;
  controls.readBytes=async p=>{assert.equal(p,item.entry.path);return bytes;};controls.blobs=new Map([[item.entry.path,item.entry.gitBlob]]);
  const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
  const first=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T10:00:00Z'});

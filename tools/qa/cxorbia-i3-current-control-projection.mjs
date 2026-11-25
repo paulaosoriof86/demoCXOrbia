@@ -331,6 +331,8 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
 
 export function bindControlPaths(out,{matrixPath,ledgerPath}){
  const {descriptor:d,pointer:p,ledger:l,matrix:m}=out;
+ // This is a current document reference; historical evidence entries stay immutable.
+ if(d.currentCumulativeTaskEvidenceMap)for(const control of [p,m,l])control.currentCumulativeTaskEvidenceMap=clone(d.currentCumulativeTaskEvidenceMap);
  m.version=matrixPath.match(/-(V\d+)\.json$/)?.[1]||m.version;
  m.findingsLedgerPath=ledgerPath;
  const matrixBlob=gitBlob(jsonBytes(m));
@@ -359,6 +361,7 @@ export function validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matr
  if(!d.currentControlProjection)return {pass:true,failures:[]};
  const seal=d.postDeployRunSeal,materialization=d.currentMaterialization,c3=d.currentC3PreterminalAudit;
  for(const [name,o]of Object.entries({descriptor:d,pointer:p,ledger:l,matrix:m})){
+  if(d.currentCumulativeTaskEvidenceMap||o.currentCumulativeTaskEvidenceMap)check(same(o.currentCumulativeTaskEvidenceMap,d.currentCumulativeTaskEvidenceMap),name+'.currentCumulativeTaskEvidenceMap');
   for(const key of REGISTRY.executionCursors)if(d[key]||o[key])check(same(o[key],d[key]),name+'.'+key);
   for(const key of REGISTRY.executionIdentity){
    check(same(o.postDeployRunSeal?.[key],materialization[key]),name+'.postDeployRunSeal.'+key);
