@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {makeFinanceNotExecutedReceipt,retireRecordedControlQueue,pendingTypedRuns,incorporateTypedResults,consumeRun,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
-import {DESCRIPTOR,POINTER,jsonBytes,gitBlob} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 // Exact identity/status/steps supplied by GitHub API captures of RUN2784/2785.
 // No logs, credentials, browser or product provider is used by these tests.
 const FINANCE_CAPTURE={"repository":"paulaosoriof86/demoCXOrbia","runId":45520112416,"runAttempt":1,"controlHead":"5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf","job":{"id":138889994810,"run_id":45520112416,"workflow_name":"CXOrbia Recovery I3 DEV Certification","head_branch":"recovery/cxorbia-phase-a-20260831","run_url":"https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/runs/45520112416","run_attempt":1,"node_id":"CR_kwDOTAA8jM8AAAAgVn0iOg","head_sha":"5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf","url":"https://api.github.com/repos/paulaosoriof86/demoCXOrbia/actions/jobs/138889994810","html_url":"https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/45520112416/job/138889994810","status":"completed","conclusion":"failure","created_at":"2026-11-25T00:43:09Z","started_at":"2026-11-25T00:43:12Z","completed_at":"2026-11-25T00:43:42Z","name":"i3-finance-focal-reproof","steps":[{"name":"Set up job","status":"completed","conclusion":"success","number":1,"started_at":"2026-11-25T00:43:13Z","completed_at":"2026-11-25T00:43:14Z"},{"name":"Run actions/checkout@v4","status":"completed","conclusion":"success","number":2,"started_at":"2026-11-25T00:43:14Z","completed_at":"2026-11-25T00:43:29Z"},{"name":"Run actions/setup-node@v4","status":"completed","conclusion":"success","number":3,"started_at":"2026-11-25T00:43:29Z","completed_at":"2026-11-25T00:43:29Z"},{"name":"Run set -Eeuo pipefail","status":"completed","conclusion":"success","number":4,"started_at":"2026-11-25T00:43:29Z","completed_at":"2026-11-25T00:43:29Z"},{"name":"Run bash tools/qa/cxorbia-i3-finance-dependencies.sh","status":"completed","conclusion":"failure","number":5,"started_at":"2026-11-25T00:43:29Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Run google-github-actions/auth@v2","status":"completed","conclusion":"skipped","number":6,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Run google-github-actions/setup-gcloud@v2","status":"completed","conclusion":"skipped","number":7,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Run set -Eeuo pipefail","status":"completed","conclusion":"skipped","number":8,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Run bash tools/qa/cxorbia-i3-finance-focal-execute.sh","status":"completed","conclusion":"skipped","number":9,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Run actions/upload-artifact@v4","status":"completed","conclusion":"failure","number":10,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Post Run actions/setup-node@v4","status":"completed","conclusion":"skipped","number":19,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:39Z"},{"name":"Post Run actions/checkout@v4","status":"completed","conclusion":"success","number":20,"started_at":"2026-11-25T00:43:39Z","completed_at":"2026-11-25T00:43:40Z"},{"name":"Complete job","status":"completed","conclusion":"success","number":21,"started_at":"2026-11-25T00:43:40Z","completed_at":"2026-11-25T00:43:40Z"}],"check_run_url":"https://api.github.com/repos/paulaosoriof86/demoCXOrbia/check-runs/138889994810","labels":["ubuntu-latest"],"runner_id":1000209988,"runner_name":"GitHub Actions 1000209988","runner_group_id":0,"runner_group_name":"GitHub Actions"}};
@@ -87,11 +87,15 @@ function mockedGitApi({initialFiles,run,jobs,artifacts}){
  };
  const currentText=p=>blobs.get(trees.get(commits.get(head).tree.sha).get(p));return {api,mutatedPaths,currentText};
 }
-function consumeFixture(capture=FINANCE_CAPTURE,{existingJournal=true}={}){
+function consumeFixture(capture=FINANCE_CAPTURE,{existingJournal=true,currentNextAction=true}={}){
  const f=fixture(capture),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[]},matrixPath='RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V999.json',ledgerPath='CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V999_2026-11-24.json';
  const previous={runId:999999999,marker:'keep-current'},pointer={currentFunctionalEvidenceIndex:index,currentResultIncorporationQueue:existingJournal?[...f.queue.values()]:[],currentAutomationReceipt:previous,phaseAHumanAcceptanceCurrent20261111:{B4:true,B5:true,B6:true,B7:true},production:'DO_NOT_TOUCH',authorizationI4:false};
  const descriptor={moduleTruthPath:matrixPath,findingsLedgerPath:ledgerPath,currentFunctionalEvidenceIndex:index,currentAutomationReceipt:previous,currentC3PreterminalAudit:{marker:'historical'},production:'DO_NOT_TOUCH'};
- const files=new Map([[DESCRIPTOR,jsonBytes(descriptor)],[POINTER,jsonBytes(pointer)],[matrixPath,jsonBytes({modules:[{domain:'benefits',classification:'MATCH'}]})],[ledgerPath,jsonBytes({findings:{}})]]);if(existingJournal)files.set(f.journalPath,jsonBytes(f.journal));
+ // These focused queue fixtures begin with an already-current action. They do
+ // not claim the complete schema required for a matrix/ledger successor.
+ const matrix={modules:[{domain:'benefits',classification:'MATCH'}]},ledger={findings:{}};
+ if(currentNextAction)projectCurrentResidualNextAction({descriptor,pointer,matrix,ledger});
+ const files=new Map([[DESCRIPTOR,jsonBytes(descriptor)],[POINTER,jsonBytes(pointer)],[matrixPath,jsonBytes(matrix)],[ledgerPath,jsonBytes(ledger)]]);if(existingJournal)files.set(f.journalPath,jsonBytes(f.journal));
  const mock=mockedGitApi({initialFiles:files,run:f.run,jobs:f.jobs,artifacts:f.artifacts});return {f,mock,descriptor,pointer,matrixPath,ledgerPath};
 }
 test('atomic Finance retry commits a nonexecution receipt, preserves journal and does not promote on replay',async()=>{
@@ -106,4 +110,16 @@ test('canonical historical failure queue retires once; execution journal remains
 });
 test('new canonical failure is recorded in journal but is never enqueued as a typed producer',async()=>{
  const x=consumeFixture(CONTROL_CAPTURE,{existingJournal:false});const r=await consumeRun({api:x.mock.api,token:'synthetic',runId:x.f.run.id,runAttempt:1,now});assert.equal(r.pendingTypedResults,0);assert.equal(r.typedResultsIncorporated,0);const j=JSON.parse(x.mock.currentText(x.f.journalPath));assert.equal(j.jobs[0].conclusion,'failure');assert.deepEqual(j.pendingTypedResults,[]);
+});
+
+test('incomplete stale control cannot acquire a successor while exact nonexecution evidence still records',async()=>{
+ const x=consumeFixture(FINANCE_CAPTURE,{currentNextAction:false}),matrix=x.mock.currentText(x.matrixPath),ledger=x.mock.currentText(x.ledgerPath),journal=x.mock.currentText(x.f.journalPath);
+ const result=await consumeRun({api:x.mock.api,token:'synthetic',runId:x.f.run.id,runAttempt:1,now});
+ assert.equal(result.typedResultsIncorporated,1);assert.equal(result.pendingTypedResults,0);
+ assert.deepEqual(result.typedFailures.map(x=>x.code),['MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED']);
+ const pointer=JSON.parse(x.mock.currentText(POINTER));
+ assert.equal(pointer.currentFunctionalEvidenceIndex.results[0].artifactId,null);
+ assert.equal(pointer.currentTypedResultFailures[0].code,'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED');
+ assert.equal(x.mock.currentText(x.matrixPath),matrix);assert.equal(x.mock.currentText(x.ledgerPath),ledger);assert.equal(x.mock.currentText(x.f.journalPath),journal);
+ assert.equal(pointer.phaseAComplete,undefined);assert.equal(pointer.authorizationI4,false);
 });

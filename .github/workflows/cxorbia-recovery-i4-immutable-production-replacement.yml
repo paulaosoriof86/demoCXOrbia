@@ -99,7 +99,8 @@ jobs:
           test "$(jq -r '.promotion.noRebuild' "$G21")" = true
           test "$(jq -r '.promotion.noRecomposition' "$G21")" = true
           test "$(jq -r '.moduleTruth.moduleCount' "$G21")" = 21
-          test "$(jq -r '.moduleTruth.allModulesMatch' "$G21")" = true
+          test "$(jq -r '.moduleTruth.terminalAcceptance' "$G21")" = true
+          test "$(jq -r '.moduleTruth.acceptanceMode' "$G21")" = FROZEN_FUNCTIONAL_TASK_SETS
           test "$(jq -r '.liveFixtures.cleanup' "$G21")" = true
           test "$(jq -r '.certification.runId' "$G21")" = "$GATE21_RUN_ID"
           test "$(jq -r '.certification.buildCount' "$G21")" = 1
@@ -109,13 +110,12 @@ jobs:
           test "$(jq -r '.rebuildAfterCertification' "$MAN")" = false
           test "$(jq -r '.production' "$MAN")" = false
           test "$(jq -r '.phaseAComplete' "$CERT/module-truth-matrix.json")" = true
-          test "$(jq -r '.allModulesMatch' "$CERT/module-truth-matrix.json")" = true
-          test "$(jq -r '.terminalClosure.decision' "$CERT/module-truth-matrix.json")" = PASS_C3_TERMINAL_MODULE_TRUTH_21_21
           test "$(jq '.modules | length' "$CERT/module-truth-matrix.json")" = 21
           test "$(sha256sum "$CERT/module-truth-matrix.json" | awk '{print $1}')" = "$(jq -r '.moduleTruth.evidenceSha256' "$G21")"
           test "$(jq -r '.moduleTruthEvidenceSha256' "$MAN")" = "$(jq -r '.moduleTruth.evidenceSha256' "$G21")"
 
           ARTIFACT_SHA="$(sha256sum "$CERT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
+          node tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs "$CERT/module-truth-matrix.json" --require-terminal "$ARTIFACT_SHA"
           test "$ARTIFACT_SHA" = "$APPROVED_CERTIFIED_ARTIFACT_SHA256"
           test "$ARTIFACT_SHA" = "$(awk '{print $1}' "$CERT/cxorbia-i3-certified-source.tar.sha256")"
           test "$ARTIFACT_SHA" = "$(jq -r '.artifactSha256' "$MAN")"

@@ -1,0 +1,518 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-c-d-task-evidence-map.v1",
+  "createdAt": "2026-11-25",
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "READONLY_DOCUMENTARY_CROSSWALK_18_ORIGINAL_TASKS_NOT_GATE_CERTIFICATE",
+  "sourceHeadInspected": "bfd9171017bb751a0159ef07b3b3903c3d5c2177",
+  "originalFrozenPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "taskCount": 18,
+  "interpretation": {
+    "acceptanceBlocksAreNotTaskIds": true,
+    "historicalHumanPendingAliasesSupersededOnlyByExactLaterAcceptance": true,
+    "noNewFunctionalTests": true,
+    "noCodeChanges": true,
+    "noRemoteWrites": true,
+    "noFullTaskPromotionByInference": true,
+    "sourceParityAndCurrentDeploymentMustRemainBoundToExistingAuthority": true
+  },
+  "evidence": {
+    "currentTasks": {
+      "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+      "gitBlob": "288147c50f75b31433fca54e51606fa7914e17cb",
+      "sha256": "0fd58f4814bdddb2a1646803dba1307bbc1c212e0349c26469e80ff25a967f90",
+      "scope": "taskProgress exact snapshot; human review pending strings must be read together with later accepted block receipts and Nov19 automation authority"
+    },
+    "currentMatrix": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+      "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+      "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332",
+      "scope": "Current residual clauses and accepted evidence dimensions; no full-domain inference"
+    },
+    "c01": {
+      "path": "CXORBIA_I3_A04_A05_C01_G05_LIVE_BLOCK_PASS_2026-10-17.json",
+      "gitBlob": "2b09022b62cb0650fcbe8fc44571c19563358745",
+      "sha256": "9d2b913877c41b042d6de681d605cd3d9bf213ec77720129da16068fff39f57d",
+      "scope": "C01 provider proof RUN1746/39033804891; scope restricted September and relevant UI actions"
+    },
+    "c02d04": {
+      "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+      "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+      "sha256": "e06ad2e57a10c7ea95b904a0abff2bbac596f105297649ad8cbabb641b8a05bd",
+      "scope": "C02 two-context 24-field readback; D04 real question edit, version2, history, reload, independent context, pending_review and cleanup; fullTaskClosed:false at original receipt"
+    },
+    "c04c05": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+      "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+      "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d",
+      "scope": "Four synthetic commands ACK/audit/readback, two zero-write replays, Q/L separated, independent Admin context, exact13-document cleanup; fullTasksClosed:false"
+    },
+    "blocks456": {
+      "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+      "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+      "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae",
+      "scope": "Explicit cumulative functional block acceptance. B4_certificaciones, B5_beneficios, B6_dashboard_visitas_detalle are acceptance blocks, NOT task IDs B04/B05/B06. B8 payment settlement and release-security residuals remain."
+    },
+    "financeInventory": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+      "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+      "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4",
+      "scope": "Read-only two advance identities, application-link presence, exact September inventory, private identity review set. No payment/reconciliation execution."
+    },
+    "financeDirective": {
+      "path": "docs/checkpoints/CXORBIA_FINANCE_SEPT2026_PAULA_SETTLEMENT_DIRECTIVE_OCTNOV_CXP_20261109.json",
+      "gitBlob": "99aa96cc66736f17c4e86893a93999428e54fb9b",
+      "sha256": "22a84e0f28066c4e6bf899283bd76fa5f621aba1943f29327cc04cffdbed005b",
+      "scope": "Existing owner settlement decision; not a technical ACK of each financial row"
+    },
+    "financeUiScope": {
+      "path": "docs/checkpoints/CXORBIA_I3_C09_C10_ADVANCE_UI_READONLY_SCOPE_20261125.json",
+      "gitBlob": "ea60a2701c24d65cc44d1132821b5fd28aa54e7d",
+      "sha256": "4f98c846a2a39259cfb5b720910b83e1303bbbd98904f8b11beedf723dc0a596",
+      "scope": "Exact committed RUN2783 second-advance metadata proof referenced as prerequisite; UI two-session and export scope remains request, not executed PASS"
+    },
+    "financeAcademyLatest": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2786_RUNNER_CONTINUITY_CORRECTION_20261125.json",
+      "gitBlob": "e127f2512b93e78644156889ee537f28385e2956",
+      "sha256": "ca0e211202fb8e2da9e689508e3161ba3125453ce5314e1510e77047867a3c7d",
+      "scope": "RUN2786 actual failures and published runner correction. Primary Finance PDF_CONTENT unresolved; Academia UI rerender defect repaired in QA, no new full UI PASS."
+    },
+    "d01": {
+      "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+      "gitBlob": "b38b0747bf624ceaeb54c4c0e6168b76bcd79281",
+      "sha256": "87a8c107b90a3e737e31cc1dcfb64efc86bc2800f8166c4ab0b46b33e1a9acec",
+      "scope": "Explicit PASS_D01_AUTHORIZED_DOCUMENT_SOURCE; exact approved PDF hash, revision, GT/HN scope and approval chronology"
+    },
+    "d02": {
+      "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1753_2026-10-17.json",
+      "gitBlob": "673d1cf3e606ecc1750c5b66256c329408e13689",
+      "sha256": "d3910ffd65cf409d76d725bbb0fc0e1912502350fe200d862fdea95ebeff852f",
+      "scope": "Real DEV DOCX mammoth and PDF pdfjs parser smoke; authentic approved PDF deferred to D01/D03 at this historical receipt"
+    },
+    "d03": {
+      "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+      "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72",
+      "sha256": "6e4c551ebc674c09b49c1e404fa9c4a05b6812f0a675dda5dfac9a7ea6596f40",
+      "scope": "Real Vertex15questions/15page references,2providerwrites,durable readback,zero-write replay,exact cleanup; no legacy bank reuse"
+    },
+    "d05": {
+      "path": "docs/checkpoints/CXORBIA_I3_D05_DEV_QA_POSITIVE_PUBLISH_CONFIGURE_RETIRE_PASS_20261101.json",
+      "gitBlob": "7600b971a7f98deb980ec3455c76a95e1f5901db",
+      "sha256": "04e425888d67672c7b24a645077f8456c7d522c45e86edb0237cf92cf68e62ed",
+      "scope": "QA bank publish/configure/retire with three provider ACK/readbacks; source-scoped, real banks unchanged"
+    },
+    "d05Negative": {
+      "path": "docs/checkpoints/CXORBIA_I3_D05_NEGATIVE_SAFETY_CURRENT_SOURCE_PASS_RUN421569_20261105.json",
+      "gitBlob": "ac385bd0abdd961b7c8b1fbe86dcd78fd233d1ca",
+      "sha256": "b2438422413f1d02eb2ef096e5081fb9fa1732ef4a59446bc3324eb29664edf2",
+      "scope": "Prior authenticated negative server/UI proof preserved by later B4 acceptance"
+    },
+    "d05Flex": {
+      "path": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+      "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c",
+      "sha256": "f49fcca43f9f11dbb84053cf26338b61b85b174992483441318c7add0f8ec611",
+      "scope": "Admin QA15questions expanded2/3 to4options,version1→2,readback/reload,QAretire,sixrealbanksunchanged"
+    },
+    "d06": {
+      "path": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+      "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37",
+      "sha256": "ac6d0d9a5a9782471ba9fb157b220d6b3e2500b7853f3ef75053435ab85d852e",
+      "scope": "Authorized real Shopper passing/failing attempts and history/reload, later scoped B4 acceptance; no new attempt required without concrete drift"
+    },
+    "d07": {
+      "path": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+      "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9",
+      "sha256": "6a5431d0d3a81c9f05e03d8a2587f0cd490d27b6f8e484181902a93c1a5f7f29",
+      "scope": "Authenticated original7pagePDF read/download; no proof PDF create/version/retire lifecycle"
+    },
+    "d07Current": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+      "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+      "sha256": "ac69a0b479aa83dd495ca4d3a42a419fad7678dbf937be09b0839aa8fd465fee",
+      "scope": "Authenticated PDF HTTP200 on both exact DEV origins; bounded role/read clause"
+    },
+    "d08Provider": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+      "gitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+      "sha256": "9d2c8a96186eadc4d2ed9981d442f66c3a5835bbb6052a24aa02162ce9e56e6f",
+      "scope": "Academia durable progress ACK,newsession,replay,otherlearner isolation,wrong-audience denial,cleanup; UI3roles not closed"
+    },
+    "d08Contract": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_SCOPED_OBLIGATION_AUTHORITY_20261124.json",
+      "gitBlob": "c0acf2f60ee14597f2c6da397ff4c8a59e79d8c0",
+      "sha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+      "scope": "25 precise D08 tenant/course obligations, no invented period prerequisite, not entire certification domain"
+    },
+    "accountLock": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2787_ENVIRONMENT_NOT_STARTED_20261125.json",
+      "gitBlob": "ff4df8a5b51ccdcfb836b2cdf2bfe12fce7ed307",
+      "sha256": "36e1ea9682fcf84f2e4aa17a65f5a68b43912f14a9f787179698bc01efefc3e7",
+      "scope": "RUN2787 no runner steps or functional tests; provider account lock; no functional PASS/FAIL inferred"
+    }
+  },
+  "tasks": [
+    {
+      "taskId": "C01",
+      "originalModule": "Conciliar en Dashboard",
+      "originalAcceptance": "Clic en ambas rutas produce acción o denegación humana; no existe botón mudo; caso positivo y bloqueado comprobados.",
+      "originalOwnerFiles": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216",
+      "originalDepends": "G04",
+      "evidenceState": "PRESERVE_SCOPED_LIVE_PASS",
+      "evidenceRefs": [
+        "c01",
+        "blocks456",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "RUN1746 passed the focal financial UI/provider proof; prior C01 owner parity preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Retain positive/blocked Dashboard and detail coverage only at evidenced scope; uncovered current eligible/blocked financial UI is still in finance residuals."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C02",
+      "originalModule": "Readback financiero coherente",
+      "originalAcceptance": "La misma fila cambia, se conserva al recargar y se ve en otra sesión; fallo no actualiza éxito local.",
+      "originalOwnerFiles": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | app/modules/finanzas.js:209–403,290,987–1011; detalle:1216",
+      "originalDepends": "A05,C01",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "c02d04",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Exact durable receipt/audit/visit24fields agree; Q60+Q145=Q205 read in two isolated app contexts and reload."
+      ],
+      "remainingOrMappingBoundary": [
+        "Original live reconciliation client ACK was not observed in RUN1962; no reconciliation replay/payment executed. Complete uncovered ACK/error/current UI clauses; do not repeat readback already proven."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C03",
+      "originalModule": "Anticipo/remesa Q7.300",
+      "originalAcceptance": "Q7.300 aparece o su ausencia queda demostrada por fuente exacta; resumen y detalle concuerdan con naturaleza aprobada. No se da por borrado ni se duplica.",
+      "originalOwnerFiles": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas",
+      "originalDepends": "G05",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "financeInventory",
+        "financeUiScope",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Both distinct Q7300 advances located; RUN2783 second November advance metadata correction/readback/replay credited; first advance and totalQ14600 preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Finish current UI nature/amount/source coherence in two sessions and exports; no inferred allocation, third advance, income or payment."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C04",
+      "originalModule": "Proyecto y Global durable",
+      "originalAcceptance": "Movimiento/cuenta autorizado aparece en otra sesión/dispositivo; ninguna operación monetaria usa localStorage como verdad.",
+      "originalOwnerFiles": "finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133",
+      "originalDepends": "G02",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "c04c05",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Remote synthetic accounts/movements with ACK/audit/readback; independent Admin session, Q/L separation and exact cleanup."
+      ],
+      "remainingOrMappingBoundary": [
+        "RUN1992 explicitly leaves fullTasksClosed:false. Only missing whole-flow/permitted UI/role/error clauses may remain; preserve its four commands and two replays."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C05",
+      "originalModule": "CxP, CxC, cobros y financiamientos",
+      "originalAcceptance": "Cobro/abono reduce sólo cuenta correcta, replay no duplica, referencias cruzadas reconstruibles y GTQ/HNL nunca sumados como una moneda.",
+      "originalOwnerFiles": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133",
+      "originalDepends": "C03,C04",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "c04c05",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Create/apply CxC, financing creation and CxP apply; proper entity refs, replay0writes, remote persistence and independent context."
+      ],
+      "remainingOrMappingBoundary": [
+        "Remaining authorized obligations/right/payability/support scopes need exact evidence; do not infer all account/payment modes from four bounded commands."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C06",
+      "originalModule": "Pago individual y soporte",
+      "originalAcceptance": "Pago interno, soporte recibido, confirmación externa y conciliado se distinguen; ACK, readback y recarga sin doble pago.",
+      "originalOwnerFiles": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216 | app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "originalDepends": "C02,C05,A08",
+      "evidenceState": "RESIDUAL_UNPROVEN",
+      "evidenceRefs": [
+        "currentMatrix",
+        "financeInventory"
+      ],
+      "preservedEvidenceScope": [
+        "Existing B5 benefits read/display scope and underlying finance provider proofs retained; no new money transfer."
+      ],
+      "remainingOrMappingBoundary": [
+        "Eligible and blocked individual liquidation via UI; durable support, ACK/readback/reload, internal payment vs external confirmation vs reconciliation distinction and no doublepayment."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C07",
+      "originalModule": "Lotes de pago",
+      "originalAcceptance": "Contenido, importe y fuente del lote coinciden; otro intento no duplica; filas excluidas no se pagan; Shopper y Admin ven lo mismo.",
+      "originalOwnerFiles": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "originalDepends": "C06",
+      "evidenceState": "RESIDUAL_UNPROVEN",
+      "evidenceRefs": [
+        "currentMatrix",
+        "financeInventory"
+      ],
+      "preservedEvidenceScope": [
+        "Prior financial command and source-backed benefits scopes retained."
+      ],
+      "remainingOrMappingBoundary": [
+        "Exact selected/elegible same-currency batch, support, registration/query/export/reconcile, no duplicate/excluded payments, Admin/Shopper agreement; no complete task receipt identified in this bounded review."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C08",
+      "originalModule": "Cortes históricos aceptados",
+      "originalAcceptance": "Cohortes y recibos exactos trazables; septiembre ambiguo se presenta en única lista de decisión; no se inventa confirmación externa ni se reimporta.",
+      "originalOwnerFiles": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas",
+      "originalDepends": "C03,C05",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "financeDirective",
+        "financeInventory",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "July/August approved cuts preserved; existing owner September settlement directive and exact inventory retained."
+      ],
+      "remainingOrMappingBoundary": [
+        "Resolve already-enumerated private identity pairs and exact per-visit source/amount authority. Do not reprove accepted historical cuts or infer external confirmation from totals/HR."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C09",
+      "originalModule": "Beneficios, reportes y Dashboard financiero",
+      "originalAcceptance": "Totales explicables por filas y moneda; beneficio propio coincide con Admin; soporte visible según permisos; no IDs técnicos como identidad principal.",
+      "originalOwnerFiles": "app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | app/styles/theme.css; app/styles/layout.css; app/core/ui.js y owners con tamaños inline",
+      "originalDepends": "C05,C06,C07,C08",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "blocks456",
+        "financeUiScope",
+        "financeAcademyLatest",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "B5 Benefits functional acceptance and B6 Dashboard functional acceptance preserved; RUN2786 control flow reached preview/XLSX/printDOM before PDF failure."
+      ],
+      "remainingOrMappingBoundary": [
+        "Actual PDF content/extraction failure remains unresolved; current same-cut/currency/export and finance-only cross-role residuals remain. Do not reopen accepted B5/B6 merely because B8 settlement is open."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "C10",
+      "originalModule": "Cierre financiero entre sesiones",
+      "originalAcceptance": "Cuentas, movimientos, liquidación, lote y soporte correctos en nueva sesión; pruebas de septiembre no cierran casos de octubre.",
+      "originalOwnerFiles": "app/modules/finanzas.js:209–403,290,987–1011; detalle:1216 | app/modules/finanzas.js:22–26,405–580; proveedores de movimientos y cuentas | finanzas.js:475–482; cliente-insights.js:7–10,98–124; integraciones.js:90–133 | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "originalDepends": "C02,C03,C04,C05,C06,C07,C08,C09",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "c02d04",
+        "c04c05",
+        "financeInventory",
+        "financeUiScope",
+        "financeAcademyLatest",
+        "accountLock"
+      ],
+      "preservedEvidenceScope": [
+        "Historical independent-session evidence for exact C02/C04/C05 scopes retained; existing operational/QA data boundaries preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Current two-session finance/exactadvance/export verification not passed; RUN2787 did not start. Full terminal account/movement/liquidation/batch/support flow still requires uncovered evidence."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D01",
+      "originalModule": "Documento fuente autorizado",
+      "originalAcceptance": "Fuente identificada y vigente; se conserva evidencia de aprobación. Si falta aprobación real, queda pendiente sólo esa publicación; parser puede avanzar.",
+      "originalOwnerFiles": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "originalDepends": "G02",
+      "evidenceState": "ACCEPTED_TASK_SCOPE_PRESERVED",
+      "evidenceRefs": [
+        "d01"
+      ],
+      "preservedEvidenceScope": [
+        "Exact authoritative Instructivo Shopper.pdf identified by hash/version; approval recovered and GT/HN scope verified."
+      ],
+      "remainingOrMappingBoundary": [],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D02",
+      "originalModule": "Extractor PDF/DOCX",
+      "originalAcceptance": "El PDF auténtico conserva instrucciones relevantes; DOCX ya no retorna vacío; formato inválido se rechaza antes de llamar al proveedor.",
+      "originalOwnerFiles": "app/core/automations.js:62–82; app/modules/cert.js:249–266",
+      "originalDepends": "G04",
+      "evidenceState": "PRESERVE_PARSER_AND_DOWNSTREAM_PROOFS",
+      "evidenceRefs": [
+        "d02",
+        "d01",
+        "d03"
+      ],
+      "preservedEvidenceScope": [
+        "Live PDF/DOCX parser smoke passed; D01 approved document and D03 fresh generation followed."
+      ],
+      "remainingOrMappingBoundary": [
+        "Do not treat historical PENDING_D01 as current pending. Mapping actual approved-PDF extraction and input-rejection clauses to original evidence remains a documentary crosswalk if required, not authority for rerunning generation."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D03",
+      "originalModule": "Generación real con IA",
+      "originalAcceptance": "Quince preguntas válidas, distintas y revisables desde texto válido; persistencia pending_review con ACK; un fallo de entrada se distingue del modelo.",
+      "originalOwnerFiles": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "originalDepends": "D01,D02",
+      "evidenceState": "ACCEPTED_PROVIDER_SCOPE_PRESERVED",
+      "evidenceRefs": [
+        "d03",
+        "d01",
+        "currentTasks"
+      ],
+      "preservedEvidenceScope": [
+        "Real Vertex15distinct questions with15references; durable readback,2firstwrites,zero-write replay and cleanup; taskProgress preserves live E2E pass."
+      ],
+      "remainingOrMappingBoundary": [
+        "No new generation/replacement-bank request; pending_review/source validation must be tied to original immutable D03 contract/result when machine-normalizing complete task."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D04",
+      "originalModule": "Editor y revisión del banco",
+      "originalAcceptance": "Admin revisa/edita realmente; no basta cambiar metadatos o estado; una sesión nueva conserva contenido y versión.",
+      "originalOwnerFiles": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "originalDepends": "D02",
+      "evidenceState": "ACCEPTED_B4_AND_EDITOR_SCOPE_PRESERVED",
+      "evidenceRefs": [
+        "c02d04",
+        "d05Flex",
+        "blocks456"
+      ],
+      "preservedEvidenceScope": [
+        "Real15Q editor changed content,version2,history,source,visibleACK,reload and independentcontext; later B4 acceptance preserves editor and bank mechanics."
+      ],
+      "remainingOrMappingBoundary": [
+        "Do not reopen editor or ask for routine human reapproval. Any residual server-role/reviewer boundary must remain scoped to A08/D05/release security, not erase existing edit PASS."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D05",
+      "originalModule": "Publicación y vigencia",
+      "originalAcceptance": "Borrador no se rinde; banco publicado autorizado sí; retiro no borra intentos; ningún otro proyecto hereda certificación.",
+      "originalOwnerFiles": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219",
+      "originalDepends": "D03,D04,A08",
+      "evidenceState": "ACCEPTED_B4_LIFECYCLE_SCOPE_PRESERVED",
+      "evidenceRefs": [
+        "d05",
+        "d05Negative",
+        "d05Flex",
+        "blocks456"
+      ],
+      "preservedEvidenceScope": [
+        "Prior publish/configure/retire ACK/readback,negative409,Adminreview and Shopper bank gating carried into accepted B4 functional block."
+      ],
+      "remainingOrMappingBoundary": [
+        "No blanket new cross-tenant/current authenticated negative proof invented. Preserve remaining release-security obligations independently; no real-bank publication or global recertification required to repeat accepted QA mechanics."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D06",
+      "originalModule": "Ciclo Shopper y recertificación",
+      "originalAcceptance": "Certificaciones, Mi Día y Mis Visitas comparten la misma elegibilidad; test de cuatro preguntas no sustituye contrato de quince.",
+      "originalOwnerFiles": "app/modules/cert.js:7–39,247–372; certification-runtime.mjs:149–219 | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "originalDepends": "A09,D05",
+      "evidenceState": "ACCEPTED_B4_D06_PRESERVED",
+      "evidenceRefs": [
+        "d06",
+        "blocks456",
+        "currentTasks"
+      ],
+      "preservedEvidenceScope": [
+        "Current taskProgress explicitly ACCEPTED_B4_D06_PRESERVED_NO_REPEATED_BANK_ATTEMPTS; residuals=[] at this scoped task; historical records preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "D08 and release-security obligations remain separate. Do not repeat bank attempts or request new15QShopper exam on behalf of already accepted B4 scope; no bulk recertification authorized."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D07",
+      "originalModule": "Recursos y documentos",
+      "originalAcceptance": "Archivo y metadato coinciden; no binario huérfano; documento ajeno denegado; vínculo a visita y revisión correcto.",
+      "originalOwnerFiles": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+      "originalDepends": "D02,A08",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "d07",
+        "d07Current",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Original authenticated7pagePDF open/download and latest scopedHTTP200 read preserved; TXT lifecycle not extrapolated to PDF."
+      ],
+      "remainingOrMappingBoundary": [
+        "Isolated PDF create,metadata,version,retirement,foreigndocument denial,durable readACK,visit/revision binding remain exact residuals."
+      ],
+      "newPassGranted": false
+    },
+    {
+      "taskId": "D08",
+      "originalModule": "Academia y progreso",
+      "originalAcceptance": "Progreso y edición persisten en nueva sesión en Admin/Shopper/Cliente; funciones futuras de IA quedan fuera sólo con autoridad de alcance.",
+      "originalOwnerFiles": "app/core/automations.js:62–82; app/modules/cert.js:249–266 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+      "originalDepends": "D02,A08",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceRefs": [
+        "d08Provider",
+        "d08Contract",
+        "financeAcademyLatest",
+        "accountLock",
+        "currentMatrix"
+      ],
+      "preservedEvidenceScope": [
+        "Historical provider progress ACK/newsession/replay/isolation/negative/cleanup accepted; RUN2786 Admin course/evaluation progression partial and cleanup retained; runner rerender fixed source."
+      ],
+      "remainingOrMappingBoundary": [
+        "25 scoped D08 obligations require complete Admin/Shopper/Cliente UI/session/evaluation/resource/progress/edit/negative readback. RUN2787 not started gives no new credit; current UI retry after environment unlock."
+      ],
+      "newPassGranted": false
+    }
+  ],
+  "production": false,
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "sourceTreeInspected": "49c2d6dea6fb8c9fb8bc20a14a20f33f1f1b75bd",
+  "readbackVerifiedAgainstPublishedHead": true
+}

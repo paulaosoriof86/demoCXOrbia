@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import {hasTerminalAcceptance} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {isDeepStrictEqual} from 'node:util';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -303,7 +304,7 @@ export function validatePrecertificationFixtureReceipt(live,{binding,bindingHash
 export function validateSealedFixtureReceipt(manifest,live,{binding,bindingHash,liveHash,artifactHash,readFinalBytes}={}){
   requireBinding(manifest?.decision==='PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21'&&manifest.production===false&&manifest.buildCount===1&&
     manifest.artifactPackCount===1&&manifest.rebuildAfterCertification===false&&manifest.moduleTruth?.phaseAComplete===true&&
-    manifest.moduleTruth?.allModulesMatch===true,'FINAL_CERTIFICATE');
+    hasTerminalAcceptance(manifest.moduleTruth,{sourceSha:manifest.i3CertificationSourceSha,sourceTree:manifest.i3CertificationSourceTree,runtimeRevision:manifest.devRuntimeRevision,runtimeDigest:manifest.runtimeImageDigest,hostingVersion:manifest.hostingVersionName,artifactSha256:artifactHash}),'FINAL_CERTIFICATE');
   requireBinding(manifest.liveFixtures?.evidenceSha256===liveHash&&manifest.liveFixtures?.prerequisitesSha256===bindingHash&&
     manifest.artifactSha256===artifactHash&&binding.artifactSha256===artifactHash,'SEALED_HASH');
   validatePrecertificationFixtureReceipt(live,{binding,bindingHash,readFinalBytes});

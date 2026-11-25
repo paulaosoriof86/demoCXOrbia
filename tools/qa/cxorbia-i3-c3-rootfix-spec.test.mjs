@@ -48,7 +48,7 @@ function fixture(type='read',options={}){
     phaseAAuthority:true,currentBlob:BLOBS[t]}));
   const findings=Object.fromEntries(['033','034','035','036','037','038','039','040','041','042'].map(n=>['VRM-'+n,{state:'FIXED_PROVEN'}]));
   const identity={sourceSha:SHA,sourceTree:TREE,runtimeRevision:'runtime-dev',runtimeDigest:DIGEST,hostingVersion:'sites/dev/versions/1'};
-  return {pre:{productSource:{sha:SHA,treeSha:TREE},preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21,pendingMappingApprovalFiles:[]},modules,sourceFiles},
+  return {acceptanceMode:'LEGACY_21_HISTORICAL',pre:{productSource:{sha:SHA,treeSha:TREE},preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21,pendingMappingApprovalFiles:[]},modules,sourceFiles},
     ledger:{findings},identity,additionalReceipts:[],
     focal:{decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:SHA,hrRevision:HR},
     human:{decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:SHA,sourceRevision:HR},

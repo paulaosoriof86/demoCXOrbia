@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {incorporateTypedResults,consumeRun,selectTypedArtifact,pendingTypedRuns,pendingSatisfiedRequestRuns,retireSatisfiedD08Request,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
-import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 import {TYPED_SUMMARY_SCHEMAS} from './cxorbia-i3-typed-result-summary.mjs';
 
 // Small synthetic producer-shaped results. No test imports, providers or secrets.
@@ -60,6 +60,12 @@ function installOld(f,index=0){
 }
 
 function mockedGitApi({initialFiles,run,jobs,artifacts}){
+  // Queue/receipt tests start from a current action; complete successor-schema
+  // and stale-action repair are exercised in scoped-clause-projection tests.
+  const descriptor=JSON.parse(initialFiles.get(DESCRIPTOR)),pointer=JSON.parse(initialFiles.get(POINTER));
+  const matrix=JSON.parse(initialFiles.get(descriptor.moduleTruthPath)),ledger=JSON.parse(initialFiles.get(descriptor.findingsLedgerPath));
+  projectCurrentResidualNextAction({descriptor,pointer,matrix,ledger});
+  for(const [file,value]of [[DESCRIPTOR,descriptor],[POINTER,pointer],[descriptor.moduleTruthPath,matrix],[descriptor.findingsLedgerPath,ledger]])initialFiles.set(file,jsonBytes(value));
   let head='1'.repeat(40),next=2;const blobs=new Map(),trees=new Map(),commits=new Map(),mutatedPaths=[];
   const makeSha=()=>String(next++).padStart(40,'0');
   const tree=new Map();for(const [p,text]of initialFiles){const b=gitBlob(text);blobs.set(b,text);tree.set(p,b);}trees.set('2'.repeat(40),tree);commits.set(head,{sha:head,tree:{sha:'2'.repeat(40)},parents:[]});

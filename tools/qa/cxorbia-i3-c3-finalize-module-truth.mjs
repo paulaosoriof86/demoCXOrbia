@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {assertCanonicalModuleCoverage} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
+import {assertCanonicalModuleCoverage,evaluateFrozenTaskCoverage,FUNCTIONAL_TASK_MODE,LEGACY_TASK_MODE} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {validateTenantReadonlyReceipt} from './cxorbia-i3-tenant-readonly-acceptance.mjs';
 import {validateBenefitsReadonlyReceipt,BENEFITS_FINDINGS} from './cxorbia-i3-benefits-readonly-contract.mjs';
 import {permitsD08PeriodlessScope} from './cxorbia-i3-d08-result-normalizer.mjs';
@@ -128,6 +128,40 @@ const approvedCarryForward=(r,mod,sourceFiles,identity)=>{
   return deps.every(x=>sourceFiles.some(s=>s.path===x.path &&
     unchangedByteProof(x,s.currentBlob)));
 };
+// Revalidate accepted evidence at every terminal consumer; a PASS-shaped label
+// or task mapping never substitutes authenticated scope/bytes/provider/UI proof.
+export function validateTerminalAcceptedReceipt({receipt:r,mod,sourceFiles=[],identity,hrRevision,findingIds:ids=[]}){
+  const errors=[],need=(ok,key)=>{if(!ok)errors.push(key);},paths=(r.ownerPaths||[]).map(String),domain=mod.domain;
+  const current=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>r[k]===identity[k]);
+  need(current||approvedCarryForward(r,mod,sourceFiles,identity),'CURRENT_IDENTITY_OR_VERIFIED_CARRY');
+  need(String(r.decision||'').startsWith('PASS_'),'DECISION');need(r.production===false,'PRODUCTION');
+  need(r.hrIndependent===true?(!r.hrRevision||r.hrRevision===hrRevision):r.hrRevision===hrRevision&&!!hrRevision,'HR_REVISION');
+  need(paths.length>0,'PATHS');
+    const hardenedReadOnly=r.operationKind==='READ_ONLY'&&['benefits','tenant-admin-config-branding'].includes(domain);
+    if(hardenedReadOnly){
+      const benefits=domain==='benefits';
+      const check=benefits?validateBenefitsReadonlyReceipt(r,mod):validateTenantReadonlyReceipt(r,mod);errors.push(...check.failures);
+      // The two explicitly frozen read-only contracts retain their strict
+      // domain-specific validators and approved finding scopes.
+      need(ids.length>0 && ids.every(fid=>(benefits?BENEFITS_FINDINGS:['VRM-194','VRM-330']).includes(fid)),'READONLY_FINDING_SCOPE');
+    }else if(nonWritingKinds.has(r.operationKind)){
+      errors.push(...scopeErrors(r,mod,sourceFiles,paths),...nonWritingErrors(r));
+    }else if(!r.operationKind||r.operationKind==='PROVIDER_WRITE'){
+      for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression'])need(r[k]===true,'INCOMPLETE:'+k);
+      if(r.operationKind==='PROVIDER_WRITE'){
+        const p=r.providerWriteProof||{};
+        need(!!p.remoteReceiptId && !!p.idempotencyKey && p.replayNoDuplicate===true,'REMOTE_ACK_IDEMPOTENCY_REPLAY');
+        errors.push(...scopeErrors(r,mod,sourceFiles,paths));
+      }
+      // Previously MATCH domains need only reproof of the affected owner files.
+      // Accept observed clauses independently from complete-domain promotion.
+      // moduleEvidenceRequirements still requires the full frozen inventory.
+      if(mod.classification!=='MATCH')need(Array.isArray(r.contractCoverage?.obligations) && r.contractCoverage.obligations.length>0 &&
+        r.contractCoverage.obligations.every(x=>x.observed===true && x.evidenceRef),'FUNCTIONAL_OBLIGATIONS');
+    }else errors.push('UNKNOWN_OPERATION_KIND');
+  return errors;
+}
+
 const moduleEvidenceRequirements=(mod,sourceFiles,candidate)=>{
   const cls=String(mod.classification||''),domain=mod.domain,pending=(mod.pendingTerminalFiles||[]).map(String);
   const required=cls==='MATCH'?pending:canonicalDomainPaths(mod,sourceFiles);
@@ -230,8 +264,8 @@ export function readDurableDomainReceipts({descriptor,pointer,readBytes}){
 }
 
 // Pending functional proof produces a durable HOLD report. Identity corruption
-// still throws. Only the final 21-domain + global-proof conjunction yields GO.
-export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},parity={},identity,additionalReceipts=[]}){
+// still throws. Current GO requires original functional tasks plus global proofs.
+export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},parity={},identity,additionalReceipts=[],acceptanceMode=FUNCTIONAL_TASK_MODE}){
   const {sourceSha:SOURCE,sourceTree:TREE,runtimeRevision:RUNTIME,runtimeDigest:DIGEST,hostingVersion:HOSTING}=identity;
   if(pre?.preTerminalComposition?.decision!=='PASS_C3_PRETERMINAL_COMPOSITION'||pre?.productSource?.sha!==SOURCE||pre?.productSource?.treeSha!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_PRETERMINAL_RECEIPT');
   const pendingMappings=pre?.preTerminalComposition?.pendingMappingApprovalFiles||[];
@@ -282,28 +316,7 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
     // defect. It can never silently resolve any unrelated ledger finding.
     if(ids.length)need(ids.every(fid=>f[fid] && paths.every(p=>ownerPaths(f[fid]).includes(p))),'OWNER_MISMATCH');
     else need(row.additional && paths.every(p=>canonicalDomainPaths(mod,sourceFiles).includes(p)),'OWNER_DOMAIN_SCOPE');
-    const hardenedReadOnly=r.operationKind==='READ_ONLY'&&['benefits','tenant-admin-config-branding'].includes(domain);
-    if(hardenedReadOnly){
-      const benefits=domain==='benefits';
-      const check=benefits?validateBenefitsReadonlyReceipt(r,mod):validateTenantReadonlyReceipt(r,mod);errors.push(...check.failures);
-      // The two explicitly frozen read-only contracts retain their strict
-      // domain-specific validators and approved finding scopes.
-      need(ids.length>0 && ids.every(fid=>(benefits?BENEFITS_FINDINGS:['VRM-194','VRM-330']).includes(fid)),'READONLY_FINDING_SCOPE');
-    }else if(nonWritingKinds.has(r.operationKind)){
-      errors.push(...scopeErrors(r,mod,sourceFiles,paths),...nonWritingErrors(r));
-    }else if(!r.operationKind||r.operationKind==='PROVIDER_WRITE'){
-      for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression'])need(r[k]===true,'INCOMPLETE:'+k);
-      if(r.operationKind==='PROVIDER_WRITE'){
-        const p=r.providerWriteProof||{};
-        need(!!p.remoteReceiptId && !!p.idempotencyKey && p.replayNoDuplicate===true,'REMOTE_ACK_IDEMPOTENCY_REPLAY');
-        errors.push(...scopeErrors(r,mod,sourceFiles,paths));
-      }
-      // Previously MATCH domains need only reproof of the affected owner files.
-      // Accept observed clauses independently from complete-domain promotion.
-      // moduleEvidenceRequirements still requires the full frozen inventory.
-      if(mod.classification!=='MATCH')need(Array.isArray(r.contractCoverage?.obligations) && r.contractCoverage.obligations.length>0 &&
-        r.contractCoverage.obligations.every(x=>x.observed===true && x.evidenceRef),'FUNCTIONAL_OBLIGATIONS');
-    }else errors.push('UNKNOWN_OPERATION_KIND');
+    errors.push(...validateTerminalAcceptedReceipt({receipt:r,mod,sourceFiles,identity,hrRevision:human.sourceRevision,findingIds:ids}));
     if(errors.length){rejectedReceipts.push({findingId:id,moduleDomain:domain,reasons:errors});continue;}
     if(!receiptsByDomain.has(domain))receiptsByDomain.set(domain,[]);
     receiptsByDomain.get(domain).push(row);
@@ -325,6 +338,7 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
   for(const id of terminalIds)if(!isResolved(id))addFailure('C3_TERMINAL_FINDING_NOT_RESOLVED:'+id);
   const openP0=Object.entries(f).filter(([id,v])=>(String(v.severity||'').toUpperCase()==='P0'||/^P0_PROVEN(?:_|$)/.test(String(v.priority||'')))&&!isResolved(id));
   if(openP0.length)addFailure('C3_OPEN_P0_FINDINGS:'+openP0.map(([id])=>id).join(','));
+  const globalFailures=[...failures];
   const promotionByDomain=new Map(),domainResults=[];
   for(const mod of modules){
     const cls=String(mod.classification||''),pending=(mod.pendingTerminalFiles||[]).map(String),domain=mod.domain;
@@ -356,6 +370,10 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
   const nonMatchModules=modules.filter(x=>x.classification!=='MATCH');
   const nonMatchFiles=sourceFiles.filter(x=>x.phaseAAuthority!==false&&x.classification!=='MATCH');
   if(nonMatchModules.length||nonMatchFiles.length)addFailure('C3_MODULE_TRUTH_NOT_CLOSED');
+  const processAcceptance=evaluateFrozenTaskCoverage({matrix:{...pre,modules,sourceFiles},receipts:[...receiptsByDomain.values()].flat().map(x=>x.receipt),identity});
+  const domainFailures=failures.filter(x=>!globalFailures.includes(x));
+  if(acceptanceMode===FUNCTIONAL_TASK_MODE){failures.length=0;failures.push(...globalFailures,...processAcceptance.failures);}
+  else if(acceptanceMode!==LEGACY_TASK_MODE)failures.push('C3_ACCEPTANCE_MODE_UNKNOWN');
   const complete=failures.length===0;
   const receiptRows=[...promotionByDomain.entries()].flatMap(([moduleDomain,rows])=>rows.map(x=>({moduleDomain,findingId:x.findingId,decision:x.receipt.decision,ownerPaths:x.receipt.ownerPaths})));
   const acceptedCurrentOwnerReceipts=[...new Map([...receiptsByDomain.values()].flat().map(row=>{
@@ -364,7 +382,7 @@ export function evaluateTerminalModuleTruth({pre,ledger,focal={},human={},qa={},
   })).values()];
   return {...pre,schemaVersion:'cxorbia.recovery.module-truth-matrix.v10-incremental-owner-receipts',generatedAt:new Date().toISOString(),
     productSource:{sha:SOURCE,treeSha:TREE},sourceFiles,modules,phaseAComplete:complete,allModulesMatch:nonMatchModules.length===0&&nonMatchFiles.length===0,
-    terminalClosure:{decision:complete?'PASS_C3_TERMINAL_MODULE_TRUTH_21_21':'HOLD_C3_TERMINAL_MODULE_TRUTH',status:complete?'GO':'HOLD',
+    terminalClosure:{decision:complete?(acceptanceMode===FUNCTIONAL_TASK_MODE?'PASS_C3_TERMINAL_FUNCTIONAL_TASK_SETS':'PASS_C3_TERMINAL_MODULE_TRUTH_21_21'):'HOLD_C3_TERMINAL_MODULE_TRUTH',status:complete?'GO':'HOLD',acceptanceMode,processAcceptance,domainFailures,artifactSha256:identity.artifactSha256||null,
       moduleCount:21,matchModules:modules.filter(x=>x.classification==='MATCH').length,nonMatchModules:nonMatchModules.length,
       sourceSha:SOURCE,sourceTree:TREE,hrRevision:String(human.sourceRevision||''),runtimeRevision:RUNTIME,runtimeDigest:DIGEST,hostingVersion:HOSTING,
       hardenedFocalDecision:focal.decision||null,fullHumanDecision:human.decision||null,qaReservationAfter:qa.after??null,pendingOwnerByteParity:parity.decision||null,
@@ -384,7 +402,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   for(const r of [...indexed,...discovery.receipts,...durable.receipts])unique.set(sha256(JSON.stringify(r)),r);
   const additionalReceipts=[...unique.values()];
   const out=evaluateTerminalModuleTruth({pre:read(E.C3_PRETERMINAL),ledger:read(E.C3_LEDGER),focal:read(E.C3_FOCAL),human:read(E.C3_HUMAN),qa:read(E.C3_QA),parity:read(E.C3_PARITY),additionalReceipts,
-    identity:{sourceSha:E.C3_SOURCE,sourceTree:E.C3_TREE,runtimeRevision:E.C3_RUNTIME_REVISION,runtimeDigest:E.C3_RUNTIME_DIGEST,hostingVersion:E.C3_HOSTING_VERSION}});
+    identity:{artifactSha256:E.C3_ARTIFACT_SHA256,sourceSha:E.C3_SOURCE,sourceTree:E.C3_TREE,runtimeRevision:E.C3_RUNTIME_REVISION,runtimeDigest:E.C3_RUNTIME_DIGEST,hostingVersion:E.C3_HOSTING_VERSION}});
   out.terminalClosure.evidenceDiscovery={indexReceipts:indexed.length,sameRunFilesInspected:discovery.filesInspected,
     durableResultRecords:durable.records,durableOwnerReceipts:durable.receipts.length,
     sameRunAdditionalUniqueReceipts:discovery.receipts.filter(r=>!indexKeys.has(sha256(JSON.stringify(r)))).length,

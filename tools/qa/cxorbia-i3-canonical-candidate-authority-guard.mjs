@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {hasTerminalAcceptance} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {execFileSync} from 'node:child_process';
 import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
 import {validateCurrentAuthorityAliases,validateLatestExecutionSource} from './cxorbia-i3-current-authority-alias-guard.mjs';
@@ -130,7 +131,7 @@ const moduleTruthReadback={
   path:moduleTruthPath,sourceSha:mtSource,expectedSourceSha:d.productSourceSha,
   sourceAligned:mtSource===d.productSourceSha,
   domainCount:modules.length,uniqueDomainCount:new Set(domains).size,
-  phaseAComplete:mt?.phaseAComplete===true,allModulesMatch:mt?.allModulesMatch===true,
+  phaseAComplete:mt?.phaseAComplete===true,allModulesMatch:mt?.allModulesMatch===true,terminalAcceptance:hasTerminalAcceptance(mt),
   scope:'CONTROL_DIAGNOSTIC_ONLY_NOT_CERTIFICATION'
 };
 const moduleRegistryPath=String(d.moduleAuthorityRegistryPath||'');
@@ -192,11 +193,11 @@ const workflowLedgerReadback={
 // workflow-wide fixed path creates a second, eventually stale authority.
 if(workflowLedgerPointer)fail('MAPPING_FAILURE:TOP_LEVEL_WORKFLOW_LEDGER_POINTER',workflowLedgerPointer);
 // READY means safe to attempt terminal verification, not already terminal GO.
-// A GO descriptor is still impossible without 21 independently certified modules.
+// A GO descriptor requires the selected terminal contract and its exact evidence.
 if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleBlobReadback.pass||
    !moduleRegistryReadback.historicalSubsetValid||
    (legacyWorkflowLedgerActive&&!workflowLedgerReadback.aligned)||
-   (d.status==='GO'&&(!moduleTruthReadback.phaseAComplete||!moduleTruthReadback.allModulesMatch))))
+   (d.status==='GO'&&(!moduleTruthReadback.phaseAComplete||!moduleTruthReadback.terminalAcceptance))))
   fail('RELEASE_COMPOSITION_FAILURE:TERMINAL_AUTHORITIES_NOT_CONVERGED',
     JSON.stringify({moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback}));
 if(/^\s*I3_CERTIFICATION_SOURCE_SHA:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_SOURCE_AUTHORITY');
@@ -303,7 +304,7 @@ const result={
   continuityReadback,
   moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,postDeploySealReadback,
   terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
-    moduleTruthReadback.allModulesMatch&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
+    moduleTruthReadback.terminalAcceptance&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
     (!legacyWorkflowLedgerActive||workflowLedgerReadback.aligned),
   production:false
 };

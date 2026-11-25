@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "cxorbia.i3.process-acceptance-local-verification.v1",
+  "createdAt": "2026-11-25T07:35:52.081215+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "baseControlHead": "bfd9171017bb751a0159ef07b3b3903c3d5c2177",
+  "productSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "servedSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "mode": "FROZEN_FUNCTIONAL_TASK_SETS",
+  "authority": "PAULA_20261125_SAME_CANDIDATE_PROCESS_CLOSURE",
+  "proofKind": "LOCAL_CONTROL_TESTS_NOT_FUNCTIONAL_PRODUCT_CERTIFICATE",
+  "localVerification": {
+    "requiredNodeCommands": 60,
+    "allCommandsExitZero": true,
+    "reportedNodeTestExecutions": 2271,
+    "uniqueTestCountClaimed": false,
+    "reportedFailedTests": 0,
+    "logSha256": "e77dffeeaf5ed1b3eaec10d6945c34a88a36400f981c3edaca201ebbfa00be81",
+    "commandScriptSha256": "0aefd13b96798c2a268b1ed027f54ec161e0722f92ebb3264b1e198b278b32bb",
+    "commands": [
+      "node --test tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs",
+      "node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring,scoped-clause-projection,execution-failure-incorporation}.test.mjs",
+      "node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs",
+      "node --test tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs",
+      "node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs",
+      "node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+      "node --test tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs backend/runtime/hr-live-service/test/cxorbia-b14-excel-country-binding.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+      "node --test tools/qa/cxorbia-i3-f2-excel-operational-lineage-v1.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-excel-operational-source-v1.test.mjs",
+      "node --test tools/qa/cxorbia-i3-gthn-existing-dev-readback.test.mjs",
+      "node --test tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs",
+      "node --test tools/qa/cxorbia-i3-q2-shopper-admin-command-contract-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-q2-cxdata-readonly-owner-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-q2-hr-static-builder-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-q2-eight-remaining-owner-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-postulaciones-country-options-unified.test.mjs tools/qa/cxorbia-i3-d06-misvisitas-cross-period-classification.test.mjs tools/qa/cxorbia-i3-dashboard-por-asignar-facets.test.mjs tools/qa/cxorbia-i3-shoppers-bridge-authority.test.mjs tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs tools/qa/cxorbia-i3-available-visits-active-period-scope.test.mjs tools/qa/cxorbia-i3-period-project-client-parity.test.mjs tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs tools/qa/cxorbia-i3-shopper-identity-review-rail-notice.test.mjs",
+      "node --test tools/qa/cxorbia-i3-certification-project-continuity.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm280-exact-shopper-session-fallback.test.mjs tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs tools/qa/cxorbia-i3-d04e03-shopper-relogin-pdf-source.test.mjs tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs tools/qa/cxorbia-i3-certification-project-continuity.test.mjs tools/qa/cxorbia-i3-hr-source-operational-readback.test.mjs tools/qa/cxorbia-i3-d07-viewer-single-flight.test.mjs tools/qa/cxorbia-i3-g03-crm-composition-provider-parity.test.mjs tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs tools/qa/cxorbia-i3-shopper-registration-provider-ack.test.mjs tools/qa/cxorbia-i3-admin-identity-review-notice.test.mjs tools/qa/cxorbia-i3-v01-cross-module-legibility.test.mjs tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs tools/qa/cxorbia-i3-shopper-create-phone-dial-review.test.mjs tools/qa/cxorbia-i3-work-uat-cert-resource-period.test.mjs tools/qa/cxorbia-i3-work-uat-d05-canonical-source-proof.test.mjs tools/qa/cxorbia-i3-d04-versioned-bank-review.test.mjs tools/qa/cxorbia-i3-b8-finance-human-copy.test.mjs tools/qa/cxorbia-i3-work-uat-reservations-firestore-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-work-uat-*.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b2-b3-active-history-parity.test.mjs",
+      "node --test tools/qa/cxorbia-i3-visitas-effective-availability.test.mjs",
+      "node --test tools/qa/cxorbia-i3-e03-visita-payment-human-state.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm301-idempotent-visit-detail.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm302-admin-shoppers-modal-binding.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm304-adjudicated-supersession.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm308-hn-country-alias-normalization.test.mjs",
+      "node --test tools/hr-source/tya-resolve-live-month-tabs.test.mjs",
+      "node --test tools/qa/cxorbia-i3-vrm300-traffic.test.mjs",
+      "node --test tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs",
+      "node --test tools/qa/cxorbia-i3-preterminal-source-readiness.test.mjs",
+      "node --test tools/qa/cxorbia-i3-source-qa-evidence.test.mjs tools/qa/cxorbia-i3-terminal-hr-observation.test.mjs tools/qa/cxorbia-i3-terminal-human-contract.test.mjs",
+      "node --test tools/qa/cxorbia-i3-period-project-client-parity.test.mjs",
+      "node --test tools/qa/cxorbia-i3-g03-rutas-effective-hr-source-truth.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+      "node --check app/modules/dashboard.js",
+      "node --check app/modules/postulaciones.js",
+      "node --test tools/qa/cxorbia-i3-b7-cancel-reason-human-source-20261014.test.mjs",
+      "node --check app/core/backend-bulletins.js",
+      "node --test tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs",
+      "node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "node --test tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r07-cancel-ack-readback-source-20261014.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r22-read-status-source-20261014.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r05-r06-postulaciones-owner-source.test.mjs",
+      "node --test tools/qa/cxorbia-i3-r20-no-visit-shopper-auth-gate.test.mjs",
+      "node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs",
+      "node --test tools/qa/cxorbia-i3-g03-crm-protected-tombstone-parity.test.mjs"
+    ],
+    "focusedTerminalTests": 225,
+    "focusedTerminalFailures": 0,
+    "focusedLogSha256": "7cd5d6d9fbb5d53c84d71af5f8750a163d0cec030dda892d9cfe1a193bd68b60",
+    "sourceInvariantGates": [
+      "tya-payment-history-source-safe",
+      "tya-postulation-eligibility-r21",
+      "tya-hr-header-variants-r20"
+    ],
+    "sourceInvariantGatesExitZero": true,
+    "yamlFilesParsed": 3,
+    "bashRunBlocksSyntaxChecked": 433,
+    "workflowBytes": 500492,
+    "authorityGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  },
+  "verifiedCodeAndInventoryFiles": [
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "beforeSha256": "060092b5af006e93dab195c6366edc13ae8e65d5d3db9f18480577a43ff81e55",
+      "afterSha256": "fb7514a68faa035277039a5b1aecf00a868f618f3e90ac5315c1f35836e15418",
+      "bytes": 500492
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml",
+      "beforeSha256": "1e1e3e483fddade99d6dac7f56dcf9d87b46b7ed524b5354a64d7d6a156e5275",
+      "afterSha256": "6657ed536642e1a3bc727ef3dbf6f7afcbca248e2b452e0a8c2d1cd6cb6c1de5",
+      "bytes": 9953
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i4-immutable-production-replacement.yml",
+      "beforeSha256": "962a6b779c0da917d646e06ba2ac2a3b559ef7cd49a6267d36309b4efd700b4d",
+      "afterSha256": "268e405e6c80d6806e18580d405adfe650985b42ea697996bb646cac1c45706e",
+      "bytes": 25636
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_FROZEN_FUNCTIONAL_TASK_CONTRACTS_20261125.json",
+      "beforeSha256": null,
+      "afterSha256": "a8908d4879473ae3d0afe8d6dd4462788bc3f42409781db7ed766deee208e832",
+      "bytes": 55550
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+      "beforeSha256": "e25003e9cb506c86018e52cfbb2641978c217aed924d231ed376947c59344981",
+      "afterSha256": "c8ee2777b25b12da182ea694bc9cd3239f563f23cc01c7ce21e405c2af422a8f",
+      "bytes": 30980
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-c3-rootfix-spec.test.mjs",
+      "beforeSha256": "9b26e882e768494f143af4c2c0e6e49bee8451143a228116e6154957fea67534",
+      "afterSha256": "6329175608e6be5031db102ce7398a996359e2fd64a59ea8b9d342e8dbde2ae1",
+      "bytes": 28771
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+      "beforeSha256": "6c4e43c11ebec5adbfd47d40b68092ea744ca1da254ef80fc9bdbb3005969768",
+      "afterSha256": "f46b7b3d04a9027e83ab670ea917d529c434dc95fc7f7854ef66427fd54edf88",
+      "bytes": 23765
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.mjs",
+      "beforeSha256": "c9d34b0769bf7800f0eccdec247b17c27980037ba0e58e089c407997be85e10a",
+      "afterSha256": "2e580d724e44cb2957564f05346596c23d099f68b5987d060292af54f08f537e",
+      "bytes": 27172
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-live-fixture-contract.test.mjs",
+      "beforeSha256": "946a36a6f2945f4f1fe9c1676b4aff186f290458de31d1b06789e207ea1c66a9",
+      "afterSha256": "1d9685146c891f9d7af03245bafe7d703be5a549b791c694e3bbc159cdc6799b",
+      "bytes": 36831
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs",
+      "beforeSha256": "13148ac3965ae9204fdb581a4d806fa585e4fed63762740cd0b64da2c01d1311",
+      "afterSha256": "8483645f1acdc73b7e73889c8387cbeefe232f5305564cef66d826cfa64b3ec2",
+      "bytes": 10953
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.test.mjs",
+      "beforeSha256": "90d5b15f3b3053bd1270f6d9c95963d99c16158d6238683931b4a67593671232",
+      "afterSha256": "6ad4870db66ff49fe40e3e2e07c2debac15e88a57d74f4d3d48b6416b765a9ad",
+      "bytes": 20726
+    },
+    {
+      "path": "tools/qa/fixtures/cxorbia-i3-frozen-task-acceptance.fixture.mjs",
+      "beforeSha256": null,
+      "afterSha256": "2c007d25d89b7f21946b8a82a2a3eb5c290671ec693623285a86fa11209c6331",
+      "bytes": 3543
+    }
+  ],
+  "methodChecks": [
+    "Complete original task acceptance can close without manufacturing 21 MATCH classifications.",
+    "Missing task mapping or evidence remains HOLD; no original task is reset or newly approved.",
+    "Unresolved P0, forged PASS, invalid role/auth/owner/UI, source drift and artifact mismatch remain blocked.",
+    "Existing exact taskId/scopeContractSha256 receipts can be reused.",
+    "Original route/task joins are traceability and do not create a task-by-route UI gate.",
+    "UI clauses still require exact real interaction and original global route/role acceptance remains.",
+    "All terminal consumers require the same original contracts, source and single artifact.",
+    "Incomplete stale consumer controls still record a mapping failure without promoting product."
+  ],
+  "preserved": {
+    "originalFunctionalTasks": 52,
+    "originalGlobalControls": 11,
+    "moduleInventory": 21,
+    "integralModuleMatches": 6,
+    "acceptanceBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "sameCandidate": true,
+    "sameBranch": true,
+    "sameProductSource": true,
+    "sameServedPredecessor": true
+  },
+  "remainingTechnicalWork": "Normalize existing accepted receipts into complete frozen task mappings; retain partial scopes and only execute unproved or changed clauses.",
+  "functionalEvidenceAddedByThisControlPackage": 0,
+  "newModuleMatches": 0,
+  "ciExecuted": false,
+  "ciBlocker": "ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED",
+  "devDeployments": 0,
+  "productionDeployments": 0,
+  "production": false,
+  "phaseAComplete": false,
+  "i4Authorized": false
+}

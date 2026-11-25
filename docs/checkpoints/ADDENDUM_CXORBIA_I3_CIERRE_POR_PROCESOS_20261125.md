@@ -16,6 +16,12 @@ Los 21 dominios se conservan como inventario de propietarios y cobertura. Su con
 6. Cerrar I3 solo cuando todos los procesos y contratos aplicables tengan evidencia vinculada al artefacto y no haya P0 abierto. Gate20/Gate21 comprueban esa evidencia y la identidad del artefacto. La implementación de sus criterios debe ser verificable; este texto no declara por sí mismo ningún GO.
 7. En I4, presentar a Paula el artefacto certificado para autorización productiva y publicar esos mismos bytes, sin rebuild. Verificar operación productiva y crear PRODUCTION_LOCK.
 
+## Aplicación del criterio terminal
+
+El evaluador C3 y sus consumidores existentes usan las tareas funcionales originales y su aceptación congelada, agrupadas por proceso. Mantienen los controles globales G/V y la cobertura de rutas/roles en la aceptación automatizada y Gate20. Una referencia compartida de ruta es trazabilidad: no crea una nueva prueba de UI por cada combinación de ruta y tarea documental. Cuando una cláusula sí exige interacción, exige su prueba real, rol, ruta, alcance y artefacto exactos.
+
+La matriz conserva sus 21 dominios y sus clasificaciones honestas. Una evidencia parcial no se transforma en MATCH integral. La vinculación técnica de un recibo válido al contrato original se acumula sin pedir una nueva aprobación humana ni repetir el alcance ya demostrado. Los vínculos ausentes mantienen HOLD y se distinguen de un defecto funcional. La implementación y sus pruebas locales constan en `CXORBIA_I3_PROCESS_ACCEPTANCE_LOCAL_VERIFICATION_20261125.json`; no sustituyen la ejecución funcional pendiente.
+
 ## Estado al congelar esta regla
 
 I3/HOLD. DEV sirve source `1691a76a7bc095ad4bf444aa0db76df2f359a5f0`, RUN2780 `45488581923`. RUN2786 `45522159779` está incorporado: Academia se detuvo por una búsqueda de UI sin redraw; Finanzas llegó a comprobaciones de exportación y falló en contenido PDF, ocultado por la clasificación de red del runner. No hay nuevo PASS integral de esos procesos. F3 tiene una corrección focal de seis archivos probada localmente y pendiente de publicación serial en DEV y ACK remoto. E08 sigue como bloqueo real de entorno. Producción no ha sido autorizada ni modificada.

@@ -1,3 +1,7 @@
+import crypto from 'node:crypto';
+import {evaluateTerminalModuleTruth} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import {completeSyntheticProcessMatrix} from './fixtures/cxorbia-i3-frozen-task-acceptance.fixture.mjs';
+import {evaluateFrozenTaskCoverage,readFrozenTaskContracts,hasTerminalAcceptance,taskMappingSha256,FUNCTIONAL_TASK_MODE} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -81,7 +85,7 @@ test('Terminal jobs and Gate21 require the same 21-domain contract, never legacy
   assert.doesNotMatch(terminal,/MODULE_TRUTH_20_20|moduleCount:20|matchModules:20|MATRIX-20260918/);
   assert.match(terminal,/CANDIDATE_DESCRIPTOR.*READY_FOR_TERMINAL_CERTIFICATION|READY_FOR_TERMINAL_CERTIFICATION/);
   assert.match(terminal,/moduleTruthPath/);
-  assert.match(terminal,/PASS_C3_TERMINAL_MODULE_TRUTH_21_21/);
+  assert.match(terminal,/--require-terminal/);
   assert.match(terminal,/cxorbia-i3-terminal-module-domain-coverage\.mjs/);
   const currentCertify=workflow.slice(certStart,end);
   assert.doesNotMatch(currentCertify,/POST_RUN500_LEDGER/);
@@ -162,7 +166,7 @@ test('C3 finalizer preserves historical MATCH but cannot skip missing current-ow
     const run=()=>spawnSync(process.execPath,['tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs'],{env,encoding:'utf8'});
     const noReceipt=run();
     assert.notEqual(noReceipt.status,0);
-    assert.match(noReceipt.stderr,/C3_OWNER_RECEIPT_MISSING:historical/);
+    assert.match(noReceipt.stderr,/C3_PROCESS_TASK_UNPROVEN:/);
     findings['VRM-C3-HISTORICAL-RECEIPT']={
       severity:'P0',state:'FIXED_PROVEN',owner:[historicPath],terminalEvidence:{ownerSpecificReceipts:[{
         decision:'PASS_TEST_HISTORICAL_OWNER',moduleDomain:'historical',sourceSha:source,sourceTree:tree,
@@ -172,12 +176,82 @@ test('C3 finalizer preserves historical MATCH but cannot skip missing current-ow
     };
     write('ledger',{findings});
     const pass=run();
-    assert.equal(pass.status,0,pass.stderr);
+    assert.notEqual(pass.status,0);
     const result=JSON.parse(fs.readFileSync(output,'utf8'));
-    assert.equal(result.terminalClosure.decision,'PASS_C3_TERMINAL_MODULE_TRUTH_21_21');
+    assert.equal(result.terminalClosure.decision,'HOLD_C3_TERMINAL_MODULE_TRUTH');
+    assert.equal(result.terminalClosure.acceptanceMode,'FROZEN_FUNCTIONAL_TASK_SETS');
     assert.equal(result.modules.find(m=>m.domain==='historical').historicalMatchPreserved,true);
     assert.equal(result.sourceFiles[0].classification,'MATCH');
     assert.equal(result.sourceFiles[1].classification,'PRESERVED_NON_AUTHORITY');
     assert.equal(result.sourceFiles[1].terminalProof,'PRESERVED_NON_RUNTIME_OWNER_NOT_PART_OF_TERMINAL_ACCEPTANCE');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+const syntheticIdentity={sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),runtimeRevision:'synthetic-runtime',runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/synthetic/versions/1',artifactSha256:'d'.repeat(64)};
+test('current acceptance uses all original functional tasks and preserves eleven existing G/V controls',()=>{
+ const c=readFrozenTaskContracts();assert.equal(c.tasks.length,52);assert.equal(c.controlTasksUnchanged.length,11);assert.equal(c.V05IsTerminalResult,true);
+ assert.deepEqual(Object.values(c.taskSets).flat().sort(),c.tasks.map(t=>t.taskId).sort());
+});
+test('complete synthetic process coverage can pass without fabricating domain MATCH',()=>{
+ const m=completeSyntheticProcessMatrix(syntheticIdentity);assert.equal(m.allModulesMatch,false);assert.equal(m.terminalClosure.processAcceptance.provenTaskCount,52);assert.equal(hasTerminalAcceptance(m,syntheticIdentity),true);
+});
+for(const [name,change] of [
+ ['legacy label',m=>m.terminalClosure.acceptanceMode='LEGACY_21_HISTORICAL'],
+ ['21 MATCH alone',m=>{m.allModulesMatch=true;m.terminalClosure={decision:'PASS_C3_TERMINAL_MODULE_TRUTH_21_21',acceptanceMode:'LEGACY_21_HISTORICAL'};}],
+ ['missing mapping',m=>delete m.functionalTaskEvidenceMappings.D08],
+ ['changed frozen acceptance',m=>m.functionalTaskEvidenceMappings.C09.acceptanceBindingSha256='0'.repeat(64)],
+ ['missing observed clause',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.contractCoverage.obligations=[]],
+ ['different current artifact',m=>m.terminalClosure.artifactSha256='e'.repeat(64)],
+ ['unresolved P0',m=>m.terminalClosure.unresolvedP0=[{id:'P0'}]],
+ ['global functional proof missing',m=>m.terminalClosure.fullHumanDecision='HOLD'],
+ ['different source',m=>m.productSource.sha='f'.repeat(40)],
+ ['foreign role',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.scope.role='shopper'],
+ ['different evidence source',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.sourceSha='f'.repeat(40)],
+ ['super cannot substitute admin',m=>{m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.scope.role='super';m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.auth.role='super';}],
+ ['PASS-shaped receipt without real UI',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.uiProof.realBrowserE2E=false],
+ ['PASS-shaped receipt without authentication',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.auth.authenticated=false],
+ ['PASS-shaped receipt without owner parity',m=>m.terminalClosure.acceptedCurrentOwnerReceipts[0].receipt.ownerEvidence=[]]
+])test('contract acceptance rejects '+name,()=>{const m=completeSyntheticProcessMatrix(syntheticIdentity);change(m);assert.equal(hasTerminalAcceptance(m,syntheticIdentity),false);});
+test('missing mappings are technical normalization gaps, never newly declared functional failures',()=>{
+ const r=evaluateFrozenTaskCoverage({matrix:{modules:[]},identity:syntheticIdentity});assert.equal(r.pass,false);assert.equal(r.tasks.length,52);assert.ok(r.tasks.every(t=>t.mappingFailures.includes('MAPPING_MISSING')));
+});
+test('exact existing scoped task receipts are reusable without rewriting accepted evidence',()=>{
+ const m=completeSyntheticProcessMatrix(syntheticIdentity),task='D08',map=m.functionalTaskEvidenceMappings[task],hash='8'.repeat(64);
+ for(const c of map.requiredClauses)c.scopeContractSha256=hash;
+ const mod=m.modules.find(x=>x.domain===map.requiredClauses[0].moduleDomain);mod.scopedContractAuthorities={[task]:{sha256:hash}};
+ for(const row of m.terminalClosure.acceptedCurrentOwnerReceipts){const r=row.receipt;if(r.contractAuthority.taskBindings?.[0]?.taskId===task){r.contractAuthority={contractSha256:r.contractAuthority.contractSha256,taskId:task,scopeContractSha256:hash};delete r.artifactSha256;}}
+ const receipts=m.terminalClosure.acceptedCurrentOwnerReceipts.map(x=>x.receipt);
+ m.terminalClosure.processAcceptance=evaluateFrozenTaskCoverage({matrix:m,receipts,identity:syntheticIdentity});
+ assert.equal(hasTerminalAcceptance(m,syntheticIdentity),true);
+ mod.scopedContractAuthorities[task].sha256='0'.repeat(64);assert.equal(hasTerminalAcceptance(m,syntheticIdentity),false);
+});
+
+test('C3 default evaluator closes frozen contracts without independent domain counter and still blocks open P0',()=>{
+ const pre=completeSyntheticProcessMatrix(syntheticIdentity),contract='synthetic exact contract',blob='8'.repeat(40),bytes='7'.repeat(64),hr='6'.repeat(64);
+ pre.preTerminalComposition={decision:'PASS_C3_PRETERMINAL_COMPOSITION',moduleCount:21,pendingMappingApprovalFiles:[]};
+ for(const m of pre.modules){m.pendingTerminalFiles=[];m.contractFunctional=contract;m.roles=['Admin','Shopper','Cliente'];m.currentOwnerBlobs=Object.fromEntries(m.owners.map(p=>[p,blob]));}
+ const receipts=pre.terminalClosure.acceptedCurrentOwnerReceipts.map(x=>x.receipt);delete pre.terminalClosure;
+ for(const r of receipts){r.hrIndependent=true;r.hrRevision=hr;r.auth={authenticated:true,tenantExact:true,projectAuthorized:true,role:r.scope.role};r.ownerEvidence=r.ownerPaths.map(path=>({path,gitBlob:blob,byteParity:true,sourceSha256:bytes,servedSha256:bytes}));r.contractAuthority.contractSha256=crypto.createHash('sha256').update(contract).digest('hex');r.mutationEvidence={applicable:false,providerAckClaimed:false,providerWrites:0,firestoreWrites:0,hrWrites:0,authWrites:0};Object.assign(r.uiProof,{realBrowserE2E:true,routeConsistent:true,roleScopeVerified:true,visualEvidenceSha256:bytes});}
+ const input={pre,identity:syntheticIdentity,additionalReceipts:receipts,ledger:{findings:Object.fromEntries(['033','034','035','036','037','038','039','040','041','042'].map(n=>['VRM-'+n,{state:'FIXED_PROVEN'}]))},focal:{decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:syntheticIdentity.sourceSha,hrRevision:hr},human:{decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:syntheticIdentity.sourceSha,sourceRevision:hr},qa:{decision:'PASS_C3_QA_RESERVATION_CLEANUP',after:0},parity:{decision:'PASS_C3_PENDING_OWNER_BYTE_PARITY',mismatches:0}};
+ const out=evaluateTerminalModuleTruth(input);assert.deepEqual(out.terminalClosure.failures,[]);assert.equal(out.phaseAComplete,true);assert.equal(out.allModulesMatch,false);assert.equal(hasTerminalAcceptance(out,syntheticIdentity),true);
+ input.ledger.findings['VRM-TEST']={severity:'P0',state:'OPEN'};const blocked=evaluateTerminalModuleTruth(input);assert.equal(blocked.phaseAComplete,false);assert.ok(blocked.terminalClosure.failures.includes('C3_OPEN_P0_FINDINGS:VRM-TEST'));
+ delete input.ledger.findings['VRM-TEST'];receipts[0].uiProof.realBrowserE2E=false;const rejected=evaluateTerminalModuleTruth(input);assert.equal(rejected.phaseAComplete,false);assert.ok(rejected.terminalClosure.rejectedReceipts.some(x=>x.reasons.includes('SCOPED_BROWSER_E2E')));
+});
+
+test('document and parser task route joins do not create new UI obligations per role',()=>{
+ const m=completeSyntheticProcessMatrix(syntheticIdentity),kept=m.terminalClosure.acceptedCurrentOwnerReceipts;
+ for(const taskId of ['D01','D02']){
+  const mapping=m.functionalTaskEvidenceMappings[taskId];
+  assert.ok(readFrozenTaskContracts().tasks.find(t=>t.taskId===taskId).roleRoutes.length>1);
+  const clause={...mapping.requiredClauses[0],operationKind:'READ_ONLY'};delete clause.route;mapping.requiredClauses=[clause];
+  const row=kept.find(x=>x.receipt.contractAuthority.taskBindings[0].taskId===taskId),r=row.receipt;
+  r.operationKind='READ_ONLY';delete r.uiProof;r.readOnlyProof={liveReadback:true,expectedObserved:true,providerCommandsObserved:0};
+  r.contractCoverage.obligations=[{id:clause.id,observed:true,evidenceRef:'synthetic-frozen-document-parser-proof',evidenceSha256:'9'.repeat(64)}];
+  r.contractAuthority.taskBindings[0].mappingSha256=taskMappingSha256(mapping);
+  for(let i=kept.length-1;i>=0;i--)if(kept[i]!==row&&kept[i].receipt.contractAuthority.taskBindings[0].taskId===taskId)kept.splice(i,1);
+ }
+ m.terminalClosure.processAcceptance=evaluateFrozenTaskCoverage({matrix:m,receipts:kept.map(x=>x.receipt),identity:syntheticIdentity});
+ assert.equal(hasTerminalAcceptance(m,syntheticIdentity),true);
+ const ui=kept.find(x=>x.receipt.operationKind==='UI_INTERACTION');ui.receipt.uiProof.realBrowserE2E=false;
+ assert.equal(hasTerminalAcceptance(m,syntheticIdentity),false);
 });

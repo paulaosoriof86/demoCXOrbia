@@ -1,3 +1,4 @@
+import {completeSyntheticProcessMatrix} from './fixtures/cxorbia-i3-frozen-task-acceptance.fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -266,7 +267,7 @@ function sealedFixture(){
     tests:FIXTURE_TEST_IDS.map(id=>({id,ok:true})),...Object.fromEntries(['sourceSha','sourceTree','artifactSha256','runtimeRevision',
       'runtimeDigest','hostingVersion','runId','runAttempt','controlHeadSha'].map(k=>[k,b[k]]))};
   const manifest={decision:'PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21',production:false,buildCount:1,artifactPackCount:1,
-    rebuildAfterCertification:false,moduleTruth:{phaseAComplete:true,allModulesMatch:true},artifactSha256:artifactHash,
+    rebuildAfterCertification:false,moduleTruth:completeSyntheticProcessMatrix({sourceSha:b.sourceSha,sourceTree:b.sourceTree,runtimeRevision:b.runtimeRevision,runtimeDigest:b.runtimeDigest,hostingVersion:b.hostingVersion,artifactSha256:artifactHash}),artifactSha256:artifactHash,
     liveFixtures:{evidenceSha256:liveHash,prerequisitesSha256:bindingHash},i3CertificationSourceSha:b.sourceSha,i3CertificationSourceTree:b.sourceTree,
     controlHeadSha:b.controlHeadSha,runId:b.runId,runAttempt:b.runAttempt,devRuntimeRevision:b.runtimeRevision,runtimeImageDigest:b.runtimeDigest,
     hostingVersionName:b.hostingVersion,certificationHrRevision:b.hrRevision};
@@ -276,7 +277,7 @@ test('sealed verification links unchanged functional evidence and TAR to the lat
   const x=sealedFixture();assert.equal(validateSealedFixtureReceipt(x.manifest,x.live,x.context).writes,0);
 });
 for(const [name,change] of [
-  ['four matches presented as certificate',x=>x.manifest.moduleTruth.allModulesMatch=false],
+  ['partial task coverage presented as certificate',x=>delete x.manifest.moduleTruth.functionalTaskEvidenceMappings.D08],
   ['altered fixture hash',x=>x.context.liveHash='3'.repeat(64)],['repacked TAR',x=>x.context.artifactHash='3'.repeat(64)],
   ['cleanup failure',x=>x.live.cleanup.ok=false],['nine tests',x=>x.live.tests.pop()],
   ['duplicate test',x=>x.live.tests[9]=x.live.tests[0]],['HR changed during tests',x=>x.live.finalHrRevision='3'.repeat(64)],
@@ -293,7 +294,7 @@ test('single workflow gathers fixtures before strict21 and only verifies them af
   const fixtures=workflow.split('  live-fixtures:\n')[1].split('  gate21:\n')[0];
   const pre=certify.indexOf('I3_FIXTURE_STAGE=PRE_CERTIFICATION'),strict=certify.indexOf('TERMINAL_LEDGER=');
   assert.ok(pre>certify.indexOf('PASS_PRE_I4_FOCAL_HUMAN_BROWSER')&&pre<strict);
-  assert.equal((certify.match(/tar -C/g)||[]).length,1);assert.match(certify,/PASS_C3_TERMINAL_MODULE_TRUTH_21_21/);
+  assert.equal((certify.match(/tar -C/g)||[]).length,1);assert.match(certify,/--require-terminal/);
   assert.match(certify,/verify-live/);assert.match(fixtures,/verify-sealed/);assert.doesNotMatch(fixtures,/RECOVERY-I3-LIVE-FIXTURES|credentials_json|npm install|tar -xf/);
   assert.match(workflow,/cancel-in-progress: false/);assert.ok(Buffer.byteLength(workflow)<510000);
 });
