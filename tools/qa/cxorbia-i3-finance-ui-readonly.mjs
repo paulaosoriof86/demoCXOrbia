@@ -38,6 +38,31 @@ async function failureUi(page,scope){
       route:window.CX?.session?.view,role:ctx.role,movementRowCount:document.querySelectorAll('#view [data-delm]').length,reportRowCount:document.querySelectorAll('#rkBody tbody tr').length};
   },{tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.cashPeriodId}));}catch{return sanitizeUiDiagnostic({});}
 }
+// Only a fixed code or a one-way digest can leave the browser. The HR owner may
+// include private UID, tenant, period or provider details after a diagnostic.
+export function financeHrOwnerCode(value){
+  const error=String(value||'');
+  const codes=['HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS','HR_LIVE_DUPLICATE_PERIOD_KEYS','HR_LIVE_NETWORK_FAILURE','HR_LIVE_NONEMPTY_REQUIRED','HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION','HR_LIVE_REVISION_PUBLICATION_MISMATCH','HR_LIVE_REVISION_READBACK_MISSING','HR_LIVE_REVISION_REQUIRED','HR_LIVE_SCOPE_MISMATCH','HR_LIVE_SOURCE_SAFE_REQUIRED','HR_LIVE_UNAVAILABLE','PROJECT_SCOPE_REQUIRED','CANONICAL_COMPOSER_V2_MISSING','CANONICAL_PERIOD_LOSS','CERTIFICATION_EVIDENCE_PROJECTOR_MISSING','BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED','BACKEND_REFRESH_READBACK_REVISION_MISMATCH','AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED','AUTH_FAILURE:SESSION_GENERATION_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SESSION_NO_LONGER_AUTHORIZED','AUTH_FAILURE:PROTECTED_STATE_PRINCIPAL_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH'];
+  if(codes.includes(error))return error;
+  for(const prefix of ['CANONICAL_DYNAMIC_COMPOSITION_INVARIANT_','HR_LIVE_VISIT_PERIOD_MISSING_','AUTH_FAILURE:SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED:'])if(error.startsWith(prefix))return prefix.slice(0,-1);
+  if(/^HR_LIVE_(REVISION_READBACK_)?HTTP_[1-5][0-9]{2}$/.test(error))return error;
+  return error?'OTHER':'NO_OWNER_ERROR';
+}
+async function captureHrOwner(page){
+  try{
+    const state=await page.evaluate(()=>{
+      const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY,src=window.CX?.dataSource;
+      const route=performance.getEntriesByType('resource').filter(x=>{
+        try{const u=new URL(x.name);return u.origin===location.origin&&u.pathname.endsWith('/hr-live');}catch{return false;}
+      });
+      return {authorityPresent:!!a,applied:a?.applied===true,retryable:a?.retryable===true,ownerError:String(a?.error||''),
+        sourceReady:src?.status==='ready',sourceBlocked:src?.status==='blocked',runtimeReady:typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY==='function',
+        authenticatedHrHttp:route.slice(-8).map(x=>Number(x.responseStatus)||0)};
+    });
+    const {ownerError,...publicState}=state;
+    return {...publicState,ownerCode:financeHrOwnerCode(ownerError),ownerErrorSha256:ownerError?hashBytes(Buffer.from(ownerError)):null};
+  }catch{return {available:false};}
+}
 async function readLedger(tenant,projectId,FieldPath){
   const ledger={},versions={};
   const collections={movements:'financialMovements',accounts:'financeAccounts',lots:'paymentLots',reconciliations:'paymentReconciliations',budgets:'financeBudgets'};
@@ -177,7 +202,7 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
         evidence.activeSessionProgress.finalRead=true;
         evidence.sessions.push({index:index+1,newContextEmpty:true,principalScopeSha256:principal.principalScopeSha256,exactCurrentAdminClaims:true,periodId:scope.cashPeriodId,hrRevisionObserved:observed.hrRevision,serverReadConfirmed:true,advancePairExact:true,firstAdvanceUnchanged:true,secondMetadataExact:true,rowCount:sourceRows.length,semanticRowsSha256:rowDataHash(sourceRows),domRowsSha256:digest(observed.rows),movementExport,dashboard});
         evidence.independentAdminSessions++;
-      }catch(error){evidence.failureUi=await failureUi(page,scope);throw error;}finally{stopGuard();await context.close();}
+      }catch(error){evidence.failureUi=await failureUi(page,scope);evidence.hrOwnerDiagnostic=await captureHrOwner(page);throw error;}finally{stopGuard();await context.close();}
       need(evidence.network.unexpectedDenied===0&&evidence.network.routeControlFailures===0,'ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST');
     }
     const [a,b]=evidence.sessions;

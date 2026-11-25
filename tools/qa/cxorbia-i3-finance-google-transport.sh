@@ -22,6 +22,7 @@ export FINAL_FOCAL_OUT
 FINAL_FOCAL_OUT="$(mktemp -d "${TMPDIR:-/tmp}/cxorbia-finance-google.XXXXXXXX")"
 export PERIOD_ID
 PERIOD_ID="$(jq -er '.cashPeriodId' docs/checkpoints/CXORBIA_I3_C09_C10_ADVANCE_UI_READONLY_SCOPE_20261125.json)"
+[[ "$(node -p 'process.versions.node.split(".")[0]')" == 24 ]] || { echo 'ENVIRONMENT_FAILURE:FINANCE_NODE_24_REQUIRED' >&2; exit 1; }
 # Read and execute the producer workflow's existing source and live identity guards.
 WORKFLOW=.github/workflows/cxorbia-recovery-i3-dev-certification.yml
 git show "$producer:$WORKFLOW" > "$FINAL_FOCAL_OUT/workflow.yml"

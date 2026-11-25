@@ -64,3 +64,11 @@ for(const [name,alter] of [
 ]){
   test('rejects '+name,()=>{const f=resultFixture();alter(f);assert.throws(()=>summarizeGoogleFinanceResult({uri:f.resultUri,expectedIdentity:f.expected},f.read));});
 }
+
+import {financeHrOwnerCode} from './cxorbia-i3-finance-ui-readonly.mjs';
+test('HR diagnostic retains only an owner-defined code and strips all dynamic detail',()=>{
+  assert.equal(financeHrOwnerCode('HR_LIVE_REVISION_READBACK_HTTP_503'),'HR_LIVE_REVISION_READBACK_HTTP_503');
+  assert.equal(financeHrOwnerCode('HR_LIVE_VISIT_PERIOD_MISSING_private'),'HR_LIVE_VISIT_PERIOD_MISSING');
+  assert.equal(financeHrOwnerCode('PRIVATE_ACCOUNT_OR_PROVIDER'),'OTHER');
+  assert.equal(financeHrOwnerCode(''),'NO_OWNER_ERROR');
+});
