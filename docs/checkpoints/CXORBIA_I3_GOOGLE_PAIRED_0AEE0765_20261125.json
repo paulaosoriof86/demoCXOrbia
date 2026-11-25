@@ -22,5 +22,22 @@
   ],
   "pairedReceiptAvailable": false,
   "newFunctionalWritesAfterAttempt": 0,
-  "production": false
+  "production": false,
+  "classification": "ENVIRONMENT_FAILURE",
+  "cause": "P0367_HOLD_SOURCE_DRIFT",
+  "nativeLogLines": [
+    214,
+    215,
+    216,
+    221
+  ],
+  "lastSuccessfulGuard": "PASS_EXACT_PROVEN_DEV_PREDECESSOR",
+  "observedPredecessorRuntime": "cxorbia-live-hr-dev-00391-8mg",
+  "observedPredecessorHosting": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+  "originalRuntimeUpdateCommandReached": false,
+  "hostingDeploys": 0,
+  "runtimeDeploys": 0,
+  "operationalImports": 0,
+  "owner": "currentMailboxEnvironmentHold projected in the four canonical controls",
+  "correction": "Keep the original mailbox observation at its prior source and use the successor tuple only as the pending disabled-mailbox deployment constraint. Keep failedRunId and predecessor revision."
 }

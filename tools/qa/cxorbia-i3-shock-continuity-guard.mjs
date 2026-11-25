@@ -51,6 +51,12 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
         !hosting.receiptPath||gitBlob(hosting.receiptPath)!==hosting.receiptBlob)return {present:true,pass:false};
     }else{
       const paired=d.currentMaterialization;
+      const hold=d.currentMailboxEnvironmentHold;
+      if(pending.scope==='RUNTIME_AND_HOSTING'&&hold?.state==='HOLD_MAIL_UNCONFIGURED'){
+        if(hold.sourceSha!==pending.sourceSha||hold.sourceTree!==pending.sourceTree||
+          hold.runtimeRevision!==paired?.runtimeRevision||hold.production!==false||
+          JSON.stringify(hold)!==JSON.stringify(p.currentMailboxEnvironmentHold))return {present:true,pass:false};
+      }
       if(p.currentHostingOnlyDevMaterialization||pending.servingHosting||!paired||
         JSON.stringify(seal)!==JSON.stringify(p.postDeployRunSeal)||
         JSON.stringify(paired)!==JSON.stringify(p.currentDevMaterialization)||
