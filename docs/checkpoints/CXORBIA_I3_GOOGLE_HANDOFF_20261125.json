@@ -444,11 +444,14 @@
       "challengeSigned": true
     },
     "academySealedRequest": {
-      "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_REQUEST_20261125.json",
-      "sha256": "88ff6a694d08bbc368e521f802ec71dd4b9479ea64c5e4e0a1ba102319d1d2d2",
+      "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json",
+      "sha256": "82457baf75e72341f5958ae2b0d16fed16b2d2f673abf21f8ce7c26e252b1f9a",
+      "pairedRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
       "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
-      "ownershipChecksPassed": 44,
-      "newBusinessProcessPasses": 0
+      "newBusinessProcessPasses": 0,
+      "providerWrites": 0,
+      "observedAt": "2026-11-25T23:53:11.883840Z"
     },
     "financeDashboardOnSealedDev": {
       "iteration": "I3",
@@ -568,6 +571,24 @@
       "http": 403,
       "status": "PERMISSION_DENIED",
       "signed": false
+    },
+    "predecessorAcademySealedRequest": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_REQUEST_20261125.json",
+      "sha256": "88ff6a694d08bbc368e521f802ec71dd4b9479ea64c5e4e0a1ba102319d1d2d2",
+      "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
+      "ownershipChecksPassed": 44,
+      "newBusinessProcessPasses": 0
+    },
+    "googleMaterializationRegression": {
+      "testFiles": [
+        "tools/qa/cxorbia-i3-google-consumer.test.mjs",
+        "tools/qa/cxorbia-i3-google-materialization.test.mjs",
+        "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs"
+      ],
+      "pass": 117,
+      "fail": 0,
+      "fixOwner": "tools/qa/cxorbia-i3-google-materialization.test.mjs",
+      "scope": "Synthetic predecessor now uses the referenced actual executor, with exact provider mismatch and GCP project metadata checks. No runtime change."
     }
   },
   "lastChromeConnection": {
@@ -579,7 +600,7 @@
   },
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
-    "academy": "Preserve observed Admin actions and the exact cleanup. Rebind residual Academia request to this pair and capture the protected bootstrap before closing or reloading the initial failed context.",
+    "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
     "deployment": "E10 is paired and verified in DEV. Reuse the published source and digest.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Use the source-bound F3 config docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json and genuine QA execution identity to verify remote ACK, independent readback, replay, conflict/echo, restoration and exact cleanup.",

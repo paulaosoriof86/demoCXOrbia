@@ -1,0 +1,181 @@
+{
+  "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+  "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+  "schemaVersion": "cxorbia.i3.d08-ui-qa-request.v1",
+  "createdAt": "2026-11-25T00:47:13.763Z",
+  "iteration": "I3",
+  "authorization": "PAULA_AUTHORIZED_D08_DEV_ONLY",
+  "authorizationBasis": "User current request to complete pending work and prior frozen D08 isolated QA authorization; real learners and real courses excluded",
+  "production": false,
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "country": "GT",
+  "hrIndependent": true,
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedReceiptGitBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+  "pairedRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+  "draftScope": {
+    "tenantId": [
+      "tya"
+    ],
+    "projectId": [],
+    "pais": [],
+    "rol": [
+      "admin"
+    ],
+    "nivel": [],
+    "modulo": [],
+    "paquete": []
+  },
+  "scopeNote": "One existing D08 three-role isolated UI cycle after exact RUN2783 cleanup. Existing accepted B4/B5/B6/B7 gates and historical provider proofs remain preserved. Tenant/Admin draft only; empty project scope does not certify project-scoped editing. Preserve the six observed Admin commands and the signed-off cleanup on the preceding revision. Obtain outstanding Shopper and Cliente course, resource, protected-context, replay and role observations on the current revision.",
+  "allowedWrites": [
+    "Four isolated qa_d08 run+attempt identities and memberships, two exact shopper QA profiles",
+    "Progress of these QA learners only",
+    "One tagged QA Admin draft course and one authorized edit",
+    "Provider receipts and audits for these exact commands",
+    "Ownership-checked cleanup of this invocation only",
+    "Idempotent exact RUN2783 ownership/absence recheck through the existing recovery helper before a new fixture; no replay of the previously unsettled command."
+  ],
+  "forbidden": [
+    "real learner progress",
+    "real course edit or publication",
+    "HR writes",
+    "real visit writes",
+    "production deploy",
+    "permission or rules change",
+    "Replaying the previously unsettled RUN2783 command"
+  ],
+  "requiredEvidence": [
+    "Admin Shopper Cliente actual UI lessons quizzes resources progress",
+    "Provider ACK and durable independent readback",
+    "New sessions plus idempotent replay",
+    "Admin draft edit and negative learner roles",
+    "Foreign learner read denial",
+    "Current exact runtime and Hosting before/after",
+    "Owned QA cleanup with zero residuals",
+    "Before the new fixture: exact RUN2783 recovery helper PASS and zero owned documents/Auth readback; the prior incorporated cleanup receipt and retired request are bound below."
+  ],
+  "fullDomainPromotionAutomatic": false,
+  "updatedAt": "2026-11-25T23:53:11.171Z",
+  "executionMode": "UI_WITH_RECOVERY",
+  "recoveryRun2783": {
+    "runId": "45514816284",
+    "runAttempt": "1",
+    "artifactId": 14976779119,
+    "artifactName": "cxorbia-i3-run2382-academy-b7-synthetic-45514816284",
+    "artifactSha256": "aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+    "journalEntry": "result.json",
+    "journalSha256": "f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "expectedDocuments": 18,
+    "expectedAuthUsers": 4,
+    "policy": "EXACT_PINNED_RUN2783_FIXTURE_CLEANUP_ONLY"
+  },
+  "priorCleanupPrerequisite": {
+    "state": "VERIFIED_FROM_COMMITTED_TYPED_RESULT_AND_RETIREMENT",
+    "controlHead": "987a7e22f93e6a94b3cff785e41233db7c2a4d90",
+    "typedResult": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_TYPED_RESULT.json",
+      "gitBlob": "d9ca5c0065128a9660028fc4b715a8343b46dc22",
+      "sha256": "a597dbf6b8f928e2f1950873b5021208bb418904c7390758364fdb3f686fbc47"
+    },
+    "producer": {
+      "runId": "45520112416",
+      "runAttempt": "1",
+      "jobId": "138889998069",
+      "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
+      "artifactId": "14979538218",
+      "artifactDigest": "sha256:7274a685136c3e3f0ca35c598a3893ed19d284bce6dc93bcc470c95e7b933817",
+      "entry": "d08-recovery/result.json",
+      "resultSha256": "3d637b2a2565a9b28dfbfa2e6c9a89d631b9fe0c6f4fbb64fc0afd363c8b0876"
+    },
+    "retiredRequest": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+      "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+      "canonicalSha256": "fdbf4f24fdecf7f2a4176a5bb7a69016a1df5d62796b2c28ee9e386899236161"
+    },
+    "retirementArchive": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_SATISFIED_D08_RECOVERY_REQUEST.json",
+      "gitBlob": "44be1e73749f03803df21c71b034bcca0c3b328f",
+      "sha256": "4a60c3cd527edcbabe3bf05936c1ae6d86ac444efd90cda58c7afce8a0e9ac93"
+    },
+    "fixtureRunId": "45514816284",
+    "fixtureRunAttempt": "1",
+    "firestoreTransactionConfirmed": true,
+    "remainingOwnedDocuments": 0,
+    "remainingOwnedAuth": 0,
+    "production": false
+  },
+  "scopedAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_SCOPED_OBLIGATION_AUTHORITY_20261124.json",
+    "gitBlob": "c0acf2f60ee14597f2c6da397ff4c8a59e79d8c0",
+    "sha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+    "taskId": "D08",
+    "fullDomain": false,
+    "production": false
+  },
+  "preserveAcceptedEvidence": {
+    "historicalProviderEvidence": {
+      "decision": "PASS",
+      "runId": 42927850644,
+      "runNumber": 2391,
+      "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+      "receiptGitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+      "historicalProviderOnly": true,
+      "scope": "SYNTHETIC_PROGRESS_ACK_DURABLE_READ_NEW_SESSION_REPLAY_ISOLATION_NEGATIVE_AND_CLEANUP",
+      "currentUiCertified": false
+    },
+    "acceptedHumanBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "run2783Partial": {
+      "runId": "45514816284",
+      "runAttempt": "1",
+      "artifactId": 14976779119,
+      "artifactDigest": "sha256:aebb76345afed8b39c80c65e180dc0896ab50482df5a9dffb29141ce9483855c",
+      "entry": "result.json",
+      "entrySha256": "f77b28264754da5011b40b25e19107c3091f34f7163108d24ba50ddd7e2446fc",
+      "observed": [
+        "Admin course, content, evaluation and progress visible",
+        "Four Admin progress commands received ACK200 and durable readback",
+        "Admin approved manual resource displayed read-only",
+        "Independent Admin session reached READY"
+      ],
+      "unproven": [
+        "Replay ACK and no-duplicate proof",
+        "Shopper and Cliente UI/session proofs",
+        "Admin draft edit and role/foreign-learner negatives",
+        "Cleanup of that invocation until the prerequisite above"
+      ],
+      "ownerSpecificReceiptsAccepted": 0,
+      "fullDomain": false
+    },
+    "googleAdminOn235d": {
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795639660815985_TYPED_RESULT.json",
+      "sha256": "f1c8860770abdc1611aa3890448cfd105f8206f1e15ecbdaf0a18d55cc53d508",
+      "rolesObserved": [
+        "admin"
+      ],
+      "commandsObserved": 6,
+      "deletedDocuments": 25,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0
+    }
+  },
+  "fixturePurpose": "Create only new disposable run/attempt identities required by the unchanged 25-clause D08 contract. The existing runner requires 4 Admin + 5 Shopper + 4 Cliente lessons to establish replay and isolation; these setup-dependent observations do not reopen accepted product gates.",
+  "supersedesRequest": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_REQUEST_20261125.json",
+    "gitBlob": "4cde63c252d559f89b621466f616c5b25a1c637f",
+    "outcome": "PRIOR_ADMIN_COMMANDS_RESOURCE_AND_OWNED_CLEANUP_RECORDED_SHOPPER_CLIENTE_PENDING"
+  },
+  "pairedExecutionProvider": "GOOGLE_CLOUD_BUILD"
+}
