@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cxorbia.f3.endpoint-qa-config.v1",
-  "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
-  "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
-  "runtimeDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
-  "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529",
+  "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+  "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
   "remoteManifestPath": "docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json",
   "remoteManifestSha256": "9276e4b72e67a33ac74dc3342fb6c7ca9223a770f0adaec3f46294b5f96a694a",
   "scope": "ISOLATED_QA_TABS_IN_ORIGINAL_BOOKS_NO_OPERATIONAL_ROWS",
   "production": false,
-  "canonicalMaterializationRunId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+  "canonicalMaterializationRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
   "canonicalMaterializationProvider": "GOOGLE_CLOUD_BUILD",
-  "canonicalMaterializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
-  "canonicalMaterializationReceiptSha256": "a511e6f4ebb33bbb998ab6029b6cac9d442a5b05821d51dbe112b375e0c00ac5"
+  "canonicalMaterializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+  "canonicalMaterializationReceiptSha256": "ceafac6ef9ceaf01e3473c71301614027a0a8057a5cdcdaf59e8463000de9ca4"
 }

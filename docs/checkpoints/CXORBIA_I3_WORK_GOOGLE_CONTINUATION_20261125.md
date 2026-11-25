@@ -2,6 +2,8 @@
 
 ## Reanudación por autoridad viva
 
+La publicación emparejada de E10 terminó en DEV el 25 de noviembre a las 17:42 de Guatemala. Cloud Run sirve la revisión `00393-p54` con el 100 % del tráfico y Hosting sirve la versión `607182bc22875d48`. La siguiente ejecución debe reutilizar esta publicación para las pruebas residuales de F3, roles e importación autenticada. [Recibo de publicación](CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json) · [Pruebas del importador servido](CXORBIA_I3_E10_SERVED_MAPPING_5670F782_20261125.json)
+
 Antes de usar cualquiera de los cortes o comandos históricos que siguen, sincronizar la rama canónica y ejecutar:
 
 ```sh

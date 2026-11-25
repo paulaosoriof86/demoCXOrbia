@@ -4,7 +4,7 @@
   "state": "HOLD",
   "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
   "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
-  "servedSource": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
     "ownerPaths": 111,
@@ -358,7 +358,7 @@
       "sha256": "045230aea2e20ee94fb8653a944a547fb15715d2d8b5588eb9c1be08abd7f6f3",
       "imageBuildId": "748ebf68-744a-43b5-9c08-f6251e363059",
       "imageDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
-      "nextAction": "Use the verified immutable E10 image in the existing paired job after the active predecessor QA.",
+      "nextAction": "Reuse the published digest for current DEV proofs.",
       "sourceObject": {
         "bucket": "cxorbia-backend-dev_cloudbuild",
         "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
@@ -367,7 +367,7 @@
         "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
       },
       "registryVerified": true,
-      "served": false
+      "served": true
     },
     "firstNativePairedAttempt": {
       "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_PAIRED_0AEE0765_20261125.json",
@@ -406,31 +406,33 @@
       "guard": "Continue aborting all 13 requests. Count only the three exact GET image resources separately. Unknown URLs, methods, query strings, non-image resource types and all unauthorized writes still fail."
     },
     "pairedDev": {
-      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-      "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
       "provider": "GOOGLE_CLOUD_BUILD",
-      "buildId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
-      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
-      "receiptSha256": "a511e6f4ebb33bbb998ab6029b6cac9d442a5b05821d51dbe112b375e0c00ac5",
-      "journalPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_18d8d2fd-0e77-4692-a910-904c1bc66238_EXECUTION_JOURNAL.json",
-      "journalSha256": "c15e769406e8b081ec53ee2942f0f9e06780e54bee6318b7f3e50266fc0a75b1",
+      "buildId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "imageBuildId": "748ebf68-744a-43b5-9c08-f6251e363059",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+      "receiptSha256": "ceafac6ef9ceaf01e3473c71301614027a0a8057a5cdcdaf59e8463000de9ca4",
+      "journalPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_5670f782-19af-47aa-bdda-47cf94c689f2_EXECUTION_JOURNAL.json",
+      "journalSha256": "02314c211c575871e19a3bbd940f5e5e26a80d484e7cff2ae3a7746ee28d146a",
       "archive": {
         "bucket": "cxorbia-backend-dev_cloudbuild",
-        "name": "cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip",
-        "generation": "1795632693578753",
-        "size": 5504,
-        "sha256": "1cc06ff7c9721421fb2864436b0812173a99af955c8ef6cc6546adaa8d98906a",
-        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip#1795632693578753"
+        "name": "cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip",
+        "generation": "1795650129757606",
+        "size": 5588,
+        "sha256": "f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip#1795650129757606"
       },
-      "digest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
-      "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795632644375000",
+      "digest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
       "trafficPercent": 100,
-      "verifiedServedAssets": 49,
+      "verifiedServedAssets": 50,
       "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
       "hrReadbackDecision": "PASS_EXCEL_CANONICAL_ID_READONLY",
       "productPdfOwnerServedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+      "productImporterServedSha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
       "mailbox": "HOLD_E08_MAILBOX_UNCONFIGURED",
       "production": false
     },
@@ -497,10 +499,12 @@
     "pendingE10": {
       "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
       "tree": "e8bf021e54e84cb52a925824ffc02527f5073164",
-      "served": false,
+      "served": true,
       "sourceEvidence": "docs/checkpoints/CXORBIA_I3_VRM379_E10_SOURCE_20261125.json",
       "owner": "app/core/importador.js",
-      "operationalImports": 0
+      "operationalImports": 0,
+      "servingReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+      "servedMapping": "docs/checkpoints/CXORBIA_I3_E10_SERVED_MAPPING_5670F782_20261125.json"
     },
     "currentAccessReadback": {
       "observedAt": "2026-11-25T20:29:25Z",
@@ -527,6 +531,43 @@
       "cause": "Sparse checkout omitted .github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs; the original test suite stopped before functional execution. Restored and checked the exact file. The independently recorded full producer carried the functional job.",
       "newBusinessPasses": 0,
       "functionalWrites": 0
+    },
+    "predecessorPairedDev": {
+      "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+      "provider": "GOOGLE_CLOUD_BUILD",
+      "buildId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+      "receiptSha256": "a511e6f4ebb33bbb998ab6029b6cac9d442a5b05821d51dbe112b375e0c00ac5",
+      "journalPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_18d8d2fd-0e77-4692-a910-904c1bc66238_EXECUTION_JOURNAL.json",
+      "journalSha256": "c15e769406e8b081ec53ee2942f0f9e06780e54bee6318b7f3e50266fc0a75b1",
+      "archive": {
+        "bucket": "cxorbia-backend-dev_cloudbuild",
+        "name": "cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip",
+        "generation": "1795632693578753",
+        "size": 5504,
+        "sha256": "1cc06ff7c9721421fb2864436b0812173a99af955c8ef6cc6546adaa8d98906a",
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/18d8d2fd-0e77-4692-a910-904c1bc66238/paired-evidence.zip#1795632693578753"
+      },
+      "digest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+      "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795632644375000",
+      "trafficPercent": 100,
+      "verifiedServedAssets": 49,
+      "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+      "hrReadbackDecision": "PASS_EXCEL_CANONICAL_ID_READONLY",
+      "productPdfOwnerServedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+      "mailbox": "HOLD_E08_MAILBOX_UNCONFIGURED",
+      "production": false
+    },
+    "currentQAAccessReadback": {
+      "at": "2026-11-25T23:39:12.611146Z",
+      "project": "cxorbia-backend-dev",
+      "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "http": 403,
+      "status": "PERMISSION_DENIED",
+      "signed": false
     }
   },
   "lastChromeConnection": {
@@ -537,11 +578,11 @@
     "trafficPercent": 100
   },
   "next": {
-    "finance": "Two independent Admin Finance sessions passed C09/C10 Movimientos and Dashboard preview, XLSX and native PDF on sealed235d. Preserve the two advances, scope and role boundaries. Execute the existing Academy residual on its served request, then publish E10 through the paired job using the independently verified image without rebuilding. Rebind outstanding Finance roles, HR KPIs, E10, F3 and other source-bound residuals to the new native receipt.",
-    "academy": "Publish the verified E10 image and Hosting through the existing paired DEV job, using its exact source and receipt. Preserve the six Admin commands, captures and exact D08 cleanup on 235d. Diagnose the timed wait against its journal and rebind only remaining learner/role clauses to the new native receipt.",
-    "deployment": "Dispatch the original paired DEV job for the verified E10 image using launch tag cxorbia-vrm379-pair-5fa6ff90-a1. Incorporate the Google receipt before the next functional write.",
+    "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
+    "academy": "Preserve observed Admin actions and the exact cleanup. Rebind residual Academia request to this pair and capture the protected bootstrap before closing or reloading the initial failed context.",
+    "deployment": "E10 is paired and verified in DEV. Reuse the published source and digest.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
-    "f3": "Rebind the existing isolated GT/HN endpoint fixture to this receipt. Use genuine QA producer identity and verify provider ACK, independent remote readback, replay and exact cleanup.",
+    "f3": "Use the source-bound F3 config docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json and genuine QA execution identity to verify remote ACK, independent readback, replay, conflict/echo, restoration and exact cleanup.",
     "googleExecution": {
       "servedProducer": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
       "financeTransportFilesFromValidatedControl": [
@@ -558,11 +599,13 @@
       "nativeResultRequired": true,
       "duplicateDispatch": false,
       "financeTransportCommit": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
-      "academyTransportCommit": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69"
+      "academyTransportCommit": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+      "predecessorOnly": true,
+      "pairedReceiptForCurrentDev": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json"
     },
-    "recoveryOnReconnect": "Read current authority; check the native E10 launch tag for any active or completed build before dispatch or control writes. Reuse and consume that execution if present. Otherwise run the existing paired job with the verified E10 image and the exact current producer. Preserve Finance PASS and D08 partial evidence."
+    "recoveryOnReconnect": "Read the current guard and native receipt, then execute the remaining scoped functional proofs. Use the current source for E10 authenticated import and provider ACK; no operational reimports."
   },
-  "newDevDeploys": 1,
+  "newDevDeploys": 2,
   "newFinancialMovements": 0,
   "newI3BusinessProcessPasses": 0,
   "phaseAComplete": false,
@@ -575,7 +618,7 @@
     "matrixVersion": "V406",
     "ledgerVersion": "V733"
   },
-  "servedTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "servedTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
   "currentControlReadbackCommand": "node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current",
   "continuityForensics": {
     "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_ROOT_CAUSE_20261125.md",
@@ -584,11 +627,8 @@
     "production": false
   },
   "recoverySessionConnection": {
-    "observedAt": "2026-11-25T21:04:43.674399+00:00",
-    "provider": "CHROME_CONNECTED_BROWSER",
-    "outcome": "ENVIRONMENT_FAILURE_NO_CONNECTED_BROWSER",
-    "toolMessage": "No connected browser was found for the originating browser instance.",
-    "scope": "THIS_RECOVERY_SESSION_ONLY",
-    "nativeBuildStatusNotInferred": true
+    "state": "CHROME_AND_CLOUD_SHELL_VERIFIED_FOR_E10_PUBLICATION",
+    "control": "304a5f093703aca37fb0d6ac75b6a4fd0081f542",
+    "nativeResult": "5670f782-19af-47aa-bdda-47cf94c689f2"
   }
 }

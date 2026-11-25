@@ -1,0 +1,622 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.served-mapping-proof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+  "materializationReceiptSha256": "ceafac6ef9ceaf01e3473c71301614027a0a8057a5cdcdaf59e8463000de9ca4",
+  "publicReadback": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "nativeBuildId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "capturedAt": "2026-11-25T23:42:23.787062+00:00",
+    "required": 50,
+    "matched": 50,
+    "additionalDedupeMatched": true,
+    "files": [
+      {
+        "path": "core/importador.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+        "observedSha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+        "match": true
+      },
+      {
+        "path": "core/data.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+        "observedSha256": "f80436b1254a9eb6021b18b05aec82ec64c325c8b45130bc06880ef01914e76f",
+        "match": true
+      },
+      {
+        "path": "core/router.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+        "observedSha256": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+        "match": true
+      },
+      {
+        "path": "core/tya-phase-a-source-safe-preview.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+        "observedSha256": "0cc0db95bc0cf949db84c09bf951f489d5df15acb24d9991f4fb576e984596bf",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-live-source-inplace-apply.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "708a9a44da97b28e23dd3c5d9ddf806cc9f1066c3a5b216e4c9aee28d91cdf45",
+        "observedSha256": "708a9a44da97b28e23dd3c5d9ddf806cc9f1066c3a5b216e4c9aee28d91cdf45",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-cumulative-read-model-v2.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:41:56 GMT",
+        "expectedSha256": "a2eb856f4510bc58ca9d4cca20a688655de091c12f94e7be2328160a266e00c3",
+        "observedSha256": "a2eb856f4510bc58ca9d4cca20a688655de091c12f94e7be2328160a266e00c3",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-canonical-finance-read-model-v2.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+        "observedSha256": "acd44366661d26250e79fffd89fac27cdb503b2d4347d17b4b3f6e3d4a47b30f",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-canonical-shopper-portal-v2.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+        "observedSha256": "214b1260a71f5612a269618eb9bed12263d00bf26a099d6ee73315bad61f1cc3",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+        "observedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+        "match": true
+      },
+      {
+        "path": "data/tya-hr-source-safe-periods.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+        "observedSha256": "82b87e084b5a763b6ac812fb37ab09da2070b05b72994df7d6e161de2f8a5fe0",
+        "match": true
+      },
+      {
+        "path": "modules/midia.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+        "observedSha256": "9084290ad4a627eae457d6e8a31f83a9348f49d0f1e991018120f913b3491e5c",
+        "match": true
+      },
+      {
+        "path": "modules/misvisitas.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:00 GMT",
+        "expectedSha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+        "observedSha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+        "match": true
+      },
+      {
+        "path": "modules/visita-detalle.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+        "observedSha256": "c812eb418adc0262610bab498b93413abef30cec79d4a5b9f4ef6dbcf95c3b58",
+        "match": true
+      },
+      {
+        "path": "modules/shoppers.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+        "observedSha256": "b985cc833635944d48bd77f66a501cb6136a1dfc898f892de2501635a65f2150",
+        "match": true
+      },
+      {
+        "path": "modules/postulaciones.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+        "observedSha256": "cbc828e2d4d6a86f2ae37ccdb38c7d621fde2b16b3a4bb3b279a540dd647dcc3",
+        "match": true
+      },
+      {
+        "path": "modules/beneficios.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+        "observedSha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+        "match": true
+      },
+      {
+        "path": "modules/cert.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+        "observedSha256": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+        "match": true
+      },
+      {
+        "path": "modules/academia.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:03 GMT",
+        "expectedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+        "observedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+        "match": true
+      },
+      {
+        "path": "styles/layout.css",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+        "observedSha256": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+        "observedSha256": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+        "match": true
+      },
+      {
+        "path": "adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "5aa353b5b7c568d6aff07c1a6898d488e408d018cda0bc7d6ae91c83520f1b28",
+        "observedSha256": "5aa353b5b7c568d6aff07c1a6898d488e408d018cda0bc7d6ae91c83520f1b28",
+        "match": true
+      },
+      {
+        "path": "index-backend-dev.html",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "abca0b5d21fbdc1949047b71f43c0ac0298f19b652c63305a1cd3d946e17b93e",
+        "observedSha256": "abca0b5d21fbdc1949047b71f43c0ac0298f19b652c63305a1cd3d946e17b93e",
+        "match": true
+      },
+      {
+        "path": "core/backend-firebase.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+        "observedSha256": "2aca1f072f3cbffb993bb149b155aaeb5a175210ccd8dcea578615a39e6441d3",
+        "match": true
+      },
+      {
+        "path": "adapters/tya-live-source-refresh-watch-v2.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:07 GMT",
+        "expectedSha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+        "observedSha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+        "match": true
+      },
+      {
+        "path": "modules/hr-source.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "4c32d7e647c58fec4e747278961d863dbc35ba401e8769b6343aafef98284d44",
+        "observedSha256": "4c32d7e647c58fec4e747278961d863dbc35ba401e8769b6343aafef98284d44",
+        "match": true
+      },
+      {
+        "path": "modules/clientes.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+        "observedSha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+        "match": true
+      },
+      {
+        "path": "modules/historico.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "observedSha256": "cab99b87798f385d6cf71cc63bef144b5fc7cb6c55bf31ba101817ade07e2819",
+        "match": true
+      },
+      {
+        "path": "modules/visitas.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+        "observedSha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+        "match": true
+      },
+      {
+        "path": "modules/cuestionario-shopper.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+        "observedSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+        "match": true
+      },
+      {
+        "path": "core/backend-certifications.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:10 GMT",
+        "expectedSha256": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+        "observedSha256": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+        "match": true
+      },
+      {
+        "path": "core/finanzas-core.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+        "observedSha256": "c61e7f193992a4e6a60b9417a0ad3cdf3b82f3b06f5a569c25ce1caf0089b971",
+        "match": true
+      },
+      {
+        "path": "modules/marca.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+        "observedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+        "match": true
+      },
+      {
+        "path": "modules/administrabilidad.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+        "observedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+        "match": true
+      },
+      {
+        "path": "modules/configuracion.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+        "observedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+        "match": true
+      },
+      {
+        "path": "modules/cliente-insights.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+        "observedSha256": "85f46c12b60042c72f24f220c225433b40caf732a638520ddecb606d0c135e51",
+        "match": true
+      },
+      {
+        "path": "adapters/cxorbia-command-adapter-v1.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:13 GMT",
+        "expectedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+        "observedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+        "match": true
+      },
+      {
+        "path": "core/backend-bulletins.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:17 GMT",
+        "expectedSha256": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+        "observedSha256": "694aa14581e2f8dbe8bb5ef25295c9db80e7e2b94d3fcc47f1ab091871f593b6",
+        "match": true
+      },
+      {
+        "path": "sw.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:17 GMT",
+        "expectedSha256": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+        "observedSha256": "f82b9d97fab9b153b3489585d8ab46a0102623c0f16704388b166348f8feabfa",
+        "match": true
+      },
+      {
+        "path": "core/notif.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:17 GMT",
+        "expectedSha256": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+        "observedSha256": "1a5a3965483fe83b7faacb5153ce957d4358d013194a88e7dffe2b293422d0f7",
+        "match": true
+      },
+      {
+        "path": "modules/dashboard.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:17 GMT",
+        "expectedSha256": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d",
+        "observedSha256": "7f04e706aef22150fcec3e5d8edaabfb0cccbe3c92af2338939becef6f3ca15d",
+        "match": true
+      },
+      {
+        "path": "modules/proyectos.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:16 GMT",
+        "expectedSha256": "a89dbe6a8c1b8305c3f7644d500bbcc6bfbc99db0b6420f2a7a5a226827f6db9",
+        "observedSha256": "a89dbe6a8c1b8305c3f7644d500bbcc6bfbc99db0b6420f2a7a5a226827f6db9",
+        "match": true
+      },
+      {
+        "path": "modules/proyecto-wizard.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:17 GMT",
+        "expectedSha256": "e3697ab6edb72bfe8c4da67114e8fab3ab72cbcb9274a0bccf57ade8fa1df7c1",
+        "observedSha256": "e3697ab6edb72bfe8c4da67114e8fab3ab72cbcb9274a0bccf57ade8fa1df7c1",
+        "match": true
+      },
+      {
+        "path": "core/backend-finance-benefits.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "17c77d8678bd18a3dd76099832a2d57eff5da6650830ae1e3a22f6b63b60cb07",
+        "observedSha256": "17c77d8678bd18a3dd76099832a2d57eff5da6650830ae1e3a22f6b63b60cb07",
+        "match": true
+      },
+      {
+        "path": "core/hr.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "091c06ec7b2e8b4e24acd3655ba52abee861e193089efabab426cd751e325da6",
+        "observedSha256": "091c06ec7b2e8b4e24acd3655ba52abee861e193089efabab426cd751e325da6",
+        "match": true
+      },
+      {
+        "path": "modules/correo.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "f394803f461b37485f7e2b00760ce9ab6cdb5852e646f7e93e4d7e6d49d012b3",
+        "observedSha256": "f394803f461b37485f7e2b00760ce9ab6cdb5852e646f7e93e4d7e6d49d012b3",
+        "match": true
+      },
+      {
+        "path": "modules/finanzas.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+        "observedSha256": "1ddd81e63c19c8da36120710932b56f70ae69e7b73416d3ffe8c71776f2f7317",
+        "match": true
+      },
+      {
+        "path": "modules/integraciones.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "c4eb245dd515978e1f86e7d03271b26884f0029c3de0b80e04ea20eac64beaa8",
+        "observedSha256": "c4eb245dd515978e1f86e7d03271b26884f0029c3de0b80e04ea20eac64beaa8",
+        "match": true
+      },
+      {
+        "path": "modules/revision-admin.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:20 GMT",
+        "expectedSha256": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd",
+        "observedSha256": "c4f9d96ba0050d9bcee3c53692f9f177f0aa3ae9fbfb8f80de95ced333ac68fd",
+        "match": true
+      },
+      {
+        "path": "core/data-source.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:23 GMT",
+        "expectedSha256": "d07e1642269327ea76ef8d765f0a5e3e3278ab87c43ddc966ea7aef8732486dc",
+        "observedSha256": "d07e1642269327ea76ef8d765f0a5e3e3278ab87c43ddc966ea7aef8732486dc",
+        "match": true
+      },
+      {
+        "path": "modules/cliente-extra.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:23 GMT",
+        "expectedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+        "observedSha256": "ff86e2aaada5be1649420ea9fb057b90f54cfdf3831c55ae4662a3e878cb4e21",
+        "match": true
+      },
+      {
+        "path": "core/dedupe.js",
+        "http": 200,
+        "responseDate": "Wed, 25 Nov 2026 23:42:23 GMT",
+        "expectedSha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "observedSha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+        "match": true
+      }
+    ],
+    "production": false,
+    "operationalWrites": 0
+  },
+  "focal": {
+    "decision": "LOCAL_SOURCE_FIX_VALIDATED",
+    "passed": 17,
+    "failed": 0,
+    "effects": {
+      "commitCalls": 0,
+      "networkCalls": 0,
+      "storageCalls": 0,
+      "eventCalls": 0,
+      "dataMutationCalls": 0
+    },
+    "scope": "Existing mapping harness executed using independently downloaded DEV importer and deduplication owners with synthetic in-memory fixture",
+    "cases": [
+      {
+        "id": "parse_csv",
+        "pass": true
+      },
+      {
+        "id": "parse_tsv_reordered",
+        "pass": true
+      },
+      {
+        "id": "auto_map_csv",
+        "pass": true
+      },
+      {
+        "id": "auto_map_tsv_reordered",
+        "pass": true
+      },
+      {
+        "id": "build_with_explicit_csv_mapping",
+        "pass": true
+      },
+      {
+        "id": "build_with_explicit_reordered_mapping",
+        "pass": true
+      },
+      {
+        "id": "dry_run_categories",
+        "pass": true
+      },
+      {
+        "id": "repeat_dry_run_without_mutation",
+        "pass": true
+      },
+      {
+        "id": "exact_normalized_fields",
+        "pass": true
+      },
+      {
+        "id": "legacy_ui_sample_headers",
+        "pass": true
+      },
+      {
+        "id": "existing_alias_priority",
+        "pass": true
+      },
+      {
+        "id": "short_alias_tokens_and_legacy_full_forms",
+        "pass": true
+      },
+      {
+        "id": "one_column_per_field",
+        "pass": true
+      },
+      {
+        "id": "legacy_fee_headers_preserve_amount",
+        "pass": true
+      },
+      {
+        "id": "zero_effects",
+        "pass": true
+      },
+      {
+        "id": "auto_mapping_identity_money_csv",
+        "pass": true
+      },
+      {
+        "id": "auto_mapping_identity_money_tsv",
+        "pass": true
+      }
+    ]
+  },
+  "authenticatedImportProven": false,
+  "durableImportReplayProven": false,
+  "realImports": 0,
+  "production": false,
+  "rendered": {
+    "decision": "PASS_RENDERED_HR_CLASSIC_MAPPING_AND_PREVIEW",
+    "capturedAt": "2026-11-25T23:45:08.230Z",
+    "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "scope": "Chromium component run using DEV-served bytes, original E10 synthetic project and in-memory context; no authenticated product session or import",
+    "chromiumVersion": "141.0.7390.37",
+    "assets": {
+      "core_config.js": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+      "core_ui.js": "862c178d9fc311c92e6a49c5cac0441b2fb7a55ec4a0e52fa55128fda4c05afb",
+      "core_dedupe.js": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+      "core_importador.js": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+      "modules_importador.js": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+      "styles_theme.css": "7a7e5bad0bd7790cd15fa826fc2c5ae36dce17b16a816f259b87e9004e0476cd",
+      "styles_layout.css": "77c7befcefb48d4ba732fff0e3e03276bd55263ceebf63b90a4b809f74cdb6b1"
+    },
+    "cases": [
+      {
+        "format": "csv",
+        "mapping": {
+          "0": "ref",
+          "1": "fecha",
+          "2": "sucursal",
+          "3": "ciudad",
+          "4": "shopper",
+          "5": "escenario",
+          "6": "honorario",
+          "7": "estado"
+        },
+        "rows": [
+          {
+            "ref": "QA-E10-N1",
+            "amount": 11,
+            "classification": "Nuevo"
+          },
+          {
+            "ref": "QA-E10-C1",
+            "amount": 33,
+            "classification": "Conflicto"
+          },
+          {
+            "ref": "QA-E10-D1",
+            "amount": 22,
+            "classification": "Dup"
+          },
+          {
+            "ref": "QA-E10-X1",
+            "amount": 44,
+            "classification": "Descartado"
+          }
+        ],
+        "capture": "docs/checkpoints/CXORBIA_I3_E10_RENDERED_PREVIEW_5670F782.png",
+        "imageSha256": "69a0e1faa826317097738aa3e2fd58744d9ee633a02a8b0965ad13ff99defa65"
+      },
+      {
+        "format": "tsv",
+        "mapping": {
+          "0": "honorario",
+          "1": "sucursal",
+          "2": "fecha",
+          "3": "estado",
+          "4": "ref",
+          "5": "escenario",
+          "6": "shopper",
+          "7": "ciudad"
+        },
+        "rows": [
+          {
+            "ref": "QA-E10-N1",
+            "amount": 11,
+            "classification": "Nuevo"
+          },
+          {
+            "ref": "QA-E10-C1",
+            "amount": 33,
+            "classification": "Conflicto"
+          },
+          {
+            "ref": "QA-E10-D1",
+            "amount": 22,
+            "classification": "Dup"
+          },
+          {
+            "ref": "QA-E10-X1",
+            "amount": 44,
+            "classification": "Descartado"
+          }
+        ],
+        "capture": "docs/checkpoints/CXORBIA_I3_E10_RENDERED_PREVIEW_5670F782.png",
+        "imageSha256": "69a0e1faa826317097738aa3e2fd58744d9ee633a02a8b0965ad13ff99defa65"
+      }
+    ],
+    "networkRequests": 0,
+    "commitClicks": 0,
+    "realImports": 0
+  },
+  "independentHrMetaReadback": {
+    "revision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+    "sourceAccessMode": "make_graph_delegated",
+    "sourceReadAt": "2026-11-25T23:48:12.083Z",
+    "externalReadCurrent": true,
+    "responseSha256": "f4f0c2452396b62434825084c06f2172a0732624f3cdc1a17acd4d1f9fd074df",
+    "method": "GET",
+    "endpoint": "/api/tya/cinepolis/hr-live?format=meta",
+    "hrWrites": false
+  }
+}
