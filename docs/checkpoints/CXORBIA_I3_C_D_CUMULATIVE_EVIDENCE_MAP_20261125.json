@@ -148,6 +148,93 @@
       "gitBlob": "ff4df8a5b51ccdcfb836b2cdf2bfe12fce7ed307",
       "sha256": "36e1ea9682fcf84f2e4aa17a65f5a68b43912f14a9f787179698bc01efefc3e7",
       "scope": "RUN2787 no runner steps or functional tests; provider account lock; no functional PASS/FAIL inferred"
+    },
+    "d08GoogleAdmin1691": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
+      "gitBlob": "ddacab0c6b92a510949119e5353f0cf9f7266aaf",
+      "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+      "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
+      "scope": "Verified isolated Admin UI course/lesson/evaluation/progress, ACK, durable new-session read/replay, authorized tagged Admin draft edit and exact cleanup at source1691. Preserved observations; no global PASS, learner-role/resource credit or new materialization.",
+      "observedIdentity": {
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "controlSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+      },
+      "observationBindings": [
+        {
+          "obligationId": "D08.admin.course",
+          "jsonPointers": [
+            "/observations/admin/uiCourse"
+          ]
+        },
+        {
+          "obligationId": "D08.admin.lesson",
+          "jsonPointers": [
+            "/observations/admin/uiContent"
+          ]
+        },
+        {
+          "obligationId": "D08.admin.evaluation",
+          "jsonPointers": [
+            "/observations/admin/uiEvaluation"
+          ]
+        },
+        {
+          "obligationId": "D08.admin.progress",
+          "jsonPointers": [
+            "/observations/admin/uiProgress",
+            "/observations/admin/providerAck",
+            "/observations/admin/durableReadback"
+          ]
+        },
+        {
+          "obligationId": "D08.admin.new_session_replay",
+          "jsonPointers": [
+            "/observations/admin/independentNewSession",
+            "/observations/admin/replayNoDuplicate"
+          ]
+        },
+        {
+          "obligationId": "D08.admin.edit",
+          "jsonPointers": [
+            "/observations/authorizedAdminEdit/providerAck",
+            "/observations/authorizedAdminEdit/durableReadback",
+            "/observations/authorizedAdminEdit/independentNewSession",
+            "/observations/authorizedAdminEdit/replayNoDuplicate"
+          ]
+        },
+        {
+          "obligationId": "D08.cleanup",
+          "jsonPointers": [
+            "/observations/cleanup/ok",
+            "/observations/cleanup/exactKnownPathsOnly",
+            "/observations/cleanup/remainingOwnedDocuments",
+            "/observations/cleanup/remainingOwnedAuth",
+            "/observations/postflightExact"
+          ]
+        }
+      ],
+      "receiptState": "HOLD",
+      "fullDomain": false,
+      "newFunctionalPasses": 0,
+      "production": false
+    },
+    "d08GoogleRetryHrNewSession": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json",
+      "gitBlob": "7fedca649af062a958a24e166e719e8031211fe3",
+      "sha256": "38136db5d845684e1d5ce9bd8a70146321fd6229ecc3b694c678648a41f39864",
+      "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
+      "scope": "HOLD retry; one initial role reached, new-session protected HR blocked; cleanupOk=true. No new full-role or domain credit."
+    },
+    "d08GoogleRetryHrInitial": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795627423976545_TYPED_RESULT.json",
+      "gitBlob": "242ed7228a9bc12435b6b69d00488e14b979d445",
+      "sha256": "983cbd9a52296cb328601ce38c2133fb10cf5eae1e1da2b4bcd2d1aa5cc4606e",
+      "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
+      "scope": "HOLD retry; initial protected HR remained blocked after one bounded reload; roleProofCount=0 and cleanupOk=true. No new functional credit."
     }
   },
   "tasks": [
@@ -499,13 +586,19 @@
         "d08Contract",
         "financeAcademyLatest",
         "accountLock",
-        "currentMatrix"
+        "currentMatrix",
+        "d08GoogleAdmin1691",
+        "d08GoogleRetryHrNewSession",
+        "d08GoogleRetryHrInitial"
       ],
       "preservedEvidenceScope": [
-        "Historical provider progress ACK/newsession/replay/isolation/negative/cleanup accepted; RUN2786 Admin course/evaluation progression partial and cleanup retained; runner rerender fixed source."
+        "Historical provider progress ACK/newsession/replay/isolation/negative/cleanup accepted; RUN2786 Admin course/evaluation progression partial and cleanup retained; runner rerender fixed source.",
+        "Google archive1795625702166502 independently verified the Admin course/content/evaluation/progress, ACK, durable readback, independent new session, replay, authorized tagged Admin draft edit and owned cleanup on source1691. Preserve only those recorded scopes; the new pair does not relabel their source. Later HR-blocked retries retain exact cleanup and do not erase this evidence."
       ],
       "remainingOrMappingBoundary": [
-        "25 scoped D08 obligations require complete Admin/Shopper/Cliente UI/session/evaluation/resource/progress/edit/negative readback. RUN2787 not started gives no new credit; current UI retry after environment unlock."
+        "The existing25-obligation authority is unchanged. Shopper and Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered role/stale-version negatives remain; no learner-role/resource PASS is inferred from the Admin archive.",
+        "Admin resource display has a prior RUN2783 scoped observation in the original request; this delta grants no new resource credit. Read its exact pinned result if finer binding is required, without repeating accepted bank or provider cycles.",
+        "Preserve historical RUN2391 isolation/wrong-audience/progress/replay/cleanup at its provider-only scope. The held Google attempts do not establish a new product defect. Any following execution binds its actual new serving receipt; all preserved1691 observations retain source1691."
       ],
       "newPassGranted": false
     }

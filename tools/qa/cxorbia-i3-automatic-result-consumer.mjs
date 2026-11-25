@@ -423,7 +423,7 @@ export async function readScopedIndexResults({api,token,index,controls,files,dow
 
 // Current residual text is a projection of verified partial evidence. C3 keeps
 // its existing strict owner/contract gates, and all classifications stay fixed.
-export async function reconcileCurrentScopedClauses({api,token,controls,files:destination,index,now,download=downloadArtifact}){
+export async function reconcileCurrentScopedClauses({api,token,controls,files:destination,index,now,download=downloadArtifact,producerLoader=loadControls}){
  const files=new Map(destination);
  const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
  const scoped=await readScopedIndexResults({api,token,index,controls,files,download});
@@ -434,7 +434,15 @@ export async function reconcileCurrentScopedClauses({api,token,controls,files:de
  if(scoped.verified.some(x=>x.result.kind==='FINANCE_METADATA'))financeScopeSha256=canonicalSha256(JSON.parse(await read(FINANCE_METADATA_SCOPE_PATH)));
  const projection=projectCurrentScopedClauses({matrix:active.matrix,verified:scoped.verified,financeScopeSha256});
  const out={descriptor:structuredClone(active.descriptor),pointer:structuredClone(active.pointer),ledger:structuredClone(active.ledger),matrix:projection.matrix};
- const next=projectCurrentResidualNextAction(out,{completedTaskIds:completedExecutionTaskIds(scoped.verified)});
+ let d08Evidence;
+ const d08=out.descriptor.currentFunctionalEvidenceIndex?.results?.filter(x=>x.provider==='GOOGLE_CLOUD_SHELL'&&x.path?.includes('_GOOGLE_D08_')).at(-1);
+ const followup=out.descriptor.currentD08GoogleFollowup,request=out.descriptor.currentD08UiQaRequest;
+ if(d08&&d08.key===followup?.resultKey&&d08.sha256===followup?.receiptSha256&&request?.sourceSha===out.descriptor.currentMaterialization?.sourceSha){
+  const producer=await producerLoader(api,d08.controlHead);
+  if(JSON.stringify(request)===JSON.stringify(producer.descriptor.currentD08UiQaRequest)&&JSON.stringify(request)===JSON.stringify(producer.pointer.currentD08UiQaRequest))
+   d08Evidence={producer,receiptBytes:await read(d08.path),requestBytes:await producer.readBytes(request.path)};
+ }
+ const next=projectCurrentResidualNextAction(out,{completedTaskIds:completedExecutionTaskIds(scoped.verified),d08Evidence});
  if(projection.changed||next.changed){
   for(const control of [out.descriptor,out.pointer])control.currentFunctionalEvidenceIndex=structuredClone(scoped.index);
   for(const control of [out.descriptor,out.pointer,out.ledger,out.matrix]){control.updatedAt=now;if(Object.hasOwn(control,'asOf'))control.asOf=now;}

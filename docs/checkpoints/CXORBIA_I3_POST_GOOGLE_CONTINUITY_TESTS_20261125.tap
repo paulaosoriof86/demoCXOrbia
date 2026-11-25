@@ -1,0 +1,940 @@
+TAP version 13
+# Subtest: ledger active self pointers advance together and stale paths fail validation
+ok 1 - ledger active self pointers advance together and stale paths fail validation
+  ---
+  duration_ms: 612.453781
+  type: 'test'
+  ...
+# Subtest: interruption after deploy: exact receipt advances DEV without altering six domains, C3, or human approvals
+ok 2 - interruption after deploy: exact receipt advances DEV without altering six domains, C3, or human approvals
+  ---
+  duration_ms: 327.597525
+  type: 'test'
+  ...
+# Subtest: replay of exact run/attempt/receipt is a no-op, and does not create another successor
+ok 3 - replay of exact run/attempt/receipt is a no-op, and does not create another successor
+  ---
+  duration_ms: 226.452085
+  type: 'test'
+  ...
+# Subtest: metadata permission denial keeps E08 unproved without asserting an absent or unconfigured mailbox
+ok 4 - metadata permission denial keeps E08 unproved without asserting an absent or unconfigured mailbox
+  ---
+  duration_ms: 195.126627
+  type: 'test'
+  ...
+# Subtest: a lower attempt of the same run cannot supersede the current attempt
+ok 5 - a lower attempt of the same run cannot supersede the current attempt
+  ---
+  duration_ms: 199.050565
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects pointer last C3
+ok 6 - previously unguarded active alias rejects pointer last C3
+  ---
+  duration_ms: 150.357292
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects matrix C3 transition
+ok 7 - previously unguarded active alias rejects matrix C3 transition
+  ---
+  duration_ms: 146.946526
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects ledger latest DEV
+ok 8 - previously unguarded active alias rejects ledger latest DEV
+  ---
+  duration_ms: 151.531709
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects descriptor next block
+ok 9 - previously unguarded active alias rejects descriptor next block
+  ---
+  duration_ms: 223.554433
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects nested hosting source
+ok 10 - previously unguarded active alias rejects nested hosting source
+  ---
+  duration_ms: 378.872046
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects nested candidate materialization
+ok 11 - previously unguarded active alias rejects nested candidate materialization
+  ---
+  duration_ms: 184.940102
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects nested matrix materialization
+ok 12 - previously unguarded active alias rejects nested matrix materialization
+  ---
+  duration_ms: 149.515934
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects snapshot date
+ok 13 - previously unguarded active alias rejects snapshot date
+  ---
+  duration_ms: 151.784413
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects project completed reader repeated as pending
+ok 14 - previously unguarded active alias rejects project completed reader repeated as pending
+  ---
+  duration_ms: 148.826634
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects client predecessor C3 presented as current
+ok 15 - previously unguarded active alias rejects client predecessor C3 presented as current
+  ---
+  duration_ms: 147.772058
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module serving source
+ok 16 - previously unguarded active alias rejects module serving source
+  ---
+  duration_ms: 146.138097
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module candidate source
+ok 17 - previously unguarded active alias rejects module candidate source
+  ---
+  duration_ms: 145.807443
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module candidate tree
+ok 18 - previously unguarded active alias rejects module candidate tree
+  ---
+  duration_ms: 153.367128
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module cumulative source
+ok 19 - previously unguarded active alias rejects module cumulative source
+  ---
+  duration_ms: 146.071458
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module nested deployment
+ok 20 - previously unguarded active alias rejects module nested deployment
+  ---
+  duration_ms: 152.75961
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module obsolete F2 operational receipt
+ok 21 - previously unguarded active alias rejects module obsolete F2 operational receipt
+  ---
+  duration_ms: 149.195685
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects module stale not deployed status
+ok 22 - previously unguarded active alias rejects module stale not deployed status
+  ---
+  duration_ms: 149.568183
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects owner serving source
+ok 23 - previously unguarded active alias rejects owner serving source
+  ---
+  duration_ms: 371.298142
+  type: 'test'
+  ...
+# Subtest: previously unguarded active alias rejects owner serving receipt
+ok 24 - previously unguarded active alias rejects owner serving receipt
+  ---
+  duration_ms: 179.592562
+  type: 'test'
+  ...
+# Subtest: historical archives stay historical and do not become active source assertions
+ok 25 - historical archives stay historical and do not become active source assertions
+  ---
+  duration_ms: 187.623231
+  type: 'test'
+  ...
+# Subtest: request guard rejects A08 obsolete request
+ok 26 - request guard rejects A08 obsolete request
+  ---
+  duration_ms: 162.933025
+  type: 'test'
+  ...
+# Subtest: request guard rejects D08 obsolete handoff
+ok 27 - request guard rejects D08 obsolete handoff
+  ---
+  duration_ms: 146.612716
+  type: 'test'
+  ...
+# Subtest: request guard rejects finance obsolete request
+ok 28 - request guard rejects finance obsolete request
+  ---
+  duration_ms: 147.393653
+  type: 'test'
+  ...
+# Subtest: D08 fulfilled request cannot remain active, but a distinct new request is allowed
+ok 29 - D08 fulfilled request cannot remain active, but a distinct new request is allowed
+  ---
+  duration_ms: 148.030865
+  type: 'test'
+  ...
+# Subtest: pending candidate aliases advance while the served predecessor receipt stays immutable
+ok 30 - pending candidate aliases advance while the served predecessor receipt stays immutable
+  ---
+  duration_ms: 152.104582
+  type: 'test'
+  ...
+# Subtest: pending candidate rejects stale currentCandidateSource
+ok 31 - pending candidate rejects stale currentCandidateSource
+  ---
+  duration_ms: 147.266764
+  type: 'test'
+  ...
+# Subtest: pending candidate rejects stale currentCandidateTree
+ok 32 - pending candidate rejects stale currentCandidateTree
+  ---
+  duration_ms: 144.832146
+  type: 'test'
+  ...
+# Subtest: pending candidate rejects stale cumulativeSource
+ok 33 - pending candidate rejects stale cumulativeSource
+  ---
+  duration_ms: 141.884101
+  type: 'test'
+  ...
+# Subtest: module alias migration preserves original receipts in history without changing approvals
+ok 34 - module alias migration preserves original receipts in history without changing approvals
+  ---
+  duration_ms: 141.254541
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: sourceSha
+ok 35 - HR proof must match exact scope: sourceSha
+  ---
+  duration_ms: 41.836378
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: sourceTree
+ok 36 - HR proof must match exact scope: sourceTree
+  ---
+  duration_ms: 34.992463
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: runId
+ok 37 - HR proof must match exact scope: runId
+  ---
+  duration_ms: 35.407673
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: runtimeRevision
+ok 38 - HR proof must match exact scope: runtimeRevision
+  ---
+  duration_ms: 36.243772
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: runtimeDigest
+ok 39 - HR proof must match exact scope: runtimeDigest
+  ---
+  duration_ms: 49.963621
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: hostingVersion
+ok 40 - HR proof must match exact scope: hostingVersion
+  ---
+  duration_ms: 268.956598
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: revision
+ok 41 - HR proof must match exact scope: revision
+  ---
+  duration_ms: 37.771454
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: production
+ok 42 - HR proof must match exact scope: production
+  ---
+  duration_ms: 44.493217
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: hrWrites
+ok 43 - HR proof must match exact scope: hrWrites
+  ---
+  duration_ms: 35.912317
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: authWrites
+ok 44 - HR proof must match exact scope: authWrites
+  ---
+  duration_ms: 59.063759
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: commandPosts
+ok 45 - HR proof must match exact scope: commandPosts
+  ---
+  duration_ms: 49.04623
+  type: 'test'
+  ...
+# Subtest: HR proof must match exact scope: firestoreWrites
+ok 46 - HR proof must match exact scope: firestoreWrites
+  ---
+  duration_ms: 35.546626
+  type: 'test'
+  ...
+# Subtest: partial successful-looking result cannot certify missing served asset
+ok 47 - partial successful-looking result cannot certify missing served asset
+  ---
+  duration_ms: 38.672255
+  type: 'test'
+  ...
+# Subtest: partial deploy rejects sourceHostedExact
+ok 48 - partial deploy rejects sourceHostedExact
+  ---
+  duration_ms: 37.948689
+  type: 'test'
+  ...
+# Subtest: partial deploy rejects runtimeTrafficExact
+ok 49 - partial deploy rejects runtimeTrafficExact
+  ---
+  duration_ms: 40.353584
+  type: 'test'
+  ...
+# Subtest: partial deploy rejects productionUnchanged
+ok 50 - partial deploy rejects productionUnchanged
+  ---
+  duration_ms: 35.594036
+  type: 'test'
+  ...
+# Subtest: modified ZIP digest, wrong source and duplicate artifact cannot be accepted
+ok 51 - modified ZIP digest, wrong source and duplicate artifact cannot be accepted
+  ---
+  duration_ms: 142.548381
+  type: 'test'
+  ...
+# Subtest: artifact from previous run attempt is rejected; legacy name is accepted only on first attempt
+ok 52 - artifact from previous run attempt is rejected; legacy name is accepted only on first attempt
+  ---
+  duration_ms: 36.031221
+  type: 'test'
+  ...
+# Subtest: 108 skipped jobs remain skipped and cannot create functional credit
+ok 53 - 108 skipped jobs remain skipped and cannot create functional credit
+  ---
+  duration_ms: 43.181284
+  type: 'test'
+  ...
+# Subtest: ZIP paths reject traversal, absolute, windows, and duplicate entries
+ok 54 - ZIP paths reject traversal, absolute, windows, and duplicate entries
+  ---
+  duration_ms: 0.399729
+  type: 'test'
+  ...
+# Subtest: CAS conflict before any object creation aborts without writing
+ok 55 - CAS conflict before any object creation aborts without writing
+  ---
+  duration_ms: 0.469553
+  type: 'test'
+  ...
+# Subtest: CAS race after commit construction prevents branch update and does not force
+ok 56 - CAS race after commit construction prevents branch update and does not force
+  ---
+  duration_ms: 0.460729
+  type: 'test'
+  ...
+# Subtest: source inventory comes from producer contract independently of result keys
+ok 57 - source inventory comes from producer contract independently of result keys
+  ---
+  duration_ms: 0.225803
+  type: 'test'
+  ...
+# Subtest: resumed build remains zero and needs original build, source, image and artifact proof
+ok 58 - resumed build remains zero and needs original build, source, image and artifact proof
+  ---
+  duration_ms: 36.156556
+  type: 'test'
+  ...
+# Subtest: one terminal writer in existing workflow covers every producer and stays within guarded size
+ok 59 - one terminal writer in existing workflow covers every producer and stays within guarded size
+  ---
+  duration_ms: 2.957391
+  type: 'test'
+  ...
+# Subtest: journal existence alone never proves consumption
+ok 60 - journal existence alone never proves consumption
+  ---
+  duration_ms: 35.170312
+  type: 'test'
+  ...
+# Subtest: startup recovers every missing attempt and ignores mutable checkpoint date
+ok 61 - startup recovers every missing attempt and ignores mutable checkpoint date
+  ---
+  duration_ms: 35.41912
+  type: 'test'
+  ...
+# Subtest: interrupted control-only finalizer recovers success
+ok 62 - interrupted control-only finalizer recovers success
+  ---
+  duration_ms: 40.407263
+  type: 'test'
+  ...
+# Subtest: interrupted control-only finalizer recovers failure
+ok 63 - interrupted control-only finalizer recovers failure
+  ---
+  duration_ms: 34.123839
+  type: 'test'
+  ...
+# Subtest: interrupted control-only finalizer recovers cancelled
+ok 64 - interrupted control-only finalizer recovers cancelled
+  ---
+  duration_ms: 38.729671
+  type: 'test'
+  ...
+# Subtest: interrupted control-only finalizer recovers timed_out
+ok 65 - interrupted control-only finalizer recovers timed_out
+  ---
+  duration_ms: 41.380668
+  type: 'test'
+  ...
+# Subtest: interrupted control-only finalizer recovers skipped
+ok 66 - interrupted control-only finalizer recovers skipped
+  ---
+  duration_ms: 38.206282
+  type: 'test'
+  ...
+# Subtest: control recovery preserves consumed attempt and skips running latest attempt
+ok 67 - control recovery preserves consumed attempt and skips running latest attempt
+  ---
+  duration_ms: 38.901774
+  type: 'test'
+  ...
+# Subtest: publication stage advances while D08/C09/C10 obligations remain explicit
+ok 68 - publication stage advances while D08/C09/C10 obligations remain explicit
+  ---
+  duration_ms: 155.856952
+  type: 'test'
+  ...
+# Subtest: typed window proof removes only its completed action and preserves all domain obligations
+ok 69 - typed window proof removes only its completed action and preserves all domain obligations
+  ---
+  duration_ms: 165.01232
+  type: 'test'
+  ...
+# Subtest: requested HR window result cannot be silently omitted
+ok 70 - requested HR window result cannot be silently omitted
+  ---
+  duration_ms: 77.311081
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong runId
+ok 71 - typed window proof rejects wrong runId
+  ---
+  duration_ms: 102.560561
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong runAttempt
+ok 72 - typed window proof rejects wrong runAttempt
+  ---
+  duration_ms: 94.013966
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong revision
+ok 73 - typed window proof rejects wrong revision
+  ---
+  duration_ms: 65.198643
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong sourceSha
+ok 74 - typed window proof rejects wrong sourceSha
+  ---
+  duration_ms: 47.208024
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong sourceTree
+ok 75 - typed window proof rejects wrong sourceTree
+  ---
+  duration_ms: 42.253747
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong runtimeRevision
+ok 76 - typed window proof rejects wrong runtimeRevision
+  ---
+  duration_ms: 38.539929
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong runtimeDigest
+ok 77 - typed window proof rejects wrong runtimeDigest
+  ---
+  duration_ms: 42.730318
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong hostingVersion
+ok 78 - typed window proof rejects wrong hostingVersion
+  ---
+  duration_ms: 36.350373
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong production
+ok 79 - typed window proof rejects wrong production
+  ---
+  duration_ms: 35.663459
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong hrWrites
+ok 80 - typed window proof rejects wrong hrWrites
+  ---
+  duration_ms: 92.075478
+  type: 'test'
+  ...
+# Subtest: typed window proof rejects wrong fullDomain
+ok 81 - typed window proof rejects wrong fullDomain
+  ---
+  duration_ms: 37.46769
+  type: 'test'
+  ...
+# Subtest: incorporated failed and successful jobs both leave the live pending list while the journal remains unchanged
+ok 82 - incorporated failed and successful jobs both leave the live pending list while the journal remains unchanged
+  ---
+  duration_ms: 0.947537
+  type: 'test'
+  ...
+# Subtest: only the exact effective run/attempt/job queue keeps a live pending item
+ok 83 - only the exact effective run/attempt/job queue keeps a live pending item
+  ---
+  duration_ms: 0.170841
+  type: 'test'
+  ...
+# Subtest: a repaired live pending projection is idempotent and has no product or domain credit
+ok 84 - a repaired live pending projection is idempotent and has no product or domain credit
+  ---
+  duration_ms: 0.268335
+  type: 'test'
+  ...
+# Subtest: draining an old journal cannot supersede a newer current run or attempt
+ok 85 - draining an old journal cannot supersede a newer current run or attempt
+  ---
+  duration_ms: 0.261376
+  type: 'test'
+  ...
+# Subtest: the current attempt pending projection requires the original journal binding
+ok 86 - the current attempt pending projection requires the original journal binding
+  ---
+  duration_ms: 0.284409
+  type: 'test'
+  ...
+# Subtest: a new current run publishes its effective pending set immediately
+ok 87 - a new current run publishes its effective pending set immediately
+  ---
+  duration_ms: 0.176601
+  type: 'test'
+  ...
+# Subtest: 0d457: exact incorporated D08 supersedes the stale Finance prerequisite in all four controls
+ok 88 - 0d457: exact incorporated D08 supersedes the stale Finance prerequisite in all four controls
+  ---
+  duration_ms: 5.509312
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when evidence absent
+ok 89 - D08 does not acquire current authority when evidence absent
+  ---
+  duration_ms: 0.598901
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when followup absent
+ok 90 - D08 does not acquire current authority when followup absent
+  ---
+  duration_ms: 0.514376
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when result key differs
+ok 91 - D08 does not acquire current authority when result key differs
+  ---
+  duration_ms: 0.567124
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when receipt hash differs
+ok 92 - D08 does not acquire current authority when receipt hash differs
+  ---
+  duration_ms: 0.555277
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when pointer followup differs
+ok 93 - D08 does not acquire current authority when pointer followup differs
+  ---
+  duration_ms: 0.55754
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when producer control differs
+ok 94 - D08 does not acquire current authority when producer control differs
+  ---
+  duration_ms: 0.581415
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when producer request differs
+ok 95 - D08 does not acquire current authority when producer request differs
+  ---
+  duration_ms: 0.526535
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when producer pointer request differs
+ok 96 - D08 does not acquire current authority when producer pointer request differs
+  ---
+  duration_ms: 0.626892
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when served source differs
+ok 97 - D08 does not acquire current authority when served source differs
+  ---
+  duration_ms: 0.68032
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when served tree differs
+ok 98 - D08 does not acquire current authority when served tree differs
+  ---
+  duration_ms: 0.670316
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when paired run differs
+ok 99 - D08 does not acquire current authority when paired run differs
+  ---
+  duration_ms: 0.600873
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when paired receipt differs
+ok 100 - D08 does not acquire current authority when paired receipt differs
+  ---
+  duration_ms: 0.859333
+  type: 'test'
+  ...
+# Subtest: D08 does not acquire current authority when newer D08 has no bound followup
+ok 101 - D08 does not acquire current authority when newer D08 has no bound followup
+  ---
+  duration_ms: 1.702864
+  type: 'test'
+  ...
+# Subtest: changed receipt bytes reject before any control mutation
+ok 102 - changed receipt bytes reject before any control mutation
+  ---
+  duration_ms: 0.932612
+  type: 'test'
+  ...
+# Subtest: changed request bytes reject before any control mutation
+ok 103 - changed request bytes reject before any control mutation
+  ---
+  duration_ms: 0.591771
+  type: 'test'
+  ...
+# Subtest: a different native producer cannot borrow an incorporated D08 result key
+ok 104 - a different native producer cannot borrow an incorporated D08 result key
+  ---
+  duration_ms: 0.459656
+  type: 'test'
+  ...
+# Subtest: a later incorporated Finance followup keeps precedence without ordering execution clocks
+ok 105 - a later incorporated Finance followup keeps precedence without ordering execution clocks
+  ---
+  duration_ms: 0.419878
+  type: 'test'
+  ...
+# Subtest: admitted Google pair uses the served candidate despite historical ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED
+ok 106 - admitted Google pair uses the served candidate despite historical ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED
+  ---
+  duration_ms: 0.68675
+  type: 'test'
+  ...
+# Subtest: admitted Google pair uses the served candidate despite historical CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD
+ok 107 - admitted Google pair uses the served candidate despite historical CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD
+  ---
+  duration_ms: 0.429121
+  type: 'test'
+  ...
+# Subtest: held A08 job preserves exactly HN and four historical API cells
+ok 108 - held A08 job preserves exactly HN and four historical API cells
+  ---
+  duration_ms: 4.526477
+  type: 'test'
+  ...
+# Subtest: wrong HN leaf or artifact cannot acquire historical credit
+ok 109 - wrong HN leaf or artifact cannot acquire historical credit
+  ---
+  duration_ms: 0.271479
+  type: 'test'
+  ...
+# Subtest: provenance-only carries existing evidence without crediting either diagnosed password
+ok 110 - provenance-only carries existing evidence without crediting either diagnosed password
+  ---
+  duration_ms: 0.397965
+  type: 'test'
+  ...
+# Subtest: diagnostic completion alone supplies no accepted clauses
+ok 111 - diagnostic completion alone supplies no accepted clauses
+  ---
+  duration_ms: 0.20415
+  type: 'test'
+  ...
+# Subtest: API preservation with wrong digest does not credit any API denial
+ok 112 - API preservation with wrong digest does not credit any API denial
+  ---
+  duration_ms: 0.205783
+  type: 'test'
+  ...
+# Subtest: receipt identity and hash are both verified before projection
+ok 113 - receipt identity and hash are both verified before projection
+  ---
+  duration_ms: 1.668573
+  type: 'test'
+  ...
+# Subtest: subtracts only HN and metadata; GT, SHP, Storage and financial UI remain
+ok 114 - subtracts only HN and metadata; GT, SHP, Storage and financial UI remain
+  ---
+  duration_ms: 4.424876
+  type: 'test'
+  ...
+# Subtest: API-only credit leaves all three password exceptions pending
+ok 115 - API-only credit leaves all three password exceptions pending
+  ---
+  duration_ms: 0.534857
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with wrong scope
+ok 116 - metadata does not clear obligation with wrong scope
+  ---
+  duration_ms: 0.438254
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with failed job
+ok 117 - metadata does not clear obligation with failed job
+  ---
+  duration_ms: 0.420909
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with no exact readback
+ok 118 - metadata does not clear obligation with no exact readback
+  ---
+  duration_ms: 0.359068
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with financial write
+ok 119 - metadata does not clear obligation with financial write
+  ---
+  duration_ms: 0.348723
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with domain promotion claim
+ok 120 - metadata does not clear obligation with domain promotion claim
+  ---
+  duration_ms: 0.337427
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with not replay safe
+ok 121 - metadata does not clear obligation with not replay safe
+  ---
+  duration_ms: 0.237819
+  type: 'test'
+  ...
+# Subtest: idempotent metadata noop settles the same metadata obligation only
+ok 122 - idempotent metadata noop settles the same metadata obligation only
+  ---
+  duration_ms: 0.331127
+  type: 'test'
+  ...
+# Subtest: replay and duplicate receipts do not increase credit or create another residual version
+ok 123 - replay and duplicate receipts do not increase credit or create another residual version
+  ---
+  duration_ms: 1.106287
+  type: 'test'
+  ...
+# Subtest: unknown or tampered A08 reference is rejected
+ok 124 - unknown or tampered A08 reference is rejected
+  ---
+  duration_ms: 0.448449
+  type: 'test'
+  ...
+# Subtest: predecessor serving and pending candidate are not rewritten by scoped credit
+ok 125 - predecessor serving and pending candidate are not rewritten by scoped credit
+  ---
+  duration_ms: 0.288644
+  type: 'test'
+  ...
+# Subtest: MATCH modules and their human acceptance remain byte-identical
+ok 126 - MATCH modules and their human acceptance remain byte-identical
+  ---
+  duration_ms: 0.268335
+  type: 'test'
+  ...
+# Subtest: cleanup-only evidence does not settle D08 functional requirements
+ok 127 - cleanup-only evidence does not settle D08 functional requirements
+  ---
+  duration_ms: 0.120036
+  type: 'test'
+  ...
+# Subtest: old A08 index upgrades from exact artifact without changing old receipt or key
+ok 128 - old A08 index upgrades from exact artifact without changing old receipt or key
+  ---
+  duration_ms: 1.670116
+  type: 'test'
+  ...
+# Subtest: normalization rejects changed artifact without writing anything
+ok 129 - normalization rejects changed artifact without writing anything
+  ---
+  duration_ms: 0.780107
+  type: 'test'
+  ...
+# Subtest: normalization rejects changed raw result and retains historical receipt
+ok 130 - normalization rejects changed raw result and retains historical receipt
+  ---
+  duration_ms: 0.543499
+  type: 'test'
+  ...
+# Subtest: existing control binder can bind residual-only successor without fabricated execution receipt
+ok 131 - existing control binder can bind residual-only successor without fabricated execution receipt
+  ---
+  duration_ms: 542.393981
+  type: 'test'
+  ...
+# Subtest: consumer projects already indexed metadata with no provider or artifact download
+ok 132 - consumer projects already indexed metadata with no provider or artifact download
+  ---
+  duration_ms: 637.529469
+  type: 'test'
+  ...
+# Subtest: projection failure cannot leak a staged normalization receipt or mutate caller files
+ok 133 - projection failure cannot leak a staged normalization receipt or mutate caller files
+  ---
+  duration_ms: 1.988915
+  type: 'test'
+  ...
+# Subtest: C3 still ignores scoped summaries with no owner receipts
+ok 134 - C3 still ignores scoped summaries with no owner receipts
+  ---
+  duration_ms: 4.7127
+  type: 'test'
+  ...
+# Subtest: exact recovery/probe remove only their existing execution IDs, leaving the F3 contract open
+ok 135 - exact recovery/probe remove only their existing execution IDs, leaving the F3 contract open
+  ---
+  duration_ms: 0.306891
+  type: 'test'
+  ...
+# Subtest: residual next action synchronizes four controls and handoffs without repeating completed metadata or cleanup
+ok 136 - residual next action synchronizes four controls and handoffs without repeating completed metadata or cleanup
+  ---
+  duration_ms: 72.873672
+  type: 'test'
+  ...
+# Subtest: pending approved source produces a publication step before new candidate functional proof
+ok 137 - pending approved source produces a publication step before new candidate functional proof
+  ---
+  duration_ms: 36.695771
+  type: 'test'
+  ...
+# Subtest: an Actions account lock preserves the Google DEV path, producer order and business obligations
+ok 138 - an Actions account lock preserves the Google DEV path, producer order and business obligations
+  ---
+  duration_ms: 38.620822
+  type: 'test'
+  ...
+# Subtest: consumer repairs only stale next action via existing binder even without new clause credit or provider call
+ok 139 - consumer repairs only stale next action via existing binder even without new clause credit or provider call
+  ---
+  duration_ms: 315.042853
+  type: 'test'
+  ...
+# Subtest: GT typed proof projects its own exact clause and clears only the verified password obligation
+ok 140 - GT typed proof projects its own exact clause and clears only the verified password obligation
+  ---
+  duration_ms: 3.132997
+  type: 'test'
+  ...
+# Subtest: GT alone preserves an unproved HN exception and later HN credit is order independent
+ok 141 - GT alone preserves an unproved HN exception and later HN credit is order independent
+  ---
+  duration_ms: 0.943638
+  type: 'test'
+  ...
+# Subtest: GT retirement is idempotent when HN was already projected and Legacy stays open
+ok 142 - GT retirement is idempotent when HN was already projected and Legacy stays open
+  ---
+  duration_ms: 1.824222
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing final artifact seal
+ok 143 - GT clause is absent for missing final artifact seal
+  ---
+  duration_ms: 0.300842
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing HR proof
+ok 144 - GT clause is absent for missing HR proof
+  ---
+  duration_ms: 0.382823
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing restore
+ok 145 - GT clause is absent for missing restore
+  ---
+  duration_ms: 0.319811
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for legacy attempt
+ok 146 - GT clause is absent for legacy attempt
+  ---
+  duration_ms: 0.303416
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for diagnostic substituted
+ok 147 - GT clause is absent for diagnostic substituted
+  ---
+  duration_ms: 0.21033
+  type: 'test'
+  ...
+# Subtest: GT failed producer cannot get credit even if its raw scoped decision claimed PASS
+ok 148 - GT failed producer cannot get credit even if its raw scoped decision claimed PASS
+  ---
+  duration_ms: 0.733038
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered archive
+ok 149 - GT projection rejects tampered archive
+  ---
+  duration_ms: 0.624288
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered identity
+ok 150 - GT projection rejects tampered identity
+  ---
+  duration_ms: 0.506054
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered index job
+ok 151 - GT projection rejects tampered index job
+  ---
+  duration_ms: 0.486876
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered same artifact
+ok 152 - GT projection rejects tampered same artifact
+  ---
+  duration_ms: 0.456892
+  type: 'test'
+  ...
+# Subtest: GT public reference excludes raw identities, credentials, private paths and unsupported Google provenance
+ok 153 - GT public reference excludes raw identities, credentials, private paths and unsupported Google provenance
+  ---
+  duration_ms: 0.284379
+  type: 'test'
+  ...
+# Subtest: GT scoped receipt updates every existing nextAction without adding a new progress projection
+ok 154 - GT scoped receipt updates every existing nextAction without adding a new progress projection
+  ---
+  duration_ms: 86.417829
+  type: 'test'
+  ...
+# Subtest: consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once
+ok 155 - consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once
+  ---
+  duration_ms: 406.618051
+  type: 'test'
+  ...
+1..155
+# tests 155
+# suites 0
+# pass 155
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9195.252593

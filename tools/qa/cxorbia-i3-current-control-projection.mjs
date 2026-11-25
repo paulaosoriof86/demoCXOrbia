@@ -144,7 +144,35 @@ export function residualAction(mod){
 
 // Derive the next operational step from existing residual clauses. This changes
 // no module verdict, approval or execution receipt and adds no acceptance gate.
-export function projectCurrentResidualNextAction(out,{completedTaskIds=[]}={}){
+function currentD08Followup(out,evidence){
+ const {descriptor:d,pointer:p}=out,followup=d.currentD08GoogleFollowup,requestRef=d.currentD08UiQaRequest;
+ const entry=d.currentFunctionalEvidenceIndex?.results?.filter(x=>x.provider==='GOOGLE_CLOUD_SHELL'&&x.path?.includes('_GOOGLE_D08_')).at(-1);
+ const served=d.currentMaterialization||{},seal=d.postDeployRunSeal||{};
+ if(!evidence||!followup?.nextAction||!entry||entry.key!==followup.resultKey||entry.sha256!==followup.receiptSha256||
+  !requestRef?.path||requestRef.sourceSha!==served.sourceSha||!same(followup,p.currentD08GoogleFollowup)||
+  !same(requestRef,p.currentD08UiQaRequest)||!same(entry,p.currentFunctionalEvidenceIndex?.results?.find(x=>x.key===entry.key))||
+  !same(served,p.currentMaterialization)||!same(seal,p.postDeployRunSeal))return null;
+ const {producer,receiptBytes,requestBytes}=evidence;
+ if(producer?.head!==entry.controlHead||!same(requestRef,producer.descriptor?.currentD08UiQaRequest)||
+  !same(requestRef,producer.pointer?.currentD08UiQaRequest))return null;
+ must(typeof receiptBytes==='string'&&gitBlob(receiptBytes)===entry.gitBlob&&sha256(receiptBytes)===entry.sha256,'SOURCE_FAILURE:D08_FOLLOWUP_RECEIPT_BYTES');
+ must(typeof requestBytes==='string'&&gitBlob(requestBytes)===requestRef.gitBlob,'SOURCE_FAILURE:D08_FOLLOWUP_REQUEST_BYTES');
+ const receipt=JSON.parse(receiptBytes),proof=receipt.provenance||{},request=JSON.parse(requestBytes);
+ must(receipt.schemaVersion==='cxorbia.i3.typed-result-summary.v1'&&receipt.kind==='D08_INCOMPLETE'&&
+  receipt.decision==='RECORDED_D08_INCOMPLETE'&&receipt.production===false&&proof.provider==='GOOGLE_CLOUD_SHELL'&&
+  proof.archiveVerified===true&&proof.job==='i3-run2382-academy-b7-isolated-dev-qa'&&
+  entry.key==='GOOGLE_CLOUD_SHELL/'+proof.startGeneration&&proof.controlSha===entry.controlHead&&
+  ['controlHead','transportSha','startUri','resultUri','bundleSha256','archiveUri','archiveSha256'].every(k=>typeof entry[k]==='string'&&entry[k]===proof[k]),
+  'SOURCE_FAILURE:D08_FOLLOWUP_RECEIPT_IDENTITY');
+ const identities=[served,producer.descriptor.currentMaterialization,producer.pointer.currentMaterialization];
+ if(request.production!==false||requestRef.production!==false||request.sourceSha!==requestRef.sourceSha||
+  String(request.pairedRunId)!==String(requestRef.pairedRunId)||
+  !identities.every(value=>value&&['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>typeof request[k]==='string'&&request[k]===value[k])&&String(value.runId)===String(request.pairedRunId))||
+  ![seal,producer.descriptor.postDeployRunSeal,producer.pointer.postDeployRunSeal].every(value=>value&&value.receiptPath===request.pairedReceiptPath&&value.receiptBlob===request.pairedReceiptGitBlob))return null;
+ return {entry,nextAction:followup.nextAction};
+}
+
+export function projectCurrentResidualNextAction(out,{completedTaskIds=[],d08Evidence}={}){
  const {descriptor:d,pointer:p,matrix:m}=out;
  const completed=[...new Set([...[d,p,out.ledger,m].flatMap(x=>x.nextPlannedBlock?.completedTaskIds||[]),...completedTaskIds])];
  const residuals=(m.modules||[]).filter(x=>x.classification!=='MATCH').map(mod=>({domain:mod.domain,pending:Array.isArray(mod.currentResidualClauses)?mod.currentResidualClauses.join(' '):mod.currentResidualClauses?.pending||mod.actionRequired||'Unproved existing contract; retain HOLD.'}));
@@ -156,7 +184,11 @@ export function projectCurrentResidualNextAction(out,{completedTaskIds=[]}={}){
  const followup=d.currentFinanceGoogleFollowup;
  const lastGoogleFinance=d.currentFunctionalEvidenceIndex?.results?.filter(x=>x.provider==='GOOGLE_CLOUD_SHELL'&&x.resultUri&&x.path?.includes('_GOOGLE_FINANCE_')).at(-1);
  const pendingFinance=followup?.servedSource===served.sourceSha&&lastGoogleFinance?.key===followup?.resultKey&&lastGoogleFinance?.sha256===followup?.receiptSha256&&followup?.nextAction;
- const start=pendingFinance?followup.nextAction:environmentBlocked?'GitHub Actions recorded zero steps. Use the authorized Google Cloud DEV lane when QA signing and external evidence incorporation are verified. Run the pending Finance and Academy requests on their producer-bound served source before paired publication. If Actions resumes first, use its original attempt lineage. Use one executor and incorporate each result before the next functional write.':sameCandidate?'Use the exact currently served DEV candidate.':'First verify and publish the approved pending source through the existing paired DEV lane, then verify the served artifact.';
+ const d08=currentD08Followup(out,d08Evidence),results=d.currentFunctionalEvidenceIndex?.results||[];
+ // The append-only incorporation order chooses between bound Google follow-ups;
+ // execution clocks and foreign run IDs do not establish succession.
+ const pendingD08=d08&&(!pendingFinance||results.indexOf(d08.entry)>results.indexOf(lastGoogleFinance));
+ const start=pendingD08?d08.nextAction:pendingFinance?followup.nextAction:sameCandidate?'Use the exact currently served DEV candidate.':environmentBlocked?'GitHub Actions recorded zero steps. Use the authorized Google Cloud DEV lane when QA signing and external evidence incorporation are verified. Run the pending Finance and Academy requests on their producer-bound served source before paired publication. If Actions resumes first, use its original attempt lineage. Use one executor and incorporate each result before the next functional write.':'First verify and publish the approved pending source through the existing paired DEV lane, then verify the served artifact.';
  const focused=pendingPriorities.map(([task,domain])=>task+': '+residuals.find(x=>x.domain===domain).pending).join(' ');
  const other=residuals.filter(x=>!pendingPriorities.some(([,domain])=>domain===x.domain)).map(x=>x.domain);
  const nextAction='I3: '+start+(completed.includes('HR_PERIOD_WINDOW')?' The reading window, retained history and explicit older-period read are verified in their recorded scope.':'')+' Execute only active bound requests and the following current residuals. '+focused+(other.length?' Also retain the currentResidualClauses of '+other.join(', ')+'.':'')+' E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.';

@@ -129,11 +129,13 @@ test('residual next action synchronizes four controls and handoffs without repea
 });
 test('pending approved source produces a publication step before new candidate functional proof',()=>{
  const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix};out.descriptor.productSourceSha='1'.repeat(40);
+ const servedSource=out.descriptor.currentMaterialization.sourceSha;
  out.descriptor.activeBlocker='VRM376_SOURCE_PROVEN_SINGLE_PAIRED_DEV_PENDING';
- const got=projectCurrentResidualNextAction(out);assert.match(got.nextAction,/First verify and publish the approved pending source/);assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
+ const got=projectCurrentResidualNextAction(out);assert.match(got.nextAction,/First verify and publish the approved pending source/);assert.equal(out.descriptor.currentMaterialization.sourceSha,servedSource);
 });
 test('an Actions account lock preserves the Google DEV path, producer order and business obligations',()=>{
  const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix};
+ const servedSource=out.descriptor.currentMaterialization.sourceSha;
  out.descriptor.activeBlocker='ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED';out.descriptor.productSourceSha='1'.repeat(40);
  const got=projectCurrentResidualNextAction(out);
  assert.match(got.nextAction,/^I3: GitHub Actions recorded zero steps/);
@@ -141,7 +143,7 @@ test('an Actions account lock preserves the Google DEV path, producer order and 
  assert.match(got.nextAction,/Finance and Academy requests on their producer-bound served source before paired publication/);
  for(const control of Object.values(out))assert.equal(control.nextExactAction,got.nextAction);
  assert.equal(projectCurrentResidualNextAction(out).changed,false);
- assert.match(got.nextAction,/FINANCE_RESIDUAL:/);assert.match(got.nextAction,/E08:/);assert.equal(out.descriptor.productSourceSha,'1'.repeat(40));assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
+ assert.match(got.nextAction,/FINANCE_RESIDUAL:/);assert.match(got.nextAction,/E08:/);assert.equal(out.descriptor.productSourceSha,'1'.repeat(40));assert.equal(out.descriptor.currentMaterialization.sourceSha,servedSource);
  assert.equal(out.descriptor.activeBlocker,'ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED');
 });
 test('consumer repairs only stale next action via existing binder even without new clause credit or provider call',async()=>{

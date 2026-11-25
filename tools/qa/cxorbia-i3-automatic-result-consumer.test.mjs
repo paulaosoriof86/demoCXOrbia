@@ -8,7 +8,21 @@ import {validateZipListing,selectPairedArtifact,runJournal,commitFiles,requiredP
 import {validateCurrentAuthorityAliases,validResumedBuild} from './cxorbia-i3-current-authority-alias-guard.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
-function inputs(){const descriptor=read(DESCRIPTOR);return {descriptor,pointer:read(POINTER),ledger:read(descriptor.findingsLedgerPath),matrix:read(descriptor.moduleTruthPath)};}
+function inputs(){
+ const descriptor=read(DESCRIPTOR),controls={descriptor,pointer:read(POINTER),ledger:read(descriptor.findingsLedgerPath),matrix:read(descriptor.moduleTruthPath)};
+ // These cases exercise the legacy Actions lineage. Keep the live alias shape,
+ // but anchor its predecessor to an immutable Actions receipt; a later Google
+ // UUID is covered separately and must never become Number(uuid) in this fixture.
+ const receiptPath='docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json';
+ const receiptBytes=fs.readFileSync(path.join(root,receiptPath),'utf8'),prior=JSON.parse(receiptBytes).materialization;
+ for(const control of Object.values(controls)){
+  control.currentMaterialization=structuredClone(prior);
+  control.postDeployRunSeal={...control.postDeployRunSeal,...Object.fromEntries(['runId','runNumber','runAttempt','sourceSha','sourceTree','artifactDigest','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease','firestoreRuleset','hrRevision'].map(k=>[k,prior[k]])),mode:'PREDECESSOR_SERVING_PENDING_SOURCE',receiptPath,receiptBlob:gitBlob(receiptBytes)};
+  delete control.postDeployRunSeal.executionProvider;delete control.postDeployRunSeal.executionBinding;
+  control.actionsScanCursor={provider:'GITHUB_ACTIONS',runId:String(prior.runId),runAttempt:prior.runAttempt};
+ }
+ return controls;
+}
 function fixture(){
  const controls=inputs(),d=controls.descriptor,runId=Number(d.currentMaterialization.runId)+100,attempt=1;
  const run={id:runId,run_number:3000,run_attempt:attempt,head_sha:'a'.repeat(40),head_branch:'recovery/cxorbia-phase-a-20260831',path:'.github/workflows/cxorbia-recovery-i3-dev-certification.yml',repository:{full_name:'paulaosoriof86/demoCXOrbia'},status:'in_progress',conclusion:null};
