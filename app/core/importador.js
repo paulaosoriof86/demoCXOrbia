@@ -47,10 +47,16 @@ window.CX = window.CX || {};
 
     /* propone mapeo header→campo canónico por palabras clave */
     autoMap(headers){
-      const map={};
+      const map={}, fields=Object.keys(FIELDS);
+      // Conserva las formas largas que antes coincidían con ref/num/id.
+      const fullForms={ref:['referencia'],num:['numero'],id:['identificador']};
       headers.forEach((h,i)=>{
-        const n=norm(h); let best=null;
-        Object.keys(FIELDS).forEach(f=>{ if(FIELDS[f].syn.some(s=>n.includes(s))) best=best||f; });
+        const n=norm(h), words=n.match(/[a-z0-9]+|#/g)||[];
+        // Un campo o alias exacto prevalece sobre una subcadena de otro campo.
+        const exact=fields.find(f=>[f,norm(FIELDS[f].label),...FIELDS[f].syn].includes(n));
+        const best=exact||fields.find(f=>FIELDS[f].syn.some(s=>
+          f!=='ref'||s.length>3 ? n.includes(s) : words.some(w=>w===s||(fullForms[s]||[]).includes(w))
+        ));
         if(best && !Object.values(map).includes(best)) map[i]=best;
       });
       return map; // {colIndex: field}
