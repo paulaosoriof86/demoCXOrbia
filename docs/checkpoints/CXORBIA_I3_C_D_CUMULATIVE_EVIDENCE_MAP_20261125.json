@@ -235,6 +235,12 @@
       "sha256": "983cbd9a52296cb328601ce38c2133fb10cf5eae1e1da2b4bcd2d1aa5cc4606e",
       "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
       "scope": "HOLD retry; initial protected HR remained blocked after one bounded reload; roleProofCount=0 and cleanupOk=true. No new functional credit."
+    },
+    "financeGoogleUi235d": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795638868819016_TYPED_RESULT.json",
+      "gitBlob": "1f9820937d225a7dd5a9f3a6fb3847ea5450cdc7",
+      "sha256": "8a763a7b685a3735aa37063255612dda020058a10b71a2b408f43cda80f759c8",
+      "scope": "Two independent Admin sessions on sealed235d: exact advances and server rows, Movimientos preview/XLSX/native PDF and real-row Dashboard export parity; no financial mutations. Does not certify independent HR KPIs, payments, liquidation, batch, support or the full C09/C10 tasks."
     }
   },
   "tasks": [
@@ -404,13 +410,15 @@
         "blocks456",
         "financeUiScope",
         "financeAcademyLatest",
-        "currentMatrix"
+        "currentMatrix",
+        "financeGoogleUi235d"
       ],
       "preservedEvidenceScope": [
-        "B5 Benefits functional acceptance and B6 Dashboard functional acceptance preserved; RUN2786 control flow reached preview/XLSX/printDOM before PDF failure."
+        "B5 Benefits functional acceptance and B6 Dashboard functional acceptance preserved; RUN2786 control flow reached preview/XLSX/printDOM before PDF failure.",
+        "Two independent Admin sessions on sealed235d: exact advances and server rows, Movimientos preview/XLSX/native PDF and real-row Dashboard export parity; no financial mutations. Does not certify independent HR KPIs, payments, liquidation, batch, support or the full C09/C10 tasks."
       ],
       "remainingOrMappingBoundary": [
-        "Actual PDF content/extraction failure remains unresolved; current same-cut/currency/export and finance-only cross-role residuals remain. Do not reopen accepted B5/B6 merely because B8 settlement is open."
+        "Preserve the exact two-session Admin Movimientos and Dashboard export PASS on sealed235d. Remaining evidence concerns independent same-HR KPI parity, finance-only role/support permissions and the other uncovered original C09 clauses. Do not repeat the verified PDFs or reopen accepted B5/B6 because B8 settlement remains open."
       ],
       "newPassGranted": false
     },
@@ -427,13 +435,15 @@
         "financeInventory",
         "financeUiScope",
         "financeAcademyLatest",
-        "accountLock"
+        "accountLock",
+        "financeGoogleUi235d"
       ],
       "preservedEvidenceScope": [
-        "Historical independent-session evidence for exact C02/C04/C05 scopes retained; existing operational/QA data boundaries preserved."
+        "Historical independent-session evidence for exact C02/C04/C05 scopes retained; existing operational/QA data boundaries preserved.",
+        "Two independent Admin sessions on sealed235d: exact advances and server rows, Movimientos preview/XLSX/native PDF and real-row Dashboard export parity; no financial mutations. Does not certify independent HR KPIs, payments, liquidation, batch, support or the full C09/C10 tasks."
       ],
       "remainingOrMappingBoundary": [
-        "Current two-session finance/exactadvance/export verification not passed; RUN2787 did not start. Full terminal account/movement/liquidation/batch/support flow still requires uncovered evidence."
+        "Two-session Movimientos, exact advances and export parity passed on sealed235d and remain accepted within that recorded scope. Full terminal account, liquidation, batch, support and uncovered cross-role/session clauses remain pending; preserve the original period and financial-write boundaries."
       ],
       "newPassGranted": false
     },
@@ -607,5 +617,17 @@
   "phaseAComplete": false,
   "i4Authorized": false,
   "sourceTreeInspected": "49c2d6dea6fb8c9fb8bc20a14a20f33f1f1b75bd",
-  "readbackVerifiedAgainstPublishedHead": true
+  "readbackVerifiedAgainstPublishedHead": true,
+  "latestScopedEvidenceUpdate": {
+    "observedAt": "2026-11-25T21:02:21.695Z",
+    "controlHeadInspected": "5446e5bace129b63d361de9e238342426a3715c0",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795638868819016_TYPED_RESULT.json",
+    "receiptSha256": "8a763a7b685a3735aa37063255612dda020058a10b71a2b408f43cda80f759c8",
+    "tasks": [
+      "C09",
+      "C10"
+    ],
+    "fullTaskPromotion": false,
+    "newFunctionalExecution": false
+  }
 }

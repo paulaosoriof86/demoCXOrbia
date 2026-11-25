@@ -136,6 +136,8 @@ Las decisiones del 16-10 permiten normalización y fusión nominal corroborada c
 
 **Control contra escritores simultáneos:** antes de todo write usar HEAD/tree remotos y `expected_sha` (CAS/lease); si cambia, abortar ese write sin un segundo candidato. Esta regla aplica también al control documental. Los problemas de longitud/interrupción de una conversación ChatGPT no deben alterar el estado persistente ni justificar reauditar todo.
 
+**Reanudación compacta de I3:** después de sincronizar la única rama, ejecutar `node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current`. Ejecuta el guard completo y muestra HEAD/árbol, los cuatro controles por blob, fuente aprobada frente a servida, sucesor, recibos, cola y siguiente acción. Abrir después sólo el recibo o cláusula que esa acción necesita. No volver a volcar los controles históricos completos para recuperar una decisión operativa. Un fallo `CHECKOUT_MISSING_C3_*` o `CHECKOUT_INCOMPLETE_C3_ANCESTRY` requiere completar los objetos/historial Git y repetir el guard; no demuestra deriva del producto ni autoriza reabrir PASS. La salida compacta es lectura de autoridad, no certificación funcional, visual ni I4. Los cortes estáticos de prompts anteriores no sustituyen esta lectura viva.
+
 
 ## 11. Incorporación automática de ejecuciones — corrección VRM-374, 2026-11-24
 

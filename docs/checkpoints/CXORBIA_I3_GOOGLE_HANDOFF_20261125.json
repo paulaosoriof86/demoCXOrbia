@@ -559,7 +559,8 @@
       "duplicateDispatch": false,
       "financeTransportCommit": "7cfd7f02ff69cca7159f4c01b2b909f0dff74d49",
       "academyTransportCommit": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69"
-    }
+    },
+    "recoveryOnReconnect": "Read current authority; check the native E10 launch tag for any active or completed build before dispatch or control writes. Reuse and consume that execution if present. Otherwise run the existing paired job with the verified E10 image and the exact current producer. Preserve Finance PASS and D08 partial evidence."
   },
   "newDevDeploys": 1,
   "newFinancialMovements": 0,
@@ -574,5 +575,20 @@
     "matrixVersion": "V406",
     "ledgerVersion": "V733"
   },
-  "servedTree": "77b4de2c621560019ad043f22d90e75a508d2f79"
+  "servedTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "currentControlReadbackCommand": "node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current",
+  "continuityForensics": {
+    "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_ROOT_CAUSE_20261125.md",
+    "scope": "CONTROL_AND_EVIDENCE_CONTINUITY_NOT_PHASE_A_CERTIFICATION",
+    "fullTaskPromotion": false,
+    "production": false
+  },
+  "recoverySessionConnection": {
+    "observedAt": "2026-11-25T21:04:43.674399+00:00",
+    "provider": "CHROME_CONNECTED_BROWSER",
+    "outcome": "ENVIRONMENT_FAILURE_NO_CONNECTED_BROWSER",
+    "toolMessage": "No connected browser was found for the originating browser instance.",
+    "scope": "THIS_RECOVERY_SESSION_ONLY",
+    "nativeBuildStatusNotInferred": true
+  }
 }

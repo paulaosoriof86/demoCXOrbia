@@ -1,5 +1,17 @@
 # Continuación autorizada en Google Cloud y Chrome — 25 de noviembre de 2026
 
+## Reanudación por autoridad viva
+
+Antes de usar cualquiera de los cortes o comandos históricos que siguen, sincronizar la rama canónica y ejecutar:
+
+```sh
+node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current
+```
+
+La salida distingue la fuente aprobada, la servida, la imagen preparada y los resultados funcionales. Usar su siguiente acción y los recibos vigentes; los SHAs, versiones e intentos anteriores de este documento conservan trazabilidad, no son nuevas órdenes de ejecución. No repetir un alcance con PASS incorporado por el corte de una conversación. Si Google ya tiene una ejecución activa, conservar su ID y esperar/incorporar ese resultado antes de otro dispatch o write de control que cambie el productor.
+
+El mapa C09/C10 ya debe conservar el recibo `CXORBIA_I3_GOOGLE_FINANCE_1795638868819016_TYPED_RESULT.json`: dos sesiones Admin, Movimientos y exportaciones Dashboard XLSX/PDF en235d, sin mutaciones financieras. Su alcance no cierra pagos, lotes, soportes, otros roles ni KPIs contra HR independiente. El recibo D08 `1795639660815985` conserva observaciones Admin/recurso y limpieza; no acredita el resto de roles. Véase `CXORBIA_I3_CONTINUITY_ROOT_CAUSE_20261125.md` para el diagnóstico limitado de continuidad y bootstrap.
+
 ## Hecho nuevo y límite observado
 
 Paula autoriza expresamente ejecutar las publicaciones DEV pendientes mediante Google Cloud, mantener la misma candidata, abrir y gestionar las pestañas desde su Chrome conectado y continuar hasta resolver los procesos residuales. Si esta sesión requiere Work, solicita el prompt completo. Esta autorización sustituye el carácter meramente propuesto de la contingencia Google; no acredita que el ejecutor exista o sus permisos funcionen, y conserva la autorización productiva de I4 sobre el artefacto exacto.

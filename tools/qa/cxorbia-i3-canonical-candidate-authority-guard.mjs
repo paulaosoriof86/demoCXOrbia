@@ -58,6 +58,13 @@ if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_
 const moduleTruthPath=String(d.moduleTruthPath||'');
 if(!moduleTruthPath)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_POINTER_EMPTY');
 const mt=readJson(moduleTruthPath);
+// A shallow checkout is an environment failure, not proof of release drift.
+for(const [label,sha] of Object.entries({SOURCE:d.currentC3PreterminalAudit?.sourceSha,CONTROL:d.currentC3PreterminalAudit?.controlHeadAtAudit})){
+  if(/^[a-f0-9]{40}$/.test(String(sha||''))){
+    try{execFileSync('git',['cat-file','-e',sha+'^{commit}'],{stdio:'ignore'});}
+    catch{fail('ENVIRONMENT_FAILURE:CHECKOUT_MISSING_C3_'+label,sha);}
+  }
+}
 const continuityReadback=validateShockContinuity({
   descriptor:d, pointer:p, matrix:mt,
   gitBlob:p=>{try{return git('rev-parse','HEAD:'+p);}catch{return '';}}
@@ -126,7 +133,11 @@ if(JSON.stringify(mt.currentC3PreterminalAudit||null)!==JSON.stringify(c3)||
 if(!/^[a-f0-9]{40}$/.test(String(c3.controlHeadAtAudit||'')))
   fail('SOURCE_FAILURE:CURRENT_C3_CONTROL_PARENT_MISSING');
 try{execFileSync('git',['merge-base','--is-ancestor',c3.controlHeadAtAudit,'HEAD']);}
-catch{fail('RELEASE_COMPOSITION_FAILURE:CURRENT_C3_CONTROL_HEAD_NOT_ANCESTOR');}
+catch{
+  if(git('rev-parse','--is-shallow-repository')==='true')
+    fail('ENVIRONMENT_FAILURE:CHECKOUT_INCOMPLETE_C3_ANCESTRY',c3.controlHeadAtAudit);
+  fail('RELEASE_COMPOSITION_FAILURE:CURRENT_C3_CONTROL_HEAD_NOT_ANCESTOR');
+}
 const moduleTruthReadback={
   path:moduleTruthPath,sourceSha:mtSource,expectedSourceSha:d.productSourceSha,
   sourceAligned:mtSource===d.productSourceSha,
@@ -310,4 +321,57 @@ const result={
     (!legacyWorkflowLedgerActive||workflowLedgerReadback.aligned),
   production:false
 };
-process.stdout.write(JSON.stringify(result,null,2)+'\n');
+let output=result;
+if(process.argv.includes('--current')){
+  const pick=(value,keys)=>Object.fromEntries(keys.filter(key=>Object.hasOwn(value||{},key)).map(key=>[key,value[key]]));
+  const head=git('rev-parse','HEAD');
+  const identityKeys=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'];
+  const controls=[DESCRIPTOR,'CXORBIA_RECOVERY_EXECUTION_CURRENT.json',moduleTruthPath,LEDGER].map(path=>{
+    const blob=git('rev-parse',head+':'+path);
+    if(git('hash-object',path)!==blob)fail('SOURCE_FAILURE:CURRENT_CONTROL_WORKTREE_DRIFT',path);
+    return {path,gitBlob:blob};
+  });
+  // Read the latest incorporated receipt of each kind; do not compare provider IDs.
+  const latestByKind=new Map();
+  for(const entry of d.currentFunctionalEvidenceIndex?.results||[]){
+    if(git('hash-object',entry.path)!==entry.gitBlob)fail('SOURCE_FAILURE:CURRENT_TYPED_RECEIPT_DRIFT',entry.path);
+    const receipt=readJson(entry.path);
+    const kind=receipt.kind||entry.kind||receipt.schemaVersion;
+    latestByKind.set(kind,{
+      kind,...pick(entry,['key','path','gitBlob','sha256','provider','controlHead','transportSha','observedAt','decision']),
+      producerDecision:receipt.producer?.decision||receipt.producerDecision||null,
+      identity:pick(receipt.identity?.observed||receipt.identity,identityKeys),
+      fullDomain:receipt.fullDomain===true,phaseAComplete:receipt.phaseAComplete===true
+    });
+  }
+  const pending=d.pendingDevSuccessor;
+  output={
+    decision:result.decision,proofScope:result.proofScope,view:'CURRENT_CONTROL_READBACK',
+    head,controlTree:git('rev-parse',head+'^{tree}'),controls,iteration:p.iteration,state:p.state,
+    productSource:{sha:d.productSourceSha,tree:productTree},
+    serving:{
+      ...pick(d.currentMaterialization,[...identityKeys,'executionProvider','runId','runAttempt','hostingRelease','hrRevision','verifiedServedAssetCount']),
+      ...pick(d.postDeployRunSeal,['mode','receiptPath','receiptBlob'])
+    },
+    pendingDevSuccessor:pending?{
+      ...pick(pending,['state','scope','sourceSha','sourceTree','predecessorProductSourceSha','proofReceiptPath','proofReceiptBlob','devPublished']),
+      imageBuild:pick(pending.pairedCloudBuild?.imageBuild,['id','tag','digest']),
+      launchTag:pending.pairedCloudBuild?.launchTag||null
+    }:null,
+    lastAutomation:pick(d.currentAutomationReceipt,['path','gitBlob','executionProvider','runId','runAttempt','outcome']),
+    latestFunctionalResults:[...latestByKind.values()],
+    incorporationQueue:p.currentResultIncorporationQueue||[],
+    academyRequest:d.currentD08UiQaRequest||null,
+    completedTaskIds:p.nextPlannedBlock?.completedTaskIds||[],
+    matchedDomains:modules.filter(x=>x.classification==='MATCH').map(x=>x.domain),
+    residuals:modules.filter(x=>x.classification!=='MATCH').map(x=>({
+      domain:x.domain,classification:x.classification,
+      clauseCount:Array.isArray(x.currentResidualClauses)?x.currentResidualClauses.length:null,
+      clauseReference:moduleTruthPath+'#modules/'+x.domain+'/currentResidualClauses'
+    })),
+    nextExactAction:d.exactNextAction,
+    terminalReleaseEligible:result.terminalReleaseEligible,production:d.production,authorizationI4:p.authorizationI4
+  };
+  if(git('rev-parse','HEAD')!==head)fail('SOURCE_FAILURE:CURRENT_READBACK_HEAD_CHANGED');
+}
+process.stdout.write(JSON.stringify(output,null,2)+'\n');
