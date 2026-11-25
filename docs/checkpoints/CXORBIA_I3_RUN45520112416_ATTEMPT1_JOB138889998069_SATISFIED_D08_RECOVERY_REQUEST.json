@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.i3.satisfied-d08-recovery-request.v1",
+  "requestBinding": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+    "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+    "canonicalSha256": "fdbf4f24fdecf7f2a4176a5bb7a69016a1df5d62796b2c28ee9e386899236161"
+  },
+  "fixtureRunId": "45514816284",
+  "typedReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_TYPED_RESULT.json",
+    "gitBlob": "d9ca5c0065128a9660028fc4b715a8343b46dc22",
+    "sha256": "a597dbf6b8f928e2f1950873b5021208bb418904c7390758364fdb3f686fbc47"
+  },
+  "controls": {
+    "descriptor": {
+      "currentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+        "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+        "state": "REQUESTED_EXACT_RUN2783_RECOVERY_ONLY",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "pairedRunId": 45488581923,
+        "production": false
+      }
+    },
+    "pointer": {
+      "currentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+        "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+        "state": "REQUESTED_EXACT_RUN2783_RECOVERY_ONLY",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "pairedRunId": 45488581923,
+        "production": false
+      }
+    }
+  },
+  "production": false,
+  "newDomainMatches": 0,
+  "fullDomain": false
+}

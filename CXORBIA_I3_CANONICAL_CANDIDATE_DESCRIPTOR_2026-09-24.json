@@ -224,8 +224,8 @@
   "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
   "productTreeAuthority": "3725071a72014d6b891648ab5d2eeef9638276ac",
   "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V726_2026-11-24.json",
-  "findingsLedgerExpectedGitBlob": "6cf87506896627981634b641b63fa299400edef5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V727_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "dc5284d83db0a7e363ff2bf112263d4b1d88e884",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,7 +244,7 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V399.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V400.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2958,7 +2958,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "bed0413e173e4f29ddf2ddc3bdbdfabc8f2d2cc2",
+  "moduleTruthExpectedGitBlob": "559a44a7833e35c62cf0cb077cef8f99383518fd",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -17334,7 +17334,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-25T00:19:35.934Z",
+  "updatedAt": "2026-11-25T00:44:39.032Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18357,12 +18357,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261124-V399.json",
-      "gitBlob": "bed0413e173e4f29ddf2ddc3bdbdfabc8f2d2cc2"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V400.json",
+      "gitBlob": "559a44a7833e35c62cf0cb077cef8f99383518fd"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V726_2026-11-24.json",
-      "gitBlob": "6cf87506896627981634b641b63fa299400edef5"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V727_2026-11-25.json",
+      "gitBlob": "dc5284d83db0a7e363ff2bf112263d4b1d88e884"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -35648,21 +35648,21 @@
   },
   "currentAutomationReceipt": {
     "schemaVersion": "cxorbia.i3.automatic-execution-journal.v1",
-    "path": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_EXECUTION_JOURNAL.json",
-    "gitBlob": "7cf4a6b525b802e6d195f2ba0f60292ea1e10105",
-    "runId": 45518873588,
+    "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "gitBlob": "9504eb7eef497a91bb0cfd6d987550e508348fa4",
+    "runId": 45520112416,
     "runAttempt": 1,
     "outcome": "RECORDED_EXECUTION_NO_PRODUCT_PROMOTION",
     "pendingTypedResults": [
       {
-        "jobId": 138885330821,
-        "name": "canonical-candidate-authority",
+        "jobId": 138889994810,
+        "name": "i3-finance-focal-reproof",
         "conclusion": "failure",
         "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
       },
       {
-        "jobId": 138885588333,
-        "name": "i3-keeper-role-e2e-readonly",
+        "jobId": 138889998069,
+        "name": "i3-run2382-academy-b7-isolated-dev-qa",
         "conclusion": "success",
         "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED"
       }
@@ -35681,6 +35681,17 @@
       "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_EXECUTION_JOURNAL.json",
       "journalBlob": "7cf4a6b525b802e6d195f2ba0f60292ea1e10105",
       "controlHead": "806f27e21333b5c27dd880e1fa558bb03f37134a"
+    },
+    {
+      "jobId": 138889994810,
+      "name": "i3-finance-focal-reproof",
+      "conclusion": "failure",
+      "state": "EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED",
+      "runId": 45520112416,
+      "runAttempt": 1,
+      "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_EXECUTION_JOURNAL.json",
+      "journalBlob": "9504eb7eef497a91bb0cfd6d987550e508348fa4",
+      "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf"
     }
   ],
   "vrm375ContinuityReconciliation": {
@@ -35843,14 +35854,6 @@
     "fullDomain": false,
     "production": false
   },
-  "currentD08UiQaRequest": {
-    "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
-    "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
-    "state": "REQUESTED_EXACT_RUN2783_RECOVERY_ONLY",
-    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
-    "pairedRunId": 45488581923,
-    "production": false
-  },
   "currentContinuityMethodRepair": {
     "path": "docs/checkpoints/CXORBIA_I3_TYPED_RESULT_AND_MODULE_CONTINUITY_METHOD_FIX_20261124.json",
     "gitBlob": "a82d9dcb857b6f04f1e2113e9820c94cf0003707",
@@ -35917,9 +35920,9 @@
       },
       {
         "key": "45514816284/1/138871930190",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45514816284_ATTEMPT1_JOB138871930190_TYPED_RESULT.json",
-        "gitBlob": "72146c91d4c23d34283c4b851dcf520938ef1a13",
-        "sha256": "d49f906d29b1207d4d5eb6eff31114e405529a617099b927026e33124e7a22f2",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45514816284_ATTEMPT1_JOB138871930190_TYPED_RESULT_SCOPED_V1.json",
+        "gitBlob": "929f9daf837a7eff945a9104018d2ad0355b2a73",
+        "sha256": "0cba716c691e135bd0bb16db8d6a38d8d237c4284947d4526a17dfef72c57dcd",
         "runId": 45514816284,
         "runAttempt": 1,
         "jobId": 138871930190,
@@ -35962,9 +35965,9 @@
       },
       {
         "key": "45518873588/1/138885588333",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_JOB138885588333_TYPED_RESULT.json",
-        "gitBlob": "e17160499de43b3f5eca29bca44b15215d1cca8a",
-        "sha256": "531cc0b18c6e21b4dfa04633c427205695c89434444f34dec82dc71728502fad",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_JOB138885588333_TYPED_RESULT_SCOPED_V1.json",
+        "gitBlob": "fec13faa8467f2232b67a9553cb7e7656caa89ec",
+        "sha256": "d3dddd6eba048cb211c761f5501fad41655f232ce65e476adcdea5caf37c52ac",
         "runId": 45518873588,
         "runAttempt": 1,
         "jobId": 138885588333,
@@ -35974,31 +35977,69 @@
         "decision": "RECORDED_TYPED_RESULT_HOLD",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T00:34:58.784Z"
+      },
+      {
+        "key": "45520112416/1/138889998069",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_TYPED_RESULT.json",
+        "gitBlob": "d9ca5c0065128a9660028fc4b715a8343b46dc22",
+        "sha256": "a597dbf6b8f928e2f1950873b5021208bb418904c7390758364fdb3f686fbc47",
+        "runId": 45520112416,
+        "runAttempt": 1,
+        "jobId": 138889998069,
+        "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
+        "artifactId": 14979538218,
+        "artifactDigest": "sha256:7274a685136c3e3f0ca35c598a3893ed19d284bce6dc93bcc470c95e7b933817",
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T00:44:39.032Z",
+        "kind": "D08_RECOVERY",
+        "producerDecision": "PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP",
+        "requestBinding": {
+          "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+          "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+          "canonicalSha256": "fdbf4f24fdecf7f2a4176a5bb7a69016a1df5d62796b2c28ee9e386899236161"
+        }
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T00:34:58.784Z"
+    "updatedAt": "2026-11-25T00:44:39.032Z"
   },
-  "currentTypedResultFailures": [],
+  "currentTypedResultFailures": [
+    {
+      "key": "45520112416/1/138889994810",
+      "runId": 45520112416,
+      "runAttempt": 1,
+      "jobId": 138889994810,
+      "code": "SOURCE_FAILURE:TYPED_ARTIFACT_MISSING_OR_AMBIGUOUS",
+      "observedAt": "2026-11-25T00:44:39.032Z"
+    }
+  ],
   "lastTypedResultIncorporation": {
-    "observedAt": "2026-11-25T00:34:58.784Z",
-    "runId": 45518873588,
+    "observedAt": "2026-11-25T00:44:39.032Z",
+    "runId": 45520112416,
     "runAttempt": 1,
     "receipts": [
       {
-        "key": "45518873588/1/138885588333",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_JOB138885588333_TYPED_RESULT.json",
-        "gitBlob": "e17160499de43b3f5eca29bca44b15215d1cca8a",
-        "sha256": "531cc0b18c6e21b4dfa04633c427205695c89434444f34dec82dc71728502fad",
-        "runId": 45518873588,
+        "key": "45520112416/1/138889998069",
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_TYPED_RESULT.json",
+        "gitBlob": "d9ca5c0065128a9660028fc4b715a8343b46dc22",
+        "sha256": "a597dbf6b8f928e2f1950873b5021208bb418904c7390758364fdb3f686fbc47",
+        "runId": 45520112416,
         "runAttempt": 1,
-        "jobId": 138885588333,
-        "controlHead": "806f27e21333b5c27dd880e1fa558bb03f37134a",
-        "artifactId": 14978969186,
-        "artifactDigest": "sha256:cfcff1fdfaa7fa1c57420d47c7eab10a0026d1ee14ffb6b5803c53f42af5956d",
+        "jobId": 138889998069,
+        "controlHead": "5f11003c6ea488a9e0fbbee1b3ae5cfa8f8422bf",
+        "artifactId": 14979538218,
+        "artifactDigest": "sha256:7274a685136c3e3f0ca35c598a3893ed19d284bce6dc93bcc470c95e7b933817",
         "decision": "RECORDED_TYPED_RESULT_HOLD",
         "ownerReceiptCount": 0,
-        "observedAt": "2026-11-25T00:34:58.784Z"
+        "observedAt": "2026-11-25T00:44:39.032Z",
+        "kind": "D08_RECOVERY",
+        "producerDecision": "PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP",
+        "requestBinding": {
+          "path": "docs/checkpoints/CXORBIA_I3_D08_RUN2783_RECOVERY_ONLY_REQUEST_20261125.json",
+          "gitBlob": "9a012bacac907a17b897bdc0e5d486375d3b747c",
+          "canonicalSha256": "fdbf4f24fdecf7f2a4176a5bb7a69016a1df5d62796b2c28ee9e386899236161"
+        }
       }
     ],
     "production": false,
