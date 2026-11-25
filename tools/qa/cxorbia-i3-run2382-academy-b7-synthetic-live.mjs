@@ -716,7 +716,10 @@ async function runAcademyUiQa(){
       if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await awaited('fixture.profile.create:'+identity.uid,()=>db.doc(identity.profilePath).create(identity.expectedProfile));check(same((await readDoc(identity.profilePath,'fixture.profile.readback')).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
       check(same((await readDoc(identity.memberPath,'fixture.member.readback')).data(),identity.expectedMembership),'PERSISTENCE_FAILURE:D08_MEMBER_READBACK');const actual=await auth.getUser(identity.uid);check(same(actual.customClaims,claims)&&same(authIdentity(actual),identity.authIdentity),'AUTH_FAILURE:D08_AUTH_READBACK');identity.state='CREATED_VERIFIED';save();
     }
-    const {chromium}=await import('playwright');browser=await awaited('browser.launch',()=>chromium.launch({headless:true}),45000);
+    const {chromium}=await import('playwright');
+    result.browserTransport=e.CXORBIA_D08_BROWSER_TRANSPORT==='HTTP1_DIAGNOSTIC'?'HTTP1_DIAGNOSTIC':'CHROMIUM_DEFAULT';
+    const args=result.browserTransport==='HTTP1_DIAGNOSTIC'?['--disable-http2','--disable-quic']:[];
+    browser=await awaited('browser.launch',()=>chromium.launch({headless:true,args}),45000);
     for(const identity of identities.filter(x=>!x.observer)){
       const ses=await session(identity,identity.label);await resource(ses);await progressUi(ses);await ses.context.close();const fresh=await newSessionProof(identity);
       if(identity.role==='admin'){

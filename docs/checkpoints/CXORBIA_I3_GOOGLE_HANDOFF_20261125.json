@@ -4,7 +4,7 @@
   "state": "HOLD",
   "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
   "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
-  "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "servedSource": "235d6c28e72226f792514656fd5c47c8ba65cbee",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
     "ownerPaths": 111,
@@ -445,6 +445,52 @@
       "rolePermissionsChecked": true,
       "conditionalBindingReadBack": true,
       "challengeSigned": true
+    },
+    "academySealedRequest": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_REQUEST_20261125.json",
+      "sha256": "88ff6a694d08bbc368e521f802ec71dd4b9479ea64c5e4e0a1ba102319d1d2d2",
+      "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
+      "ownershipChecksPassed": 44,
+      "newBusinessProcessPasses": 0
+    },
+    "financeDashboardOnSealedDev": {
+      "iteration": "I3",
+      "state": "HOLD",
+      "executionProvider": "GOOGLE_CLOUD_SHELL",
+      "nativeStartGeneration": "1795633941596300",
+      "nativeResultGeneration": "1795634012210303",
+      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/2350cfab-c2ca-4928-9b49-52c29cccdfec/result.json#1795634012210303",
+      "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+      "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529",
+      "session": 1,
+      "authenticatedHrApplied": true,
+      "readTransport": "HTTP1_DIAGNOSTIC",
+      "firestoreListen": {
+        "requests": 31,
+        "responses200": 31,
+        "aborted": 2
+      },
+      "result": {
+        "movementExport": true,
+        "advancesMatched": true,
+        "dashboardPreviewRows": 2,
+        "dashboardXlsxRows": 2,
+        "dashboardPrintDomRows": 2,
+        "dashboardPdfPageCount": 1,
+        "dashboardPdfSize": 50547,
+        "dashboardPdfSha256": "ab156f037d41a68e79d3202c456173045abcc36ca49ba6c14d725123da39d4fb",
+        "dashboardXlsxSha256": "86fe65f39d2ccffbcc90feeb05f0853803d5013c4b1bb79bc74da3f86766f2bf",
+        "failingCountryColumnCellHashes": [
+          "f20c8e92b1216d28f833999d3f86e95ac310773a4261a8434175e5ee99155b12",
+          "ac534d70cd42409b4a20c9e0012d7f60bbdef429a283c9de7614563bb61242fc"
+        ],
+        "financialMutations": 0,
+        "providerCommands": 0,
+        "unexpectedDenied": 0
+      },
+      "typedResultSha256": "acc41992e5f67459b12f5d7197ac51a54c77b90963a241619933976c734d3fcc",
+      "decision": "RECORDED_TYPED_RESULT_HOLD"
     }
   },
   "lastChromeConnection": {
@@ -455,8 +501,8 @@
     "trafficPercent": 100
   },
   "next": {
-    "finance": "Admin membership and metadata receipt were verified. On the sealed successor the browser reached authenticated HR HTTP 200, then Firestore server reads on projects, shoppers, periods and visits all timed out. Compare native Chromium HTTP/1 and the same authenticated read-only REST query, preserving every write guard. Then complete the PDF, dashboard and permission clauses.",
-    "academy": "Preserve the three prior scoped D08 results and their exact cleanup. Use the current revision to diagnose protected HR before exercising residual roles.",
+    "finance": "The HTTP/1 run proved the real Movimientos PDF in the first session. Dashboard preview and XLSX match both rows; the two flag + country strings are absent from parsed dashboard PDF. Compare identical printed fixture with the baseline Chromium fonts and an isolated emoji font before changing product or validating the remaining second session.",
+    "academy": "Use the new D08 request bound to Google 18d8d2fd and the tested Chromium HTTP/1 transport. Preserve the earlier Admin cycles, clean fixture evidence, and the original 25-clause contract.",
     "deployment": "Paired publication complete. Keep its real native UUID and immutable source. Do not redeploy before a proved product defect.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Rebind the existing isolated GT/HN endpoint fixture to this receipt. Use genuine QA producer identity and verify provider ACK, independent remote readback, replay and exact cleanup."
@@ -473,5 +519,6 @@
     "pdfFinding": "VRM-378",
     "matrixVersion": "V406",
     "ledgerVersion": "V733"
-  }
+  },
+  "servedTree": "77b4de2c621560019ad043f22d90e75a508d2f79"
 }

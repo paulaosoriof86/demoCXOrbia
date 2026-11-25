@@ -8,6 +8,13 @@ export GCLOUD_PROJECT="$PROJECT" GOOGLE_CLOUD_QUOTA_PROJECT="$PROJECT" HOSTING_U
 export CANDIDATE_DESCRIPTOR=CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
 export CXORBIA_GOOGLE_QA_BRANCH=recovery/cxorbia-phase-a-20260831
 producer=12f9ea2058e34085a4c668a1bfd3147fcdf266a4
+if [[ -n "${CXORBIA_D08_CURRENT_RECEIPT:-}" ]]; then
+  receipt=$(jq -er '.postDeployRunSeal | select(.mode=="CURRENT_SOURCE_SERVING") | .receiptPath' "$CANDIDATE_DESCRIPTOR")
+  [[ "$receipt" == "$CXORBIA_D08_CURRENT_RECEIPT" && "$receipt" == docs/checkpoints/CXORBIA_I3_GOOGLE_*_AUTOMATIC_DEV_RECEIPT.json ]]
+  [[ "$(git hash-object "$receipt")" == "$(jq -er .postDeployRunSeal.receiptBlob "$CANDIDATE_DESCRIPTOR")" ]]
+  jq -e '.executionProvider=="GOOGLE_CLOUD_BUILD" and .executionBinding.nativeBuildVerified and .sourceHostedExact and .materialization.hrLiveVerified and .production==false' "$receipt" >/dev/null
+  producer=$(git rev-parse HEAD)
+fi
 runner=tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
 [[ "$(git rev-parse HEAD)" == "$producer" && -z "${GITHUB_ACTIONS:-}${GITHUB_RUN_ID:-}" ]]
 [[ "$(gcloud config get-value project)" == "$PROJECT" && "$(node -p 'process.versions.node.split(".")[0]')" == 24 ]]
