@@ -609,10 +609,25 @@ async function runAcademyUiQa(){
       await page.goto('about:blank');await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
       await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
       await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());diagnostic.stage='AUTHENTICATED_WAITING_CONTEXT';save();
-      await page.waitForFunction(({uid,role,namespace,tenantId,projectId})=>{
+      const ready=({uid,role,namespace,tenantId,projectId})=>{
         const a=window.CX?.backendAuth?.context?.()||{},p=window.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},academy=d.__academyState||{};
         return a.authenticated===true&&a.role===role&&a.authNamespace===namespace&&a.tenantId===tenantId&&firebase.auth().currentUser?.uid===uid&&p.actorUid===uid&&p.role===role&&p.tenantId===tenantId&&h.applied===true&&h.actorUid===uid&&g.ready===true&&!g.blocked&&d.currentProjectId===projectId&&academy.authority==='firestore_tenant_academy'&&academy.progressOwnerUid===uid&&academy.progress?.ownerUid===uid&&academy.progressAuthority==='firestore_user_academy_progress'&&CX.acadData?._canonical?.()===true;
-      },{uid:identity.uid,role:identity.role,namespace:identity.namespace,tenantId,projectId},{timeout:150000});
+      };
+      const scope={uid:identity.uid,role:identity.role,namespace:identity.namespace,tenantId,projectId};
+      try{await page.waitForFunction(ready,scope,{timeout:75000});}
+      catch(error){
+        if(error.name!=='TimeoutError'||ses.postCount!==0)throw error;
+        const bound=await page.evaluate(({uid,role,namespace,tenantId,projectId})=>{
+          const ctx=window.CX?.backendAuth?.context?.()||{};
+          return firebase.auth().currentUser?.uid===uid&&ctx.authenticated===true&&ctx.role===role&&ctx.authNamespace===namespace&&ctx.tenantId===tenantId&&ctx.projectIds?.includes(projectId);
+        },scope);
+        if(!bound)throw error;
+        diagnostic.contextReload='EXACT_AUTHENTICATED_SCOPE_NO_COMMANDS';save();
+        await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+        await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
+        await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());
+        await page.waitForFunction(ready,scope,{timeout:75000});
+      }
       diagnostic.observed=await page.evaluate(()=>{const a=CX.backendAuth.context(),h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};return {authenticated:a.authenticated,role:a.role,namespace:a.authNamespace,tenantId:a.tenantId,projectId:CX.data.currentProjectId,periodId:CX.data.currentPeriodId,sourceRevision:CX.data.previewMeta?.sourceRevision||null,shopperCountry:h.shopperCountry||null,shopperReady:h.exactSessionShopperReady===true,ownVisits:h.ownVisits??null,boundaryActorId:CX.cxDataCommandBoundary.context().actorId};});
       ses.boundaryActorId=diagnostic.observed.boundaryActorId;check(ses.boundaryActorId,'AUTH_FAILURE:D08_BOUNDARY_ACTOR_MISSING');
       if(identity.role==='shopper')check(diagnostic.observed.shopperCountry===country&&diagnostic.observed.shopperReady&&diagnostic.observed.ownVisits===0,'AUTH_FAILURE:D08_SHOPPER_FIXTURE_PROFILE');

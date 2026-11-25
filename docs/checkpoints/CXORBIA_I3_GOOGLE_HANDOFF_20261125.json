@@ -108,7 +108,8 @@
       "newRoleCycles": 0
     },
     "academyResults": [
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json"
     ],
     "currentAcademy": {
       "decision": "HOLD",
@@ -171,6 +172,26 @@
       "failureCode": "SHOPPER_MEMBERSHIP_UID_MISMATCH",
       "fixtureOwner": "tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs",
       "enforcingProduct": "app/adapters/cxorbia-shopper-membership-wiring-v1.js"
+    },
+    "currentAcademyRetry": {
+      "decision": "HOLD",
+      "source": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "resultSha256": "38136db5d845684e1d5ce9bd8a70146321fd6229ecc3b694c678648a41f39864",
+      "archive": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/0d5e7808-76d9-4abe-b44d-57847fefa2ea/evidence.zip#1795626801050440",
+      "workerFinished": true,
+      "waitingStage": "admin-new-session protected HR context",
+      "gate": "protected_auth_hr_authority_blocked",
+      "ownerError": null,
+      "browserTimeoutMs": 150000,
+      "completedRoleInInitialSession": "admin",
+      "learnerRolesReached": 0,
+      "deletedDocuments": 18,
+      "deletedAuthUsers": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "classification": "ENVIRONMENT_FAILURE",
+      "productDefectEstablished": false,
+      "priorAdminEvidence": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json"
     }
   },
   "lastChromeConnection": {
@@ -182,7 +203,7 @@
   },
   "next": {
     "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
-    "academy": "On served 1691a76, the Admin course and authorized edit survived independent sessions and replay. The D08 Shopper fixture omitted its required UID fingerprint and claims digest. Rerun the authorized original D08 request with the repaired fixture and its unchanged product guard. Record the independent result and exact cleanup. Then publish paired source 235d6c28 and continue Finance and F3 on its real DEV receipt.",
+    "academy": "Retain the verified Admin course and edit, the learner role coverage still outstanding, and both cleanup readbacks. A fresh Admin context on 1691 timed out waiting for protected HR readiness before it reached the Shopper. The runner permits one normal reload only before commands and only for the exact authenticated scope. Run the same D08 request, incorporate it, then deploy paired 235d6c28 and verify the PDF and F3 with the same native receipt.",
     "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },

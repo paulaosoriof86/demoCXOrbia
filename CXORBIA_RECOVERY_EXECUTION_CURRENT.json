@@ -388,8 +388,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
-          "gitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V410.json",
+          "gitBlob": "b649e7499a659fd52c0369eda1491da86145c86c",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -2515,8 +2515,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
-    "gitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V410.json",
+    "gitBlob": "b649e7499a659fd52c0369eda1491da86145c86c"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4516,8 +4516,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
-    "matrixBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V410.json",
+    "matrixBlob": "b649e7499a659fd52c0369eda1491da86145c86c",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -6415,12 +6415,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
-      "gitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V410.json",
+      "gitBlob": "b649e7499a659fd52c0369eda1491da86145c86c"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V736_2026-11-25.json",
-      "gitBlob": "9f9840b2419db62802dfa056bbddef06e818d757"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V737_2026-11-25.json",
+      "gitBlob": "7fe76cb766fe6510e43f28897cef5a5d692208d9"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7236,8 +7236,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V736_2026-11-25.json",
-  "findingsLedgerExpectedGitBlob": "9f9840b2419db62802dfa056bbddef06e818d757",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V737_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "7fe76cb766fe6510e43f28897cef5a5d692208d9",
   "nextFindingId": "VRM-379",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8257,7 +8257,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V409.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V410.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -10832,7 +10832,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "796ab0e26e78eb1d7997090bf8519f734dbb6ec2",
+  "moduleTruthExpectedGitBlob": "b649e7499a659fd52c0369eda1491da86145c86c",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -27393,10 +27393,27 @@
         "decision": "RECORDED_D08_INCOMPLETE",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T16:55:02.230000+00:00"
+      },
+      {
+        "key": "GOOGLE_CLOUD_SHELL/1795626564900967",
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795626807221222_TYPED_RESULT.json",
+        "gitBlob": "7fedca649af062a958a24e166e719e8031211fe3",
+        "sha256": "38136db5d845684e1d5ce9bd8a70146321fd6229ecc3b694c678648a41f39864",
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+        "transportSha": "69aa6aaa373d0034f388b2a02875e3841c6e7f38",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/0d5e7808-76d9-4abe-b44d-57847fefa2ea/start.json#1795626564900967",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/0d5e7808-76d9-4abe-b44d-57847fefa2ea/result.json#1795626807221222",
+        "bundleSha256": "50e1e38f01873a94d2e7f7753c3b9092d78edcac0d3f1853d55240b8f82f6ef9",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/0d5e7808-76d9-4abe-b44d-57847fefa2ea/evidence.zip#1795626801050440",
+        "archiveSha256": "d0f995c120cf1e3e738be25033a35502fc7ec65a4f7b91a1781fd6896d4bab4a",
+        "decision": "RECORDED_D08_INCOMPLETE",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-25T17:13:27.221Z"
       }
     ],
     "production": false,
-    "updatedAt": "2026-11-25T16:55:02.230000+00:00"
+    "updatedAt": "2026-11-25T17:13:27.221Z"
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
@@ -27678,8 +27695,8 @@
     "nextAction": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write."
   },
   "currentD08GoogleFollowup": {
-    "resultKey": "GOOGLE_CLOUD_SHELL/1795625465105544",
-    "receiptSha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
-    "nextAction": "On served 1691a76, the Admin course and authorized edit survived independent sessions and replay. The D08 Shopper fixture omitted its required UID fingerprint and claims digest. Rerun the authorized original D08 request with the repaired fixture and its unchanged product guard. Record the independent result and exact cleanup. Then publish paired source 235d6c28 and continue Finance and F3 on its real DEV receipt."
+    "resultKey": "GOOGLE_CLOUD_SHELL/1795626564900967",
+    "receiptSha256": "38136db5d845684e1d5ce9bd8a70146321fd6229ecc3b694c678648a41f39864",
+    "nextAction": "Retain the verified Admin course and edit, the learner role coverage still outstanding, and both cleanup readbacks. A fresh Admin context on 1691 timed out waiting for protected HR readiness before it reached the Shopper. The runner permits one normal reload only before commands and only for the exact authenticated scope. Run the same D08 request, incorporate it, then deploy paired 235d6c28 and verify the PDF and F3 with the same native receipt."
   }
 }
