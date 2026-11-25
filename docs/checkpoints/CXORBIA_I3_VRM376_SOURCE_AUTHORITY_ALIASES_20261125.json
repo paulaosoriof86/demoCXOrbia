@@ -1,0 +1,847 @@
+{
+  "schemaVersion": "cxorbia.i3.source-authority-alias-migration.v1",
+  "findingId": "VRM-376",
+  "observedAt": "2026-11-25T07:06:37.914Z",
+  "expectedParentSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+  "sourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "reason": "Advance exact candidate and two approved owner blobs; preserve immutable served predecessor, C3, HR window and accepted clauses.",
+  "controls": {
+    "descriptor": {
+      "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "updatedAt": "2026-11-25T06:52:11.316Z",
+      "currentMaterializationIsPredecessorOnly": false,
+      "postDeployRunSeal": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 45488581923,
+        "runNumber": 2780,
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+        "hrLiveVerified": true,
+        "certifiable": false,
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      },
+      "currentSourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "pendingDevSuccessor": {
+        "previouslyAbsent": true
+      },
+      "exactNextAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "activeBlocker": "CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD",
+      "activeBlockers": [
+        "F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP",
+        "UNCOVERED_DOMAIN_CLAUSES",
+        "CURRENT_SOURCE_C3_GATE20_GATE21",
+        "E08_MAILBOX_UNCONFIGURED"
+      ],
+      "activeAuthoritySemantics": "Current product 1691a76a7bc095ad4bf444aa0db76df2f359a5f0; DEV run 45488581923, runtime cxorbia-live-hr-dev-00391-8mg, Hosting sites/cxorbia-backend-dev/versions/511061474d07baca. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.",
+      "nextPlannedBlock": {
+        "taskIds": [
+          "FINANCE_RESIDUAL",
+          "D08",
+          "F3",
+          "A08",
+          "E08",
+          "G20",
+          "G21"
+        ],
+        "completedTaskIds": [
+          "HR_PERIOD_WINDOW",
+          "F3_RUN2782_RECOVERY",
+          "F3_TRANSPORT_DIAGNOSIS",
+          "D08_RUN2783_RECOVERY",
+          "FINANCE_SECOND_ADVANCE_METADATA",
+          "A08_HN_PASSWORD"
+        ],
+        "exactPending": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "production": false
+      },
+      "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "productSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "productTreeAuthority": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7"
+    },
+    "descriptor.continuityHandoff": {
+      "immediateAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization."
+    },
+    "pointer": {
+      "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "updatedAt": "2026-11-25T06:52:11.316Z",
+      "currentMaterializationIsPredecessorOnly": false,
+      "postDeployRunSeal": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 45488581923,
+        "runNumber": 2780,
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+        "hrLiveVerified": true,
+        "certifiable": false,
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      },
+      "currentSourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "pendingDevSuccessor": {
+        "previouslyAbsent": true
+      },
+      "exactNextAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "activeBlocker": "CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD",
+      "activeBlockers": [
+        "F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP",
+        "UNCOVERED_DOMAIN_CLAUSES",
+        "CURRENT_SOURCE_C3_GATE20_GATE21",
+        "E08_MAILBOX_UNCONFIGURED"
+      ],
+      "activeAuthoritySemantics": "Current product 1691a76a7bc095ad4bf444aa0db76df2f359a5f0; DEV run 45488581923, runtime cxorbia-live-hr-dev-00391-8mg, Hosting sites/cxorbia-backend-dev/versions/511061474d07baca. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.",
+      "asOf": "2026-11-25T06:52:11.316Z",
+      "nextPlannedBlock": {
+        "taskIds": [
+          "FINANCE_RESIDUAL",
+          "D08",
+          "F3",
+          "A08",
+          "E08",
+          "G20",
+          "G21"
+        ],
+        "completedTaskIds": [
+          "HR_PERIOD_WINDOW",
+          "F3_RUN2782_RECOVERY",
+          "F3_TRANSPORT_DIAGNOSIS",
+          "D08_RUN2783_RECOVERY",
+          "FINANCE_SECOND_ADVANCE_METADATA",
+          "A08_HN_PASSWORD"
+        ],
+        "exactPending": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "production": false
+      },
+      "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "productSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "productTreeAuthority": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "productTree": "3725071a72014d6b891648ab5d2eeef9638276ac"
+    },
+    "pointer.continuityHandoff": {
+      "immediateAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization."
+    },
+    "ledger": {
+      "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "updatedAt": "2026-11-25T06:52:11.316Z",
+      "currentMaterializationIsPredecessorOnly": false,
+      "postDeployRunSeal": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 45488581923,
+        "runNumber": 2780,
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+        "hrLiveVerified": true,
+        "certifiable": false,
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      },
+      "currentSourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "pendingDevSuccessor": {
+        "previouslyAbsent": true
+      },
+      "exactNextAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "activeBlocker": "CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD",
+      "activeBlockers": [
+        "F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP",
+        "UNCOVERED_DOMAIN_CLAUSES",
+        "CURRENT_SOURCE_C3_GATE20_GATE21",
+        "E08_MAILBOX_UNCONFIGURED"
+      ],
+      "activeAuthoritySemantics": "Current product 1691a76a7bc095ad4bf444aa0db76df2f359a5f0; DEV run 45488581923, runtime cxorbia-live-hr-dev-00391-8mg, Hosting sites/cxorbia-backend-dev/versions/511061474d07baca. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.",
+      "nextPlannedBlock": {
+        "taskIds": [
+          "FINANCE_RESIDUAL",
+          "D08",
+          "F3",
+          "A08",
+          "E08",
+          "G20",
+          "G21"
+        ],
+        "completedTaskIds": [
+          "HR_PERIOD_WINDOW",
+          "F3_RUN2782_RECOVERY",
+          "F3_TRANSPORT_DIAGNOSIS",
+          "D08_RUN2783_RECOVERY",
+          "FINANCE_SECOND_ADVANCE_METADATA",
+          "A08_HN_PASSWORD"
+        ],
+        "exactPending": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "production": false
+      },
+      "currentProductSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentProductSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v728"
+    },
+    "ledger.canonicalFunctionalCandidate": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "predecessorSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+      "predecessorProductSourceSha": "9d51a76d0bcc76e778669ac20393209e42bacb74",
+      "state": "RUNTIME_AND_HOSTING_DEV_MATERIALIZED_FUNCTIONAL_C3_PENDING",
+      "scope": "P0_PROVEN_GT_HN_MAPPING_PERFORMANCE_PAIRED_DEV_PENDING",
+      "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "exactNextAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "proof": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2563_CANONICAL_NODE_SOURCE_QA_READBACK_20261116.json",
+        "gitBlob": "c68dd23004e094c36ee6994962e0fcb86e27824f",
+        "sha256": "0b9c0918156755ba5f083316376745cd1d1afedd9fcf0f9484e96ea733fbc02d",
+        "sourceSha": "66312f88a70bd123b137c7a031a1f456969465f5",
+        "sourceTree": "38eba9364e0a7cbf1e505f84375959d19918391d",
+        "runId": 43821946355,
+        "runNumber": 2563,
+        "testsPass": 586,
+        "testsFail": 0,
+        "providerTestsPass": 142,
+        "ownerCount": 22,
+        "decision": "PASS_CANONICAL_NODE_SOURCE_QA_AND_EXACT_DEV_NATIVE_REPAIR_PENDING",
+        "scope": "NODE_SOURCE_QA_NOT_FULL_DOMAIN_OR_TERMINAL",
+        "production": false
+      },
+      "sourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM356_GRID_CUMULATIVE_SOURCE_AUTHORITY_20261116.json",
+        "gitBlob": "430a052eb5678f34bdd7df9a052c59bb6e98e20d",
+        "sha256": "69a896ab645e267bedc695966f782cff2bcc0f33926843e025c21a82d6d82873",
+        "sourceSha": "42b4b880dd9166df1e5ab5aef2e4bea86cebff73",
+        "sourceTree": "b927ae81b1a3fd9eaf6f5ed2fe904a365678f3c7",
+        "decision": "PASS_NODE_VRM356_GRID_BODY_DEADLINE_CUMULATIVE_SOURCE_PENDING_REAL_DEV",
+        "testsPass": 141,
+        "testsFail": 0,
+        "scope": "EXACT_NODE_SOURCE_QA_ONLY_REAL_RANGE_AND_DEV_PENDING",
+        "production": false
+      },
+      "currentSourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM372_CUMULATIVE_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "7a9116a65f4fbe55e9d52ef6dce97c7089ad6635",
+        "sourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+        "sourceTree": "4eb3d72c8d86c97212292020096bbf9dbd00e1fe",
+        "sourceTestsPass": 615,
+        "sourceTestsFail": 0,
+        "production": false
+      }
+    },
+    "ledger.continuityHandoff": {
+      "immediateAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization."
+    },
+    "matrix": {
+      "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "updatedAt": "2026-11-25T06:52:11.316Z",
+      "currentMaterializationIsPredecessorOnly": false,
+      "postDeployRunSeal": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 45488581923,
+        "runNumber": 2780,
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+        "hrLiveVerified": true,
+        "certifiable": false,
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      },
+      "currentSourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "pendingDevSuccessor": {
+        "previouslyAbsent": true
+      },
+      "exactNextAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "nextExactAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+      "activeBlocker": "CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD",
+      "activeBlockers": [
+        "F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP",
+        "UNCOVERED_DOMAIN_CLAUSES",
+        "CURRENT_SOURCE_C3_GATE20_GATE21",
+        "E08_MAILBOX_UNCONFIGURED"
+      ],
+      "activeAuthoritySemantics": "Current product 1691a76a7bc095ad4bf444aa0db76df2f359a5f0; DEV run 45488581923, runtime cxorbia-live-hr-dev-00391-8mg, Hosting sites/cxorbia-backend-dev/versions/511061474d07baca. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.",
+      "nextPlannedBlock": {
+        "taskIds": [
+          "FINANCE_RESIDUAL",
+          "D08",
+          "F3",
+          "A08",
+          "E08",
+          "G20",
+          "G21"
+        ],
+        "completedTaskIds": [
+          "HR_PERIOD_WINDOW",
+          "F3_RUN2782_RECOVERY",
+          "F3_TRANSPORT_DIAGNOSIS",
+          "D08_RUN2783_RECOVERY",
+          "FINANCE_SECOND_ADVANCE_METADATA",
+          "A08_HN_PASSWORD"
+        ],
+        "exactPending": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "production": false
+      }
+    },
+    "matrix.continuityHandoff": {
+      "immediateAction": "I3: run the corrected existing Finance readonly UI/export and D08 three-role UI jobs on exact DEV source1691/RUN2780. Incorporate their results and correct the specific failing owner before retrying that process. RUN2782 F3 recovery, RUN2783 Academy cleanup, Honduras password, four API denials and the second-advance metadata are already recorded; do not repeat them as open work. Then publish the approved six-file VRM-376 source on the same candidate through the existing paired DEV lane, bind the actual deployment receipt and run the isolated F3 application ACK/readback/replay/conflict/restore/cleanup chain. Close remaining business-process contract obligations, including identity exceptions and E08 mailbox, retain prior valid evidence, and certify the exact artifact through the existing terminal lane. I3 HOLD; production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization."
+    },
+    "ledger.governance": {
+      "currentProductSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentProductSourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "terminalState": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "postDeployRunSeal": {
+        "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+        "mode": "CURRENT_SOURCE_SERVING",
+        "runId": 45488581923,
+        "runNumber": 2780,
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "artifactDigest": "sha256:4534f7958d89d0e72e0e46f1a9b2b61b332acffa3d90234700a336334e33161e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795555080814000",
+        "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "hrRevision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+        "hrLiveVerified": true,
+        "certifiable": false,
+        "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+        "gate20": "HOLD",
+        "gate21": "HOLD",
+        "production": false
+      }
+    },
+    "ledger.currentTruth": {
+      "productSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "productTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "sourceMaterialized": true,
+      "currentMaterializationIsPredecessor": false,
+      "materializationScope": "RUNTIME_AND_HOSTING"
+    },
+    "matrix.productSource": {
+      "sha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "treeSha": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "predecessorProductSourceSha": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "authorityState": "RUNTIME_AND_HOSTING_DEV_MATERIALIZED_PENDING_C3_E2E",
+      "state": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+      "message": "Exact runtime, Hosting assets and HR readback verified. Functional and current-source C3 clauses remain pending.",
+      "sourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM372_CUMULATIVE_PUBLISHED_SOURCE_20261124.json",
+      "sourceProofReceiptBlob": "7a9116a65f4fbe55e9d52ef6dce97c7089ad6635"
+    },
+    "matrix.functionalBlockCertificationAccounting20261110": {
+      "currentProductSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "pointer.activePhaseAClosureLock20261110": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "matrix.modules.canonical-hr-state-adapters": {
+      "sourceClosure": {
+        "previouslyAbsent": true
+      }
+    },
+    "matrix.modules.persistence-command-ack-boundary": {
+      "sourceClosure": {
+        "previouslyAbsent": true
+      }
+    },
+    "ledger.findings.VRM-376": {
+      "state": "P0_PROVEN_EXACT_OWNER_SOURCE_FIX_PENDING",
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "sourceProof": {
+        "previouslyAbsent": true
+      },
+      "sourceTestsPass": {
+        "previouslyAbsent": true
+      },
+      "sourceTestsFail": {
+        "previouslyAbsent": true
+      }
+    }
+  },
+  "sourceOwners": {
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "historicalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "historicalApprovedBlob": null,
+      "f9ApprovedSource": null,
+      "f9ApprovedBlob": null,
+      "latestApprovedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "latestApprovedBlob": "93634ee52f17103a878d52f345443fe4bbd9850f",
+      "currentBlob": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c",
+      "loadTarget": "runtime-service",
+      "phaseAAuthority": true,
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "atomicDisposition": "FOCAL_FIX",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
+      "approvedSourceCommit": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "approvedBlob": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c",
+      "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+      "composedAtSource": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+      "preI4SuccessorMessage": "fix(pre-i4): close durable postulation lifecycle gap",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "9b952d348e7cdf06a7fa0ec1444d6856d270cbe7",
+      "currentLoadOrder": null,
+      "i3B7Provenance": "SOURCE_FIXED_PENDING_TEST_AND_LIVE__PRESERVE_APPROVED_BASELINE",
+      "previousMatrixCurrentBlob": "7ea31109cc44704f7cfb11e930d8e3b23cb7531a",
+      "byteAuthorityReadback": "PASS_CANONICAL_GIT_BLOB_READBACK_AND_RUN1730",
+      "previousClassificationBeforeG05": "SOURCE_FIXED_PENDING_DEV_E2E_HUMAN",
+      "g05FocalSourceReceipt": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
+      "g05FinalSourceQaReceipt": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+      "preTerminalHistoricalApprovedSource": "06ab83008d1517f05c5fb51526570775c41b66bd",
+      "preTerminalHistoricalApprovedBlob": "e39b79845219752e003e573da1aacf53fde287d1",
+      "lastServedBlob": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c",
+      "changedVsLastServed": false,
+      "findingIds": [
+        "VRM-013",
+        "VRM-034",
+        "VRM-061",
+        "VRM-062",
+        "VRM-069",
+        "VRM-070",
+        "VRM-077",
+        "VRM-122",
+        "VRM-123",
+        "VRM-125",
+        "VRM-134",
+        "VRM-143",
+        "VRM-169",
+        "VRM-170",
+        "VRM-180",
+        "VRM-200",
+        "VRM-287",
+        "VRM-346",
+        "VRM-350",
+        "VRM-360",
+        "VRM-363",
+        "VRM-365",
+        "VRM-366"
+      ],
+      "approvalStatus": "SOURCE_QA_PROVEN_PENDING_DEV_AND_DOMAIN_E2E",
+      "preTerminalScopedLedgerSourceProof": {
+        "ledgerLocation": "c3Q2Run2511TwentyFourOwnerSourceProofs20261113",
+        "sourceSha": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+        "runId": 43558482664,
+        "decision": "PASS_RUN2511_TWENTYFOUR_EXACT_Q2_OWNER_SOURCES_BATCH_193_OF_193",
+        "scope": "SOURCE_QA_ONLY_HUMAN_NOT_APPROVED"
+      },
+      "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR349_VRM350_SOURCE_PROOF_20261116.json",
+      "sourceProofReceiptBlob": "2c96a9515abf259b815b5509f6ab750df6ce5697",
+      "currentFindingId": "VRM-143",
+      "lastServedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "devReceipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
+        "gitBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2545_PAIRED_DEV_AND_NOTIFICATION_CYCLE_ACK_20261116.json",
+        "receiptBlob": "f3073ec2b05f608f313e4289a0d2e6948f7e29de",
+        "runId": 43791736690,
+        "runNumber": 2545,
+        "sourceSha": "f2fcb6200843971485ef2b092240c5497148038b",
+        "sourceTree": "41c4a8c884808a6722ff7b7217eda0ea5fbf7ef3",
+        "state": "PASS_EXACT_PAIRED_DEV_AND_VRM143_SCOPED_LIVE_CYCLE",
+        "kind": "EXACT_PAIRED_DEV_ACK_WITH_SCOPED_NOTIFICATION_LIVE_PROOF_NOT_TERMINAL_CERTIFICATE",
+        "artifactId": 14193062315,
+        "artifactDigest": "sha256:02f4effe48ed09b71a3d36387b4c219fc95bd85922fdea70b1820aace1bba9cb",
+        "production": false
+      },
+      "historicalBeforeHr349Vrm350Run2546": {
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN"
+      },
+      "currentFindingIds": [
+        "VRM-349",
+        "VRM-350"
+      ],
+      "canonicalCiSourceQA": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/source-qa/source-qa-receipt.json",
+        "gitBlob": "6915cd22a0405b14790438f261895a502bbee892",
+        "sha256": "81a1f7d58d9db2922c7d319b622d25b2ce90250b104e276dd01368e5b573b537",
+        "artifactId": 14195094488,
+        "artifactDigest": "sha256:3e76fe66c041b1a7e854da0b1c74811971dd6729a97b4dd277bcdb5cfe1b5eb9",
+        "runId": 43798644730,
+        "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+        "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+        "controlSha": "1eed4e2e9c0e5bcada67e7aa4559eefca06d9c41",
+        "testsPass": 440,
+        "testsFail": 0,
+        "owners": 21,
+        "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN"
+      },
+      "historicalServingBeforeRun2548Consumption": {
+        "lastServedSource": "f2fcb6200843971485ef2b092240c5497148038b",
+        "lastServedBlob": "913a6d98df276f582aa69152a3bfaa1e5b02c77b",
+        "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+        "approvedSourceCommit": "792f223b14c24c061c0e0a1ba82afafedd9808c6"
+      },
+      "currentSameRunSourceQa": {
+        "artifactId": 14196440064,
+        "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/43799873886/artifacts/14196440064",
+        "artifactDigest": "sha256:596fd101656d0d85926f75b0982b4f7b65c5ff8dd3e5e02cf3aaba573e4bd901",
+        "artifactDigestIndependentlyVerified": true,
+        "member": "source-qa-receipt.json",
+        "sha256": "332394b0468ac90825709320831fa03bd4af2151c67b0175267eb3dc2ea43ae6",
+        "runId": 43799873886,
+        "runNumber": 2548,
+        "controlSha": "c9ec5ee30a1cba7dd2fadc231fba7076199655de",
+        "sourceSha": "06ab83008d1517f05c5fb51526570775c41b66bd",
+        "sourceTree": "ad6093864ee4b734ab9692661f00b322abe863a9",
+        "testsPass": 440,
+        "testsFail": 0,
+        "owners": 21,
+        "scope": "SOURCE_QA_ONLY_NOT_FULL_DOMAIN",
+        "ownerPath": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "ownerBlob": "e39b79845219752e003e573da1aacf53fde287d1"
+      },
+      "preTerminalSameRunSourceProof": {
+        "controlSha": "540ef037c365c344230e3059c324818bd564f4d2",
+        "runAttempt": 1,
+        "suiteId": "frontend-behavior",
+        "ownerGitBlob": "e39b79845219752e003e573da1aacf53fde287d1",
+        "logSha256": "2f67180d8e8a12fb7e913e6cf49c0000df0b4363b5d83bc4fa07274aa1bc9884",
+        "scope": "SOURCE_QA_ONLY_NOT_E2E_OR_HUMAN_ACCEPTANCE",
+        "receiptSha256": "d18e9108381d3231e4cbabd90319beb5c5bb8ae60a8c2fe8396ff21c04da449a",
+        "sourceSha": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+        "runId": 44008540028,
+        "decision": "PASS_I3_SAME_RUN_PATH_BOUND_SOURCE_QA"
+      },
+      "currentServingAuthority": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "gitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "runId": 45488581923,
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "scope": "EXACT_DEV_MATERIALIZATION_NOT_FUNCTIONAL_OR_HUMAN_CERTIFICATE"
+      },
+      "historicalApprovalBeforeGthn20261124": {
+        "approvedSourceCommit": "06ab83008d1517f05c5fb51526570775c41b66bd",
+        "approvedBlob": "e39b79845219752e003e573da1aacf53fde287d1",
+        "approvalAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+        "approvalStatus": "INDEPENDENT_PATH_BOUND_PROVEN",
+        "lastServedSource": "680c9db6d4992877dbe055a2aa7f85cc2a708eec",
+        "lastServedBlob": "e39b79845219752e003e573da1aacf53fde287d1"
+      },
+      "sourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_REVIEW_MAIL_FINANCE_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ee4ce95740c9b22b4d5e2a618fc68b356c7ec51d",
+        "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+        "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+        "sourceTestsPass": 360,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "historicalApprovalBeforeHrFieldsEditor20261124": {
+        "approvedSourceCommit": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+        "approvedBlob": "7d0938f878ee8ded78daae37169d2bd0ee48e31a",
+        "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+        "approvalStatus": "SOURCE_QA_PROVEN_PENDING_DEV_AND_DOMAIN_E2E",
+        "lastServedSource": "f13b355b52e71736b1f93f2faeb9b6f483292d63",
+        "lastServedBlob": "7d0938f878ee8ded78daae37169d2bd0ee48e31a"
+      },
+      "historicalApprovalBeforeHrMailFinance20261124": {
+        "approvedSourceCommit": "3206918d84ed45d33851bff266de42ad59e546cb",
+        "approvedBlob": "1d4260c091d751c2fedb4b86c866bf007a7d87d2",
+        "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+        "approvalStatus": "SOURCE_QA_PROVEN_PENDING_DEV_AND_DOMAIN_E2E",
+        "classification": "MATCH"
+      }
+    },
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": {
+      "path": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "loadTarget": "backend-runtime",
+      "phaseAAuthority": true,
+      "approvedSourceCommit": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "approvedBlob": "743d63a71b632fdfeaef6ead4f6709ae64f0ecc5",
+      "currentBlob": "743d63a71b632fdfeaef6ead4f6709ae64f0ecc5",
+      "currentCumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "lastServedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "lastServedBlob": "743d63a71b632fdfeaef6ead4f6709ae64f0ecc5",
+      "changedVsLastServed": false,
+      "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "workPeriodB14SourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_WORK_PERIOD_B14_RUNTIME_PACKAGE_SOURCE_PROOF_20261120.json",
+        "gitBlob": "1316bf14da6ed8425c52a6443bdd9f6cf83c038f",
+        "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
+        "sourceTree": "062e702b1409fcf7bf7f6befa01742f469884227",
+        "devPublished": false,
+        "production": false
+      },
+      "latestApprovedBlob": "8fe0bc655aa2865a5a282d759acfaf35870af836",
+      "latestApprovedSource": "ea0def43f653b014a271d7404df5604f2a9e2805",
+      "composedAtSource": "ea0def43f653b014a271d7404df5604f2a9e2805",
+      "previousMatrixCurrentBlob": "960e4bb85b34b3e429dbdb677ba24bd647ec8849",
+      "approvalStatus": "SOURCE_QA_PROVEN_PENDING_DEV_AND_DOMAIN_E2E",
+      "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+      "sourceProofReceiptBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+      "historicalApprovalBeforeGthn20261124": {
+        "approvedSourceCommit": "ea0def43f653b014a271d7404df5604f2a9e2805",
+        "approvedBlob": "8fe0bc655aa2865a5a282d759acfaf35870af836",
+        "approvalAuthority": "P0_PROVEN_SCOPED_SOURCE_QA",
+        "approvalStatus": "P0_SCOPED_LOCAL_OWNER_QA_PASS_CANONICAL_CI_PENDING",
+        "lastServedSource": "d72275685d57941f6cfa0fcebc4823287942f786",
+        "lastServedBlob": null
+      },
+      "sourceProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM375_PUBLISHED_SOURCE_20261124.json",
+        "gitBlob": "ec09362cada2cef251f77a686700a885f9ec6070",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "sourceTestsPass": 725,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "findingIds": [
+        "VRM-361",
+        "VRM-365",
+        "VRM-375"
+      ],
+      "currentServingAuthority": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "gitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+        "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+        "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+        "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+        "runId": 45488581923,
+        "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+        "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+        "scope": "EXACT_DEV_MATERIALIZATION_NOT_FUNCTIONAL_OR_HUMAN_CERTIFICATE"
+      },
+      "historicalApprovalBeforeHrMailFinance20261124": {
+        "approvedSourceCommit": "32d8ecd9ce1f000b5a5472e8cb5371c7a16f42b7",
+        "approvedBlob": "8eede7528f49345001716c137614c0ad1fb72dff",
+        "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+        "approvalStatus": "SOURCE_QA_PROVEN_PENDING_DEV_AND_DOMAIN_E2E",
+        "classification": "SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION"
+      },
+      "currentFindingId": "VRM-375"
+    }
+  },
+  "production": false,
+  "moduleCurrentAliases": {
+    "auth-protected-data-runtime": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "base-router-shell-cache": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "benefits": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "canonical-hr-state-adapters": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "certifications": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "client-portal-reportkit": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "core-config-data-router-permissions": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "dashboard-operation": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "documents-resources": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "finance-core-liquidation-costs": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "historical": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "human-runtime-domain-consistency": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "identity-membership-roll-forward": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "persistence-command-ack-boundary": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "phase-a-supporting-core": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "projects-periods-hr-source-wizard-multiproject": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "questionnaire-shopper": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "reports-admin-shopper": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "shoppers-mi-visitas-profile": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "visits-review-postulations-reservations": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    },
+    "tenant-admin-config-branding": {
+      "currentCandidateSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentCandidateTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "cumulativeSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0"
+    }
+  },
+  "moduleOwnerBlobs": {
+    "canonical-hr-state-adapters": {
+      "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "743d63a71b632fdfeaef6ead4f6709ae64f0ecc5"
+    },
+    "persistence-command-ack-boundary": {
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "e2aeec1aeb8a570d48643a7d36fd5a62d7cb8f7c"
+    }
+  }
+}

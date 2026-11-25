@@ -206,7 +206,7 @@ export function f3OwnedCleanupPath(path,owner,commands=[]){
   if(path===project||path.startsWith(project+'/'))return true;
   if(path.startsWith('tenants/tya/integrationSettings/'+owner+'-')&&F3_QA.countries.some(c=>path==='tenants/tya/integrationSettings/'+owner+'-'+c))return true;
   if(/^tenants\/tya\/shoppers\/qa_f3_20261124_(gt|hn)_[ab]$/.test(path))return true;
-  if(path==='tenants/tya/users/'+owner+'-admin')return true;
+  if(['-admin','-shopper-gt','-shopper-hn'].some(suffix=>path==='tenants/tya/users/'+owner+suffix))return true;
   return commands.some(c=>path===c||path.startsWith(c+'/'));
 }
 // Persist reconciliation evidence before evaluating ACK or deleting its journal.
@@ -247,6 +247,13 @@ export function f3VerifyRestoredBaseline(baseline,live){
   return {decision:'PASS_F3_EXACT_REMOTE_BASELINE_READBACK',sourceRevision:live.revision,visits:2,fields:8,readAt:new Date().toISOString()};
 }
 
+// Metadata is a precondition only. It never substitutes for application ACK.
+export function f3RequireWriterMetadataBeforeFixtures(probe){
+  const t=probe?.tools?.[0],hint=t&&(t.readOnlyHintType==='undefined'&&t.readOnlyHint===null||t.readOnlyHintType==='boolean'&&t.readOnlyHintPresent===true&&t.readOnlyHint===false);
+  f3Need(probe?.decision==='PASS_F3_WRITER_INITIALIZE_LISTTOOLS_CONTRACT_ONLY'&&probe.stage==='contract'&&probe.contractExact===true&&probe.nextCursorPresent===false&&probe.toolCount===1&&probe.tools?.length===1&&probe.providerWrites===0&&probe.callToolCount===0&&typeof t?.readOnlyHintPresent==='boolean'&&t.writerHintCompatible===true&&hint,'PROVIDER_FAILURE:F3_QA_WRITER_METADATA_CONTRACT');
+  return true;
+}
+
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
@@ -269,6 +276,7 @@ async function runF3EndpointProbe(){
   const adminUid=owner+'-admin',claims={tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:[F3_QA.projectId],qaOwner:owner};
   let token='',authCreated=false,baselineReady=false,baselineLock=null,lockPath='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
   const written=new Map(),commands=[],reconcilePaths=new Set(),projectPath='tenants/tya/projects/'+F3_QA.projectId;
+  let shopperRoleQa=null;
   const profiles=f3FixtureDocuments(manifest,owner),recordCase=(name,details={})=>{receipt.cases.push({name,...details});save();};
   const httpJson=async(url,options={})=>{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(180000),...options});const text=await r.text();let body;try{body=JSON.parse(text);}catch{throw Error('PROVIDER_FAILURE:F3_QA_NON_JSON_'+r.status);}return {status:r.status,body};};
   const cloudGet=async url=>(await cloudClient.request({method:'GET',url,timeout:30000,retry:false,maxRedirects:0})).data;
@@ -360,6 +368,9 @@ async function runF3EndpointProbe(){
   };
   try{
     receipt.runtimeBefore=await runtimeRead();save();
+    const [{Client},{StreamableHTTPClientTransport}]=await Promise.all([import('@modelcontextprotocol/sdk/client/index.js'),import('@modelcontextprotocol/sdk/client/streamableHttp.js')]);
+    receipt.writerProbe=await f3ProbeWriterMcpMetadataOnly({cloudClient,Client,StreamableHTTPClientTransport});save();
+    f3RequireWriterMetadataBeforeFixtures(receipt.writerProbe);
     const projectRef=db.doc(projectPath);f3Need(!(await projectRef.get()).exists&&(await projectRef.listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_PROJECT_NOT_ABSENT');
     try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_USER_EXISTS');}catch(error){if(error.code!=='auth/user-not-found')throw error;}
     const member={path:'tenants/tya/users/'+adminUid,data:{...claims,uid:adminUid,active:true,status:'active',synthetic:true,qaOwner:owner}};
@@ -377,11 +388,17 @@ async function runF3EndpointProbe(){
     receipt.initialSourceRevision=baseline.revision;
     receipt.remoteBaseline={revision:baseline.revision,rows:baseline.rows.map(row=>({visitId:row.id||row.visitId,countryCode:row.country||row.pais,periodId:row.periodId,hrRowId:row.hrRowId,worksheetFingerprint:row.excelWorksheetFingerprint,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]??null]))})),readAt:new Date().toISOString()};save();
     await reconcile('initial');
+    // Uses the same four existing QA profiles; does not claim automatic upsert.
+    const {createF3ShopperRoleQa}=await import('./cxorbia-i3-f3-shopper-role-qa.mjs');
+    shopperRoleQa=await createF3ShopperRoleQa({auth,db,qa:F3_QA,owner,outDir:path.dirname(outPath),rememberDocument:rec=>written.set(rec.path,f3Digest(rec.data)),publish:value=>{receipt.shopperRoleProof=value;save();}});
+    try{await shopperRoleQa.prepare();await shopperRoleQa.capture('before',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
     let first;
     for(const country of F3_QA.countries){
       const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
       for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write');if(!first)first=row;}
     }
+    // A UI failure is recorded without interrupting remote restoration.
+    try{await shopperRoleQa.capture('assigned',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
     // Retry the exact committed command. Actual transport fault injection is a
     // separate proof obligation and is not claimed by this endpoint run.
     const replay=await send(first.command);assertF3RemoteAck(replay.body);
@@ -400,6 +417,7 @@ async function runF3EndpointProbe(){
   }catch(error){receipt.failure=f3Code(error);receipt.decision='HOLD_F3_ISOLATED_ENDPOINT';throw error;
   }finally{
     const cleanupErrors=[],snapshots=[];
+    if(shopperRoleQa)try{await shopperRoleQa.close();}catch(error){shopperRoleQa.recordFailure(error);}
     const enumerate=async ref=>{const snap=await ref.get();if(snap.exists)snapshots.push({path:ref.path,data:snap.data()});for(const collection of await ref.listCollections())for(const doc of (await collection.get()).docs)await enumerate(doc.ref);};
     const remove=async row=>{f3Need(f3OwnedCleanupPath(row.path,owner,commands),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_SCOPE');await db.runTransaction(async tx=>{const ref=db.doc(row.path),live=await tx.get(ref);if(!live.exists)return;f3Need(f3Same(live.data(),row.data),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_DRIFT');tx.delete(ref);});f3Need(!(await db.doc(row.path).get()).exists,'PERSISTENCE_FAILURE:F3_QA_CLEANUP_READBACK');};
     if(baselineReady){
@@ -442,6 +460,7 @@ async function runF3EndpointProbe(){
       }catch(error){cleanupErrors.push(f3Code(error));}
     }
     if(authCreated&&receipt.cleanup.firestore===true)try{const user=await auth.getUser(adminUid);f3Need(user.uid===adminUid&&(user.customClaims?.qaOwner===owner||Object.keys(user.customClaims||{}).length===0&&user.displayName==='CXOrbia isolated QA operator'),'AUTH_FAILURE:F3_QA_CLEANUP_USER_OWNER');await auth.deleteUser(adminUid);try{await auth.getUser(adminUid);throw Error('AUTH_FAILURE:F3_QA_AUTH_CLEANUP_READBACK');}catch(error){if(error.code!=='auth/user-not-found')throw error;}receipt.cleanup.auth=true;}catch(error){cleanupErrors.push(f3Code(error));}
+    if(shopperRoleQa)try{if(!await shopperRoleQa.cleanupAuth(receipt.cleanup.firestore===true))receipt.cleanup.auth=false;}catch(error){receipt.cleanup.auth=false;cleanupErrors.push(f3Code(error));}
     if(authCreated&&receipt.cleanup.firestore!==true)receipt.cleanup.authPreservedForRecovery=true;
     receipt.remoteCleanup={required:true,scenarioId:10199316,dataStoreId:213856,eventKeys:receipt.events.map(e=>e.remoteEventKey),headKeys:[...new Set(receipt.events.map(e=>e.remoteHeadKey))],worksheetNames:F3_QA.countries.map(c=>manifest.countries[c].worksheetName),rule:'ROOT_VERIFIES_EXACT_KEYS_AND_CURRENT_OWNER_BEFORE_DELETE_THEN_READS_ABSENCE'};
     if(cleanupErrors.length){receipt.cleanupErrors=cleanupErrors;receipt.decision='HOLD_F3_QA_CLEANUP_UNVERIFIED';process.exitCode=1;}

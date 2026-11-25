@@ -1,0 +1,512 @@
+{
+  "schemaVersion": "cxorbia.i3.make-four-scope-readonly.v1",
+  "decision": "PASS_MAKE_GT_HN_OCT_NOV_DOUBLE_READ",
+  "iteration": "I3",
+  "phaseAState": "HOLD",
+  "scenarioId": 10200465,
+  "zone": "eu2.make.com",
+  "organizationId": 4090072,
+  "teamId": 1975919,
+  "authorization": "ROOT_AUTHORIZED_FOUR_EXACT_NEXT_READ_INPUTS_20261125",
+  "scope": "DIRECT_MAKE_READER_ONLY_NOT_APPLICATION_ACK_OR_BROWSER_CERTIFICATION",
+  "runCount": 4,
+  "providerGetOperations": 12,
+  "providerWriteOperations": 0,
+  "hrWrites": 0,
+  "productionWrites": 0,
+  "makeWriterExecuted": false,
+  "cleanupExecuted": false,
+  "allScopesPass": true,
+  "allHashesMatchEarlierObservation": true,
+  "runs": [
+    {
+      "scenarioId": 10200465,
+      "executionId": "1c47c7531d7d475f921848032e26fbc3",
+      "runStatus": "success",
+      "id": "1c47c7531d7d475f921848032e26fbc3",
+      "status": "success",
+      "startedAt": "2026-11-25T07:01:53.504Z",
+      "duration": 7133,
+      "operations": 3,
+      "credits": 3,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-11",
+        "worksheetId": "{5899E379-9B56-4FF7-87ED-78194D0EA544}",
+        "rangeAddress": "A1:AI140",
+        "operation": "read",
+        "bindingFingerprint": "55ac434389337a2575bdc5e8bfb54aaaa9081353799717033f15ba71ba400b09"
+      },
+      "status1": 200,
+      "status2": 200,
+      "rowCount1": 140,
+      "rowCount2": 140,
+      "actualShape1": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "actualShape2": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "hash1": "79cea3d9b06f7f4f71f665ad144ad93b601af955e0fd9ae92b07a49e8d9452c0",
+      "hash2": "79cea3d9b06f7f4f71f665ad144ad93b601af955e0fd9ae92b07a49e8d9452c0",
+      "completeRawArraysEqual": true,
+      "exactScope": true,
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:01:53.997Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:01:57.351Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:01:58.796Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:00.311Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:00.624Z"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "scenarioId": 10200465,
+      "executionId": "96e4729e7d154ae5a948055be1812cc9",
+      "runStatus": "success",
+      "id": "96e4729e7d154ae5a948055be1812cc9",
+      "status": "success",
+      "startedAt": "2026-11-25T07:02:12.623Z",
+      "duration": 5946,
+      "operations": 3,
+      "credits": 3,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-10",
+        "worksheetId": "{026C413B-5F8C-4771-874E-872AEB3ABF78}",
+        "rangeAddress": "A1:AI140",
+        "operation": "read",
+        "bindingFingerprint": "1e1057e06108e0cbe981826c9e4f68229c171a656e02a39b4f6ddfda3b80d106"
+      },
+      "status1": 200,
+      "status2": 200,
+      "rowCount1": 140,
+      "rowCount2": 140,
+      "actualShape1": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "actualShape2": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "hash1": "d00f1fbbc0b8ed11892c735281057c9ace077c6df25190147cb51757ac833f2b",
+      "hash2": "d00f1fbbc0b8ed11892c735281057c9ace077c6df25190147cb51757ac833f2b",
+      "completeRawArraysEqual": true,
+      "exactScope": true,
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:12.725Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:14.784Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:16.752Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:18.295Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:18.561Z"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "scenarioId": 10200465,
+      "executionId": "41fb208c5393444fa70036e863264a17",
+      "runStatus": "success",
+      "id": "41fb208c5393444fa70036e863264a17",
+      "status": "success",
+      "startedAt": "2026-11-25T07:02:21.959Z",
+      "duration": 4536,
+      "operations": 3,
+      "credits": 3,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "HN",
+        "periodId": "cinepolis-2026-10",
+        "worksheetId": "{201322D7-9242-49D1-924A-ED591CECD79B}",
+        "rangeAddress": "A1:AI140",
+        "operation": "read",
+        "bindingFingerprint": "c922ad0869d85f70ac84d1832f97cbf56a092e529757d1595c43b42592a937d9"
+      },
+      "status1": 200,
+      "status2": 200,
+      "rowCount1": 140,
+      "rowCount2": 140,
+      "actualShape1": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "actualShape2": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "hash1": "1c7d8d15364a05cd1676448c4d40ef54b486b9b0fe088c72cb9c1dd37381a5a2",
+      "hash2": "1c7d8d15364a05cd1676448c4d40ef54b486b9b0fe088c72cb9c1dd37381a5a2",
+      "completeRawArraysEqual": true,
+      "exactScope": true,
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:22.092Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:23.718Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:25.117Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:26.277Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:26.488Z"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "scenarioId": 10200465,
+      "executionId": "ee1bedfcb00d4f6c912c5ae2d8f6bdfd",
+      "runStatus": "success",
+      "id": "ee1bedfcb00d4f6c912c5ae2d8f6bdfd",
+      "status": "success",
+      "startedAt": "2026-11-25T07:02:03.405Z",
+      "duration": 6160,
+      "operations": 3,
+      "credits": 3,
+      "scope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "countryCode": "GT",
+        "periodId": "cinepolis-2026-11",
+        "worksheetId": "{7FBC45CE-951F-41D7-8BF9-6690E2EC951F}",
+        "rangeAddress": "A1:AI140",
+        "operation": "read",
+        "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda"
+      },
+      "status1": 200,
+      "status2": 200,
+      "rowCount1": 140,
+      "rowCount2": 140,
+      "actualShape1": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "actualShape2": {
+        "rows": 140,
+        "columns": [
+          35
+        ]
+      },
+      "hash1": "837dfd6c9dee9adcf8789e3ab9d1c4d4c20ccf00065b0f46c7208daa29bc0227",
+      "hash2": "837dfd6c9dee9adcf8789e3ab9d1c4d4c20ccf00065b0f46c7208daa29bc0227",
+      "completeRawArraysEqual": true,
+      "exactScope": true,
+      "modules": [
+        {
+          "id": 1,
+          "name": "scenario-service: StartSubscenario",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:03.506Z"
+        },
+        {
+          "id": 5,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:06.037Z"
+        },
+        {
+          "id": 2,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:07.496Z"
+        },
+        {
+          "id": 3,
+          "name": "onedrive: makeApiCall",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:09.305Z"
+        },
+        {
+          "id": 4,
+          "name": "scenario-service: ReturnData",
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-25T07:02:09.552Z"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "privateRowsPersisted": false,
+  "limitations": [
+    "Does not prove current application projection or authenticated UI",
+    "Does not prove F3 remote write ACK",
+    "Does not close I3 or authorize production"
+  ],
+  "futureF3RemoteCleanupPlan": {
+    "status": "PREPARED_NOT_EXECUTED",
+    "scope": "ONLY_EXACT_COMPLETED_F3_FIXTURE_OWNER_AND_KEYS",
+    "requiresRootWriter": true,
+    "scenarioId": 10199316,
+    "dataStoreId": 213856,
+    "fixtureAuthorityPath": "docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json",
+    "rawReceiptRequired": "Verified raw cxorbia.i3.f3.qa-endpoint.v1 from the completed newly deployed endpoint run; never RUN2782 or another run",
+    "preconditions": {
+      "decision": "PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING",
+      "applicationAckProven": true,
+      "remoteValuesRestored": true,
+      "remoteRestoreReadbackDecision": "PASS_F3_EXACT_REMOTE_BASELINE_READBACK",
+      "cleanupFirestore": true,
+      "cleanupAuth": true,
+      "recoveryRequired": false,
+      "producerRunFinished": true,
+      "resultConsumerFinished": true
+    },
+    "preservedSentinel": {
+      "key": "757bfe4bd75b",
+      "schemaVersion": 1,
+      "recordType": "sentinel",
+      "payloadJson": "{\"schemaVersion\":1,\"absent\":true}"
+    },
+    "observedStoreBeforeNewEndpoint": {
+      "records": 1,
+      "onlyPreservedSentinel": true,
+      "thisObservationIsNotFutureCleanupAuthority": true
+    },
+    "tools": {
+      "listRecords": {
+        "name": "mcp__codex_apps__make_data_store_record_list",
+        "input": {
+          "dataStoreId": 213856,
+          "offset": 0
+        },
+        "pagination": "Follow nextOffset through all pages before and after; each page may contain at most50records"
+      },
+      "deleteRecords": {
+        "name": "mcp__codex_apps__make_data_store_record_delete",
+        "inputTemplate": {
+          "dataStoreId": 213856,
+          "keys": []
+        },
+        "keysRule": "Use only PRESENT keys from the raw receipt remoteCleanup.eventKeys and remoteCleanup.headKeys after ownership checks. Never sentinel, foreign keys, prefix deletion or whole-store deletion."
+      },
+      "scenario": "mcp__codex_apps__make_scenario_run",
+      "executionReadback": "mcp__codex_apps__make_scenario_execution_get",
+      "moduleReadback": "mcp__codex_apps__make_scenario_execution_module_get"
+    },
+    "recordOwnership": [
+      "Parse data.payloadJson; both envelope and payload schemaVersion must equal1; recordType is event or head.",
+      "Event key must equal event:<eventId>; eventId/eventDigest must match an event embedded in this run raw receipt.",
+      "Match the embedded Firestore event origin=platform and actorUid=<rawReceipt.qaOwner>-admin, exact tya/f3-qa-20261124/f3-qa-20261124-2026-11 scope, country,visitId,fieldKey,expected worksheetId/fingerprints.",
+      "Require status=committed,writeHttpStatus=200 and writeExecutionId equal the exact providerExecutionId proven by the receipt for this event; mismatches preserve all data and HOLD.",
+      "Head key is the raw64hex SHA256 JSON array [tya,projectId,periodId,countryCode,visitId,fieldKey]; there is NO head: prefix. Its current eventId/eventDigest must refer to a run-owned committed event, with matching scope/request/afterValue.",
+      "Only final restored heads may be removed; match their afterValue to restored baseline and current independent worksheet read. HR-origin events listed by the fixture but absent from Make are already absent and are not invented or recreated."
+    ],
+    "worksheetReadPayloads": {
+      "GT": {
+        "scenarioId": 10199316,
+        "inputs": {
+          "protocolVersion": "cxorbia.f3.fixture-transport.v1",
+          "operation": "read",
+          "fixtureId": "qa_f3_20261123",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11",
+          "visitId": "qa_f3_20261123_GT",
+          "hrRowId": "qa_f3_20261123_GT",
+          "fieldKey": "shopperId",
+          "bindingFingerprint": "e0f878ce9440746fcbd935491ddd9c95b111ed4fc6aae552a6b78f5162b8e6fb"
+        }
+      },
+      "HN": {
+        "scenarioId": 10199316,
+        "inputs": {
+          "protocolVersion": "cxorbia.f3.fixture-transport.v1",
+          "operation": "read",
+          "fixtureId": "qa_f3_20261123",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11",
+          "visitId": "qa_f3_20261123_HN",
+          "hrRowId": "qa_f3_20261123_HN",
+          "fieldKey": "shopperId",
+          "bindingFingerprint": "be5068c472a95ae4aca55a1f7d032f22c0a9cc4b23d075892fac4906a6432066"
+        }
+      }
+    },
+    "worksheetInventoryPayloads": {
+      "GT": {
+        "scenarioId": 10199316,
+        "inputs": {
+          "protocolVersion": "cxorbia.f3.fixture-transport.v1",
+          "operation": "inspect",
+          "fixtureId": "qa_f3_20261123",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11",
+          "visitId": "qa_f3_20261123_GT",
+          "hrRowId": "qa_f3_20261123_GT",
+          "fieldKey": "shopperId",
+          "bindingFingerprint": "e0f878ce9440746fcbd935491ddd9c95b111ed4fc6aae552a6b78f5162b8e6fb"
+        }
+      },
+      "HN": {
+        "scenarioId": 10199316,
+        "inputs": {
+          "protocolVersion": "cxorbia.f3.fixture-transport.v1",
+          "operation": "inspect",
+          "fixtureId": "qa_f3_20261123",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11",
+          "visitId": "qa_f3_20261123_HN",
+          "hrRowId": "qa_f3_20261123_HN",
+          "fieldKey": "shopperId",
+          "bindingFingerprint": "be5068c472a95ae4aca55a1f7d032f22c0a9cc4b23d075892fac4906a6432066"
+        }
+      }
+    },
+    "worksheetOwnership": {
+      "GT": {
+        "worksheetName": "CXR_B14_QA_GT_20261119",
+        "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+        "acceptedSeedExecutionId": "419793a205834f02a26c8449c2f47553"
+      },
+      "HN": {
+        "worksheetName": "CXR_B14_QA_HN_20261119",
+        "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+        "acceptedSeedExecutionId": "3044ee3faac04034a18fe1abf384a855"
+      }
+    },
+    "deleteWorksheetPayloadDerivation": {
+      "base": "Copy country worksheetReadPayloads[c].inputs; set operation=delete and writeBody=\"\".",
+      "expectedRemoteValue": "fresh successful read.outputs.values2[1][1]",
+      "expectedRemoteEventId": "fresh successful read.outputs.values2[1][2]",
+      "expectedRemoteDigest": "fresh successful read.outputs.values2[1][3]",
+      "requiredPrefix": "Both current reads equal acceptedSeedExecution.outputs.values2 restricted to A1:D2. Header exactly [fixtureId,fieldValue,eventId,eventDigest]; row0 exactly qa_f3_20261123_<country>. Current inventory name and worksheetId equal fixture authority.",
+      "importantScope": "The existing legacy delete branch requires projectId=cinepolis and periodId=cinepolis-2026-11 but only targets the two fixed CXR_B14_QA tabs. Do not substitute the newer f3-qa project into this legacy branch.",
+      "deleteGate": "Existing scenario module12 rereads A1:D2 immediately before module2 DELETE; mismatched expected value/event/digest produces CONFLICT_NOOP and zero writes.",
+      "success": "deleteStatus204,providerWriteRequests1,decisionDELETE_ACK; module3 independently GETs worksheet inventory with HTTP200 and both name and ID absent. providerAck is FALSE by design for legacy DELETE, so do not use providerAck as its success test."
+    },
+    "orderedActions": [
+      "Verify completed endpoint raw receipt plus exact same-run owner and remote restoration; archive hashes and current Make rows before deletion.",
+      "Read all datastore pages; build only the exact PRESENT owned-key deletion list, preserving sentinel and foreign records.",
+      "For GT then HN, use existing read and inspect payloads; compare A1:D2 with the accepted seed execution and exact worksheet ID with fixture manifest.",
+      "Delete only the matching fixed QA worksheet through existing scenario10199316; inspect module2 DELETE and module3 inventory HTTP200 and exact name/ID absence. If outcome uncertain, inspect inventory before any retry; do not reseed/recreate.",
+      "After both worksheet absences are verified, reread the selected datastore rows and require unchanged hashes and same owner, then delete that exact list with data_store_record_delete.",
+      "Read every datastore page again: all requested owned event/head keys absent; sentinel and pre-existing foreign rows unchanged. Record requested/deleted/already-absent arrays and execution IDs.",
+      "Persist a separate completed cleanup receipt tied to producer run/source/raw-receipt hash; do not rewrite the original endpoint raw artifact or claim B14/fullI3GO solely from this cleanup."
+    ],
+    "notAuthorizedByThisPlan": [
+      "new scenario",
+      "whole datastore deletion",
+      "operational worksheet deletion",
+      "new source fixture",
+      "production writes"
+    ],
+    "requiresNoNewPaulaAuthorizationWithinExistingExactOwnedQARecovery": true
+  }
+}

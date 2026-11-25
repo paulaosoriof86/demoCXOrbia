@@ -84,6 +84,33 @@ export function residualAction(mod){
  return null;
 }
 
+// Derive the next operational step from existing residual clauses. This changes
+// no module verdict, approval or execution receipt and adds no acceptance gate.
+export function projectCurrentResidualNextAction(out,{completedTaskIds=[]}={}){
+ const {descriptor:d,pointer:p,matrix:m}=out;
+ const completed=[...new Set([...[d,p,out.ledger,m].flatMap(x=>x.nextPlannedBlock?.completedTaskIds||[]),...completedTaskIds])];
+ const residuals=(m.modules||[]).filter(x=>x.classification!=='MATCH').map(mod=>({domain:mod.domain,pending:Array.isArray(mod.currentResidualClauses)?mod.currentResidualClauses.join(' '):mod.currentResidualClauses?.pending||mod.actionRequired||'Unproved existing contract; retain HOLD.'}));
+ const priorities=[['FINANCE_RESIDUAL','finance-core-liquidation-costs'],['D08','certifications'],['F3','canonical-hr-state-adapters'],['A08','auth-protected-data-runtime']];
+ const pendingPriorities=priorities.filter(([,domain])=>residuals.some(x=>x.domain===domain));
+ const taskIds=[...new Set([...(p.nextPlannedBlock?.taskIds||[]),...pendingPriorities.map(([task])=>task),'E08','G20','G21'])].filter(id=>!completed.includes(id));
+ const served=d.currentMaterialization||{},sameCandidate=served.sourceSha===d.productSourceSha&&served.sourceTree===d.productSourceTree;
+ const environmentBlocked=d.activeBlocker==='ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED';
+ const start=environmentBlocked?'Resolve the observed GitHub Actions account lock first; the blocked execution ran zero steps and produced no functional evidence. Resume the exact already-authorized jobs against their bound served source, then publish any approved pending source through the existing paired DEV lane and verify the served artifact.':sameCandidate?'Use the exact currently served DEV candidate.':'First verify and publish the approved pending source through the existing paired DEV lane, then verify the served artifact.';
+ const focused=pendingPriorities.map(([task,domain])=>task+': '+residuals.find(x=>x.domain===domain).pending).join(' ');
+ const other=residuals.filter(x=>!pendingPriorities.some(([,domain])=>domain===x.domain)).map(x=>x.domain);
+ const nextAction='I3: '+start+(completed.includes('HR_PERIOD_WINDOW')?' The reading window, retained history and explicit older-period read are verified in their recorded scope.':'')+' Execute only active bound requests and the following current residuals. '+focused+(other.length?' Also retain the currentResidualClauses of '+other.join(', ')+'.':'')+' E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.';
+ const block={...(p.nextPlannedBlock||{}),taskIds,completedTaskIds:completed,exactPending:nextAction,sourceSha:d.productSourceSha,production:false};
+ let changed=false;
+ const assign=(value,key,next)=>{if(!same(value[key],next)){value[key]=clone(next);changed=true;}};
+ for(const value of [d,p,out.ledger,m]){
+  assign(value,'nextExactAction',nextAction);assign(value,'exactNextAction',nextAction);assign(value,'nextPlannedBlock',block);
+  if(value.canonicalFunctionalCandidate){assign(value.canonicalFunctionalCandidate,'nextExactAction',nextAction);assign(value.canonicalFunctionalCandidate,'exactNextAction',nextAction);}
+  if(value.currentCanonicalCheckpoint)assign(value.currentCanonicalCheckpoint,'immediateAction',nextAction);
+  if(value.continuityHandoff)assign(value.continuityHandoff,'immediateAction',nextAction);
+ }
+ return {changed,nextAction,completedTaskIds:completed};
+}
+
 function archiveActive(object,keys,archive){for(const key of keys)if(Object.hasOwn(object,key)){archive[key]=object[key];delete object[key];}}
 
 // These compatibility snapshots have no execution readers. The exact request
@@ -197,6 +224,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  for(const o of [d,p,l,m])o.activeAliasHistory={path:archivePath,gitBlob:gitBlob(jsonBytes(archived)),semantics:'IMMUTABLE_SUPERSEDED_ACTIVE_HEADERS_NOT_EXECUTION_AUTHORITY'};
  const projection={schemaVersion:PROJECTION_SCHEMA,receiptPath,receiptBlob:blob,runId:r.runId,runAttempt:r.runAttempt,sourceSha:r.sourceSha,sourceTree:r.sourceTree,historicalC3SourceSha:c3.sourceSha,currentSourceC3Certified:false,domainPromotion:false,production:false};
  for(const o of [d,p,l,m])o.currentControlProjection=clone(projection);
+ projectCurrentResidualNextAction(out,{completedTaskIds:input.pointer.nextPlannedBlock?.completedTaskIds||[]});
  assertPreserved(input,out);
  return { ...out,receiptPath,receipt,archivePath,archived,matrixPath,ledgerPath,noop:false};
 }

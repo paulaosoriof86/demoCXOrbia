@@ -3,11 +3,11 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
 import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
-import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses} from './cxorbia-i3-scoped-clause-projection.mjs';
+import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
@@ -353,7 +353,7 @@ export async function readScopedIndexResults({api,token,index,controls,files,dow
  for(const entry of next.results){
   const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
   const savedBytes=await read(entry.path),kind=JSON.parse(savedBytes)?.kind;
-  if(!['A08_RESIDUAL','FINANCE_METADATA'].includes(kind))continue;
+  if(!['A08_RESIDUAL','FINANCE_METADATA','F3_RUN2782_RECOVERY'].includes(kind))continue;
   let item=verifiedTypedReceipt(entry,savedBytes,{gitBlob,sha256});
   if(item.result.kind==='A08_RESIDUAL'&&!Object.hasOwn(item.result.observations||{},'acceptedClauseRefs')){
    const old={path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},saved=item.result,proof=saved.provenance;
@@ -392,8 +392,9 @@ export async function reconcileCurrentScopedClauses({api,token,controls,files:de
  let financeScopeSha256=null;
  if(scoped.verified.some(x=>x.result.kind==='FINANCE_METADATA'))financeScopeSha256=canonicalSha256(JSON.parse(await read(FINANCE_METADATA_SCOPE_PATH)));
  const projection=projectCurrentScopedClauses({matrix:active.matrix,verified:scoped.verified,financeScopeSha256});
- if(projection.changed){
-  const out={descriptor:structuredClone(active.descriptor),pointer:structuredClone(active.pointer),ledger:structuredClone(active.ledger),matrix:projection.matrix};
+ const out={descriptor:structuredClone(active.descriptor),pointer:structuredClone(active.pointer),ledger:structuredClone(active.ledger),matrix:projection.matrix};
+ const next=projectCurrentResidualNextAction(out,{completedTaskIds:completedExecutionTaskIds(scoped.verified)});
+ if(projection.changed||next.changed){
   for(const control of [out.descriptor,out.pointer])control.currentFunctionalEvidenceIndex=structuredClone(scoped.index);
   for(const control of [out.descriptor,out.pointer,out.ledger,out.matrix]){control.updatedAt=now;if(Object.hasOwn(control,'asOf'))control.asOf=now;}
   const date=now.slice(0,10),compact=date.replaceAll('-','');
@@ -406,7 +407,7 @@ export async function reconcileCurrentScopedClauses({api,token,controls,files:de
   for(const [file,text]of bound)files.set(file,text);
  }
  for(const [file,text]of files)destination.set(file,text);
- return {...scoped,changedDomains:projection.changedDomains,changed:projection.changed||scoped.upgraded>0};
+ return {...scoped,changedDomains:projection.changedDomains,nextActionChanged:next.changed,changed:projection.changed||next.changed||scoped.upgraded>0};
 }
 
 export function runJournal({run,jobs,artifacts,needs,now}){

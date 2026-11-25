@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i3.environment-not-started.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "ENVIRONMENT_FAILURE",
+  "code": "ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED",
+  "runId": 45564175381,
+  "runAttempt": 1,
+  "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+  "runUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/45564175381",
+  "observedAt": "2026-11-25T07:09:27.255Z",
+  "observation": "GitHub Actions reported an account lock before runner allocation. The two failed jobs had zero steps; all dependent functional jobs were skipped.",
+  "evidence": {
+    "apiJobCount": 111,
+    "nonSkippedJobs": [
+      {
+        "jobId": 139034809402,
+        "name": "canonical-candidate-authority",
+        "conclusion": "failure",
+        "steps": 0,
+        "runnerAllocated": false
+      },
+      {
+        "jobId": 139034830848,
+        "name": "continuity-result-consumer",
+        "conclusion": "failure",
+        "steps": 0,
+        "runnerAllocated": false
+      }
+    ],
+    "artifacts": 0,
+    "journalPath": "docs/checkpoints/CXORBIA_I3_RUN45564175381_ATTEMPT1_EXECUTION_JOURNAL.json",
+    "journalBlob": "34af2e7ebdb78183eca81976309ec4c54883a3f8",
+    "browserReadback": true
+  },
+  "productSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "servedSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "productChangedInDev": false,
+  "productionChanged": false,
+  "functionalEvidenceCreated": false,
+  "newDomainMatches": 0,
+  "clearOnlyAfter": "Provider confirms restored execution capacity and an authorized job actually starts; queued status alone is insufficient.",
+  "resume": {
+    "first": {
+      "runId": 45564175381,
+      "action": "Re-run failed jobs after the account is unlocked. This exact control remains bound to the served predecessor1691; Finance and Academy had zero functional steps."
+    },
+    "then": {
+      "action": "Incorporate exact predecessor results, then activate existing paired DEV lane for the single approved source8d70 with [i3-paired-dev-once]. Preserve the actual served predecessor until deployment readback."
+    },
+    "afterMaterialization": {
+      "action": "Bind existing F3 endpoint config to actual source/tree/runtime/digest/Hosting receipt, then [i3-f3-qa-endpoint]; use [i3-original-app-ui] for current-source HR reading and three Shopper reloads. Verify exact remote cleanup from the returned receipt."
+    }
+  },
+  "production": false
+}

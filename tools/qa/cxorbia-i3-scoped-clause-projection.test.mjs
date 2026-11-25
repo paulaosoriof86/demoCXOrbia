@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {publicA08ClauseRefs,projectCurrentScopedClauses,verifiedTypedReceipt,canonicalSha256,FINANCE_METADATA_SCOPE_PATH} from './cxorbia-i3-scoped-clause-projection.mjs';
+import {publicA08ClauseRefs,projectCurrentScopedClauses,verifiedTypedReceipt,canonicalSha256,FINANCE_METADATA_SCOPE_PATH,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
 import {summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
 import {readScopedIndexResults,reconcileCurrentScopedClauses} from './cxorbia-i3-automatic-result-consumer.mjs';
-import {jsonBytes,gitBlob,sha256,DESCRIPTOR,POINTER,bindControlPaths,assertPreserved} from './cxorbia-i3-current-control-projection.mjs';
+import {jsonBytes,gitBlob,sha256,DESCRIPTOR,POINTER,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 const HN='shopper_hn_3b3c2f5cc1',GT='shopper_gt_a092a0647f',SHP='shp-3669abbb015a';
 const artifactDigest='sha256:3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb';
 const leaf='f901d42c1ff1ec0dd6538324b076021731da154f08b7d34e72a987939c76f2da';
@@ -105,4 +105,39 @@ test('projection failure cannot leak a staged normalization receipt or mutate ca
 test('C3 still ignores scoped summaries with no owner receipts',async()=>{
  const {readDurableDomainReceipts}=await import('./cxorbia-i3-c3-finalize-module-truth.mjs');const a=summary(),e=indexEntry(a),idx={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[e]};
  assert.deepEqual(readDurableDomainReceipts({descriptor:{currentFunctionalEvidenceIndex:idx},pointer:{currentFunctionalEvidenceIndex:idx},readBytes:()=>{throw Error('No C3 owner receipt exists');}}),{receipts:[],records:0});
+});
+
+function f3Recovery(){return {kind:'F3_RUN2782_RECOVERY',state:'HOLD',production:false,fullDomain:false,newDomainMatches:0,ownerSpecificReceipts:[],producer:{jobConclusion:'success',decision:'PASS_F3_RUN2782_EXACT_OWNED_RECOVERY_ONLY'},observations:{firestoreDeletes:29,authDeletes:1,cleanup:{firestore:true,auth:true,remoteMake:'INDEPENDENT_ABSENCE_ALREADY_PROVEN_NO_DELETE'},safety:{production:false,hrWrites:0,remoteMakeWrites:0,productionWrites:0},writerProbe:{decision:'HOLD_F3_WRITER_TOOL_CONTRACT',stage:'contract',contractExact:false,providerWrites:0,callToolCount:0,toolCount:1}}};}
+test('exact recovery/probe remove only their existing execution IDs, leaving the F3 contract open',()=>{
+ const f=f3Recovery();assert.deepEqual(completedExecutionTaskIds([{result:f}]),['F3_RUN2782_RECOVERY','F3_TRANSPORT_DIAGNOSIS']);assert.equal(f.state,'HOLD');assert.equal(f.newDomainMatches,0);
+ f.observations.writerProbe.callToolCount=1;assert.deepEqual(completedExecutionTaskIds([{result:f}]),['F3_RUN2782_RECOVERY']);
+ f.observations.cleanup.auth=false;assert.deepEqual(completedExecutionTaskIds([{result:f}]),[]);
+});
+test('residual next action synchronizes four controls and handoffs without repeating completed metadata or cleanup',()=>{
+ const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix},before=structuredClone(out);
+ for(const c of Object.values(out)){c.nextExactAction=c.exactNextAction='Recover RUN2782; apply November metadata';c.nextPlannedBlock={taskIds:['F3_RUN2782_RECOVERY','F3_TRANSPORT_DIAGNOSIS','F3','FINANCE_RESIDUAL'],completedTaskIds:[]};}
+ const got=projectCurrentResidualNextAction(out,{completedTaskIds:completedExecutionTaskIds([{result:f3Recovery()}])});assert.equal(got.changed,true);
+ for(const c of Object.values(out)){assert.equal(c.nextExactAction,out.descriptor.exactNextAction);assert.equal(c.nextPlannedBlock.exactPending,c.nextExactAction);assert.ok(!c.nextPlannedBlock.taskIds.includes('F3_RUN2782_RECOVERY'));assert.ok(c.nextPlannedBlock.taskIds.includes('F3'));if(c.continuityHandoff)assert.equal(c.continuityHandoff.immediateAction,c.nextExactAction);if(c.currentCanonicalCheckpoint)assert.equal(c.currentCanonicalCheckpoint.immediateAction,c.nextExactAction);}
+ assert.match(got.nextAction,/E08:.*external ACK/);assert.match(got.nextAction,/FINANCE_RESIDUAL:/);assert.ok(!got.nextAction.includes('apply November metadata'));assert.ok(!got.nextAction.includes('Recover RUN2782'));assertPreserved(before,out);assert.equal(projectCurrentResidualNextAction(out).changed,false);
+});
+test('pending approved source produces a publication step before new candidate functional proof',()=>{
+ const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix};out.descriptor.productSourceSha='1'.repeat(40);
+ out.descriptor.activeBlocker='VRM376_SOURCE_PROVEN_SINGLE_PAIRED_DEV_PENDING';
+ const got=projectCurrentResidualNextAction(out);assert.match(got.nextAction,/First verify and publish the approved pending source/);assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
+});
+test('an observed account lock precedes execution without losing pending source or business obligations',()=>{
+ const f=controlsFixture(),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:f.matrix};
+ out.descriptor.activeBlocker='ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED';out.descriptor.productSourceSha='1'.repeat(40);
+ const got=projectCurrentResidualNextAction(out);
+ assert.match(got.nextAction,/^I3: Resolve the observed GitHub Actions account lock first/);assert.match(got.nextAction,/zero steps/);
+ assert.match(got.nextAction,/FINANCE_RESIDUAL:/);assert.match(got.nextAction,/E08:/);assert.equal(out.descriptor.productSourceSha,'1'.repeat(40));assert.equal(out.descriptor.currentMaterialization.sourceSha,source);
+ assert.equal(out.descriptor.activeBlocker,'ENVIRONMENT_FAILURE_GITHUB_ACTIONS_ACCOUNT_LOCKED');
+});
+test('consumer repairs only stale next action via existing binder even without new clause credit or provider call',async()=>{
+ const controls=controlsFixture(),before=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger}),files=new Map(),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[]};
+ for(const c of [controls.descriptor,controls.pointer])c.nextExactAction=c.exactNextAction='stale completed operation';
+ const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
+ const got=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T03:00:00Z'});assert.equal(got.changed,true);assert.equal(got.nextActionChanged,true);assert.deepEqual(got.changedDomains,[]);
+ const d=JSON.parse(files.get(DESCRIPTOR)),p=JSON.parse(files.get(POINTER)),m=JSON.parse(files.get(d.moduleTruthPath)),l=JSON.parse(files.get(d.findingsLedgerPath));
+ assert.equal(d.nextExactAction,p.nextExactAction);assert.equal(d.nextExactAction,m.nextExactAction);assert.equal(d.nextExactAction,l.nextExactAction);assert.equal(d.moduleTruthExpectedGitBlob,gitBlob(files.get(d.moduleTruthPath)));assert.equal(d.findingsLedgerExpectedGitBlob,gitBlob(files.get(d.findingsLedgerPath)));assertPreserved(before,{descriptor:d,pointer:p,matrix:m,ledger:l});
 });

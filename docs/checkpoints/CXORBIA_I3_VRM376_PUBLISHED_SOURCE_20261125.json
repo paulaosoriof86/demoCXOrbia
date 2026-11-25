@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "iteration": "I3",
+  "findingId": "VRM-376",
+  "state": "SOURCE_PROVEN_PENDING_CANONICAL_CI_DEV",
+  "sourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "sourceTree": "5be93b3151578bc15f9cbe2f8d686e2ec663c72f",
+  "expectedParentSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+  "predecessorProductSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "sourceTestsPass": 105,
+  "sourceTestsFail": 0,
+  "allowedProductFiles": [
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs",
+    "tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-376",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT"
+    }
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_VRM376_F3_WRITER_PRE_EDIT_TRUTH_20261124.json",
+  "scopeReceiptBlob": "092293b051de7e62d6b96b608ded0fc981430db7",
+  "focalLogSha256": "59407c9a301311fd0016e8dc0076b307e9bfeae2ca74b62b48bbf55afda767cb",
+  "approvedPatchSha256": "5e01ff4ea0110f507993db74f084d55ac60c7106d7eead2d03ec3971262b3dad",
+  "approvedSourceBlobs": {
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "7f638cc27347fdea658446ab88fc45c2a764372f",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "d9d82a6ce33187dc5ecf3a1320940cf57b293646",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-field-journal.test.mjs": "2e0cf87c27af9deb24a857ae6f82333f71fe9767",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs": "298882cf4f1fbb89c3c723ae519eec4a7a4063ea",
+    "tools/qa/cxorbia-i3-b14-make-graph-provider.test.mjs": "8797340f96494047f61c76ba163d5ea231eae7b2",
+    "tools/qa/cxorbia-i3-f3-run2782-recovery.test.mjs": "7b6f0d50c9002fa6c1c727941ef2899b2840e061"
+  },
+  "preservedApprovedQa": {
+    "path": "backend/runtime/hr-live-service/test/cxorbia-client-collaboration-provider.test.mjs",
+    "approvedCommit": "109a6263cf16bce195573a7d9ed702e6fef09477",
+    "approvedBlob": "24da256e726f1e146e9dc84ce06eb37ddd1bcfb6",
+    "servedSourceBlob": "9c6f70117240caf941c66c8da06f9d20ff2d91e7",
+    "authority": "VRM375_CONTEXTUAL_PERIOD_TEST_HARNESS_ALREADY_APPROVED"
+  },
+  "hrPeriodWindowRequired": true,
+  "preservedDevRunId": 45488581923,
+  "preservedHrPeriodWindow": {
+    "schemaVersion": "cxorbia.i3.hr-period-window-dev.v1",
+    "decision": "PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ",
+    "findingId": "VRM-375",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+    "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+    "runId": "45488581923",
+    "runAttempt": 1,
+    "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+    "rolling": {
+      "mode": "rolling_window",
+      "periodIds": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11"
+        }
+      ],
+      "periodBindings": 4,
+      "visits": 88,
+      "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+      "sourceReadAt": "2026-11-24T21:18:39.199Z",
+      "externalReadCurrent": true
+    },
+    "history": {
+      "available": true,
+      "externalReadCurrent": false,
+      "visits": 836,
+      "periods": 19,
+      "countryPeriods": 38,
+      "originalSeedVisits": 836,
+      "seedBankVisits": 836,
+      "originalObservation": "2026-11-24T15:28:33.482Z",
+      "seedArtifactId": 14934489092,
+      "seedSnapshotSha256": "437426fb7e95fd2a7d9dfaa7d6740a7aa24e34a20a8ef54f61dfc63167589032"
+    },
+    "explicit": {
+      "mode": "explicit_period",
+      "periodIds": [
+        "cinepolis-2026-09"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-09"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-09"
+        }
+      ],
+      "periodBindings": 2,
+      "visits": 44,
+      "revision": "d0409c48d4913428081bfce9d5c998d49ed1446110935bcd13ae581eedb886d2",
+      "sourceReadAt": "2026-11-24T21:19:06.621Z",
+      "externalReadCurrent": true
+    },
+    "returned": {
+      "mode": "rolling_window",
+      "periodIds": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ],
+      "referenceMonth": "2026-11",
+      "timeZone": "America/Guatemala",
+      "nextPeriodAvailable": false,
+      "countryPeriods": [
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-10"
+        },
+        {
+          "countryCode": "GT",
+          "periodId": "cinepolis-2026-11"
+        },
+        {
+          "countryCode": "HN",
+          "periodId": "cinepolis-2026-11"
+        }
+      ],
+      "periodBindings": 4,
+      "visits": 88,
+      "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+      "sourceReadAt": "2026-11-24T21:19:16.741Z",
+      "externalReadCurrent": true
+    },
+    "additionalHttpReads": 2,
+    "inventoryPolicy": {
+      "automaticMaxAgeMs": 86400000,
+      "manualDiscoverySourceTested": true,
+      "liveManualDiscoveryCertified": false
+    },
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "operationalImports": 0,
+    "production": false,
+    "fullDomain": false,
+    "authenticatedUiCertified": false,
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+    "scope": "READ_WINDOW_AND_HISTORY_ONLY_NO_DOMAIN_PROMOTION"
+  },
+  "expectedNextVerification": "Use the existing single paired DEV lane, verify current HR window/history and exact deployed bytes, then the bounded F3 application endpoint. No domain promotion from source tests.",
+  "buildsPerformed": 0,
+  "devPublished": false,
+  "production": false,
+  "newDomainMatches": 0,
+  "createdAt": "2026-11-25T07:06:37.914Z"
+}

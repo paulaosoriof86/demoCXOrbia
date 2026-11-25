@@ -196,7 +196,7 @@ function windowFixture(f){return {schemaVersion:'cxorbia.i3.hr-period-window-dev
 test('typed window proof removes only its completed action and preserves all domain obligations',()=>{
  const f=fixture();f.hrWindow=windowFixture(f);f.requireHrWindow=true;
  const {out}=project(f);assert.ok(!out.pointer.nextPlannedBlock.taskIds.includes('HR_PERIOD_WINDOW'));
- assert.deepEqual(out.pointer.nextPlannedBlock.completedTaskIds,['HR_PERIOD_WINDOW']);
+ assert.deepEqual([...out.pointer.nextPlannedBlock.completedTaskIds].sort(),[...new Set([...(f.controls.pointer.nextPlannedBlock?.completedTaskIds||[]),'HR_PERIOD_WINDOW'])].sort());
  assert.match(out.pointer.exactNextAction,/reading window, retained history and explicit older-period read are verified/);
  assert.match(out.matrix.modules.find(x=>x.domain==='canonical-hr-state-adapters').actionRequired,/Complete authenticated durable HR/);
  assert.equal(validateCurrentAuthorityAliases(out).pass,true);assert.equal(out.matrix.modules.filter(x=>x.classification==='MATCH').length,6);

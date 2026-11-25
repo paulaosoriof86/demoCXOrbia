@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import {F3_QA,assertF3EndpointScope,f3FixtureDocuments,f3FieldCommand,assertF3RemoteAck,f3OwnedCleanupPath} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
+import {F3_QA,assertF3EndpointScope,f3FixtureDocuments,f3FieldCommand,assertF3RemoteAck,f3OwnedCleanupPath,f3ProbeWriterMcpMetadataOnly,f3RequireWriterMetadataBeforeFixtures} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
 import {validateProjectPayload} from '../../backend/runtime/cxorbia-project-command-provider-v1.mjs';
 const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 function fixture(){
@@ -47,4 +47,29 @@ test('F3 live branch uses real authenticated endpoint, bounded replay and readba
  assert.ok(source.includes("F3_QA.baseUrl+'/v1/cxorbia/commands'"));assert.ok(source.includes("F3_QA.baseUrl+'/api/tenants/tya/projects/'"));assert.ok(source.includes('for(let attempt=0;attempt<3;attempt++)'));
  assert.ok(source.includes('F3_QA_ACTIVE_REMOTE_LEASE'));assert.ok(source.includes('item.event=event;item.delivery='));assert.ok(source.includes('F3_QA_CLEANUP_DRIFT'));
  assert.ok(!source.includes('console.log(token'));assert.ok(!source.includes('console.log(custom'));assert.ok(!source.includes('recursiveDelete('));assert.ok(source.includes('PASS_B14_ISOLATED_PROVIDER_ACK_AND_READBACK_ONLY'));
+});
+
+function endpointMetadataFixture({present=false,hint}={}){
+ const counts={connect:0,list:0,call:0,close:0},properties=Object.fromEntries(['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].map(k=>[k,{}]));
+ const tool={name:'qa_writer',annotations:present?{readOnlyHint:hint}:{},inputSchema:{properties}},list={tools:[tool]};
+ class Client{async connect(){counts.connect++;}async listTools(){counts.list++;return list;}async callTool(){counts.call++;throw Error('UNEXPECTED_WRITE');}async close(){counts.close++;}}
+ class StreamableHTTPClientTransport{constructor(){}}
+ return {counts,list,args:{cloudClient:{request:async()=>({data:{payload:{data:Buffer.from('LOCAL_NOT_A_CREDENTIAL').toString('base64')}}})},Client,StreamableHTTPClientTransport}};
+}
+for(const [name,present,hint,accept,type] of [['omitted',false,undefined,true,'undefined'],['explicit undefined',true,undefined,true,'undefined'],['false',true,false,true,'boolean'],['null',true,null,false,'null'],['true',true,true,false,'boolean'],['string',true,'false',false,'string'],['number',true,0,false,'number']])test('F3 endpoint metadata preflight '+name+' preserves presence/type and stops incompatible fixture setup',async()=>{
+ const f=endpointMetadataFixture({present,hint}),probe=await f3ProbeWriterMcpMetadataOnly(f.args);let setupWrites=0;
+ const proceed=()=>{f3RequireWriterMetadataBeforeFixtures(probe);setupWrites++;};
+ if(accept)proceed();else assert.throws(proceed,/PROVIDER_FAILURE:F3_QA_WRITER_METADATA_CONTRACT/);
+ assert.equal(setupWrites,accept?1:0);assert.equal(probe.tools[0].readOnlyHintPresent,present);assert.equal(probe.tools[0].readOnlyHintType,type);assert.deepEqual(f.counts,{connect:1,list:1,call:0,close:1});assert.doesNotMatch(JSON.stringify(probe),/LOCAL_NOT_A_CREDENTIAL/);
+});
+for(const [name,mutate] of [['cursor',f=>f.list.nextCursor='more'],['no tools',f=>f.list.tools=[]],['missing property',f=>delete f.list.tools[0].inputSchema.properties.eventId],['transport failure',f=>f.args.cloudClient.request=async()=>{throw Object.assign(Error('secret URL TOKEN'),{status:503});}]])test('F3 endpoint metadata preflight fail-closed '+name,async()=>{
+ const f=endpointMetadataFixture();mutate(f);const probe=await f3ProbeWriterMcpMetadataOnly(f.args);assert.throws(()=>f3RequireWriterMetadataBeforeFixtures(probe),/F3_QA_WRITER_METADATA_CONTRACT/);assert.equal(f.counts.call,0);assert.doesNotMatch(JSON.stringify(probe),/secret URL TOKEN|LOCAL_NOT_A_CREDENTIAL/);
+});
+test('F3 endpoint calls metadata preflight before any fixture creation, independently from the historical cleanup wrapper',()=>{
+ const source=fs.readFileSync(new URL('./cxorbia-i3-b14-isolated-provider-writer-qa.mjs',import.meta.url),'utf8'),start=source.indexOf('async function runF3EndpointProbe(){');
+ const body=source.slice(start,source.indexOf('async function runF3Run2768',start)>start?source.indexOf('async function runF3Run2768',start):source.indexOf('export const F3_RUN2782',start));
+ assert.ok(body.indexOf('receipt.writerProbe=await f3ProbeWriterMcpMetadataOnly')>0);
+ assert.ok(body.indexOf('f3RequireWriterMetadataBeforeFixtures(receipt.writerProbe)')<body.indexOf('baselineReady=true'));
+ assert.ok(body.indexOf('f3RequireWriterMetadataBeforeFixtures(receipt.writerProbe)')<body.indexOf('await db.doc(rec.path).create(rec.data)'));
+ assert.ok(!body.includes('runF3Run2782Recovery()'));
 });

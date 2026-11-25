@@ -41,6 +41,20 @@ function metadataAccepted(result,scopeSha256){
  return decision==='PASS_FINANCE_METADATA_SECOND_ADVANCE'?o.providerCommandsExecuted===2&&o.providerWrites===3&&o.idempotentReplay===true:o.providerCommandsExecuted===0&&o.providerWrites===0&&o.idempotentNoop===true;
 }
 
+// These IDs already exist in nextPlannedBlock. A completed diagnostic never
+// claims that the still-open F3 remote-write contract has passed.
+export function completedExecutionTaskIds(verified){
+ const completed=new Set();
+ for(const {result:r}of verified){
+  const o=r.observations||{},s=o.safety||{},p=o.writerProbe||{};
+  if(r.kind!=='F3_RUN2782_RECOVERY'||r.state!=='HOLD'||r.production!==false||r.fullDomain!==false||r.newDomainMatches!==0||r.ownerSpecificReceipts?.length!==0||r.producer?.jobConclusion!=='success'||r.producer?.decision!=='PASS_F3_RUN2782_EXACT_OWNED_RECOVERY_ONLY')continue;
+  if(o.firestoreDeletes!==29||o.authDeletes!==1||o.cleanup?.firestore!==true||o.cleanup?.auth!==true||o.cleanup?.remoteMake!=='INDEPENDENT_ABSENCE_ALREADY_PROVEN_NO_DELETE'||s.production!==false||!['hrWrites','remoteMakeWrites','productionWrites'].every(k=>s[k]===0))continue;
+  completed.add('F3_RUN2782_RECOVERY');
+  if(p.decision==='HOLD_F3_WRITER_TOOL_CONTRACT'&&p.stage==='contract'&&p.contractExact===false&&p.providerWrites===0&&p.callToolCount===0&&p.toolCount===1)completed.add('F3_TRANSPORT_DIAGNOSIS');
+ }
+ return [...completed];
+}
+
 export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}){
  const credit=new Map();
  for(const {entry,result}of [...verified].sort((a,b)=>Number(a.entry.runId)-Number(b.entry.runId)||Number(a.entry.jobId)-Number(b.entry.jobId))){
