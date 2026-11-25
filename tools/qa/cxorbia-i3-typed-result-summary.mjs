@@ -1,6 +1,7 @@
 // Pure summaries of exact producer results; no provider calls or domain promotion.
 // Consumer verifies the archive, exact producer attempt/job/window, and pins first.
 import crypto from 'node:crypto';
+import {readGoogleFinanceResult} from './cxorbia-i3-google-qa-execution.mjs';
 import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS} from './cxorbia-i3-a08-exact-password-proof.mjs';
 import {publicA08ClauseRefs} from './cxorbia-i3-scoped-clause-projection.mjs';
 
@@ -70,7 +71,9 @@ function observedIdentity(raw,expected){
 
 function financeUiSeal({seal,transport,expected}){
   const present=!!seal,jobSuccessful=transport.jobConclusion==='success';
-  const bindingExact=present&&seal.entry==='identity-live-readback.json'&&String(seal.artifactId)===String(transport.artifactId)&&seal.artifactDigest===transport.artifactDigest;
+  const bindingExact=present&&seal.entry==='identity-live-readback.json'&&(transport.provider==='GOOGLE_CLOUD_SHELL'
+    ?seal.resultUri===transport.resultUri&&seal.bundleSha256===transport.bundleSha256
+    :String(seal.artifactId)===String(transport.artifactId)&&seal.artifactDigest===transport.artifactDigest);
   const bounded=typeof seal?.text==='string'&&Buffer.byteLength(seal.text)<=65536;
   let parsed=null;if(bounded){try{parsed=JSON.parse(seal.text);}catch{}}
   const parseable=!!parsed&&typeof parsed==='object'&&!Array.isArray(parsed);
@@ -84,15 +87,26 @@ function financeUiStage(value){
   return typeof value==='string'&&/^(?:PREFLIGHT|DEPENDENCIES|ADC_BASELINE|METADATA_RECEIPT|ADMIN_AUTHORITY|SESSION_[12]_(?:AUTH|PERIOD|MOVEMENTS|MOVEMENT_EXPORT|DASHBOARD|FINAL_READ)|FINAL_LEDGER|COMPLETE)$/.test(value)?value:null;
 }
 
-export function summarizeTypedResult({resultText,transport,expectedIdentity={},identityReadback}){
+export function summarizeGoogleFinanceResult({uri,expectedIdentity},read){
+  for(const key of ['runtimeRevision','runtimeDigest','hostingVersion'])need(typeof expectedIdentity?.[key]==='string'&&expectedIdentity[key].length>0,'GOOGLE_LIVE_PIN_'+key);
+  const bundle=readGoogleFinanceResult(uri,expectedIdentity,read);
+  return summarizeVerifiedResult({...bundle,expectedIdentity},true);
+}
+export function summarizeTypedResult(input){
+  return summarizeVerifiedResult(input,false);
+}
+function summarizeVerifiedResult({resultText,transport,expectedIdentity={},identityReadback},google){
   need(typeof resultText==='string'&&Buffer.byteLength(resultText)<=2*1024*1024,'RESULT_SIZE');
   let raw;try{raw=JSON.parse(resultText);}catch{throw Error('MAPPING_FAILURE:TYPED_SUMMARY_INVALID_JSON');}
   const spec=TYPED_SUMMARY_SCHEMAS[raw?.schemaVersion];need(spec,'UNKNOWN_SCHEMA');
   need(spec.decisions.includes(raw.decision),'UNKNOWN_PRODUCER_DECISION');
   const t=transport||{};
-  for(const key of ['runId','runAttempt','jobId','artifactId'])need(/^[1-9][0-9]*$/.test(String(t[key]||'')),'TRANSPORT_'+key);
-  need(t.jobName===spec.job&&['success','failure','cancelled','timed_out','action_required','neutral','stale'].includes(t.jobConclusion),'PRODUCER_JOB');
-  need(SHA.test(String(t.controlHead||''))&&/^sha256:[a-f0-9]{64}$/.test(String(t.artifactDigest||''))&&t.verifiedArchiveDigest===t.artifactDigest,'TRANSPORT_DIGEST');
+  if(!google){
+    need(!raw.externalExecution&&t.provider!=='GOOGLE_CLOUD_SHELL','GOOGLE_RESULT_REQUIRES_PROVIDER_VERIFICATION');
+    for(const key of ['runId','runAttempt','jobId','artifactId'])need(/^[1-9][0-9]*$/.test(String(t[key]||'')),'TRANSPORT_'+key);
+    need(t.jobName===spec.job&&['success','failure','cancelled','timed_out','action_required','neutral','stale'].includes(t.jobConclusion),'PRODUCER_JOB');
+    need(SHA.test(String(t.controlHead||''))&&/^sha256:[a-f0-9]{64}$/.test(String(t.artifactDigest||''))&&t.verifiedArchiveDigest===t.artifactDigest,'TRANSPORT_DIGEST');
+  }
   need(t.entry===spec.entry,'ARTIFACT_ENTRY');
   if(spec.requiresRun||raw.runId!==undefined)need(String(raw.runId)===String(t.runId),'RUN_ID');
   if(spec.requiresRun||raw.runAttempt!==undefined)need(String(raw.runAttempt)===String(t.runAttempt),'RUN_ATTEMPT');
@@ -221,7 +235,9 @@ export function summarizeTypedResult({resultText,transport,expectedIdentity={},i
     schemaVersion:'cxorbia.i3.typed-result-summary.v1',kind:spec.kind,
     state:'HOLD',decision:summaryDecision,
     producer:{schemaVersion:raw.schemaVersion,decision:raw.decision,jobName:spec.job,jobConclusion:t.jobConclusion},
-    provenance:{runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
+    provenance:google?{provider:t.provider,startUri:t.startUri,startGeneration:t.startGeneration,startSha256:t.startSha256,
+      resultUri:t.resultUri,resultGeneration:t.resultGeneration,bundleSha256:t.bundleSha256,resultSha256:rawHash,
+      entry:spec.entry,controlHead:t.controlHead,transportSha:t.transportSha}: {runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
       artifactId:String(t.artifactId),artifactDigest:t.artifactDigest,entry:spec.entry,resultSha256:rawHash},
     identity,classification,failureCodes,unclassifiedFailureCount,observations,
     ownerSpecificReceipts:[],fullDomain:false,newDomainMatches:0,phaseAComplete:false,

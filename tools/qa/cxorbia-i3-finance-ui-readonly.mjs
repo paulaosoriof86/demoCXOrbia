@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {settleCustomRoleAuth} from '../../.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 import {UI_SCHEMA,UI_SCOPE_PATH,str,need,digest,hashBytes,ordered,publicError,prepareMetadataCommand,validateUiEnvironment,assertCommittedAdvanceReadback,assertCurrentAdmin,assertBrowserPrincipal,assertExactMovementProjection,movementExpected,assertMovementDom,assertStableFinance,classifyUiRequest,rowDataHash,MOVEMENT_HEADERS,DASHBOARD_HEADERS,sanitizeUiDiagnostic} from './cxorbia-i3-finance-ui-readonly-contract.mjs';
+import {readGoogleQaExecution} from './cxorbia-i3-google-qa-execution.mjs';
 import {proveReport} from './cxorbia-i3-finance-ui-export-readonly.mjs';
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 
@@ -103,10 +104,12 @@ async function dashboardProof(page,scope,privateDir,label,failureArchive){
 }
 
 export async function runFinanceUiReadonly({project,host,out,source,env=process.env}){
+  const google=readGoogleQaExecution(env,'i3-finance-focal-reproof',source,env.FOCAL_TREE);
   const destination=path.join(out,'ui-readonly');fs.mkdirSync(destination,{recursive:true});
   const privateDir=fs.mkdtempSync(path.join(os.tmpdir(),'cx-finance-ui-private-'));
   const evidence={schemaVersion:UI_SCHEMA,decision:'HOLD_C09_C10_UI_READONLY',state:'HOLD',operationKind:'READ_ONLY_WITH_APP_MUTATIONS_BLOCKED',scope:'ADVANCE_UI_AND_FINANCE_EXPORT_PARITY_ONLY',
-    runId:String(env.GITHUB_RUN_ID||''),runAttempt:String(env.GITHUB_RUN_ATTEMPT||''),controlSha:String(env.GITHUB_SHA||''),sourceSha:source,sourceTree:env.FOCAL_TREE,
+    ...(google?{externalExecution:google}:{}),
+    runId:google?.runId||String(env.GITHUB_RUN_ID||''),runAttempt:google?.runAttempt||String(env.GITHUB_RUN_ATTEMPT||''),controlSha:google?.controlSha||String(env.GITHUB_SHA||''),sourceSha:source,sourceTree:env.FOCAL_TREE,
     production:false,i4Authorized:false,fullDomain:false,newDomainMatches:0,phaseAComplete:false,privateDataExposed:false,
     independentAdminSessions:0,authIdentityOrClaimsWrites:0,directFirestoreWrites:0,providerCommandsExecuted:0,financialMutationRequestsDispatched:0,
     paymentsTested:false,benefitsRetested:false,dashboardIndependentHrKpisCertified:false,automaticHrReconciliationProven:false,
@@ -116,7 +119,7 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
   try{
     const scope=readJson(UI_SCOPE_PATH),plan=readJson(scope.metadataScopePath);
     const descriptor=readJson(env.CANDIDATE_DESCRIPTOR||'CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'),current=readJson('CXORBIA_RECOVERY_EXECUTION_CURRENT.json');
-    validateUiEnvironment({scope,plan,descriptor,current,project,host,source,tree:env.FOCAL_TREE,branch:env.GITHUB_REF_NAME,mode:env.CXORBIA_I3_FINANCE_MODE,period:env.FINAL_FOCAL_PERIOD_ID,emulator:env.FIRESTORE_EMULATOR_HOST});
+    validateUiEnvironment({scope,plan,descriptor,current,project,host,source,tree:env.FOCAL_TREE,branch:google?.branch||env.GITHUB_REF_NAME,mode:env.CXORBIA_I3_FINANCE_MODE,period:env.FINAL_FOCAL_PERIOD_ID,emulator:env.FIRESTORE_EMULATOR_HOST});
     const failureArchive={destination,publicKey:readJson('docs/checkpoints/CXORBIA_I3_FINANCE_CURRENT_READONLY_SCOPE_20261117.json').encryptionPublicKey,
       identity:{runId:evidence.runId,runAttempt:evidence.runAttempt,controlSha:evidence.controlSha,sourceSha:source,sourceTree:env.FOCAL_TREE}};
     const identity=descriptor.currentMaterialization;
@@ -125,7 +128,7 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
     stage('DEPENDENCIES');
     const appModule=await import('firebase-admin/app');deleteApp=appModule.deleteApp;
     const {getFirestore,FieldPath}=await import('firebase-admin/firestore'),{getAuth}=await import('firebase-admin/auth'),{chromium}=await import('playwright');
-    app=appModule.initializeApp({credential:appModule.applicationDefault(),projectId:project},'finance-ui-'+evidence.runId+'-'+evidence.runAttempt);
+    app=appModule.initializeApp({credential:appModule.applicationDefault(),projectId:project,...(google?{serviceAccountId:google.signer}:{})},'finance-ui-'+evidence.runId+'-'+evidence.runAttempt);
     const db=getFirestore(app),auth=getAuth(app),tenant=db.collection('tenants').doc(scope.tenantId);
     stage('ADC_BASELINE');
     const before=await readLedger(tenant,scope.projectId,FieldPath),prepared=prepareMetadataCommand(before.ledger,plan);
