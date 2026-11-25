@@ -93,6 +93,26 @@ test('F3 lost response recovers from exact remote receipt without repeating a PA
  const replay=await h.provider().execute('verified',h.command),second=await dispatchOperationalHrFields({db:h.db,command:h.command,result:replay,writeField:m.write});
  assert.equal(second.hrProviderAck,true);assert.equal(second.successUiAllowed,true);assert.equal(m.writes(),1);
 });
+for(const [message,code,stage]of [
+ ['MAPPING_FAILURE:B14_WRITER_TOOLBOX_CONTRACT','B14_WRITER_TOOLBOX_CONTRACT','tool_contract'],
+ ['PROVIDER_FAILURE:B14_WRITER_TOOLBOX_INITIALIZE','B14_WRITER_TOOLBOX_INITIALIZE','initialize'],
+ ['PROVIDER_FAILURE:B14_WRITER_TOOLBOX_LISTTOOLS','B14_WRITER_TOOLBOX_LISTTOOLS','list_tools'],
+ ['MAPPING_FAILURE:B14_FIELD_TARGET_SCOPE','B14_FIELD_TARGET_SCOPE','target_contract'],
+ ['PROVIDER_FAILURE:B14_WRITER_TOOLBOX_REQUEST_UNCERTAIN','B14_WRITER_TOOLBOX_REQUEST_UNCERTAIN','tool_call'],
+ ['MAPPING_FAILURE:B14_WRITER_TOOLBOX_CONTRACT:PRIVATE_SECRET','HR_FIELD_WRITER_EXCEPTION','write_field'],
+ ['Bearer PRIVATE_SECRET https://private.example/row','HR_FIELD_WRITER_EXCEPTION','write_field']
+])test('F3 pending diagnostic preserves safe cause and recovery-only replay '+stage+' '+code,async()=>{
+ const h=fixture();h.command.payload.patch={escenario:'APP'};const local=await h.provider().execute('verified',h.command),seen=[];
+ const writeField=async(_event,options)=>{seen.push(options.recoveryOnly);throw Error(message);};
+ const first=await dispatchOperationalHrFields({db:h.db,command:h.command,result:local,writeField});
+ const proof=first.hrFieldOutcomes[0];assert.equal(proof.code,'HR_FIELD_REMOTE_OUTCOME_UNCERTAIN');assert.equal(proof.remoteFailure.code,code);assert.equal(proof.remoteFailure.stage,stage);
+ assert.equal(proof.remoteWriteRequests,null);assert.equal(proof.providerAck,false);assert.equal(proof.readbackVerified,false);assert.equal(first.successUiAllowed,false);
+ const persisted=[...h.db.store].find(([p])=>p.includes('/hrFieldDeliveries/')&&!p.includes('/attempts/'))?.[1];
+ assert.ok(persisted);assert.deepEqual(persisted.remoteFailure,proof.remoteFailure);
+ assert.doesNotMatch(JSON.stringify([...h.db.store]),/PRIVATE_SECRET|private\.example/);
+ const replay=await h.provider().execute('verified',h.command);await dispatchOperationalHrFields({db:h.db,command:h.command,result:replay,writeField});
+ assert.deepEqual(seen,[false,true]);
+});
 test('F3 plain reflection without remote event receipt never becomes remote write ACK',async()=>{
  const h=fixture();h.command.payload.patch={escenario:'APP'};await h.provider().execute('verified',h.command);const e=h.events()[0],m=makeFixture();
  const reply=await executeExcelFieldEventThroughMake({event:e,target:m.target(e),recoveryOnly:true,
@@ -108,7 +128,7 @@ test('F3 remote changed base yields explicit conflict with zero write requests',
 test('F3 foreign scope ACK is never accepted',async()=>{
  const h=fixture();h.command.payload.patch={escenario:'APP'};const local=await h.provider().execute('verified',h.command),m=makeFixture();
  const r=await dispatchOperationalHrFields({db:h.db,command:h.command,result:local,writeField:async(e,o)=>({...await m.write(e,o),periodId:'foreign-period'})});
- assert.equal(r.status,'pending_hr');assert.equal(r.hrProviderAck,false);assert.equal(r.successUiAllowed,false);
+ assert.equal(r.status,'pending_hr');assert.equal(r.hrProviderAck,false);assert.equal(r.successUiAllowed,false);assert.equal(r.hrFieldOutcomes[0].code,'HR_FIELD_REMOTE_PROOF_INVALID');assert.equal(r.hrFieldOutcomes[0].remoteFailure,null);
 });
 test('F3 matching HR echo preserves pending intent, appends observation and invents no edit or write ACK',async()=>{
  const h=fixture();h.command.payload.patch={escenario:'APP'};await h.provider().execute('verified',h.command);

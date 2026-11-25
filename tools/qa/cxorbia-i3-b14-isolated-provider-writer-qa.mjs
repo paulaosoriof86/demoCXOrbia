@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
+import {isMakeGraphWriterHintCompatible} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 
 // P0 B14 provider precondition only. NEVER a project HR binding, a deployment,
 // a production write, a canonical module PASS, or a substitute for application ACK.
@@ -770,8 +771,8 @@ export async function f3ProbeWriterMcpMetadataOnly({cloudClient,Client,Streamabl
   stage='initialize';mcp=new Client({name:'cxorbia-f3-run2782-recovery-readonly',version:'1.0.0'});
   await mcp.connect(new StreamableHTTPClientTransport(new URL('https://eu2.make.com/mcp/server/4b7fc076-74a6-410b-8a7b-937e972e8bbe'),{requestInit:{redirect:'error',headers:{Authorization:'Bearer '+secret}}}));
   stage='list_tools';const list=await mcp.listTools(),tool=list.tools?.[0],keys=Object.keys(tool?.inputSchema?.properties||{});
-  const contractExact=!list.nextCursor&&list.tools?.length===1&&tool?.annotations?.readOnlyHint===false&&['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].every(k=>keys.includes(k));
-  return {...base,decision:contractExact?'PASS_F3_WRITER_INITIALIZE_LISTTOOLS_CONTRACT_ONLY':'HOLD_F3_WRITER_TOOL_CONTRACT',stage:'contract',contractExact,nextCursorPresent:Boolean(list.nextCursor),toolCount:list.tools?.length||0,tools:(list.tools||[]).map(t=>({name:t.name,readOnlyHint:typeof t.annotations?.readOnlyHint==='boolean'?t.annotations.readOnlyHint:null,inputKeys:Object.keys(t.inputSchema?.properties||{}).sort()}))};
+  const contractExact=!list.nextCursor&&list.tools?.length===1&&isMakeGraphWriterHintCompatible(tool)&&['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].every(k=>keys.includes(k));
+  return {...base,decision:contractExact?'PASS_F3_WRITER_INITIALIZE_LISTTOOLS_CONTRACT_ONLY':'HOLD_F3_WRITER_TOOL_CONTRACT',stage:'contract',contractExact,nextCursorPresent:Boolean(list.nextCursor),toolCount:list.tools?.length||0,tools:(list.tools||[]).map(t=>({name:t.name,readOnlyHint:typeof t.annotations?.readOnlyHint==='boolean'?t.annotations.readOnlyHint:null,readOnlyHintPresent:Object.hasOwn(t.annotations||{},'readOnlyHint'),readOnlyHintType:t.annotations?.readOnlyHint===undefined?'undefined':t.annotations.readOnlyHint===null?'null':typeof t.annotations.readOnlyHint,writerHintCompatible:isMakeGraphWriterHintCompatible(t),inputKeys:Object.keys(t.inputSchema?.properties||{}).sort()}))};
  }catch(error){
   const status=Number(error.response?.status||error.status||error.code),safeMessage=String(error.message||'');
   return {...base,decision:'HOLD_F3_WRITER_INITIALIZE_OR_LISTTOOLS_FAILED',stage,httpStatus:Number.isInteger(status)&&status>=100&&status<=599?status:null,errorCode:/^[A-Z_]+:[A-Z0-9_]+$/.test(safeMessage)?safeMessage:'PROVIDER_FAILURE:F3_WRITER_METADATA_REQUEST_FAILED'};

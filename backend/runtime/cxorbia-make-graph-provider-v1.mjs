@@ -237,17 +237,25 @@ export async function executeExcelFieldEventThroughMake({event,target,runScenari
   return {...base(),status:'pending_hr',code:'HR_FIELD_INDEPENDENT_READBACK_PENDING'};
 }
 
+// MCP ToolAnnotations.readOnlyHint is optional and defaults to false. The
+// hint is compatibility metadata; scoped capabilities and ACKs authorize work.
+export function isMakeGraphWriterHintCompatible(tool){
+  const hint=tool?.annotations?.readOnlyHint;return hint===undefined||hint===false;
+}
 export async function withMakeGraphToolboxWriter({client,transport},consume){
   const pending=new Set();let closing=false;
   try{
-    await client.connect(transport);const list=await client.listTools(),tool=list?.tools?.[0];
-    if(list?.nextCursor||list?.tools?.length!==1||tool?.annotations?.readOnlyHint!==false||
+    try{await client.connect(transport);}catch{fail('PROVIDER_FAILURE','WRITER_TOOLBOX_INITIALIZE');}
+    let list;try{list=await client.listTools();}catch{fail('PROVIDER_FAILURE','WRITER_TOOLBOX_LISTTOOLS');}
+    const tool=list?.tools?.[0];
+    if(list?.nextCursor||list?.tools?.length!==1||!isMakeGraphWriterHintCompatible(tool)||
       !['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].every(k=>
         Object.hasOwn(tool.inputSchema?.properties||{},k)))fail('MAPPING_FAILURE','WRITER_TOOLBOX_CONTRACT');
     const runScenario=inputs=>{
       if(closing)return Promise.reject(new Error('PROVIDER_FAILURE:B14_WRITER_TOOLBOX_CLOSED'));
       const task=(async()=>{
-        const reply=await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});
+        let reply;try{reply=await client.callTool({name:tool.name,arguments:inputs},undefined,{timeout:65000});}
+        catch{fail('PROVIDER_FAILURE','WRITER_TOOLBOX_REQUEST_UNCERTAIN');}
         if(reply.isError)fail('PROVIDER_FAILURE','WRITER_TOOLBOX_EXECUTION');
         if(reply.structuredContent)return reply.structuredContent.outputs??reply.structuredContent;
         const blocks=arrText(reply?.content);if(blocks.length!==1)fail('PROVIDER_FAILURE','WRITER_TOOLBOX_RESPONSE');

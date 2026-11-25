@@ -685,9 +685,29 @@ export async function dispatchOperationalHrFields({db,command,result,writeField,
     });}catch(error){outcomes.push({eventId,status:'pending_hr',code:str(error?.message)});continue;}
     if(held.terminal){outcomes.push(held.delivery);continue;}
     if(held.busy){outcomes.push({eventId,status:'pending_hr',code:'HR_FIELD_DISPATCH_IN_PROGRESS'});continue;}
-    let remote;
+    let remote,remoteFailure=null;
     try{remote=await writeField(held.event,{recoveryOnly:held.recoveryOnly,prior:held.delivery});}
-    catch{remote={status:'pending_hr',code:'HR_FIELD_REMOTE_OUTCOME_UNCERTAIN',providerAck:false};}
+    catch(error){
+      // Exceptions cannot prove whether a remote request took effect. Keep
+      // only bounded owner codes; SDK messages may contain credentials or PII.
+      const safeStages={
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_INITIALIZE':'initialize',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_LISTTOOLS':'list_tools',
+        'MAPPING_FAILURE:B14_WRITER_TOOLBOX_CONTRACT':'tool_contract',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_CLOSED':'tool_call',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_REQUEST_UNCERTAIN':'tool_call',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_EXECUTION':'tool_result',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_RESPONSE':'tool_result',
+        'PROVIDER_FAILURE:B14_WRITER_TOOLBOX_JSON':'tool_result',
+        'MAPPING_FAILURE:B14_FIELD_TARGET_SCOPE':'target_contract',
+        'MAPPING_FAILURE:B14_FIELD_WRITER_NOT_ENABLED':'target_contract',
+        'MAPPING_FAILURE:B14_FIELD_SOURCE_BASE_CHANGED':'target_contract',
+        'PROVIDER_FAILURE:B14_FIELD_RESPONSE_SCOPE':'remote_scope'
+      },message=str(error?.message),known=Object.hasOwn(safeStages,message);
+      remoteFailure={classification:known?message.split(':')[0]:'PROVIDER_FAILURE',
+        code:known?message.split(':')[1]:'HR_FIELD_WRITER_EXCEPTION',stage:known?safeStages[message]:'write_field'};
+      remote={status:'pending_hr',code:'HR_FIELD_REMOTE_OUTCOME_UNCERTAIN',providerAck:false};
+    }
     const event=held.event,scope=hrEventScope(event);
     const exact=remote&&Object.entries(scope).every(([key,value])=>str(remote[key])===str(value))&&
       remote.eventId===event.eventId&&remote.eventDigest===event.eventDigest;
@@ -700,7 +720,8 @@ export async function dispatchOperationalHrFields({db,command,result,writeField,
       remoteWriteRequests:exact&&Number.isInteger(remote.providerWriteRequests)?remote.providerWriteRequests:null,
       readbackVerified:committed,readbackDigest:committed?remote.readbackDigest:null,
       providerExecutionId:exact&&/^[a-f0-9]{32}$/.test(str(remote.providerExecutionId))?remote.providerExecutionId:null,
-      code:committed?null:conflict?'HR_FIELD_CAUSAL_CONFLICT':exact?str(remote.code||'HR_FIELD_REMOTE_ACK_PENDING'):'HR_FIELD_REMOTE_PROOF_INVALID',
+      code:committed?null:conflict?'HR_FIELD_CAUSAL_CONFLICT':remoteFailure?'HR_FIELD_REMOTE_OUTCOME_UNCERTAIN':exact?str(remote.code||'HR_FIELD_REMOTE_ACK_PENDING'):'HR_FIELD_REMOTE_PROOF_INVALID',
+      remoteFailure,
       observedAt:new Date(nowMs()).toISOString()};
     try{await db.runTransaction(async tx=>{
       const headSnap=await tx.get(held.headRef),head=headSnap.exists?headSnap.data():{};

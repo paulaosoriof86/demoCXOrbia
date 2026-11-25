@@ -62,8 +62,11 @@ function probeFixture(){
 test('writer metadata probe checks exact contract without invoking a tool',async()=>{
  const f=probeFixture(),out=await f3ProbeWriterMcpMetadataOnly(f.args);assert.equal(out.contractExact,true);assert.equal(out.stage,'contract');assert.deepEqual(f.counts(),{connects:1,lists:1,calls:0,closes:1});assert.doesNotMatch(JSON.stringify(out),/TEST_SECRET/);
 });
-test('writer metadata probe isolates annotation mismatch as contract HOLD',async()=>{
- const f=probeFixture();delete f.result.tools[0].annotations.readOnlyHint;const out=await f3ProbeWriterMcpMetadataOnly(f.args);assert.equal(out.decision,'HOLD_F3_WRITER_TOOL_CONTRACT');assert.equal(out.tools[0].readOnlyHint,null);assert.equal(f.counts().calls,0);
+test('writer metadata probe accepts omitted hint default while recording its absence',async()=>{
+ const f=probeFixture();delete f.result.tools[0].annotations.readOnlyHint;const out=await f3ProbeWriterMcpMetadataOnly(f.args);assert.equal(out.decision,'PASS_F3_WRITER_INITIALIZE_LISTTOOLS_CONTRACT_ONLY');assert.equal(out.tools[0].readOnlyHint,null);assert.equal(out.tools[0].readOnlyHintPresent,false);assert.equal(out.tools[0].readOnlyHintType,'undefined');assert.equal(f.counts().calls,0);
+});
+for(const hint of [true,null,'false',0])test('writer metadata probe rejects invalid or readonly hint '+JSON.stringify(hint),async()=>{
+ const f=probeFixture();f.result.tools[0].annotations.readOnlyHint=hint;const out=await f3ProbeWriterMcpMetadataOnly(f.args);assert.equal(out.decision,'HOLD_F3_WRITER_TOOL_CONTRACT');assert.equal(out.tools[0].readOnlyHintPresent,true);assert.equal(out.tools[0].writerHintCompatible,false);assert.equal(f.counts().calls,0);
 });
 test('writer metadata probe sanitizes secret access failure and preserves HTTP status',async()=>{
  const f=probeFixture();f.args.cloudClient.request=async()=>{throw Object.assign(Error('TEST_SECRET_DO_NOT_EMIT'),{response:{status:403}});};

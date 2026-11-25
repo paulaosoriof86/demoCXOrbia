@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {readExcelWorksheetInventoryThroughMake,readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap,withMakeGraphToolboxReader} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+import {readExcelWorksheetInventoryThroughMake,readExcelPeriodThroughMake,verifyMakeGraphReadOutput,validateGraphColumnMap,withMakeGraphToolboxReader,withMakeGraphToolboxWriter} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 const contract={contractId:'test-mapping',headerVariants:[{id:'full',required:['País','ID CINEMA','Shopping'],countrySource:'column'}],
  columns:{pais:{aliases:['País'],critical:true},idCinema:{aliases:['ID CINEMA'],critical:true},shopping:{aliases:['Shopping'],critical:true}}};
 const values=[['País','ID CINEMA','Shopping'],['GT','001','Cine Test']];
@@ -103,6 +103,36 @@ function toolboxFixture(){
   callTool:async request=>{seen.push(request.arguments);return {structuredContent:{outputs:{...output(),...request.arguments}}};},close:async()=>{events.push('close');}};
  return {events,seen,tool,client};
 }
+function writerFixture(){
+ const f=toolboxFixture();f.tool.name='authorized-writer';f.tool.annotations={readOnlyHint:false};
+ f.tool.inputSchema.properties=Object.fromEntries(['protocolVersion','operation','eventId','eventDigest','fieldKey','periodId','bindingFingerprint'].map(k=>[k,{}]));
+ return f;
+}
+for(const mode of ['false','omitted-hint','omitted-annotations'])test('writer accepts MCP hint '+mode+' while invoking the exact advertised tool',async()=>{
+ const f=writerFixture();if(mode==='omitted-hint')delete f.tool.annotations.readOnlyHint;if(mode==='omitted-annotations')delete f.tool.annotations;
+ await withMakeGraphToolboxWriter({client:f.client,transport:{}},run=>run({eventId:'synthetic-event'}));
+ assert.deepEqual(f.seen,[{eventId:'synthetic-event'}]);assert.deepEqual(f.events,['connect','list','close']);
+});
+for(const hint of [true,null,'false',0])test('writer rejects incompatible hint '+JSON.stringify(hint)+' without remote call',async()=>{
+ const f=writerFixture();f.tool.annotations.readOnlyHint=hint;
+ await assert.rejects(withMakeGraphToolboxWriter({client:f.client,transport:{}},run=>run({})),/MAPPING_FAILURE:B14_WRITER_TOOLBOX_CONTRACT/);
+ assert.equal(f.seen.length,0);assert.deepEqual(f.events,['connect','list','close']);
+});
+for(const mode of ['missing-key','cursor','two-tools'])test('writer preserves exact schema and inventory gate '+mode,async()=>{
+ const f=writerFixture();if(mode==='missing-key')delete f.tool.inputSchema.properties.eventDigest;
+ if(mode==='cursor')f.client.listTools=async()=>({tools:[f.tool],nextCursor:'another-page'});
+ if(mode==='two-tools')f.client.listTools=async()=>({tools:[f.tool,f.tool]});
+ await assert.rejects(withMakeGraphToolboxWriter({client:f.client,transport:{}},run=>run({})),/B14_WRITER_TOOLBOX_CONTRACT/);assert.equal(f.seen.length,0);
+});
+for(const [method,code]of [['connect','INITIALIZE'],['listTools','LISTTOOLS'],['callTool','REQUEST_UNCERTAIN']])test('writer failure remains bounded at '+method,async()=>{
+ const f=writerFixture();f.client[method]=async()=>{throw Error('Bearer PRIVATE_SECRET https://private.example/row');};
+ await assert.rejects(withMakeGraphToolboxWriter({client:f.client,transport:{}},run=>run({})),e=>e.message==='PROVIDER_FAILURE:B14_WRITER_TOOLBOX_'+code);
+ assert.equal(f.events.at(-1),'close');
+});
+test('reader still requires an explicit readonly annotation',async()=>{
+ const f=toolboxFixture();delete f.tool.annotations.readOnlyHint;
+ await assert.rejects(withMakeGraphToolboxReader({client:f.client,transport:{}},run=>run({})),/B14_TOOLBOX_CONTRACT/);assert.equal(f.seen.length,0);
+});
 test('38 live country-period reads share one authenticated toolbox session and keep all independent read proofs',async()=>{
  const f=toolboxFixture(),scopes=Array.from({length:38},(_,i)=>({...binding,scope:{...binding.scope,countryCode:i%2?'HN':'GT',periodId:'period-'+i}}));
  const result=await withMakeGraphToolboxReader({client:f.client,transport:{}},async runScenario=>{
