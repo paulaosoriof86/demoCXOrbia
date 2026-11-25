@@ -1,0 +1,143 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "OFFLINE_EXACT_SOURCE_C09_C10_DASHBOARD_RENDER_AND_QA_TRANSPORT_PRECONDITION",
+  "classification": "ENVIRONMENT_FAILURE",
+  "controlBefore": "cafd1ee1e92a94282cf68b2155498a63f6cacb59",
+  "nativeFinanceReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795634012210303_TYPED_RESULT.json",
+    "sha256": "acc41992e5f67459b12f5d7197ac51a54c77b90963a241619933976c734d3fcc",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/2350cfab-c2ca-4928-9b49-52c29cccdfec/result.json#1795634012210303"
+  },
+  "pairedReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedReceiptGitBlob": "09b9dab404e4dd5c76ed64e8c8a930e15c0f68bf",
+  "served": {
+    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+    "runtimeRevision": "cxorbia-live-hr-dev-00392-788",
+    "runtimeDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8c9523cb34a7e529"
+  },
+  "owner": "Chromium font availability in tools/qa/cxorbia-i3-finance-google-transport.sh",
+  "repro": "tools/qa/cxorbia-i3-finance-print-country-proof.cjs",
+  "sourceOwnerBlobs": {
+    "app/core/config.js": "5446270196c99f01715f60d1ad65892d12a070db",
+    "app/modules/cliente-extra.js": "b87de5036fab23c8f3f0633b0fd03f663ea4c755",
+    "app/modules/finanzas.js": "9bd11970cf0acb4e0c19df331bf9eade76e2ba90"
+  },
+  "before": {
+    "scope": "SYNTHETIC_COUNTRY_RENDER_ONLY",
+    "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "chromium": "141.0.7390.37",
+    "playwright": "1.56.1",
+    "pdfjs": "3.11.174",
+    "dom": [
+      [
+        "🇬🇹 Guatemala",
+        "GTQ"
+      ],
+      [
+        "🇭🇳 Honduras",
+        "HNL"
+      ]
+    ],
+    "pdfBytes": 43790,
+    "pdfSha256": "486ea97a09ed4018ff9f552dd48b3d2e3780581dd99f5e47a19df3b20521ff70",
+    "result": {
+      "matches": false,
+      "pages": 1,
+      "textCharacters": 569,
+      "textSha256": "20d9d0804be0b875aad4516d9220ff4e877ddfefcf38014625993b594e14639d",
+      "titleMatches": true,
+      "periodMatches": true,
+      "titleMatchesIgnoringWhitespace": true,
+      "periodMatchesIgnoringWhitespace": true,
+      "missingCellCount": 2,
+      "missingCells": [
+        {
+          "row": 0,
+          "column": 0,
+          "expectedCharacters": 14,
+          "expectedSha256": "f20c8e92b1216d28f833999d3f86e95ac310773a4261a8434175e5ee99155b12",
+          "matchesIgnoringWhitespace": false
+        },
+        {
+          "row": 1,
+          "column": 0,
+          "expectedCharacters": 13,
+          "expectedSha256": "ac534d70cd42409b4a20c9e0012d7f60bbdef429a283c9de7614563bb61242fc",
+          "matchesIgnoringWhitespace": false
+        }
+      ],
+      "missingCellsTruncated": false
+    },
+    "operationalWrites": 0
+  },
+  "withPinnedFont": {
+    "scope": "SYNTHETIC_COUNTRY_RENDER_ONLY",
+    "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "chromium": "141.0.7390.37",
+    "playwright": "1.56.1",
+    "pdfjs": "3.11.174",
+    "dom": [
+      [
+        "🇬🇹 Guatemala",
+        "GTQ"
+      ],
+      [
+        "🇭🇳 Honduras",
+        "HNL"
+      ]
+    ],
+    "pdfBytes": 66323,
+    "pdfSha256": "7a50047838363110bc3dff74539bf8406e1a76cac44257f74e579578a0165fcc",
+    "result": {
+      "matches": true,
+      "pages": 1,
+      "textCharacters": 577,
+      "textSha256": "942eaf5a199fa2f8fc17f42556f78202eb77af78896d2507b243f3b31701fd18",
+      "titleMatches": true,
+      "periodMatches": true,
+      "titleMatchesIgnoringWhitespace": true,
+      "periodMatchesIgnoringWhitespace": true,
+      "missingCellCount": 0,
+      "missingCells": [],
+      "missingCellsTruncated": false
+    },
+    "operationalWrites": 0
+  },
+  "fallbackDependency": {
+    "name": "Noto Color Emoji",
+    "version": "2.051",
+    "upstreamCommit": "8998f5dd683424a73e2314a8c1f1e359c19e8742",
+    "sha256": "72a635cb3d2f3524c51620cdde406b217204e8a6a06c6a096ff8ed4b5fd6e27b",
+    "installation": "Process-local when the two country cells fail the synthetic native PDF; no system or product installation."
+  },
+  "testedTransportPreconditions": [
+    {
+      "fontSource": "noto_color_emoji_v2_051",
+      "chromium": "141.0.7390.37",
+      "pdfjs": "3.11.174",
+      "pdfSha256": "bdb349ba4a491103c077a9ad5624c6cf2de4c5aed994168567f9361d8be9537e",
+      "matches": true
+    },
+    {
+      "fontSource": "system",
+      "chromium": "141.0.7390.37",
+      "pdfjs": "3.11.174",
+      "pdfSha256": "e9a86410166d808cddd47894ff92f4dff4b987e31310951b94db1fc6ec38d97a",
+      "matches": true
+    }
+  ],
+  "localRegression": {
+    "suiteCount": 5,
+    "testsPassed": 254,
+    "testsFailed": 0
+  },
+  "operationalSessionsNew": 0,
+  "financialMutations": 0,
+  "productCodeChanges": 0,
+  "deploys": 0,
+  "production": false,
+  "nextAction": "Complete Finance on served 235d6c28 using producer 123be4dd3294bdcad0fea7c158e3bd2f4294ed69, its sealed Google request, the independently hash-checked font transport and HTTP/1. Incorporate both read-only sessions or their typed failure. Use that same original producer for Academy residual roles if it is still served. After settling the active source-bound work, publish only the exact E10 successor d727f3be67a4430f08216dbb37cccba790f934f5 with the existing paired DEV job, capture its native receipt, and rebind remaining work including F3."
+}

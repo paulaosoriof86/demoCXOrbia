@@ -2,8 +2,8 @@
   "schemaVersion": "cxorbia.i3.google-work-handoff.v1",
   "iteration": "I3",
   "state": "HOLD",
-  "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
   "servedSource": "235d6c28e72226f792514656fd5c47c8ba65cbee",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
@@ -570,6 +570,29 @@
       },
       "typedResultSha256": "acc41992e5f67459b12f5d7197ac51a54c77b90963a241619933976c734d3fcc",
       "decision": "RECORDED_TYPED_RESULT_HOLD"
+    },
+    "financeDashboardCountryFontProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_FINANCE_DASHBOARD_COUNTRY_PDF_ENVIRONMENT_20261125.json",
+      "sha256": "fc859894f48719937c3dc0ab1881466e97dfb3a0aec4af08702b572efe1cede6",
+      "gitBlob": "73596fe111f7ab3aba177928dae64734956c3b5e",
+      "scope": "OFFLINE_EXACT_SOURCE_C09_C10_DASHBOARD_RENDER_AND_QA_TRANSPORT_PRECONDITION",
+      "classification": "ENVIRONMENT_FAILURE"
+    },
+    "pendingE10": {
+      "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "tree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "served": false,
+      "sourceEvidence": "docs/checkpoints/CXORBIA_I3_VRM379_E10_SOURCE_20261125.json",
+      "owner": "app/core/importador.js",
+      "operationalImports": 0
+    },
+    "currentAccessReadback": {
+      "observedAt": "2026-11-25T19:43:51.957Z",
+      "connectedExtension": "ORIGINATING_BROWSER_CONTEXT_UNAVAILABLE_BEFORE_TAB_LIST",
+      "alternateChromeFirebase": "SIGNED_IN_CORRECT_ACCOUNT_AND_DEV_PROJECT",
+      "alternateChromeCloudConsole": "HTTP_403_SITE_UNAVAILABLE",
+      "alternateChromeCloudShell": "HTTP_403_SITE_UNAVAILABLE_IN_EMBED_AND_DIRECT",
+      "googleQaRunStartedOnThisReadback": false
     }
   },
   "lastChromeConnection": {
@@ -580,11 +603,27 @@
     "trafficPercent": 100
   },
   "next": {
-    "finance": "Retain the first-session Movimientos PDF and two advances. Compare the same country-label PDF with and without the supported Chromium fonts. Use that result to locate the owner before repeating the two read-only sessions and remaining permissions on the paired DEV revision.",
+    "finance": "Complete Finance on served 235d6c28 using producer 123be4dd3294bdcad0fea7c158e3bd2f4294ed69, its sealed Google request, the independently hash-checked font transport and HTTP/1. Incorporate both read-only sessions or their typed failure. Use that same original producer for Academy residual roles if it is still served. After settling the active source-bound work, publish only the exact E10 successor d727f3be67a4430f08216dbb37cccba790f934f5 with the existing paired DEV job, capture its native receipt, and rebind remaining work including F3.",
     "academy": "Use the new D08 request bound to Google 18d8d2fd and the tested Chromium HTTP/1 transport. Preserve the earlier Admin cycles, clean fixture evidence, and the original 25-clause contract.",
-    "deployment": "Paired publication complete. Keep its real native UUID and immutable source. Do not redeploy before a proved product defect.",
+    "deployment": "After the active QA on the served 235d producer has been settled, publish the E10 successor d727f3be67a4430f08216dbb37cccba790f934f5 using one exact image and the original paired DEV job with this predecessor. Incorporate its verified native receipt before another functional write.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
-    "f3": "Rebind the existing isolated GT/HN endpoint fixture to this receipt. Use genuine QA producer identity and verify provider ACK, independent remote readback, replay and exact cleanup."
+    "f3": "Rebind the existing isolated GT/HN endpoint fixture to this receipt. Use genuine QA producer identity and verify provider ACK, independent remote readback, replay and exact cleanup.",
+    "googleExecution": {
+      "servedProducer": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
+      "financeTransportFilesFromValidatedControl": [
+        "tools/qa/cxorbia-i3-finance-google-transport.sh",
+        "tools/qa/cxorbia-i3-finance-print-country-proof.cjs"
+      ],
+      "producerRule": "Use the exact served producer checkout; materialize only the two QA transport files by git show from the admitted transport commit. Check both blobs and retain the original producer workflow, product, descriptor and request. Set CXORBIA_TRANSPORT_SHA to the transport commit for Finance, to the original producer for unchanged Academy.",
+      "account": "Existing DEV identity",
+      "project": "cxorbia-backend-dev",
+      "financeTransport": "HTTP1_DIAGNOSTIC",
+      "financeEntry": "tools/qa/cxorbia-i3-finance-google-transport.sh",
+      "pairedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+      "academyAfterFinance": "i3-run2382-academy-b7-isolated-dev-qa",
+      "nativeResultRequired": true,
+      "duplicateDispatch": false
+    }
   },
   "newDevDeploys": 1,
   "newFinancialMovements": 0,

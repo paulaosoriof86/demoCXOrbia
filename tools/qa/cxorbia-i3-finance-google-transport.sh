@@ -65,11 +65,49 @@ bash "$FINAL_FOCAL_OUT/live.sh"
 jq -e --arg r "$(jq -er '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" \
   '([.status.traffic[]|select(.percent>0)|.percent]|add)==100 and all(.status.traffic[]|select(.percent>0);.revisionName==$r)' "$FINAL_FOCAL_OUT/runtime.json" >/dev/null
 node --input-type=module -e 'for(const [p,v] of [["firebase-admin","13.4.0"],["playwright","1.56.1"],["pdfjs-dist","3.11.174"]]){const fs=await import("node:fs");if(JSON.parse(fs.readFileSync("node_modules/"+p+"/package.json")).version!==v)throw Error("ENVIRONMENT_FAILURE:FINANCE_DEPENDENCY_VERSION")};const{chromium}=await import("playwright");const b=await chromium.launch({headless:true});await b.close()'
+# The finance dashboard emits regional indicators in its country labels. Chromium
+# needs a font which maps both flags back to text in the native PDF.
+if [[ -n "${CXORBIA_FINANCE_CURRENT_RECEIPT:-}" ]]; then
+  proof=tools/qa/cxorbia-i3-finance-print-country-proof.cjs
+  [[ "$(git hash-object "$proof")" == "$(git rev-parse "$CXORBIA_TRANSPORT_SHA:$proof")" ]]
+  country_result="$FINAL_FOCAL_OUT/country-pdf-preflight.json"
+  font_source=system
+  if ! node "$proof" "$FOCAL_SOURCE" "$country_result" pass; then
+    # Fetch a font only when the PDF is otherwise valid and both regional indicator labels are missing.
+    jq -e '.result.titleMatches and .result.periodMatches and .result.missingCellCount == 2 and
+      ([.result.missingCells[] | [.row,.column]] == [[0,0],[1,0]])' "$country_result" >/dev/null
+    font_source=noto_color_emoji_v2_051
+    font_root="$FINAL_FOCAL_OUT/print-font"
+    mkdir -p "$font_root/fonts"
+    font="$font_root/fonts/NotoColorEmoji.ttf"
+    font_sha=72a635cb3d2f3524c51620cdde406b217204e8a6a06c6a096ff8ed4b5fd6e27b
+    curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --retry 2 --max-time 90 \
+      https://raw.githubusercontent.com/googlefonts/noto-emoji/8998f5dd683424a73e2314a8c1f1e359c19e8742/fonts/NotoColorEmoji.ttf -o "$font"
+    printf '%s  %s\n' "$font_sha" "$font" | sha256sum -c -
+    python3 - "$font_root" "${FONTCONFIG_FILE:-/etc/fonts/fonts.conf}" <<'PYFONT'
+import pathlib, sys, xml.etree.ElementTree as ET
+root = pathlib.Path(sys.argv[1]).resolve()
+config = ET.Element('fontconfig')
+ET.SubElement(config, 'include').text = str(pathlib.Path(sys.argv[2]).resolve(strict=True))
+ET.SubElement(config, 'dir').text = str(root / 'fonts')
+ET.SubElement(config, 'cachedir').text = str(root / 'cache')
+ET.ElementTree(config).write(root / 'fonts.conf', encoding='utf-8', xml_declaration=True)
+PYFONT
+    export FONTCONFIG_FILE="$font_root/fonts.conf"
+    node "$proof" "$FOCAL_SOURCE" "$country_result" pass
+  fi
+fi
 # A create-only generation is issued by Google. It remains distinct from Actions IDs.
 uuid="$(python3 -c 'import uuid;print(uuid.uuid4())')"
 prefix="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/$uuid"
 jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg control "$producer" --arg transport "$CXORBIA_TRANSPORT_SHA" \
   '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:"recovery/cxorbia-phase-a-20260831",job:"i3-finance-focal-reproof",attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport}' > "$FINAL_FOCAL_OUT/start.json"
+if [[ -n "${CXORBIA_FINANCE_CURRENT_RECEIPT:-}" ]]; then
+  jq --slurpfile proof "$country_result" --arg mode "$font_source" \
+    '. + {pdfCountryPreflight:{fontSource:$mode,chromium:$proof[0].chromium,pdfjs:$proof[0].pdfjs,pdfSha256:$proof[0].pdfSha256,matches:$proof[0].result.matches}}' \
+    "$FINAL_FOCAL_OUT/start.json" > "$FINAL_FOCAL_OUT/start-with-font.json"
+  mv "$FINAL_FOCAL_OUT/start-with-font.json" "$FINAL_FOCAL_OUT/start.json"
+fi
 export CXORBIA_GOOGLE_QA_START
 CXORBIA_GOOGLE_QA_START="$(put "$FINAL_FOCAL_OUT/start.json" "$prefix/start.json")"
 printf 'START %s\n' "$CXORBIA_GOOGLE_QA_START"
