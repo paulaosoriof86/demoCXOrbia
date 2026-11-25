@@ -1,0 +1,235 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "FINANCE_UI_READONLY",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.finance-core-ui-readonly.v1",
+    "decision": "HOLD_C09_C10_UI_READONLY",
+    "jobName": "i3-finance-focal-reproof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/61608719-a0af-4c1d-a676-f354eb5e8d1a/start.json#1795624414514166",
+    "startGeneration": "1795624414514166",
+    "startSha256": "384240347398bfa023c68c800e1ab7eabe82a26d258eb2947decb3acae6fe718",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/61608719-a0af-4c1d-a676-f354eb5e8d1a/result.json#1795624487264686",
+    "resultGeneration": "1795624487264686",
+    "bundleSha256": "5adfbd5bd23c081ed060a20c65d69eb5fd8ac085d3be3571483d9743d867f16e",
+    "resultSha256": "745eb7842661e8e3a19858da1ebb6d7270d0540ca9b55b500460277cc2e54df0",
+    "entry": "finance-ui-readonly.json",
+    "controlHead": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+    "transportSha": "8b2f0cd48c1f69a009c6affb6ea590557d20c409",
+    "encryptedPdfEvidence": {
+      "status": "VERIFIED",
+      "objects": [
+        {
+          "entry": "private-session-0-movements-pdf.envelope.json",
+          "sha256": "97fd594a0e6b9d0a517efb990c693b50c2c365e50b4c330f6461d80fd97fb845",
+          "verified": true,
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/61608719-a0af-4c1d-a676-f354eb5e8d1a/private-session-0-movements-pdf.envelope.json#1795624481362306",
+          "generation": "1795624481362306"
+        }
+      ]
+    }
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+      "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+      "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+    },
+    "complete": true
+  },
+  "classification": "FUNCTIONAL_DEFECT",
+  "failureCodes": [
+    "FUNCTIONAL_DEFECT:C09_C10_PDF_CONTENT"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "sameArtifactReadback": {
+      "entry": "identity-live-readback.json",
+      "present": true,
+      "bindingExact": true,
+      "parseable": true,
+      "jobSuccessful": false,
+      "fieldsExact": true,
+      "noDeployment": true,
+      "readbackExact": true,
+      "sha256": "a81f26dada76e8c3d290b13dc6a1e45997f9cff23121005a005d8f3c4c57592d",
+      "verified": false
+    },
+    "effectiveDecision": "HOLD_C09_C10_UI_READONLY",
+    "stage": "SESSION_1_MOVEMENT_EXPORT",
+    "failureStage": "SESSION_1_MOVEMENT_EXPORT",
+    "sessionAttempted": 1,
+    "activeSessionProgress": {
+      "auth": true,
+      "period": true,
+      "serverRows": true,
+      "dom": true,
+      "advancePair": true,
+      "movementExport": false,
+      "dashboard": false,
+      "finalRead": false
+    },
+    "failureUi": {
+      "available": true,
+      "firebaseUserPresent": true,
+      "contextAuthenticated": true,
+      "authorityApplied": true,
+      "expectedProjectSelected": true,
+      "expectedPeriodSelected": true,
+      "projectionLoaded": true,
+      "projectionKeyMatches": true,
+      "movExportPresent": true,
+      "finExportPresent": false,
+      "reportPreviewPresent": true,
+      "printTablePresent": true,
+      "route": "movimientos",
+      "role": "admin",
+      "movementRowCount": 3,
+      "reportRowCount": 3
+    },
+    "hrOwnerDiagnostic": {
+      "available": null,
+      "authorityPresent": true,
+      "applied": true,
+      "retryable": false,
+      "sourceReady": true,
+      "sourceBlocked": false,
+      "runtimeReady": true,
+      "bootstrap": {
+        "lastStatePresent": true,
+        "sourceFirestore": false,
+        "authorizedStatePresent": true,
+        "actorMatches": true,
+        "bootAuthorized": true,
+        "bootBackendReady": true,
+        "bootDependenciesReady": true,
+        "bootExhausted": null,
+        "stateErrorCode": "NONE",
+        "serverReads": {}
+      },
+      "ownerCode": "NO_OWNER_ERROR",
+      "ownerErrorSha256": null,
+      "authenticatedHrHttp": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ]
+    },
+    "failurePdf": {
+      "matches": false,
+      "parsed": null,
+      "titleMatches": true,
+      "periodMatches": true,
+      "titleMatchesIgnoringWhitespace": true,
+      "periodMatchesIgnoringWhitespace": true,
+      "bytes": 50615,
+      "pages": 1,
+      "textCharacters": 696,
+      "missingCellCount": 3,
+      "sha256": "1860827afc728bed582b4d18fe901d27fe90694791d05a9eec627ad8a9412d66",
+      "textSha256": "0acc8845847a6e1f0fec486c84991aac039bd3a7f25ab105f56b2128116675b4",
+      "missingCells": [
+        {
+          "row": 0,
+          "column": 0,
+          "expectedCharacters": 10,
+          "expectedSha256": "25b8fb449a1b1d76be32730ec387a98ddaaff89db9f2211252e5de859eb03ac3",
+          "matchesIgnoringWhitespace": true
+        },
+        {
+          "row": 1,
+          "column": 0,
+          "expectedCharacters": 10,
+          "expectedSha256": "e016178c36337a2ec1a2e658f8827b48620231e909ac7486ca8a58ba51903b78",
+          "matchesIgnoringWhitespace": true
+        },
+        {
+          "row": 2,
+          "column": 0,
+          "expectedCharacters": 10,
+          "expectedSha256": "95d17cab42b9c0ff1c9a10c44cef534e01e57635ffe1d795124538a8ba8575d5",
+          "matchesIgnoringWhitespace": true
+        }
+      ],
+      "missingCellsTruncated": false,
+      "privateEvidence": {
+        "entry": "private-session-0-movements-pdf.envelope.json",
+        "sha256": "97fd594a0e6b9d0a517efb990c693b50c2c365e50b4c330f6461d80fd97fb845",
+        "plainSha256": "a7b5c47ca2c9861355b75d7c4d099bd78418ec7ceba307ee4a6d950ce356d639",
+        "encrypted": true,
+        "algorithm": "RSA-OAEP-SHA256+AES-256-GCM",
+        "referenceOnly": true
+      },
+      "privateEvidenceError": null
+    },
+    "partialExportProof": {
+      "decision": "PARTIAL_EXPORT_PROOF_PDF_PENDING",
+      "rows": 3,
+      "semanticRowsSha256": "d084e0cdd53731e04eac2755f2e617edba114b1ba83d048615b3a874a069b3a2",
+      "preview": {
+        "sha256": "7de4dfa9fa6b18d20399092f0594a26cb0c28ac1e384bc27b65a340190a33a70",
+        "contentMatches": true
+      },
+      "xlsx": {
+        "bytes": 21844,
+        "pages": null,
+        "sha256": "a0ab00d48d0668fc05ca035d6d7cbe7ed1b00720c4fb81426dc041755fadf1e7",
+        "parsed": true,
+        "contentMatches": true
+      },
+      "nativePrintDom": {
+        "sha256": "7de4dfa9fa6b18d20399092f0594a26cb0c28ac1e384bc27b65a340190a33a70",
+        "contentMatches": true
+      },
+      "pdf": {
+        "bytes": 50615,
+        "pages": 1,
+        "sha256": "1860827afc728bed582b4d18fe901d27fe90694791d05a9eec627ad8a9412d66",
+        "parsed": true,
+        "contentMatches": false
+      }
+    },
+    "networkFailure": "ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST",
+    "currentAdminClaimsVerified": null,
+    "browserServerReadVerified": null,
+    "committedMetadataReceiptVerified": null,
+    "firstAdvanceUnchanged": null,
+    "secondMetadataExact": null,
+    "sameCashPeriod": null,
+    "newSessionParity": null,
+    "financialDocumentsStable": null,
+    "independentAdminSessions": 0,
+    "advanceCount": null,
+    "customTokenMints": 1,
+    "network": {
+      "automaticHrSuppressed": 0,
+      "unexpectedDenied": 13,
+      "allowedAuthRequests": 6,
+      "routeControlFailures": 0
+    },
+    "sessions": [],
+    "safety": {
+      "authIdentityOrClaimsWrites": 0,
+      "directFirestoreWrites": 0,
+      "providerCommandsExecuted": 0,
+      "financialMutationRequestsDispatched": 0,
+      "production": false
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

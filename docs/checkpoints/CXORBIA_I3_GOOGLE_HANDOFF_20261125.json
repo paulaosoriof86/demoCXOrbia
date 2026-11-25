@@ -17,7 +17,12 @@
     "financeTransportAndUiTests": 132,
     "integratedControlAndFinanceTests": 399,
     "integratedControlAndFinanceFailures": 0,
-    "integratedTestLogSha256": "a0d7aa8d8b44958163d6130e707afd792d4fdbc1f3e52740bd9231c2e36e1f31"
+    "integratedTestLogSha256": "a0d7aa8d8b44958163d6130e707afd792d4fdbc1f3e52740bd9231c2e36e1f31",
+    "financeBootstrapControlTests": {
+      "commit": "8b2f0cd48c1f69a009c6affb6ea590557d20c409",
+      "passed": 202,
+      "failed": 0
+    }
   },
   "confirmed": {
     "cloudAccess": "docs/checkpoints/CXORBIA_I3_GOOGLE_DEV_PREFLIGHT_20261125.json",
@@ -29,7 +34,8 @@
     },
     "financeResults": [
       "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795624487264686_TYPED_RESULT.json"
     ],
     "printProof": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json",
     "productProof": "docs/checkpoints/CXORBIA_I3_VRM378_PDF_SOURCE_20261125.json",
@@ -56,18 +62,54 @@
         }
       ],
       "causedProtectedBackendFailure": "NOT_ESTABLISHED"
+    },
+    "currentFinance": {
+      "resultGeneration": "1795624487264686",
+      "sha256": "7b4dde1ca89c40dc50bd0d3ca7dfb9cf19bade788247259ac07481050e210134",
+      "observedAt": "2026-11-25T16:34:47.264Z",
+      "stage": "SESSION_1_MOVEMENT_EXPORT",
+      "classification": "FUNCTIONAL_DEFECT",
+      "protectedHrApplied": true,
+      "exactAdvancePair": true,
+      "previewRows": 3,
+      "parsedXlsxRows": 3,
+      "nativePrintDomExact": true,
+      "nativePdfMissingDateCells": 3,
+      "newFinancialMovements": 0,
+      "completeAdminSessions": 0,
+      "encryptedPdfEvidenceVerified": true
+    },
+    "qaSignerWindow2": {
+      "role": "projects/cxorbia-backend-dev/roles/cxorbiaI3QaBlobSigner",
+      "permission": "iam.serviceAccounts.signBlob",
+      "project": "cxorbia-backend-dev",
+      "scope": "one previously approved DEV service account and Cloud Shell user",
+      "expiresAt": "2026-11-25T18:28:02Z",
+      "priorSignature": "IAM_PERMISSION_DENIED",
+      "conditionReadBack": true,
+      "challengeAfterPropagation": "SIGNED",
+      "actualFinanceCustomTokenLogin": true
+    },
+    "academyPreflight": {
+      "decision": "PASS_D08_CURRENT_PAIRED_DEV_REQUEST_PREFLIGHT",
+      "producer": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+      "scope": "D08_PREFLIGHT",
+      "source": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "environmentFileSha256": "69d6350942c0cdb0a5d48e81be800e1db173e884c6c2fe08c414565d5985871e",
+      "providerWrites": 0,
+      "newRoleCycles": 0
     }
   },
   "lastChromeConnection": {
     "googleConsolesOpened": true,
     "cloudShellUsed": true,
-    "subsequentOriginLookup": "No connected browser was found for the originating browser instance.",
-    "causeAtDevice": "UNKNOWN",
-    "holderActionEstablished": false
+    "reconnected": true,
+    "servingRevision": "cxorbia-live-hr-dev-00391-8mg",
+    "trafficPercent": 100
   },
   "next": {
-    "finance": "On the served 1691 predecessor use the 12f9 producer, Node 24 and pinned Google transport. Inspect CX_BACKEND_LAST_STATE and the protected Firestore read that blocks backendReady() before HR publication. Read only bounded diagnostic codes/counts and correlate the failed read with its owning module. Preserve the mutation guards. The Admin session and the HTTP 200 alone did not satisfy the flow.",
-    "academy": "Resume the clean D08 role and course-view request on the same predecessor, after establishing its evidence ingestion and owned-fixture cleanup. Retain the prior accepted cycles and cleanups.",
+    "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
+    "academy": "Current D08 preflight passed on 1691. Bind a genuine Google start, the prior verified cleanup, this invocation's journal, and the typed result before running the authorized clean role fixture.",
     "deployment": "Use the existing paired runtime/Hosting job with the exact 235d6c28 product source and F3 changes. Establish paired materialization receipt ingestion before changing DEV, then bind F3, QA role journeys and HR to the materialization.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },

@@ -184,3 +184,5 @@ Fuente sucesora para el próximo despliegue emparejado de DEV: `235d6c28e72226f7
 Consulta el corte de ejecución y la siguiente acción en `docs/checkpoints/CXORBIA_I3_GOOGLE_HANDOFF_20261125.json`.
 
 El control incorpora la rama tal como quedó en d45f9b80. Sus mapas D01/E05, la precisión de A08, el diagnóstico de Finanzas y los controles F3 conservan su procedencia. El ledger asigna VRM-377 al hallazgo previo de ese corte y VRM-378 a la corrección PDF. Los cuatro GET rechazados en el primer intento fueron imágenes de marca y banderas. Las mutaciones siguieron bloqueadas. Investigar el arranque Firestore protegido antes de repetir sesiones.
+
+**Reanudación I3, 25-11-2026.** El recibo Google de Finanzas `1795624487264686` acreditó la sesión Admin en la HR protegida y la lectura de las tres filas en servidor, pantalla y XLSX. La fecha se parte en las tres filas del PDF de la versión servida. El sucesor `235d6c28` conserva la reparación VRM-378 y F3. La solicitud actual de Academia pasó su control previo sobre `1691a76`. Continuar desde `docs/checkpoints/CXORBIA_I3_GOOGLE_HANDOFF_20261125.json` y el índice del descriptor.
