@@ -268,6 +268,38 @@
       },
       "registryVerified": true,
       "served": false
+    },
+    "firstNativePairedAttempt": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_PAIRED_0AEE0765_20261125.json",
+      "sha256": "6e6667e7da1146ae3949db693a8f67d463424426c75b0c4273e6b781bee92e65",
+      "nativeId": "0aee0765-7d7b-4596-b081-cb4470c8b01a",
+      "status": "FAILURE",
+      "stepStatus": "FAILURE",
+      "pairedReceiptAvailable": false
+    },
+    "financePresentationRequests": {
+      "financeResultGeneration": "1795624487264686",
+      "method": "GET",
+      "resourceType": "image",
+      "count": 13,
+      "targets": [
+        {
+          "host": "flagcdn.com",
+          "path": "/24x18/gt.png",
+          "count": 1
+        },
+        {
+          "host": "flagcdn.com",
+          "path": "/24x18/hn.png",
+          "count": 1
+        },
+        {
+          "host": "tyaconsultores.com",
+          "path": "/wp-content/uploads/2023/05/logo.png",
+          "count": 11
+        }
+      ],
+      "guard": "Continue aborting all 13 requests. Count only the three exact GET image resources separately. Unknown URLs, methods, query strings, non-image resource types and all unauthorized writes still fail."
     }
   },
   "lastChromeConnection": {
@@ -280,7 +312,7 @@
   "next": {
     "finance": "On served 1691a76, Finance authenticated the Admin, applied protected HR, matched Firestore and the DOM, verified the two advances, and matched all three rows in preview, XLSX and print DOM. The native PDF split exactly three dates in column zero. Keep those successful observations. Complete the current clean D08 request with provider-bound evidence and owned-fixture cleanup. Publish the paired runtime and Hosting from exact source 235d6c28, then verify the real movement PDF, dashboard and two independent sessions on the new materialization. Preserve the network guard and incorporate every result before the next functional write.",
     "academy": "Publish paired DEV source 235d6c28, including the real PDF repair and F3, from the verified immutable Google source object. Do not repeat the D08 request on 1691. Two subsequent attempts stalled on protected HR in distinct Admin contexts; the last attempted one normal authenticated reload, posted zero commands and verified exact cleanup. Preserve the earlier Admin progress and edit; use the new pair and provider-derived HR diagnosis before further learner fixtures.",
-    "deployment": "Publish the verified image digest and exact Hosting source through the paired DEV job. Independently consume its Google receipt before any functional write. Rebind F3, Finance and authenticated HR; retain all D08 cleanup and the proved Admin cycles.",
+    "deployment": "Read Google worker exception and live runtime / Hosting before retry. Reuse image 196450ea, the original paired workflow and exact source 235d6c28. Verify paired archive and incorporate native receipt before functional writes.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact."
   },
   "newDevDeploys": 0,

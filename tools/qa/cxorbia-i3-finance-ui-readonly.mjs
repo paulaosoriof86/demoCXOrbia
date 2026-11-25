@@ -14,7 +14,8 @@ async function installNetworkGuard(context,scope,project,host,stats){
   await context.route('**/*',async route=>{
     try{
     const request=route.request();let body=null;try{body=request.postDataJSON();}catch{}
-    const action=classifyUiRequest({url:request.url(),method:request.method(),body,devOrigin:host,firebaseProject:project,tenantId:scope.tenantId,projectId:scope.projectId});
+    const action=classifyUiRequest({url:request.url(),method:request.method(),resourceType:request.resourceType(),body,devOrigin:host,firebaseProject:project,tenantId:scope.tenantId,projectId:scope.projectId});
+    if(action==='BLOCK_KNOWN_PRESENTATION_IMAGE'){stats.knownPresentationImagesBlocked++;await route.abort('blockedbyclient');return;}
     if(action==='BLOCK_AUTOMATIC_HR'){stats.automaticHrSuppressed++;await route.abort('blockedbyclient');return;}
     if(action.startsWith('DENY_')){
       stats.unexpectedDenied++;stats.denialKinds[action]=(stats.denialKinds[action]||0)+1;
@@ -182,7 +183,7 @@ export async function runFinanceUiReadonly({project,host,out,source,env=process.
     production:false,i4Authorized:false,fullDomain:false,newDomainMatches:0,phaseAComplete:false,privateDataExposed:false,
     independentAdminSessions:0,authIdentityOrClaimsWrites:0,directFirestoreWrites:0,providerCommandsExecuted:0,financialMutationRequestsDispatched:0,
     paymentsTested:false,benefitsRetested:false,dashboardIndependentHrKpisCertified:false,automaticHrReconciliationProven:false,
-    rawExports:'PRIVATE_TEMP_PARSED_HASHED_REMOVED_FAILED_PDF_ENCRYPTED_ONLY',stage:'PREFLIGHT',sessionAttempted:0,sessions:[],network:{automaticHrSuppressed:0,unexpectedDenied:0,allowedAuthRequests:0,routeControlFailures:0,denialKinds:{},deniedRequests:[]},customTokenMints:0};
+    rawExports:'PRIVATE_TEMP_PARSED_HASHED_REMOVED_FAILED_PDF_ENCRYPTED_ONLY',stage:'PREFLIGHT',sessionAttempted:0,sessions:[],network:{automaticHrSuppressed:0,knownPresentationImagesBlocked:0,unexpectedDenied:0,allowedAuthRequests:0,routeControlFailures:0,denialKinds:{},deniedRequests:[]},customTokenMints:0};
   const stage=value=>{evidence.lastCompletedStage=evidence.stage;evidence.stage=value;};
   let app,browser,deleteApp,failure;
   try{

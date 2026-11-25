@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.i3.google-paired-attempt-status.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "executionProvider": "GOOGLE_CLOUD_BUILD",
+  "executionId": "0aee0765-7d7b-4596-b081-cb4470c8b01a",
+  "region": "global",
+  "project": "cxorbia-backend-dev",
+  "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+  "job": "vrm154-156-dev-materialization",
+  "producerControl": "34b1140c96cd37ada17f8212eab3d3de20df0dda",
+  "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+  "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
+  "imageBuildId": "196450ea-342f-4a31-bf8d-a2620a31f155",
+  "imageDigest": "sha256:8277d2a4bdf5a83910b97bb1ef57adbc398408cfdd634f6046926942ec470f55",
+  "nativeStatus": "FAILURE",
+  "nativeStepStatus": "FAILURE",
+  "nativeWorkerExitCode": 1,
+  "finishedAt": "2026-11-25T17:48:41.698492Z",
+  "checkpointObjectsObserved": [
+    "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/0aee0765-7d7b-4596-b081-cb4470c8b01a/start.json"
+  ],
+  "pairedReceiptAvailable": false,
+  "newFunctionalWritesAfterAttempt": 0,
+  "production": false
+}

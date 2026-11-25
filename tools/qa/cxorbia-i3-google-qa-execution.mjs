@@ -11,7 +11,7 @@ const project = 'cxorbia-backend-dev';
 const signer = 'firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com';
 const sha = /^[a-f0-9]{40}$/;
 const objectUri = /^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})\/(start|result)\.json#([1-9]\d{7,19})$/;
-const runnerFiles = ['tools/qa/cxorbia-i3-finance-ui-readonly.mjs','tools/qa/cxorbia-i3-google-qa-execution.mjs'];
+const runnerFiles = ['tools/qa/cxorbia-i3-finance-ui-readonly.mjs','tools/qa/cxorbia-i3-google-qa-execution.mjs','tools/qa/cxorbia-i3-finance-ui-readonly-contract.mjs'];
 export const academyJob='i3-run2382-academy-b7-isolated-dev-qa';
 export const academyAbsenceScope='docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json';
 const readCommand = (cmd,args) => execFileSync(cmd,args,{encoding:'utf8',timeout:45000,maxBuffer:3*1024*1024});

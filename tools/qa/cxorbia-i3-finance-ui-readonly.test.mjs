@@ -179,3 +179,12 @@ test('partial UI diagnostics contain only approved booleans, counts and enumerat
   assert.equal(safe.available,true);assert.equal(safe.firebaseUserPresent,true);assert.equal(safe.route,'OTHER_OR_UNAVAILABLE');assert.equal(safe.role,'OTHER_OR_UNAVAILABLE');assert.equal(safe.movementRowCount,3);assert.equal(safe.reportRowCount,null);
   assert(!JSON.stringify(safe).includes('PRIVATE'));assert(!JSON.stringify(safe).includes('example.test'));
 });
+
+test('only the three evidenced external image GETs are classified and still blocked',()=>{
+ const scoped={devOrigin:'https://cxorbia-backend-dev.web.app',firebaseProject:'cxorbia-backend-dev',tenantId:'qa',projectId:'demo',method:'GET',resourceType:'image'};
+ for(const url of ['https://tyaconsultores.com/wp-content/uploads/2023/05/logo.png','https://flagcdn.com/24x18/gt.png','https://flagcdn.com/24x18/hn.png']){
+    assert.equal(classifyUiRequest({...scoped,url}),'BLOCK_KNOWN_PRESENTATION_IMAGE');
+    for(const alter of [{method:'POST'},{resourceType:'fetch'},{url:url+'?scope=private'},{url:url.replace('https://','https://private@')},{url:url+'/unapproved'}])
+      assert.equal(classifyUiRequest({...scoped,url,...alter}),'DENY_OTHER');
+ }
+});

@@ -99,11 +99,17 @@ export function assertMovementDom(observed,expected){
   }
   return true;
 }
-export function classifyUiRequest({url,method,body,devOrigin,firebaseProject,tenantId,projectId}){
+const verifiedPresentationImages=new Set([
+  'https://tyaconsultores.com/wp-content/uploads/2023/05/logo.png',
+  'https://flagcdn.com/24x18/gt.png',
+  'https://flagcdn.com/24x18/hn.png'
+]);
+export function classifyUiRequest({url,method,body,devOrigin,firebaseProject,tenantId,projectId,resourceType}){
   let u;try{u=new URL(url);}catch{return 'DENY_OTHER';}
   const m=String(method).toUpperCase(),read=['GET','HEAD'].includes(m);
   if(['data:','blob:','about:'].includes(u.protocol))return 'ALLOW_LOCAL';
   if(u.protocol!=='https:'||u.username||u.password)return 'DENY_OTHER';
+  if(m==='GET'&&resourceType==='image'&&verifiedPresentationImages.has(u.href))return 'BLOCK_KNOWN_PRESENTATION_IMAGE';
   let p;try{p=decodeURIComponent(u.pathname);}catch{return 'DENY_OTHER';}
   if(u.origin===devOrigin&&p==='/v1/cxorbia/commands'){
     const automatic=m==='POST'&&body?.commandType==='hr.snapshot.reconcile'&&body.tenantId===tenantId&&body.projectId===projectId&&body.source==='hr-source-authorized-auto-reconciliation'&&/^[a-f0-9]{64}$/.test(String(body.entityId||''))&&body.expectedVersion===body.entityId;

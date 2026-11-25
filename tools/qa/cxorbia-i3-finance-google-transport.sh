@@ -28,10 +28,19 @@ export CANDIDATE_DESCRIPTOR=CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24
 export FIN_RUNNER=tools/qa/cxorbia-prei4-final-focal-finance-live.mjs
 export CXORBIA_I3_FINANCE_MODE=READONLY_C09_C10_CURRENT_UI
 producer=12f9ea2058e34085a4c668a1bfd3147fcdf266a4
+if [[ -n "${CXORBIA_FINANCE_CURRENT_RECEIPT:-}" ]]; then
+  receipt=$(jq -er '.postDeployRunSeal | select(.mode=="CURRENT_SOURCE_SERVING") | .receiptPath' "$CANDIDATE_DESCRIPTOR")
+  [[ "$receipt" == "$CXORBIA_FINANCE_CURRENT_RECEIPT" && "$receipt" == docs/checkpoints/CXORBIA_I3_GOOGLE_*_AUTOMATIC_DEV_RECEIPT.json ]]
+  [[ "$(git hash-object "$receipt")" == "$(jq -er .postDeployRunSeal.receiptBlob "$CANDIDATE_DESCRIPTOR")" ]]
+  jq -e '.executionProvider=="GOOGLE_CLOUD_BUILD" and .executionBinding.nativeBuildVerified and .sourceHostedExact and .production==false and .materialization.hrLiveVerified' "$receipt" >/dev/null
+  read -r FOCAL_SOURCE FOCAL_TREE < <(jq -er '[.materialization.sourceSha,.materialization.sourceTree]|@tsv' "$receipt")
+  jq -e --arg s "$FOCAL_SOURCE" --arg t "$FOCAL_TREE" --arg r "$receipt" '.currentMaterialization.sourceSha==$s and .productSourceSha==$s and .productTreeAuthority==$t and .currentMaterialization.materializationReceiptPath==$r' "$CANDIDATE_DESCRIPTOR" >/dev/null
+  producer=$(git rev-parse HEAD)
+fi
 [[ "$(git rev-parse HEAD)" == "$producer" && "$(git rev-parse "$FOCAL_SOURCE^{tree}")" == "$FOCAL_TREE" ]]
 [[ "$(gcloud config get-value project)" == "$PROJECT" ]]
 [[ -z "${GITHUB_ACTIONS:-}" && -z "${GITHUB_RUN_ID:-}" ]]
-for path in tools/qa/cxorbia-i3-{finance-ui-readonly,google-qa-execution}.mjs; do
+for path in tools/qa/cxorbia-i3-{finance-ui-readonly,finance-ui-readonly-contract,google-qa-execution}.mjs; do
   [[ "$(git hash-object "$path")" == "$(git rev-parse "$CXORBIA_TRANSPORT_SHA:$path")" ]]
 done
 export FINAL_FOCAL_OUT

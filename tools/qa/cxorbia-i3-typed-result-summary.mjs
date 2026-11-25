@@ -333,7 +333,7 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       ...(raw.networkFailure!==undefined?{networkFailure:safeTypedFailureCode(raw.networkFailure)}:{}),
       ...booleans(raw,['currentAdminClaimsVerified','browserServerReadVerified','committedMetadataReceiptVerified','firstAdvanceUnchanged','secondMetadataExact','sameCashPeriod','newSessionParity','financialDocumentsStable']),
       ...counts(raw,['independentAdminSessions','advanceCount','customTokenMints']),
-      network:counts(raw.network,['automaticHrSuppressed','unexpectedDenied','allowedAuthRequests','routeControlFailures']),
+      network:counts(raw.network,['automaticHrSuppressed','knownPresentationImagesBlocked','unexpectedDenied','allowedAuthRequests','routeControlFailures']),
       sessions:sessions.map(session=>({
         ...booleans(session,['newContextEmpty','exactCurrentAdminClaims','serverReadConfirmed','advancePairExact','firstAdvanceUnchanged','secondMetadataExact']),
         rowCount:count(session.rowCount),
