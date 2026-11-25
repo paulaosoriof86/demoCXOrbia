@@ -11,7 +11,7 @@ import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,project
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
-const SELF='continuity-result-consumer',PRODUCER='vrm154-156-dev-materialization';
+const SELF='continuity-result-consumer',PRODUCER='vrm154-156-dev-materialization',CONTROL_AUTHORITY='canonical-candidate-authority';
 const must=(ok,code)=>{if(!ok)throw new Error(code);};
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const git=(...args)=>execFileSync('git',args,{maxBuffer:20*1024*1024,encoding:'utf8'}).trim();
@@ -93,7 +93,7 @@ export function selectTypedArtifact({run,job,artifacts}){
  must(found.length===1,'SOURCE_FAILURE:TYPED_ARTIFACT_MISSING_OR_AMBIGUOUS');return found[0];
 }
 export const typedResultKey=x=>`${x.runId}/${x.runAttempt}/${x.jobId}`;
-export function pendingTypedRuns(queue=[]){return [...new Map(queue.filter(x=>TYPED_JOBS[x.name]).map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];}
+export function pendingTypedRuns(queue=[]){return [...new Map(queue.filter(x=>TYPED_JOBS[x.name]||x.name===CONTROL_AUTHORITY).map(x=>[`${x.runId}/${x.runAttempt}`,{runId:Number(x.runId),runAttempt:Number(x.runAttempt)}])).values()];}
 
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 export function pendingSatisfiedRequestRuns(controls){
@@ -184,6 +184,73 @@ async function normalizeD08Artifact({text,transport,producer}){
   scopeAuthority:{...authority,sha256:a.sha256},sourceAssets});
 }
 
+const FINANCE_JOB='i3-finance-focal-reproof';
+const FINANCE_DEPENDENCIES='Run bash tools/qa/cxorbia-i3-finance-dependencies.sh';
+const FINANCE_EXECUTE='Run bash tools/qa/cxorbia-i3-finance-focal-execute.sh';
+const journalFile=run=>`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${run.run_attempt}_EXECUTION_JOURNAL.json`;
+function exactRecordedJob({run,job,journal}){
+ validateConsumedJournal(journal,run,run.run_attempt);
+ must(job&&Number.isSafeInteger(job.id)&&job.id>0&&job.run_id===run.id&&job.run_attempt===run.run_attempt&&job.head_sha===run.head_sha&&job.status==='completed'&&Boolean(job.conclusion),'SOURCE_FAILURE:EXECUTION_JOB_IDENTITY');
+ must(Number.isFinite(Date.parse(job.started_at))&&Number.isFinite(Date.parse(job.completed_at))&&Date.parse(job.completed_at)>=Date.parse(job.started_at),'SOURCE_FAILURE:EXECUTION_JOB_WINDOW');
+ const recorded=(journal.jobs||[]).filter(x=>x.id===job.id);
+ must(recorded.length===1&&recorded[0].name===job.name&&recorded[0].runAttempt===job.run_attempt&&recorded[0].status===job.status&&recorded[0].conclusion===job.conclusion&&recorded[0].startedAt===job.started_at&&recorded[0].completedAt===job.completed_at,'SOURCE_FAILURE:EXECUTION_JOB_JOURNAL_MISMATCH');
+ return recorded[0];
+}
+function possibleTypedArtifact({run,job,artifacts,journal}){
+ const prefix=TYPED_JOBS[job.name]?.prefix;
+ must(prefix&&Array.isArray(artifacts)&&Array.isArray(journal.artifacts),'SOURCE_FAILURE:EXECUTION_ARTIFACT_INVENTORY');
+ const names=new Set([`${prefix}-${run.id}`,`${prefix}-${run.id}-${run.run_attempt}`]);
+ // Any matching name, including expired/wrong-attempt/head, stays ambiguous.
+ // A missing current download must never erase a historically recorded artifact.
+ return [...artifacts,...journal.artifacts].some(a=>names.has(a.name));
+}
+
+// Narrow negative execution evidence for the existing Finance job. GitHub job
+// metadata proves dependencies failed before Auth and the functional producer.
+// There is intentionally no artifact, result payload, domain proof or owner ACK.
+export function makeFinanceNotExecutedReceipt({run,job,journal,artifacts,now}){
+ exactRecordedJob({run,job,journal});
+ must(job.name===FINANCE_JOB&&job.conclusion==='failure','MAPPING_FAILURE:FINANCE_NOT_EXECUTED_JOB_STATE');
+ must(!possibleTypedArtifact({run,job,artifacts,journal}),'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_ARTIFACT_AMBIGUOUS');
+ const steps=job.steps;
+ must(Array.isArray(steps)&&steps.length>0&&steps.length<=100&&steps.every(x=>Number.isSafeInteger(x.number)&&x.number>0&&typeof x.name==='string'&&x.status==='completed'&&['success','failure','skipped'].includes(x.conclusion))&&new Set(steps.map(x=>x.number)).size===steps.length,'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_STEPS');
+ const one=name=>{const found=steps.filter(s=>s.name===name);must(found.length===1,'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_STEP_MISSING_OR_AMBIGUOUS');return found[0];};
+ const dependencies=one(FINANCE_DEPENDENCIES),auth=one('Run google-github-actions/auth@v2'),gcloud=one('Run google-github-actions/setup-gcloud@v2'),execute=one(FINANCE_EXECUTE),upload=one('Run actions/upload-artifact@v4');
+ must(dependencies.conclusion==='failure'&&auth.conclusion==='skipped'&&gcloud.conclusion==='skipped'&&execute.conclusion==='skipped'&&['failure','skipped'].includes(upload.conclusion),'MAPPING_FAILURE:FINANCE_NOT_EXECUTED_NOT_PROVEN');
+ must(dependencies.number<auth.number&&auth.number<gcloud.number&&gcloud.number<execute.number&&execute.number<upload.number,'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_STEP_ORDER');
+ must(steps.filter(s=>s.number<dependencies.number).every(s=>s.conclusion==='success')&&steps.filter(s=>s.number>dependencies.number&&s.number<upload.number).every(s=>s.conclusion==='skipped'),'MAPPING_FAILURE:FINANCE_NOT_EXECUTED_INTERVENING_STEP');
+ const postNames=new Set(['Post Run actions/setup-node@v4','Post Run actions/checkout@v4','Complete job']);
+ must(steps.filter(s=>s.number>upload.number).every(s=>postNames.has(s.name)&&['success','skipped'].includes(s.conclusion)),'MAPPING_FAILURE:FINANCE_NOT_EXECUTED_UNRECOGNIZED_POST_STEP');
+ const metadata={id:job.id,runId:job.run_id,runAttempt:job.run_attempt,controlHead:job.head_sha,name:job.name,status:job.status,conclusion:job.conclusion,startedAt:job.started_at,completedAt:job.completed_at,
+  steps:steps.map(s=>({number:s.number,name:s.name,status:s.status,conclusion:s.conclusion,startedAt:s.started_at??null,completedAt:s.completed_at??null}))};
+ return {schemaVersion:'cxorbia.i3.typed-result-summary.v1',kind:'FINANCE_NOT_EXECUTED',state:'HOLD',decision:'RECORDED_FINANCE_NOT_EXECUTED_ENVIRONMENT_FAILURE',classification:'ENVIRONMENT_FAILURE',executionStatus:'NOT_EXECUTED',
+  failureCodes:['ENVIRONMENT_FAILURE:FINANCE_DEPENDENCIES_FAILED_BEFORE_AUTH_AND_EXECUTION'],observedAt:now,
+  producer:{jobName:job.name,jobConclusion:job.conclusion,resultProduced:false},
+  provenance:{runId:String(run.id),runAttempt:String(run.run_attempt),jobId:String(job.id),controlHead:run.head_sha,artifactId:null,artifactDigest:null,entry:null,resultRef:null,resultSha256:null,
+   journalPath:journalFile(run),journalGitBlob:gitBlob(jsonBytes(journal)),jobMetadataApiPath:`/repos/${REPO}/actions/jobs/${job.id}`,jobMetadataScope:'IDENTITY_STATUS_STEPS',jobMetadataSha256:sha256(jsonBytes(metadata))},
+  artifact:null,executionEvidence:metadata,observations:{dependencyStepFailed:true,authStepSkipped:true,functionalExecuteStepSkipped:true,functionalResultProduced:false},
+  ownerSpecificReceipts:[],fullDomain:false,newDomainMatches:0,phaseAComplete:false,productActionsPerformedByConsumer:0,production:false,privateValuesStored:false};
+}
+
+// Canonical authority is a control job recorded in the execution journal, not a
+// typed functional producer. Only its exact old queue entry may be retired.
+export function retireRecordedControlQueue({queue,run,jobs,journal,journalPath,journalBlob,now}){
+ const next=new Map(queue),retired=[],failures=[];
+ for(const [key,item]of queue){
+  if(item.name!==CONTROL_AUTHORITY||String(item.runId)!==String(run.id)||String(item.runAttempt)!==String(run.run_attempt))continue;
+  try{
+   must(key===typedResultKey(item)&&item.controlHead===run.head_sha&&item.journalPath===journalFile(run)&&journalPath===item.journalPath&&item.journalBlob===journalBlob&&journalBlob===gitBlob(jsonBytes(journal)),'SOURCE_FAILURE:CONTROL_QUEUE_JOURNAL_BINDING');
+   const matches=jobs.filter(j=>j.id===item.jobId&&j.name===CONTROL_AUTHORITY);
+   must(matches.length===1,'SOURCE_FAILURE:CONTROL_QUEUE_JOB_MISSING_OR_AMBIGUOUS');
+   const job=matches[0];exactRecordedJob({run,job,journal});
+   const pending=(journal.pendingTypedResults||[]).filter(x=>x.jobId===item.jobId);
+   must(pending.length===1&&pending[0].name===CONTROL_AUTHORITY&&pending[0].conclusion===job.conclusion&&item.conclusion===job.conclusion&&item.state==='EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED','SOURCE_FAILURE:CONTROL_QUEUE_PENDING_IDENTITY');
+   next.delete(key);retired.push(key);
+  }catch(error){failures.push({key,runId:run.id,runAttempt:run.run_attempt,jobId:item.jobId,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:CONTROL_QUEUE_RECONCILIATION_UNCONFIRMED',observedAt:now});}
+ }
+ return {queue:next,retired,failures};
+}
+
 // Typed incorporation is separate from the immutable execution journal. A failed
 // producer is recorded as a failure, never promoted to a functional certificate.
 export async function incorporateTypedResults({api,token,run,jobs,artifacts,controls,journal,files,now,
@@ -207,6 +274,11 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
    const saved=JSON.parse(text),proof=saved.provenance||saved.evidence;
    must(String(proof?.runId)===String(run.id)&&String(proof?.runAttempt)===String(run.run_attempt)&&String(proof?.jobId)===String(job.id)&&proof?.controlHead===run.head_sha,'SOURCE_FAILURE:TYPED_INDEX_IDENTITY');
    must(String(proof.artifactId)===String(old.artifactId)&&proof.artifactDigest===old.artifactDigest,'SOURCE_FAILURE:TYPED_INDEX_ARTIFACT_IDENTITY');
+   if(saved.kind==='FINANCE_NOT_EXECUTED'){
+    must(old.artifactId===null&&old.artifactDigest===null&&saved.artifact===null,'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_NULL_ARTIFACT');
+    const expected=makeFinanceNotExecutedReceipt({run,job,journal,artifacts,now:saved.observedAt});
+    must(jsonBytes(saved)===jsonBytes(expected),'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_REPLAY_CHANGED');
+   }
    if(saved.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'){
     producer??=await producerLoader(api,run.head_sha);
     if(await retireSatisfiedD08Request({result:saved,entry:old,producer,controls,files}))requestsReconciled++;
@@ -216,6 +288,12 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
     if(await retireSatisfiedD08RecoveryRequest({result:saved,entry:old,producer,controls,files}))requestsReconciled++;
    }
     queue.delete(key);continue;
+   }
+   if(job.name===FINANCE_JOB&&job.conclusion==='failure'&&!possibleTypedArtifact({run,job,artifacts,journal})){
+    const result=makeFinanceNotExecutedReceipt({run,job,journal,artifacts,now}),receiptPath=`docs/checkpoints/CXORBIA_I3_RUN${run.id}_ATTEMPT${run.run_attempt}_JOB${job.id}_TYPED_RESULT.json`,bytes=jsonBytes(result);
+    if(controls.blobs?.has(receiptPath))must(controls.blobs.get(receiptPath)===gitBlob(bytes),'SOURCE_FAILURE:FINANCE_NOT_EXECUTED_RECEIPT_CHANGED');
+    const saved={key,path:receiptPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes),runId:run.id,runAttempt:run.run_attempt,jobId:job.id,controlHead:run.head_sha,artifactId:null,artifactDigest:null,kind:result.kind,decision:result.decision,ownerReceiptCount:0,observedAt:now};
+    files.set(receiptPath,bytes);entries.set(key,saved);queue.delete(key);incorporated.push(saved);continue;
    }
    const artifact=selectTypedArtifact({run,job,artifacts});
    const journalArtifact=(journal.artifacts||[]).find(item=>String(item.id)===String(artifact.id));
@@ -406,11 +484,13 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
   }finally{download.cleanup();}
  }else if(!journalExists&&paired){outcome='HOLD_PARTIAL_OR_FAILED_DEPLOY_READBACK_REQUIRED';}
  if(!journalExists){journal.outcome=outcome;journal.materializationReceiptPath=materialization;
-  journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER].includes(j.name)&&j.conclusion!=='skipped'&&(j.name!=='canonical-candidate-authority'||j.conclusion!=='success')).map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));}
+  journal.pendingTypedResults=jobs.filter(j=>![SELF,PRODUCER,CONTROL_AUTHORITY].includes(j.name)&&j.conclusion!=='skipped').map(j=>({jobId:j.id,name:j.name,conclusion:j.conclusion,state:'EVIDENCE_RECORDED_TYPED_CLAUSE_INCORPORATION_REQUIRED'}));}
  const queue=new Map((controls.pointer.currentResultIncorporationQueue||[]).map(x=>[`${x.runId}/${x.runAttempt}/${x.jobId}`,x]));
- for(const x of journal.pendingTypedResults)queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
- const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...queue.values()]}};
+ for(const x of journal.pendingTypedResults.filter(x=>x.name!==CONTROL_AUTHORITY))queue.set(`${run.id}/${run.run_attempt}/${x.jobId}`,{...x,runId:run.id,runAttempt:run.run_attempt,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),controlHead:run.head_sha});
+ const controlQueue=retireRecordedControlQueue({queue,run,jobs,journal,journalPath,journalBlob:journalExists?controls.blobs.get(journalPath):gitBlob(jsonBytes(journal)),now});
+ const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...controlQueue.queue.values()]}};
  const typed=await incorporateTypedResults({api,token,run,jobs,artifacts,controls:typedControls,journal,files,now});
+ typed.failures.push(...controlQueue.failures);
  let scoped={index:typed.index,upgraded:0,changedDomains:[],changed:false};
  try{scoped=await reconcileCurrentScopedClauses({api,token,controls,files,index:typed.index,now});}
  catch(error){typed.failures.push({key:`${run.id}/${run.run_attempt}/scoped-clauses`,runId:run.id,runAttempt:run.run_attempt,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED',observedAt:now});}
@@ -427,7 +507,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  }
  if(!journalExists)files.set(journalPath,jsonBytes(journal));
  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
- return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,scopedReceiptsNormalized:scoped.upgraded,scopedResidualDomainsUpdated:scoped.changedDomains,typedFailures:typed.failures,productActions:0};
+ return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,recordedControlQueueRetired:controlQueue.retired,scopedReceiptsNormalized:scoped.upgraded,scopedResidualDomainsUpdated:scoped.changedDomains,typedFailures:typed.failures,productActions:0};
 }
 
 export function validateConsumedJournal(journal,run,attempt){

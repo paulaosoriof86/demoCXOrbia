@@ -84,7 +84,12 @@ const readFile=p=>fs.readFileSync(path.join(root,p),'utf8');
 function controlsFixture(){const descriptor=JSON.parse(readFile(DESCRIPTOR)),pointer=JSON.parse(readFile(POINTER));return {descriptor,pointer,matrix:JSON.parse(readFile(descriptor.moduleTruthPath)),ledger:JSON.parse(readFile(descriptor.findingsLedgerPath)),blobs:new Map(),readBytes:async p=>readFile(p)};}
 test('existing control binder can bind residual-only successor without fabricated execution receipt',()=>{const controls=controlsFixture(),out=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger});const files=bindControlPaths(out,{matrixPath:'RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V999.json',ledgerPath:'CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V999_2026-11-25.json'});assert.equal(files.size,4);assert.equal(files.has(undefined),false);assertPreserved(controls,out);});
 test('consumer projects already indexed metadata with no provider or artifact download',async()=>{
- const controls=controlsFixture(),f=finance();f.observations.scopeSha256=canonicalSha256(JSON.parse(readFile(FINANCE_METADATA_SCOPE_PATH)));f.provenance={runId:45514816284,runAttempt:1,jobId:138871923237,artifactId:14976459189,artifactDigest,controlHead:transport().controlHead};
+ const controls=controlsFixture(),f=finance();
+ // This scenario starts before metadata credit, independently of live matrix progress.
+ const financeModule=controls.matrix.modules.find(m=>m.domain==='finance-core-liquidation-costs');
+ financeModule.currentResidualClauses={pending:'Resolve current amount/source/payability and safe November metadata edit; finish uncovered financial UI.',preserved:'C04/C05 and B5 accepted.'};
+ financeModule.actionRequired=financeModule.currentResidualClauses.pending+' PRESERVE: '+financeModule.currentResidualClauses.preserved;
+ f.observations.scopeSha256=canonicalSha256(JSON.parse(readFile(FINANCE_METADATA_SCOPE_PATH)));f.provenance={runId:45514816284,runAttempt:1,jobId:138871923237,artifactId:14976459189,artifactDigest,controlHead:transport().controlHead};
  const e=indexEntry(f,45514816284,138871923237),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[e]},files=new Map([[e.path,jsonBytes(f)]]);for(const c of [controls.descriptor,controls.pointer])c.currentFunctionalEvidenceIndex=index;
  const before=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,ledger:controls.ledger,matrix:controls.matrix});
  const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};const got=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T01:00:00Z'});

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.i3.control-closure.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-25T00:50:07.528069+00:00",
+  "controlParent": "987a7e22f93e6a94b3cff785e41233db7c2a4d90",
+  "runId": 45520112416,
+  "runNumber": 2785,
+  "runAttempt": 1,
+  "d08": {
+    "jobId": 138889998069,
+    "conclusion": "success",
+    "typedReceipt": "docs/checkpoints/CXORBIA_I3_RUN45520112416_ATTEMPT1_JOB138889998069_TYPED_RESULT.json",
+    "artifactId": 14979538218,
+    "artifactSha256": "7274a685136c3e3f0ca35c598a3893ed19d284bce6dc93bcc470c95e7b933817",
+    "cleanup": {
+      "deletedDocuments": 18,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "ownershipTransaction": true
+    },
+    "requestRetired": true
+  },
+  "finance": {
+    "jobId": 138889994810,
+    "conclusion": "failure",
+    "classification": "ENVIRONMENT_FAILURE",
+    "failedStep": "Run bash tools/qa/cxorbia-i3-finance-dependencies.sh",
+    "error": "Playwright does not support chromium on ubuntu26.04-x64",
+    "functionalRunnerExecuted": false,
+    "cloudAuthStepExecuted": false,
+    "artifactProduced": false,
+    "correction": {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "job": "i3-finance-focal-reproof",
+      "runsOn": "ubuntu-24.04",
+      "runtimeDependenciesUnchanged": true
+    }
+  },
+  "scopedContinuity": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V400.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V727_2026-11-25.json",
+    "domainsWithPartialCredits": [
+      "auth-protected-data-runtime",
+      "core-config-data-router-permissions",
+      "finance-core-liquidation-costs",
+      "shoppers-mi-visitas-profile"
+    ],
+    "classificationsChanged": false,
+    "newDomainMatches": 0
+  },
+  "nextAction": {
+    "financeMode": "READONLY_C09_C10_CURRENT_UI",
+    "d08Mode": "UI_WITH_RECOVERY",
+    "d08Request": "docs/checkpoints/CXORBIA_I3_D08_UI_AFTER_RUN2783_RECOVERY_REQUEST_20261125.json",
+    "metadataWritesRepeated": false,
+    "a08LoginRepeated": false,
+    "productSourceChanged": false
+  },
+  "production": false,
+  "authorizationI4": false,
+  "phaseAComplete": false,
+  "executionFailureLifecycle": {
+    "canonicalControlFailuresRemainInImmutableJournal": true,
+    "oldCanonicalQueueRetiresOnlyWithExactJournalAndApiJob": true,
+    "financeNoArtifactFailureRequiresDependenciesFailureAndAuthExecuteSkipped": true,
+    "noArtifactOrFunctionalProofInvented": true,
+    "historyAndFailedEvidencePreserved": true
+  },
+  "validation": {
+    "canonicalRequiredTestAndSyntaxCommandsPassed": 59,
+    "financeFocalTestsPassed": 147,
+    "failureLifecycleTestsPassed": 45,
+    "candidateAuthority": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY"
+  }
+}

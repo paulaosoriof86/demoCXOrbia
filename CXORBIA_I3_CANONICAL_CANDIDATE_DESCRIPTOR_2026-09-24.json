@@ -36050,5 +36050,13 @@
     "gitBlob": "940fd451e53773409422c0d9ab96ca36fa4eb997",
     "state": "CONTROL_REPAIR_FUNCTIONAL_RESIDUALS_OPEN",
     "production": false
+  },
+  "currentD08UiQaRequest": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_AFTER_RUN2783_RECOVERY_REQUEST_20261125.json",
+    "gitBlob": "1ab762e4dd18cba7d11d211d094fcd3b281df07b",
+    "state": "REQUESTED_CURRENT_DEV_UI_AFTER_EXACT_RUN2783_CLEANUP",
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "pairedRunId": 45488581923,
+    "production": false
   }
 }

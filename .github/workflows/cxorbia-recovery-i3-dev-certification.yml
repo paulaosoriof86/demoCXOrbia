@@ -85,7 +85,7 @@ jobs:
       set -Eeuo pipefail
       mkdir -p .tmp/canonical-candidate-authority
       node --test tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs
-      node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring,scoped-clause-projection}.test.mjs
+      node --test tools/qa/cxorbia-i3-{typed-result-summary,d08-result-normalizer,typed-result-wiring,scoped-clause-projection,execution-failure-incorporation}.test.mjs
       node --test tools/qa/cxorbia-i3-shock-continuity-guard.test.mjs tools/qa/cxorbia-i3-f2-predeploy-proven-predecessor.test.mjs
       node --test tools/qa/cxorbia-i3-finance-residual-readonly.test.mjs
       node --test tools/qa/cxorbia-i3-live-fixture-contract.test.mjs tools/qa/cxorbia-i3-c3-finalize-module-truth.test.mjs tools/qa/cxorbia-i3-tenant-readonly-acceptance.test.mjs tools/qa/cxorbia-i3-benefits-readonly-contract.test.mjs tools/qa/cxorbia-i3-current-authority-alias-guard.test.mjs tools/qa/cxorbia-pre-i4-focal-hr-reference.test.mjs tools/qa/cxorbia-i3-project-country-live-proof.test.mjs tools/qa/cxorbia-pre-i4-resource-read-contract.test.mjs
@@ -1373,7 +1373,7 @@ jobs:
   i3-finance-focal-reproof:
    needs: canonical-candidate-authority
    if: ${{needs.canonical-candidate-authority.outputs.status=='HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED'||(github.event_name=='push'&&(contains(github.event.head_commit.message,'[i3-finance-current-readonly]')||contains(github.event.head_commit.message,'[i3-finance-metadata]')||contains(github.event.head_commit.message,'[i3-finance-ui-readonly]')))}}
-   runs-on: ubuntu-latest
+   runs-on: ubuntu-24.04
    timeout-minutes: 60
    env:
     FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
