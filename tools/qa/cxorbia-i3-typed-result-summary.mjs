@@ -2,7 +2,7 @@
 // Consumer verifies the archive, exact producer attempt/job/window, and pins first.
 import crypto from 'node:crypto';
 import {readGoogleFinanceResult} from './cxorbia-i3-google-qa-execution.mjs';
-import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS,A08_GT_CURRENT_PROVIDER_MODE,validA08GtPasswordScope,publicA08GtPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 import {publicA08ClauseRefs} from './cxorbia-i3-scoped-clause-projection.mjs';
 
 const HASH=/^[a-f0-9]{64}$/, SHA=/^[a-f0-9]{40}$/;
@@ -81,10 +81,114 @@ function financeUiSeal({seal,transport,expected}){
   const noDeployment=parseable&&parsed.production===false&&parsed.deploys===0;
   const readbackExact=parseable&&parsed.decision==='PASS_CURRENT_FINANCE_DEV_IDENTITY_READBACK'&&parsed.runtimeTrafficExact===true&&parsed.hostingBeforeAfterSame===true;
   return {entry:'identity-live-readback.json',present,bindingExact,parseable,jobSuccessful,fieldsExact:!!fieldsExact,noDeployment:!!noDeployment,readbackExact:!!readbackExact,
-    sha256:bounded?hash(seal.text):null,verified:!!(jobSuccessful&&bindingExact&&fieldsExact&&noDeployment&&readbackExact)};
+    sha256:bounded?hash(seal.text):null,verified:!!(jobSuccessful&&bindingExact&&fieldsExact&&noDeployment&&readbackExact),
+    ...(safeTypedFailureCode(parsed?.error)?{failureCode:safeTypedFailureCode(parsed.error)}:{}),
+    ...(Number.isInteger(parsed?.readbackExitCode)&&parsed.readbackExitCode>=0&&parsed.readbackExitCode<=255?{readbackExitCode:parsed.readbackExitCode}:{})};
 }
 function financeUiStage(value){
   return typeof value==='string'&&/^(?:PREFLIGHT|DEPENDENCIES|ADC_BASELINE|METADATA_RECEIPT|ADMIN_AUTHORITY|SESSION_[12]_(?:AUTH|PERIOD|MOVEMENTS|MOVEMENT_EXPORT|DASHBOARD|FINAL_READ)|FINAL_LEDGER|COMPLETE)$/.test(value)?value:null;
+}
+const diagnosticHash=value=>typeof value==='string'&&HASH.test(value)?value:null;
+// Exact outputs of the producer's financeHrOwnerCode. Never copy ownerError,
+// suffixes, identities, request URLs or arbitrary diagnostic properties.
+function financeUiHrOwnerDiagnostic(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const codes=['HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS','HR_LIVE_DUPLICATE_PERIOD_KEYS','HR_LIVE_NETWORK_FAILURE','HR_LIVE_NONEMPTY_REQUIRED','HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION','HR_LIVE_REVISION_PUBLICATION_MISMATCH','HR_LIVE_REVISION_READBACK_MISSING','HR_LIVE_REVISION_REQUIRED','HR_LIVE_SCOPE_MISMATCH','HR_LIVE_SOURCE_SAFE_REQUIRED','HR_LIVE_UNAVAILABLE','PROJECT_SCOPE_REQUIRED','CANONICAL_COMPOSER_V2_MISSING','CANONICAL_PERIOD_LOSS','CERTIFICATION_EVIDENCE_PROJECTOR_MISSING','BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED','BACKEND_REFRESH_READBACK_REVISION_MISMATCH','AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED','AUTH_FAILURE:SESSION_GENERATION_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SESSION_NO_LONGER_AUTHORIZED','AUTH_FAILURE:PROTECTED_STATE_PRINCIPAL_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH','CANONICAL_DYNAMIC_COMPOSITION_INVARIANT','HR_LIVE_VISIT_PERIOD_MISSING','AUTH_FAILURE:SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED','OTHER','NO_OWNER_ERROR'];
+  const code=typeof value.ownerCode==='string'&&
+    (codes.includes(value.ownerCode)||/^HR_LIVE_(REVISION_READBACK_)?HTTP_[1-5][0-9]{2}$/.test(value.ownerCode))?value.ownerCode:null;
+  return {...booleans(value,['available','authorityPresent','applied','retryable','sourceReady','sourceBlocked','runtimeReady']),
+    ownerCode:code,ownerErrorSha256:diagnosticHash(value.ownerErrorSha256),
+    authenticatedHrHttp:Array.isArray(value.authenticatedHrHttp)?value.authenticatedHrHttp.slice(-8).map(x=>
+      Number.isInteger(x)&&(x===0||x>=100&&x<=599)?x:null):null};
+}
+// Retain failure evidence for the next iteration without copying PDF text,
+// financial values, URLs, ciphertext, or arbitrary artifact paths. These are
+// diagnostics, never owner receipts or a replacement for the complete proof.
+function financeUiPrivatePdfReference(value){
+  if(!value||typeof value!=='object'||Array.isArray(value)||value.encrypted!==true||
+    value.algorithm!=='RSA-OAEP-SHA256+AES-256-GCM'||
+    typeof value.entry!=='string'||!/^private-session-[01]-(?:movements|dashboard)-pdf\.envelope\.json$/.test(value.entry)||
+    !diagnosticHash(value.sha256)||!diagnosticHash(value.plainSha256))return null;
+  return {entry:value.entry,sha256:value.sha256,plainSha256:value.plainSha256,encrypted:true,
+    algorithm:'RSA-OAEP-SHA256+AES-256-GCM',referenceOnly:true};
+}
+function financeUiPdfDiagnostic(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const cells=Array.isArray(value.missingCells)?value.missingCells:[];
+  return {...booleans(value,['matches','parsed','titleMatches','periodMatches','titleMatchesIgnoringWhitespace','periodMatchesIgnoringWhitespace']),
+    ...counts(value,['bytes','pages','textCharacters','missingCellCount']),sha256:diagnosticHash(value.sha256),textSha256:diagnosticHash(value.textSha256),
+    missingCells:cells.slice(0,64).map(cell=>({...counts(cell,['row','column','expectedCharacters']),
+      expectedSha256:diagnosticHash(cell?.expectedSha256),matchesIgnoringWhitespace:bool(cell?.matchesIgnoringWhitespace)})),
+    missingCellsTruncated:cells.length>64?true:bool(value.missingCellsTruncated),
+    privateEvidence:financeUiPrivatePdfReference(value.privateEvidence),privateEvidenceError:safeTypedFailureCode(value.privateEvidenceError)};
+}
+function financeUiPartialExport(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const bytes=part=>({...counts(part,['bytes','pages']),sha256:diagnosticHash(part?.sha256),...booleans(part,['parsed','contentMatches'])});
+  return {decision:enumValue(value.decision,['PARTIAL_EXPORT_PROOF_PDF_PENDING']),rows:count(value.rows),semanticRowsSha256:diagnosticHash(value.semanticRowsSha256),
+    preview:{sha256:diagnosticHash(value.preview?.sha256),contentMatches:bool(value.preview?.contentMatches)},xlsx:bytes(value.xlsx),
+    nativePrintDom:{sha256:diagnosticHash(value.nativePrintDom?.sha256),contentMatches:bool(value.nativePrintDom?.contentMatches)},pdf:bytes(value.pdf)};
+}
+
+// F3 scope facts only: never retain raw journal, fixture values, identities,
+// network payloads or URLs. External replay counts require a separate readback.
+const f3Time=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)&&Number.isFinite(Date.parse(value))?value:null;
+const f3Hash=(value,pattern=HASH)=>typeof value==='string'&&pattern.test(value)?value:null;
+function f3ClientResponseLoss(value,transport){
+  if(value===undefined)return null;
+  const key=`f3-qa-${transport.runId}-${transport.runAttempt}-field-1`,wire=value?.transport||{},audit=value?.remoteAudit||{};
+  const out={decision:enumValue(value?.decision,['REMOTE_COMMIT_OBSERVED_BEFORE_EXACT_REPLAY','PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING']),
+    eventId:f3Hash(value?.eventId,/^hfe-[a-f0-9]{64}$/),eventDigest:f3Hash(value?.eventDigest),providerExecutionId:f3Hash(value?.providerExecutionId,/^[a-f0-9]{32}$/),
+    proofDigest:f3Hash(value?.proofDigest),...counts(value,['declaredOriginalRemoteWriteRequests','newJournalAttempts','newLocalCommandWrites']),
+    remoteReplayWrites:null,remoteReplayWriteCountProven:false,remoteExecutionAuditRequired:true,
+    independentSourceRevisionBeforeReplay:f3Hash(value?.independentSourceRevisionBeforeReplay),independentReadbackAt:f3Time(value?.independentReadbackAt),
+    independentSourceRevisionAfterReplay:f3Hash(value?.independentSourceRevisionAfterReplay),replayStartedAt:f3Time(value?.replayStartedAt),replayFinishedAt:f3Time(value?.replayFinishedAt),
+    transport:{faultBoundary:enumValue(wire.faultBoundary,['APPLICATION_HTTP_RESPONSE_BODY_TO_QA_CLIENT']),
+      ...booleans(wire,['requestBodyFinished','responseHeadersObserved','semanticAckObserved','clientConnectionDestroyed']),bodyBytesConsumed:count(wire.bodyBytesConsumed),
+      httpStatus:Number.isInteger(wire.httpStatus)&&wire.httpStatus>=100&&wire.httpStatus<=599?wire.httpStatus:null,
+      commandDigest:f3Hash(wire.commandDigest),idempotencyKey:wire.idempotencyKey===key?key:null,startedAt:f3Time(wire.startedAt),cutAt:f3Time(wire.cutAt)},
+    remoteAudit:{scenarioId:audit.scenarioId===10199316?10199316:null,eventId:f3Hash(audit.eventId,/^hfe-[a-f0-9]{64}$/),eventDigest:f3Hash(audit.eventDigest),
+      initialProviderExecutionId:f3Hash(audit.initialProviderExecutionId,/^[a-f0-9]{32}$/),idempotencyKey:audit.idempotencyKey===key?key:null,
+      requestStartedAt:f3Time(audit.requestStartedAt),replayStartedAt:f3Time(audit.replayStartedAt),replayFinishedAt:f3Time(audit.replayFinishedAt),
+      requiredObservedThroughUtc:f3Time(audit.requiredObservedThroughUtc),readOnly:true,newScenarioRunRequired:false,writeCountStatus:'UNPROVEN_UNTIL_INDEPENDENT_EXECUTION_READBACK'}};
+  if(out.decision==='PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING'){
+    const w=out.transport,a=out.remoteAudit,ordered=[a.requestStartedAt,w.startedAt,w.cutAt,out.independentReadbackAt,out.replayStartedAt,out.replayFinishedAt];
+    need(out.eventId&&out.eventDigest&&out.providerExecutionId&&out.proofDigest&&out.declaredOriginalRemoteWriteRequests===1&&
+      out.newJournalAttempts===0&&out.newLocalCommandWrites===0&&value.remoteReplayWrites===null&&value.remoteReplayWriteCountProven===false&&value.remoteExecutionAuditRequired===true&&
+      out.independentSourceRevisionBeforeReplay&&out.independentSourceRevisionBeforeReplay===out.independentSourceRevisionAfterReplay&&
+      w.faultBoundary&&w.requestBodyFinished===true&&w.responseHeadersObserved===true&&w.semanticAckObserved===false&&w.clientConnectionDestroyed===true&&
+      w.bodyBytesConsumed===0&&w.httpStatus===200&&w.commandDigest&&w.idempotencyKey&&
+      a.scenarioId===10199316&&a.eventId===out.eventId&&a.eventDigest===out.eventDigest&&a.initialProviderExecutionId===out.providerExecutionId&&a.idempotencyKey===key&&
+      a.replayStartedAt===out.replayStartedAt&&a.replayFinishedAt===out.replayFinishedAt&&ordered.every(Boolean)&&ordered.every((v,i)=>i===0||Date.parse(v)>=Date.parse(ordered[i-1]))&&
+      a.requiredObservedThroughUtc&&Date.parse(a.requiredObservedThroughUtc)===Date.parse(out.replayFinishedAt)+90000,'F3_CLIENT_RESPONSE_LOSS_SCOPE');
+  }
+  return out;
+}
+function f3ShopperRole(value){
+  if(value===undefined)return null;
+  need(value?.schemaVersion==='cxorbia.f3.scoped-shopper-role-qa.v1','F3_SHOPPER_ROLE_SCHEMA');
+  const limitations=['automatic_missing_shopper_upsert','ordinary_password_login','Admin_UI_assignment_button','postulation_lifecycle','positive_eligible_to_unavailable_transition_not_proven_for_both_countries'];
+  const phases=(Array.isArray(value.phases)?value.phases:[]).slice(0,4).map(p=>({phase:enumValue(p.phase,['before','assigned']),sourceRevision:f3Hash(p.sourceRevision),
+    countries:(Array.isArray(p.countries)?p.countries:[]).slice(0,4).map(c=>({country:enumValue(c.country,['GT','HN']),sourceRevision:f3Hash(c.sourceRevision),
+      ...counts(c,['available','own','foreignVisitCount','duplicateVisitCount']),...booleans(c,['exactAvailableKeyset','exactOwnKeyset','passed','reloadVerified']),failureCode:safeTypedFailureCode(c.failure)}))}));
+  const out={decision:enumValue(value.decision,['PENDING','HOLD_F3_QA_SHOPPER_ROLE','PASS_F3_QA_SHOPPER_ROLE_SCOPED']),
+    authentication:enumValue(value.authentication,['FIREBASE_CUSTOM_TOKEN_QA_ONLY']),...booleans(value,['sameFixture','prepared','automaticUpsertProven','ordinaryPasswordProven','availabilityRemovalProven']),
+    actorCount:length(value.actors),blockedOperationalRequests:count(value.blockedOperationalRequests),failureCount:length(value.failures),
+    failureCodes:[...new Set((Array.isArray(value.failures)?value.failures:[]).map(safeTypedFailureCode).filter(Boolean))],phases,
+    positiveAvailabilityTransitions:(Array.isArray(value.positiveAvailabilityTransitions)?value.positiveAvailabilityTransitions:[]).filter(c=>['GT','HN'].includes(c)),
+    limitations:limitations.filter(x=>value.limitations?.includes(x)),cleanup:{...booleans(value.cleanup,['complete','preservedForRecovery']),
+      authDeletedCount:length(value.cleanup?.authDeleted),authAbsentCount:length(value.cleanup?.authAbsent)}};
+  if(out.decision==='PASS_F3_QA_SHOPPER_ROLE_SCOPED'){
+    need(out.sameFixture===true&&out.prepared===true&&out.automaticUpsertProven===false&&out.ordinaryPasswordProven===false&&out.authentication==='FIREBASE_CUSTOM_TOKEN_QA_ONLY'&&
+      out.actorCount===2&&out.blockedOperationalRequests===0&&out.failureCount===0&&phases.length===2&&
+      ['before','assigned'].every(name=>phases.filter(p=>p.phase===name).length===1)&&phases.every(p=>p.sourceRevision&&p.countries.length===2&&
+        ['GT','HN'].every(country=>p.countries.filter(c=>c.country===country).length===1)&&p.countries.every(c=>c.passed===true&&c.sourceRevision===p.sourceRevision&&
+          c.exactAvailableKeyset===true&&c.exactOwnKeyset===true&&c.foreignVisitCount===0&&c.duplicateVisitCount===0&&
+          (p.phase!=='assigned'||c.reloadVerified===true&&c.available===0&&c.own===1)))&&limitations.slice(0,4).every(x=>out.limitations.includes(x)),'F3_SHOPPER_ROLE_PASS_SCOPE');
+    if(out.availabilityRemovalProven===true)need(out.positiveAvailabilityTransitions.length===2&&['GT','HN'].every(c=>out.positiveAvailabilityTransitions.includes(c))&&
+      phases.find(p=>p.phase==='before').countries.every(c=>c.available>0),'F3_SHOPPER_ROLE_AVAILABILITY');
+  }
+  return out;
 }
 
 export function summarizeGoogleFinanceResult({uri,expectedIdentity},read){
@@ -151,23 +255,35 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       safety:counts(raw,['productionWrites','operationalHrWrites']),
       guarantees:booleans(raw.guarantees,['atomicHumanExcelCas','observedBaseGuard','remoteReceiptAndIndependentRead','uncertainWriteRetry']),
       remoteCleanupRequired:bool(raw.remoteCleanup?.required),
-      unproven:['provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture'].filter(x=>raw.unproven?.includes(x))
+      clientResponseLoss:f3ClientResponseLoss(raw.clientResponseLoss,t),shopperRoleProof:f3ShopperRole(raw.shopperRoleProof),
+      unproven:['application_client_response_loss_live_fault_injection','application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture'].filter(x=>raw.unproven?.includes(x))
     };
   }else if(spec.kind==='A08_RESIDUAL'){
     need(raw.gate==='HOLD'&&raw.fullA08Certified===false&&raw.newDomainMatches===0,'A08_CREDIT_BOUNDARY');
     need(raw.safety?.production===false,'A08_DEV_SCOPE');
     const passwords=Array.isArray(raw.passwordProofs)?raw.passwordProofs:[],apis=Array.isArray(raw.apiProofs)?raw.apiProofs:[];
     const provenanceOnly=raw.scope?.executionMode==='PROVENANCE_ONLY';
+    const gtOnly=raw.scope?.executionMode===A08_GT_CURRENT_PROVIDER_MODE;
+    let gtPasswordVerified=false;
     const diagnostics=provenanceOnly?(Array.isArray(raw.provenanceDiagnostics)?raw.provenanceDiagnostics:[]).map(publicA08ProvenanceDiagnostic):[];
     if(provenanceOnly){
       need(passwords.length===0&&apis.length===0&&['loginAttempts','browserLaunches','customTokensUsed','providerCommands','directAuthWrites','directFirestoreWrites','storageWrites','hrWrites','passwordChanges','passwordResets','fixtureCreates','builds','deploys'].every(k=>raw.safety[k]===0),'A08_PROVENANCE_ZERO_ACTIONS');
       need(diagnostics.length<=2&&diagnostics.every(x=>x.caseId&&x.diagnosticOnly&&x.loginAttempts===0&&x.browserLaunches===0&&x.customTokensUsed===0&&x.historicalSameUidProof.recipeUsedForLogin===false)&&new Set(diagnostics.map(x=>x.caseId)).size===diagnostics.length,'A08_PROVENANCE_DIAGNOSTIC_SCOPE');
       if(raw.diagnosticComplete===true)need(diagnostics.length===2&&Object.keys(A08_PROVENANCE_TARGETS).every(id=>diagnostics.some(x=>x.caseId===id&&x.diagnosticComplete&&x.primaryReason))&&raw.sameArtifactAfter===true&&raw.finalChecks?.diagnosticComplete===true&&raw.finalChecks.requestedScopePass===false&&raw.finalChecks.pass===false&&raw.storageDiscovery?.executed===false,'A08_PROVENANCE_COMPLETENESS');
     }
+    if(gtOnly){
+      need(raw.scope.exceptionShopperIds?.length===1&&raw.scope.exceptionShopperIds[0]===A08_PROVENANCE_TARGETS.GT_EXCEPTION&&raw.scope.apiOperation===null&&raw.scope.storageOperation===null&&passwords.length<=1&&passwords.every(x=>x.shopperId===A08_PROVENANCE_TARGETS.GT_EXCEPTION)&&apis.length===0&&raw.storageDiscovery?.executed!==true&&raw.storageProof?.pass!==true,'A08_GT_PASSWORD_SCOPE');
+      need(['customTokensUsed','hnLoginAttempts','legacyLoginAttempts','providerCommands','directAuthWrites','directFirestoreWrites','storageWrites','hrWrites','passwordChanges','passwordResets','fixtureCreates','builds','deploys'].every(k=>raw.safety[k]===0),'A08_GT_PASSWORD_UNEXPECTED_ACTION');
+      if(raw.scopeDecision==='PASS_I3_A08_GT_PASSWORD_CURRENT_PROVIDER'){
+        need(identity.complete&&raw.decision==='HOLD_I3_A08_RESIDUAL_READONLY'&&raw.sameArtifactAfter===true&&raw.finalChecks?.seal===true&&raw.finalChecks.gtPassword===true&&raw.finalChecks.requestedScopePass===true&&raw.finalChecks.pass===false&&validA08GtPasswordScope(raw)&&failureCodes.length===0&&unclassifiedFailureCount===0,'A08_GT_PASSWORD_READBACK');
+        gtPasswordVerified=t.jobConclusion==='success';
+      }
+      summaryDecision=gtPasswordVerified?'RECORDED_A08_GT_PASSWORD_CURRENT_PROVIDER':'RECORDED_A08_GT_PASSWORD_CURRENT_PROVIDER_INCOMPLETE';
+    }
     observations={
-      executionMode:enumValue(raw.scope?.executionMode,['PASSWORD_ONLY','PASSWORD_API_ONLY','PASSWORD_API_STORAGE','PROVENANCE_ONLY']),
-      scopeDecision:enumValue(raw.scopeDecision,['PASS_I3_A08_PASSWORD3_SCOPED_READONLY','PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY','PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY','HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN']),
-      passwordProofCount:length(raw.passwordProofs),passwordPassCount:passwords.filter(x=>x?.pass===true).length,
+      executionMode:enumValue(raw.scope?.executionMode,['PASSWORD_ONLY','PASSWORD_API_ONLY','PASSWORD_API_STORAGE','PROVENANCE_ONLY',A08_GT_CURRENT_PROVIDER_MODE]),
+      scopeDecision:enumValue(raw.scopeDecision,['PASS_I3_A08_PASSWORD3_SCOPED_READONLY','PASS_I3_A08_PASSWORD3_API_SCOPED_READONLY','PASS_I3_A08_SCOPED_PASSWORD3_API_STORAGE_READONLY','PASS_I3_A08_GT_PASSWORD_CURRENT_PROVIDER','HOLD_I3_A08_REQUESTED_SCOPE_UNPROVEN']),
+      passwordProofCount:length(raw.passwordProofs),passwordPassCount:gtOnly?(gtPasswordVerified?1:0):passwords.filter(x=>x?.pass===true).length,
       apiProofCount:length(raw.apiProofs),apiDenialPassCount:apis.filter(x=>x?.pass===true).length,
       apiStatusCounts:Object.fromEntries([200,401,403].map(status=>[status,apis.filter(x=>x?.httpStatus===status).length])),
       finalChecks:{...booleans(raw.finalChecks,['seal','passwords','apis','storage','requestedScopePass','pass']),...counts(raw.finalChecks,['expectedAssetCount','servedAssetCount'])},
@@ -175,8 +291,10 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       storageDiscoveryExecuted:bool(raw.storageDiscovery?.executed),preservedEvidenceCount:length(raw.preservedEvidence),
       acceptedClauseRefs:publicA08ClauseRefs(raw,t),
       ...(provenanceOnly?{diagnosticComplete:bool(raw.diagnosticComplete),provenanceDiagnostics:diagnostics}:{}),
+      ...(gtOnly?{gtPasswordVerified,gtPasswordProofs:passwords.map(x=>publicA08GtPasswordProof({...x,pass:gtPasswordVerified&&x.pass===true})),remainingExactCredentialCases:[...(gtPasswordVerified?[]:['GT_CURRENT_PROVIDER_CREDENTIAL_AND_HR_SESSION']),'LEGACY_ORIGINAL_CREDENTIAL_PROVENANCE'],hnReexecuted:false}:{}),
       safety:{...counts(raw.safety,['providerCommands','directAuthWrites','directFirestoreWrites','storageWrites','hrWrites','passwordChanges','passwordResets','fixtureCreates','builds','deploys']),
-        ...(provenanceOnly?counts(raw.safety,['loginAttempts','browserLaunches','customTokensUsed']):{}),
+        ...(provenanceOnly||gtOnly?counts(raw.safety,['loginAttempts','browserLaunches','customTokensUsed']):{}),
+        ...(gtOnly?counts(raw.safety,['hnLoginAttempts','legacyLoginAttempts']):{}),
         ...booleans(raw.safety,['production','credentialsExported','tokensExported','privateBytesExported','privatePathsExported'])}
     };
   }else if(spec.kind==='FINANCE_METADATA'){
@@ -199,6 +317,10 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       activeSessionProgress:booleans(raw.activeSessionProgress,['auth','period','serverRows','dom','advancePair','movementExport','dashboard','finalRead']),
       failureUi:{...booleans(raw.failureUi,['available','firebaseUserPresent','contextAuthenticated','authorityApplied','expectedProjectSelected','expectedPeriodSelected','projectionLoaded','projectionKeyMatches','movExportPresent','finExportPresent','reportPreviewPresent','printTablePresent']),
         route:enumValue(raw.failureUi?.route,['login','inicio','dashboard','movimientos','financiero','OTHER_OR_UNAVAILABLE']),role:enumValue(raw.failureUi?.role,['super','admin','OTHER_OR_UNAVAILABLE']),...counts(raw.failureUi,['movementRowCount','reportRowCount'])},
+      ...(raw.hrOwnerDiagnostic!==undefined?{hrOwnerDiagnostic:financeUiHrOwnerDiagnostic(raw.hrOwnerDiagnostic)}:{}),
+      ...(raw.failurePdf!==undefined?{failurePdf:financeUiPdfDiagnostic(raw.failurePdf)}:{}),
+      ...(raw.partialExportProof!==undefined?{partialExportProof:financeUiPartialExport(raw.partialExportProof)}:{}),
+      ...(raw.networkFailure!==undefined?{networkFailure:safeTypedFailureCode(raw.networkFailure)}:{}),
       ...booleans(raw,['currentAdminClaimsVerified','browserServerReadVerified','committedMetadataReceiptVerified','firstAdvanceUnchanged','secondMetadataExact','sameCashPeriod','newSessionParity','financialDocumentsStable']),
       ...counts(raw,['independentAdminSessions','advanceCount','customTokenMints']),
       network:counts(raw.network,['automaticHrSuppressed','unexpectedDenied','allowedAuthRequests','routeControlFailures']),
@@ -211,6 +333,7 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       safety:{...counts(raw,['authIdentityOrClaimsWrites','directFirestoreWrites','providerCommandsExecuted','financialMutationRequestsDispatched']),production:false}
     };
     if(raw.decision==='PASS_C09_C10_ADVANCE_UI_AND_EXPORT_SCOPE'){
+      need(raw.hrOwnerDiagnostic===undefined&&raw.failurePdf===undefined&&raw.partialExportProof===undefined&&raw.networkFailure===undefined&&failureCodes.length===0&&unclassifiedFailureCount===0,'FINANCE_UI_CONTRADICTORY_PASS');
       need(identity.complete&&raw.independentAdminSessions===2&&sessions.length===2&&raw.advanceCount===2&&raw.newSessionParity===true&&raw.financialDocumentsStable===true&&raw.committedMetadataReceiptVerified===true&&raw.firstAdvanceUnchanged===true&&raw.secondMetadataExact===true&&raw.sameCashPeriod===true,'FINANCE_UI_PASS_SCOPE');
       need(raw.providerCommandsExecuted===0&&raw.financialMutationRequestsDispatched===0&&raw.directFirestoreWrites===0&&raw.authIdentityOrClaimsWrites===0&&raw.network?.unexpectedDenied===0&&raw.network?.routeControlFailures===0,'FINANCE_UI_NO_MUTATION');
       need(sessions.every(session=>session.newContextEmpty===true&&session.exactCurrentAdminClaims===true&&session.serverReadConfirmed===true&&session.advancePairExact===true&&session.movementExport?.decision==='PASS_EXPORT_PARITY'&&session.movementExport?.xlsx?.parsed===true&&session.movementExport?.xlsx?.contentMatches===true&&session.movementExport?.pdf?.parsed===true&&session.movementExport?.pdf?.contentMatches===true),'FINANCE_UI_SESSIONS');
@@ -237,7 +360,7 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
     producer:{schemaVersion:raw.schemaVersion,decision:raw.decision,jobName:spec.job,jobConclusion:t.jobConclusion},
     provenance:google?{provider:t.provider,startUri:t.startUri,startGeneration:t.startGeneration,startSha256:t.startSha256,
       resultUri:t.resultUri,resultGeneration:t.resultGeneration,bundleSha256:t.bundleSha256,resultSha256:rawHash,
-      entry:spec.entry,controlHead:t.controlHead,transportSha:t.transportSha}: {runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
+      entry:spec.entry,controlHead:t.controlHead,transportSha:t.transportSha,encryptedPdfEvidence:t.encryptedPdfEvidence}: {runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
       artifactId:String(t.artifactId),artifactDigest:t.artifactDigest,entry:spec.entry,resultSha256:rawHash},
     identity,classification,failureCodes,unclassifiedFailureCount,observations,
     ownerSpecificReceipts:[],fullDomain:false,newDomainMatches:0,phaseAComplete:false,

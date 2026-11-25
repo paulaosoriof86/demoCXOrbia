@@ -1,9 +1,11 @@
 // Exact partial evidence updates existing residual text. It never issues owner
 // receipts, changes MATCH, certifies a domain, or executes product operations.
 import {createHash} from 'node:crypto';
+import {A08_GT_CURRENT_PROVIDER_MODE,validA08GtPasswordScope} from './cxorbia-i3-a08-exact-password-proof.mjs';
 export const FINANCE_METADATA_SCOPE_PATH='docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json';
 const HN='shopper_hn_3b3c2f5cc1',GT='shopper_gt_a092a0647f',SHP='shp-3669abbb015a';
 const PASSWORD_ID='A08.password.'+HN;
+const GT_PASSWORD_ID='A08.password.'+GT;
 const API_CASES=['anonymous',GT,HN,SHP];
 const HN_PROOF=Object.freeze({runId:'45514816284',runAttempt:'1',jobId:'138871930190',artifactId:'14976459189',artifactDigest:'sha256:3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb',entry:'r20-shopper_hn_3b3c2f5cc1/result.json',entrySha256:'f901d42c1ff1ec0dd6538324b076021731da154f08b7d34e72a987939c76f2da'});
 const API_PROOF=Object.freeze({runId:'45364936404',runAttempt:'1',runNumber:2760,artifactId:'14906482096',artifactDigest:'sha256:ec78e422057ff95e8d062c58df9c57aff9e30ddec505303461b2e95daf700dfa'});
@@ -14,6 +16,45 @@ export const canonicalSha256=value=>createHash('sha256').update(JSON.stringify(c
 const passwordRef=()=>({clauseId:PASSWORD_ID,caseId:HN,acceptedScope:'ORDINARY_PASSWORD_HR_RESTORE_LOGOUT_RELOGIN',evidence:{...HN_PROOF}});
 const apiRef=caseId=>({clauseId:'A08.api.users.denial.'+caseId,caseId,acceptedScope:'GET_USERS_EXPECTED_401_403_ERROR_ONLY',evidence:{...API_PROOF}});
 const validRef=ref=>same(ref,passwordRef())||API_CASES.some(id=>same(ref,apiRef(id)));
+const identityKeys=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'];
+function exactGtIdentity(identity){
+ return /^[a-f0-9]{40}$/.test(identity?.sourceSha||'')&&/^[a-f0-9]{40}$/.test(identity?.sourceTree||'')&&
+  /^cxorbia-live-hr-dev-\d{5}-[a-z0-9]+$/.test(identity?.runtimeRevision||'')&&/^sha256:[a-f0-9]{64}$/.test(identity?.runtimeDigest||'')&&
+  /^sites\/cxorbia-backend-dev\/versions\/[a-z0-9]+$/.test(identity?.hostingVersion||'');
+}
+function gtPasswordRef(proof,transport,identity){
+ if(transport?.provider||!['runId','runAttempt','jobId','artifactId'].every(k=>/^[1-9][0-9]*$/.test(String(transport?.[k]||'')))||
+  !/^sha256:[a-f0-9]{64}$/.test(transport?.artifactDigest||'')||!/^[a-f0-9]{40}$/.test(transport?.controlHead||'')||
+  transport.entry!=='result.json'||typeof proof?.evidenceSha256!=='string'||!/^[a-f0-9]{64}$/.test(proof.evidenceSha256)||!exactGtIdentity(identity))return null;
+ return {clauseId:GT_PASSWORD_ID,caseId:GT,acceptedScope:'ORDINARY_PASSWORD_HR_RESTORE_LOGOUT_RELOGIN',evidence:{
+  kind:'VERIFIED_CURRENT_GT_PASSWORD_TYPED_RESULT',...Object.fromEntries(['runId','runAttempt','jobId','artifactId'].map(k=>[k,String(transport[k])])),
+  artifactDigest:transport.artifactDigest,controlHead:transport.controlHead,entry:'result.json',
+  childEntry:'r20-'+GT+'/result.json',entrySha256:proof.evidenceSha256,...Object.fromEntries(identityKeys.map(k=>[k,identity[k]]))}};
+}
+function gtTypedPasswordAccepted(result){
+ const o=result.observations||{},p=o.gtPasswordProofs?.[0],s=o.safety||{};
+ return result.decision==='RECORDED_A08_GT_PASSWORD_CURRENT_PROVIDER'&&result.producer?.jobName==='i3-keeper-role-e2e-readonly'&&
+  result.producer?.jobConclusion==='success'&&result.producer?.decision==='HOLD_I3_A08_RESIDUAL_READONLY'&&
+  result.identity?.complete===true&&exactGtIdentity(result.identity.observed)&&result.failureCodes?.length===0&&result.unclassifiedFailureCount===0&&
+  o.executionMode===A08_GT_CURRENT_PROVIDER_MODE&&o.scopeDecision==='PASS_I3_A08_GT_PASSWORD_CURRENT_PROVIDER'&&
+  o.gtPasswordVerified===true&&o.passwordProofCount===1&&o.passwordPassCount===1&&o.apiProofCount===0&&o.storageDiscoveryExecuted===false&&
+  o.sameArtifactAfter===true&&o.finalChecks?.seal===true&&o.finalChecks.requestedScopePass===true&&o.finalChecks.pass===false&&
+  o.finalChecks.passwords===false&&o.storageProof?.pass===false&&o.gtPasswordProofs?.length===1&&p?.caseId==='GT_EXCEPTION'&&p.pass===true&&
+  p.currentProviderProofVerified===true&&p.historicalSealUsedAsAuthority===false&&['READ','NOT_READ'].includes(p.sealCheck)&&
+  p.identityAndHr===true&&p.identityPreservedAfter===true&&p.loginAttempts===2&&['restore','logout','relogin'].every(k=>p.sessionLifecycle?.[k]===true)&&
+  p.authorityPreflight?.caseId==='GT_EXCEPTION'&&p.authorityPreflight?.identityAuthority==='TENANT_ADJUDICATION'&&
+  p.authorityPreflight?.provenanceAllowed===true&&p.authorityPreflight?.diagnosticComplete===true&&p.authorityPreflight?.failedChecks?.length===0&&
+  s.loginAttempts===2&&s.browserLaunches===1&&s.hnLoginAttempts===0&&s.legacyLoginAttempts===0&&s.production===false&&
+  ['customTokensUsed','providerCommands','directAuthWrites','directFirestoreWrites','storageWrites','hrWrites','passwordChanges','passwordResets','fixtureCreates','builds','deploys'].every(k=>s[k]===0);
+}
+function validGtRef(ref,{result,entry}){
+ if(!gtTypedPasswordAccepted(result))return false;
+ const provenance=result.provenance;
+ if(!provenance||!['runId','runAttempt','jobId','artifactId'].every(k=>String(provenance[k])===String(entry[k]))||
+  provenance.artifactDigest!==entry.artifactDigest||provenance.controlHead!==entry.controlHead||entry.ownerReceiptCount!==0)return false;
+ const expected=gtPasswordRef(result.observations.gtPasswordProofs[0],provenance,result.identity.observed);
+ return !!expected&&same(ref,expected);
+}
 
 // Allowlisted evidence identifiers and artifact hashes only. A diagnostic does
 // not become a password proof; it can preserve an already accepted exact proof.
@@ -23,7 +64,13 @@ export function publicA08ClauseRefs(raw,transport){
  const directHn=String(transport.runId)===HN_PROOF.runId&&String(transport.runAttempt)===HN_PROOF.runAttempt&&String(transport.jobId)===HN_PROOF.jobId&&String(transport.artifactId)===HN_PROOF.artifactId&&transport.artifactDigest===HN_PROOF.artifactDigest&&passwords.some(x=>x?.shopperId===HN&&x.pass===true&&x.decision==='PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE'&&x.evidenceSha256===HN_PROOF.entrySha256&&x.customTokenCountsAsPasswordProof===false);
  const preservedHn=preserved.some(x=>x?.credit==='HISTORICAL_HN_PASSWORD_LIFECYCLE_PASS_PRESERVED_NOT_REEXECUTED'&&['runId','runAttempt','jobId','artifactId'].every(k=>String(x[k])===HN_PROOF[k])&&'sha256:'+x.artifactSha256===HN_PROOF.artifactDigest&&x.entry===HN_PROOF.entry&&x.entrySha256===HN_PROOF.entrySha256&&x.currentRunLoginAttempts===0);
  const preservedApi=preserved.some(x=>x?.credit==='HISTORICAL_API_DENIALS_4_OF_4_PRESERVED_NOT_REEXECUTED'&&Number(x.runNumber)===API_PROOF.runNumber&&String(x.artifactId)===API_PROOF.artifactId&&'sha256:'+x.artifactSha256===API_PROOF.artifactDigest&&x.currentRunApiCalls===0);
- return [...(directHn||preservedHn?[passwordRef()]:[]),...(preservedApi?API_CASES.map(apiRef):[])];
+ const gt=raw.gate==='HOLD'&&raw.fullA08Certified===false&&raw.newDomainMatches===0&&raw.decision==='HOLD_I3_A08_RESIDUAL_READONLY'&&
+  raw.failure===undefined&&raw.error===undefined&&
+  raw.scopeDecision==='PASS_I3_A08_GT_PASSWORD_CURRENT_PROVIDER'&&raw.sameArtifactAfter===true&&raw.finalChecks?.seal===true&&
+  raw.finalChecks.gtPassword===true&&raw.finalChecks.requestedScopePass===true&&raw.finalChecks.pass===false&&
+  transport.jobName==='i3-keeper-role-e2e-readonly'&&transport.jobConclusion==='success'&&transport.verifiedArchiveDigest===transport.artifactDigest&&
+  validA08GtPasswordScope(raw)?gtPasswordRef(passwords[0],transport,raw):null;
+ return [...(directHn||preservedHn?[passwordRef()]:[]),...(preservedApi?API_CASES.map(apiRef):[]),...(gt?[gt]:[])];
 }
 
 export function verifiedTypedReceipt(entry,bytes,{gitBlob,sha256}){
@@ -60,7 +107,7 @@ export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}
  for(const {entry,result}of [...verified].sort((a,b)=>Number(a.entry.runId)-Number(b.entry.runId)||Number(a.entry.jobId)-Number(b.entry.jobId))){
   if(result.state!=='HOLD'||result.fullDomain!==false||result.newDomainMatches!==0||result.production!==false||result.ownerSpecificReceipts.length!==0)continue;
   if(result.kind==='A08_RESIDUAL')for(const ref of result.observations?.acceptedClauseRefs||[]){
-   must(validRef(ref),'A08_REFERENCE_NOT_EXACT');
+   must(validRef(ref)||validGtRef(ref,{result,entry}),'A08_REFERENCE_NOT_EXACT');
    if(!credit.has(ref.clauseId))credit.set(ref.clauseId,{clauseId:ref.clauseId,evidenceIndexKey:entry.key});
   }
   if(metadataAccepted(result,financeScopeSha256)){
@@ -70,7 +117,7 @@ export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}
  }
  if(!credit.size)return {matrix:structuredClone(matrix),changedDomains:[],changed:false};
  const out=structuredClone(matrix),changedDomains=[];
- const hn=credit.get(PASSWORD_ID),apis=API_CASES.map(id=>credit.get('A08.api.users.denial.'+id)),api=apis.every(Boolean),finance=credit.get('FINANCE.NOVEMBER_SECOND_ADVANCE_METADATA');
+ const hn=credit.get(PASSWORD_ID),gt=credit.get(GT_PASSWORD_ID),apis=API_CASES.map(id=>credit.get('A08.api.users.denial.'+id)),api=apis.every(Boolean),finance=credit.get('FINANCE.NOVEMBER_SECOND_ADVANCE_METADATA');
  const update=(domain,proofs,change)=>{
   if(!proofs.length)return;
   const mod=out.modules.find(m=>m.domain===domain);must(mod,'MODULE_MISSING_'+domain);
@@ -86,19 +133,33 @@ export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}
  };
  const preserve=(r,text)=>{if(!r.preserved.includes(text))r.preserved+=(r.preserved?' ':'')+text;};
  const hnText='RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.';
+ const gtText='GT exact ordinary password, protected HR identity and restore/logout/relogin PASS preserved from its verified same-artifact typed receipt.';
  const apiText='RUN2760 four GET users denials for anonymous and the three exact exception shoppers PASS preserved; remaining API cells stay pending.';
- update('auth-protected-data-runtime',[...(hn?[hn]:[]),...(api?apis:[])],r=>{
+ update('auth-protected-data-runtime',[...(hn?[hn]:[]),...(gt?[gt]:[]),...(api?apis:[])],r=>{
   if(hn){
    const old=GT+','+HN+','+SHP;
-   if(r.pending.includes(HN)){must(r.pending.includes(old),'AUTH_PENDING_INVENTORY');r.pending=r.pending.replace(old,GT+','+SHP);}
+   if(r.pending.includes(HN)){
+    if(r.pending.includes(old))r.pending=r.pending.replace(old,GT+','+SHP);
+    else{must(r.pending.includes(HN+','+SHP),'AUTH_PENDING_INVENTORY');r.pending=r.pending.replace(HN+','+SHP,SHP);}
+   }
    preserve(r,hnText);
+  }
+  if(gt){
+   if(r.pending.includes(GT)){
+    if(r.pending.includes(GT+','+HN+','+SHP))r.pending=r.pending.replace(GT+','+HN+','+SHP,HN+','+SHP);
+    else{must(r.pending.includes(GT+','+SHP),'AUTH_PENDING_INVENTORY');r.pending=r.pending.replace(GT+','+SHP,SHP);}
+   }
+   preserve(r,gtText);
   }
   if(api)preserve(r,apiText);
  });
- update('shoppers-mi-visitas-profile',hn?[hn]:[],r=>{
-  if(r.pending.includes('three exactAuth exceptions'))r.pending=r.pending.replace('three exactAuth exceptions','two exact Auth exceptions ('+GT+', '+SHP+')');
-  else must(r.pending.includes('two exact Auth exceptions ('+GT+', '+SHP+')'),'SHOPPER_PENDING_INVENTORY');
-  preserve(r,hnText);
+ update('shoppers-mi-visitas-profile',[...(hn?[hn]:[]),...(gt?[gt]:[])],r=>{
+  const patterns=[['three exactAuth exceptions',[GT,HN,SHP]],['two exact Auth exceptions ('+GT+', '+SHP+')',[GT,SHP]],['two exact Auth exceptions ('+HN+', '+SHP+')',[HN,SHP]],['one exact Auth exception ('+SHP+')',[SHP]]];
+  const found=patterns.filter(([text])=>r.pending.includes(text));must(found.length===1,'SHOPPER_PENDING_INVENTORY');
+  const [before,ids]=found[0],remaining=ids.filter(id=>!(id===HN&&hn)&&!(id===GT&&gt));
+  const after=remaining.length===1?'one exact Auth exception ('+remaining[0]+')':'two exact Auth exceptions ('+remaining.join(', ')+')';
+  r.pending=r.pending.replace(before,after);
+  if(hn)preserve(r,hnText);if(gt)preserve(r,gtText);
  });
  update('core-config-data-router-permissions',api?apis:[],r=>preserve(r,apiText));
  update('finance-core-liquidation-costs',finance?[finance]:[],r=>{

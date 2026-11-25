@@ -65,7 +65,7 @@ export function tenantAdjudicationReceiptRefs(links,scope){
   return [...new Set(arr(links).map(link=>historicalReceiptCandidate(link,scope)?.ref).filter(Boolean))].sort();
 }
 
-function historicalReceiptProof(link,{tenantId,projectId,commandReceipts}){
+export function historicalReceiptProof(link,{tenantId,projectId,commandReceipts}){
   const candidate=historicalReceiptCandidate(link,{tenantId,projectId});if(!candidate)return null;
   const {target,ref,id}=candidate,entry=commandReceipts.get(ref),receipt=entry?.data;
   if(entry?.exists!==true||entry.id!==ref||entry.path!=='tenants/'+tenantId+'/commandReceipts/'+ref||!receipt||

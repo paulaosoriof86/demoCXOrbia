@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
+import {request as httpsRequest} from 'node:https';
 import {isMakeGraphWriterHintCompatible} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 
 // P0 B14 provider precondition only. NEVER a project HR binding, a deployment,
@@ -254,6 +255,104 @@ export function f3RequireWriterMetadataBeforeFixtures(probe){
   return true;
 }
 
+// Fault the first existing GT field command only. This is client response-body
+// loss, not a fault between Make and the backend. No response body is consumed.
+export function f3AssertLostResponseCommand(command,owner){
+  f3Need(typeof owner==='string'&&owner.startsWith('f3-qa-')&&command?.commandType==='visit.hr.fields.update'&&
+    command.tenantId==='tya'&&command.projectId===F3_QA.projectId&&command.periodId===F3_QA.periodId&&
+    command.entityId===F3_QA.visits.GT&&command.idempotencyKey===owner+'-field-1'&&
+    command.payload?.countryCode==='GT'&&command.payload.visitId===F3_QA.visits.GT&&
+    f3Same(command.payload.patch,{escenario:'CXOrbia QA Escenario B'})&&
+    f3Same(command.payload.baseFieldValues,{escenario:'CXOrbia QA Escenario A'})&&
+    /^[a-f0-9]{64}$/.test(command.payload.sourceRevision||''),'MAPPING_FAILURE:F3_LOST_RESPONSE_SCOPE');
+  return true;
+}
+export async function f3DropEndpointResponse({command,owner,token,requestImpl=httpsRequest,timeoutMs=180000}){
+  f3AssertLostResponseCommand(command,owner);
+  f3Need(typeof token==='string'&&token.length>0,'AUTH_FAILURE:F3_LOST_RESPONSE_TOKEN');
+  const body=JSON.stringify(command),observation={faultBoundary:'APPLICATION_HTTP_RESPONSE_BODY_TO_QA_CLIENT',
+    requestBodyFinished:false,responseHeadersObserved:false,httpStatus:null,bodyBytesConsumed:0,
+    semanticAckObserved:false,clientConnectionDestroyed:false,commandDigest:f3Digest(command),
+    idempotencyKey:command.idempotencyKey,startedAt:new Date().toISOString()};
+  return new Promise((resolve,reject)=>{
+    let request,settled=false;
+    const fail=code=>{if(settled)return;settled=true;clearTimeout(timer);request?.destroy();
+      const error=Error(code);error.transportObservation=f3SafeEvidence(observation);reject(error);};
+    const timer=setTimeout(()=>fail('ENVIRONMENT_FAILURE:F3_LOST_RESPONSE_TIMEOUT'),timeoutMs);
+    try{
+      request=requestImpl(F3_QA.baseUrl+'/v1/cxorbia/commands',{method:'POST',headers:{Authorization:'Bearer '+token,
+        'Content-Type':'application/json','Content-Length':Buffer.byteLength(body),'Idempotency-Key':command.idempotencyKey}});
+      request.once('finish',()=>{observation.requestBodyFinished=true;});
+      request.once('error',()=>fail('ENVIRONMENT_FAILURE:F3_LOST_RESPONSE_TRANSPORT'));
+      request.once('close',()=>{if(!observation.responseHeadersObserved)fail('ENVIRONMENT_FAILURE:F3_LOST_RESPONSE_CLOSED_BEFORE_HEADERS');});
+      request.once('response',response=>{
+        if(settled){response.destroy();return;}
+        response.pause();response.once('error',()=>{});
+        observation.responseHeadersObserved=true;observation.httpStatus=response.statusCode;
+        // HTTP status is transport evidence only. Never parse it as semantic ACK.
+        observation.cutAt=new Date().toISOString();
+        if(!observation.requestBodyFinished)return fail('ENVIRONMENT_FAILURE:F3_LOST_RESPONSE_BODY_NOT_SENT');
+        settled=true;clearTimeout(timer);response.destroy();request.destroy();
+        observation.clientConnectionDestroyed=true;resolve(observation);
+      });
+      request.end(body);
+    }catch{fail('ENVIRONMENT_FAILURE:F3_LOST_RESPONSE_TRANSPORT');}
+  });
+}
+export function f3AssertLostResponseJournal({command,owner,transport,proof}){
+  f3AssertLostResponseCommand(command,owner);
+  f3Need(transport?.requestBodyFinished===true&&transport.responseHeadersObserved===true&&transport.httpStatus===200&&
+    transport.clientConnectionDestroyed===true&&transport.bodyBytesConsumed===0&&transport.semanticAckObserved===false&&
+    transport.commandDigest===f3Digest(command)&&transport.idempotencyKey===command.idempotencyKey,
+    'PERSISTENCE_FAILURE:F3_LOST_RESPONSE_NOT_INJECTED');
+  const receipt=proof?.commandReceipt?.data,event=proof?.event?.data,delivery=proof?.delivery?.data,
+    head=proof?.head?.data,visit=proof?.visit?.data,audit=proof?.audit?.data;
+  const headKey=f3Digest(['tya',F3_QA.projectId,F3_QA.periodId,'GT',F3_QA.visits.GT,'escenario']),
+    eventId='hfe-'+f3Digest([headKey,command.idempotencyKey]),
+    receiptId=sha(command.tenantId+'\0'+command.projectId+'\0'+command.periodId+'\0'+command.idempotencyKey).slice(0,40);
+  f3Need(['commandReceipt','event','delivery','head','visit','audit'].every(key=>proof[key]?.exists===true)&&
+    receipt.status==='committed'&&receipt.providerAck===true&&receipt.commandDigest===f3Digest(command)&&
+    receipt.actorUid===owner+'-admin'&&receipt.commandType===command.commandType&&receipt.entityId===command.entityId&&
+    f3Same(receipt.hrFieldEventIds,[eventId]),'PERSISTENCE_FAILURE:F3_LOST_RESPONSE_RECEIPT_SCOPE');
+  f3Need(event.schemaVersion==='cxorbia.hr-field-event.v1'&&event.eventId===eventId&&event.commandReceiptId===receiptId&&
+    event.idempotencyKey===command.idempotencyKey&&event.origin==='platform'&&event.actorUid===owner+'-admin'&&
+    event.tenantId==='tya'&&event.projectId===F3_QA.projectId&&event.periodId===F3_QA.periodId&&event.countryCode==='GT'&&
+    event.visitId===F3_QA.visits.GT&&event.hrRowId===command.payload.hrRowId&&event.fieldKey==='escenario'&&
+    event.before==='CXOrbia QA Escenario A'&&event.after==='CXOrbia QA Escenario B'&&
+    event.baseRevision===command.payload.sourceRevision&&event.eventDigest===f3Digest(Object.fromEntries(Object.entries(event).filter(([key])=>key!=='eventDigest'))),
+    'PERSISTENCE_FAILURE:F3_LOST_RESPONSE_EVENT_SCOPE');
+  f3Need(audit.actorUid===owner+'-admin'&&audit.idempotencyKey===command.idempotencyKey&&audit.commandType===command.commandType&&
+    audit.tenantId==='tya'&&audit.projectId===F3_QA.projectId&&audit.periodId===F3_QA.periodId&&audit.entityId===command.entityId,
+    'PERSISTENCE_FAILURE:F3_LOST_RESPONSE_AUDIT_SCOPE');
+  f3Need(delivery.eventId===eventId&&delivery.eventDigest===event.eventDigest&&delivery.status==='committed'&&
+    delivery.providerAck===true&&delivery.writeAckVerified===true&&delivery.readbackVerified===true&&
+    delivery.remoteWriteRequests===1&&/^[a-f0-9]{32}$/.test(delivery.providerExecutionId||''),
+    'PROVIDER_FAILURE:F3_LOST_RESPONSE_REMOTE_ACK_UNPROVEN');
+  const attempts=proof.attempts||[],intents=attempts.filter(x=>x.id.endsWith('-intent')),effects=attempts.filter(x=>x.id.endsWith('-effect'));
+  f3Need(attempts.length===2&&intents.length===1&&effects.length===1&&intents[0].data.recoveryOnly===false&&
+    intents[0].data.eventId===eventId&&intents[0].data.eventDigest===event.eventDigest&&
+    effects[0].data.attemptId===intents[0].data.attemptId&&effects[0].data.eventId===eventId&&
+    effects[0].data.status==='committed'&&effects[0].data.remoteWriteRequests===1&&
+    effects[0].data.providerExecutionId===delivery.providerExecutionId,
+    'PROVIDER_FAILURE:F3_LOST_RESPONSE_WRITE_COUNT_UNKNOWN');
+  f3Need(head.latestEventId===eventId&&!head.pendingEventId&&!head.leaseOwner&&!head.leaseUntil&&
+    head.confirmedValue===event.after&&visit.escenario===event.after&&visit.hrManaged?.escenario===event.after&&
+    !visit.hrPendingFields?.escenario&&visit.hrSyncStatus==='synced','PERSISTENCE_FAILURE:F3_LOST_RESPONSE_NOT_SETTLED');
+  return {eventId,eventDigest:event.eventDigest,providerExecutionId:delivery.providerExecutionId,
+    commandReceiptId:receiptId,headKey,declaredOriginalRemoteWriteRequests:1,proofDigest:f3Digest(proof)};
+}
+export function f3AssertLostResponseReplay({command,owner,transport,before,after,response}){
+  const original=f3AssertLostResponseJournal({command,owner,transport,proof:before});
+  f3AssertLostResponseJournal({command,owner,transport,proof:after});
+  f3Need(response?.status===200&&assertF3RemoteAck(response.body)===original.eventId&&
+    response.body.idempotentReplay===true&&response.body.providerWrites===0&&
+    response.body.idempotencyKey===command.idempotencyKey&&f3Same(before,after),
+    'PERSISTENCE_FAILURE:F3_LOST_RESPONSE_REPLAY_MUTATED');
+  // Unchanged local evidence does not establish an independent Make write count.
+  return {...original,newJournalAttempts:0,newLocalCommandWrites:0,remoteReplayWrites:null,
+    remoteReplayWriteCountProven:false,remoteExecutionAuditRequired:true};
+}
+
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
@@ -265,7 +364,7 @@ async function runF3EndpointProbe(){
     productionWrites:0,operationalHrWrites:0,syntheticOnly:true,notesPrivacyProven:false,ordinaryPasswordAuthenticationProven:false,
     applicationAckProven:false,b14Closed:false,newModuleMatches:0,cases:[],events:[],cleanup:{firestore:false,auth:false,remoteMake:false},
     guarantees:{atomicHumanExcelCas:false,observedBaseGuard:true,remoteReceiptAndIndependentRead:true,uncertainWriteRetry:false},
-    unproven:['provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture']};
+    unproven:['application_client_response_loss_live_fault_injection','application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture']};
   const save=()=>fs.writeFileSync(outPath,JSON.stringify(receipt,null,2)+'\n');save();
   const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
   const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
@@ -349,12 +448,56 @@ async function runF3EndpointProbe(){
     f3Need(result.status===200&&result.body.ok===true&&result.body.readbackVerified===true&&result.body.authWrites===0,'PERSISTENCE_FAILURE:F3_QA_RECONCILE_ACK');
     recordCase('explicit_reconcile_'+serial,{sourceRevision:live.revision,receiptPath:p,authWrites:result.body.authWrites});
   };
+  const readLostResponseJournal=async command=>{
+    const headKey=f3Digest(['tya',F3_QA.projectId,F3_QA.periodId,'GT',F3_QA.visits.GT,'escenario']),eventId='hfe-'+f3Digest([headKey,command.idempotencyKey]);
+    const paths={commandReceipt:commandPaths(command)[0],audit:commandPaths(command)[1],event:projectPath+'/hrFieldEvents/'+eventId,
+      delivery:projectPath+'/hrFieldDeliveries/'+eventId,head:projectPath+'/hrFieldHeads/'+headKey,visit:projectPath+'/visits/'+F3_QA.visits.GT};
+    const capture=snap=>({exists:snap.exists,data:snap.exists?f3SafeEvidence(snap.data()):null,
+      updateTime:snap.updateTime?{seconds:snap.updateTime.seconds,nanoseconds:snap.updateTime.nanoseconds}:null});
+    const proof=Object.fromEntries(await Promise.all(Object.entries(paths).map(async([key,p])=>[key,capture(await db.doc(p).get())])));
+    const attempts=await db.doc(paths.delivery).collection('attempts').get();
+    proof.attempts=attempts.docs.map(snap=>({id:snap.id,...capture(snap)})).sort((a,b)=>a.id.localeCompare(b.id));
+    return proof;
+  };
+  const postWithLostClientResponse=async command=>{
+    await remember(command);receipt.remoteValuesRestored=false;
+    const attempt={command:structuredClone(command),receiptPaths:commandPaths(command),startedAt:new Date().toISOString(),
+      state:'REMOTE_OUTCOME_UNCERTAIN',faultInjection:'CLIENT_ABORT_AFTER_HEADERS_BEFORE_BODY'};
+    (receipt.remoteCommandAttempts??=[]).push(attempt);save();
+    let transport;
+    try{transport=await f3DropEndpointResponse({command,owner,token});}
+    catch(error){attempt.transportObservation=f3SafeEvidence(error.transportObservation||{});attempt.finishedAt=new Date().toISOString();save();throw error;}
+    attempt.transportObservation=transport;attempt.finishedAt=new Date().toISOString();attempt.state='RESPONSE_BODY_LOST_RESTORE_STILL_REQUIRED';save();
+    const before=await readLostResponseJournal(command),original=f3AssertLostResponseJournal({command,owner,transport,proof:before});
+    const remoteBefore=await readLive();f3Need(remoteBefore.rows.find(row=>(row.id||row.visitId)===F3_QA.visits.GT)?.escenario===command.payload.patch.escenario,
+      'PROVIDER_FAILURE:F3_LOST_RESPONSE_INDEPENDENT_READBACK');
+    receipt.clientResponseLoss={decision:'REMOTE_COMMIT_OBSERVED_BEFORE_EXACT_REPLAY',transport,beforeJournal:before,
+      independentSourceRevisionBeforeReplay:remoteBefore.revision,independentReadbackAt:new Date().toISOString(),...original};save();
+    // Exactly one replay, the identical object/key. No retry loop or fresh key.
+    const replayStartedAt=new Date().toISOString(),response=await send(command),replayFinishedAt=new Date().toISOString();
+    const after=await readLostResponseJournal(command),replay=f3AssertLostResponseReplay({command,owner,transport,before,after,response}),remoteAfter=await readLive();
+    const fieldValues=live=>live.rows.map(row=>({visitId:row.id||row.visitId,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]??null]))})).sort((a,b)=>a.visitId.localeCompare(b.visitId));
+    f3Need(remoteAfter.revision===remoteBefore.revision&&f3Same(fieldValues(remoteAfter),fieldValues(remoteBefore)),
+      'PROVIDER_FAILURE:F3_LOST_RESPONSE_REPLAY_SOURCE_CHANGED');
+    Object.assign(receipt.clientResponseLoss,{decision:'PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING',
+      replayStartedAt,replayFinishedAt,afterJournal:after,independentSourceRevisionAfterReplay:remoteAfter.revision,...replay,
+      remoteAudit:{scenarioId:10199316,eventId:original.eventId,eventDigest:original.eventDigest,
+        initialProviderExecutionId:original.providerExecutionId,idempotencyKey:command.idempotencyKey,
+        requestStartedAt:attempt.startedAt,replayStartedAt,replayFinishedAt,
+        requiredObservedThroughUtc:new Date(Date.parse(replayFinishedAt)+90000).toISOString(),
+        rule:'READ_ONLY_COMPLETE_EXECUTION_WINDOW_ALL_PAGES_AND_EXACT_EVENT_MODULE_INPUTS; require original execution committed once and independent zero physical writes for this event during replay. Unknown/incomplete counts remain HOLD; no new scenario run.'}});
+    receipt.unproven=receipt.unproven.filter(x=>x!=='application_client_response_loss_live_fault_injection');save();
+    recordCase('client_response_body_loss_same_key_replay_journal_unchanged',{eventId:original.eventId,bodyBytesConsumed:0,
+      semanticAckObservedInitially:false,independentCommitObservedBeforeReplay:true,newJournalAttempts:0,
+      remoteReplayWrites:null,remoteExecutionAuditRequired:true});
+    return response;
+  };
   let serial=0;
-  const executeField=async(country,fieldKey,value,caseName)=>{
+  const executeField=async(country,fieldKey,value,caseName,{loseClientResponse=false}={})=>{
     const live=await readLive(),visit=live.rows.find(x=>(x.id||x.visitId)===F3_QA.visits[country]),durable=await db.doc(projectPath+'/visits/'+F3_QA.visits[country]).get();
     f3Need(durable.exists,'PERSISTENCE_FAILURE:F3_QA_DURABLE_VISIT');
     const command=f3FieldCommand({owner,serial:++serial,visit,revision:live.revision,version:durable.data().version,fieldKey,value});
-    const response=await postWithBoundedRecovery(command);f3Need(response.status===200,'PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED');const eventId=assertF3RemoteAck(response.body);
+    const response=loseClientResponse?await postWithLostClientResponse(command):await postWithBoundedRecovery(command);f3Need(response.status===200,'PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED');const eventId=assertF3RemoteAck(response.body);
     const eventSnap=await db.doc(projectPath+'/hrFieldEvents/'+eventId).get(),deliverySnap=await db.doc(projectPath+'/hrFieldDeliveries/'+eventId).get(),event=eventSnap.data(),delivery=deliverySnap.data();
     f3Need(eventSnap.exists&&event.origin==='platform'&&event.actorUid===adminUid&&event.fieldKey===fieldKey&&event.countryCode===country&&event.periodId===F3_QA.periodId&&f3Same(event.after,value),'PERSISTENCE_FAILURE:F3_QA_EVENT_READBACK');
     f3Need(deliverySnap.exists&&delivery.status==='committed'&&delivery.providerAck===true&&delivery.readbackVerified===true&&delivery.eventDigest===event.eventDigest&&/^[a-f0-9]{32}$/i.test(delivery.providerExecutionId||''),'PROVIDER_FAILURE:F3_QA_DELIVERY_READBACK');
@@ -395,12 +538,12 @@ async function runF3EndpointProbe(){
     let first;
     for(const country of F3_QA.countries){
       const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
-      for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write');if(!first)first=row;}
+      for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write',{loseClientResponse:country==='GT'&&fieldKey==='escenario'});if(!first)first=row;}
     }
     // A UI failure is recorded without interrupting remote restoration.
     try{await shopperRoleQa.capture('assigned',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
-    // Retry the exact committed command. Actual transport fault injection is a
-    // separate proof obligation and is not claimed by this endpoint run.
+    // This additional ordinary replay is separate from the first command's
+    // real client response-body loss. Make-to-backend loss remains unproven.
     const replay=await send(first.command);assertF3RemoteAck(replay.body);
     const attemptsAfter=(await db.doc(projectPath+'/hrFieldDeliveries/'+first.eventId).collection('attempts').get()).size;
     f3Need(attemptsAfter===first.attempts&&replay.body.idempotentReplay===true,'PERSISTENCE_FAILURE:F3_QA_REPLAY_WROTE');recordCase('exact_replay_no_write',{eventId:first.eventId});

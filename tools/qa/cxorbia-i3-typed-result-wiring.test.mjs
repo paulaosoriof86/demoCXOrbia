@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {incorporateTypedResults,consumeRun,selectTypedArtifact,pendingTypedRuns,pendingSatisfiedRequestRuns,retireSatisfiedD08Request,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
-import {TYPED_SUMMARY_SCHEMAS} from './cxorbia-i3-typed-result-summary.mjs';
+import {TYPED_SUMMARY_SCHEMAS,summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
 
 // Small synthetic producer-shaped results. No test imports, providers or secrets.
 function typedSummaryFixture(kind='F3_ENDPOINT'){
@@ -221,4 +221,78 @@ test('request reconciliation finds an indexed fulfilled request even when the in
   {runId:3,runAttempt:1,decision:'RECORDED_D08_INCOMPLETE'}]};
  assert.deepEqual(pendingSatisfiedRequestRuns(f.controls),[{runId:1,runAttempt:1}]);
  delete f.controls.pointer.currentD08UiQaRequest;assert.deepEqual(pendingSatisfiedRequestRuns(f.controls),[]);
+});
+
+function f3ScopedEvidenceFixture(){
+ const f=fixture(),raw=f.rows[0].raw,key='f3-qa-12345678-1-field-1',eventId='hfe-'+'a'.repeat(64),eventDigest='b'.repeat(64),providerExecutionId='c'.repeat(32),revision='f'.repeat(64);
+ const requestStartedAt='2026-11-24T21:40:00.000Z',replayStartedAt='2026-11-24T21:40:02.001Z',replayFinishedAt='2026-11-24T21:40:03.000Z';
+ raw.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING';raw.applicationAckProven=true;raw.remoteValuesRestored=true;raw.recoveryRequired=false;
+ raw.cleanup={firestore:true,auth:true,remoteMake:false};delete raw.failure;
+ raw.unproven=['application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection'];
+ raw.clientResponseLoss={decision:'PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING',eventId,eventDigest,providerExecutionId,proofDigest:'d'.repeat(64),
+  declaredOriginalRemoteWriteRequests:1,newJournalAttempts:0,newLocalCommandWrites:0,remoteReplayWrites:null,remoteReplayWriteCountProven:false,remoteExecutionAuditRequired:true,
+  independentSourceRevisionBeforeReplay:revision,independentSourceRevisionAfterReplay:revision,independentReadbackAt:'2026-11-24T21:40:02.000Z',replayStartedAt,replayFinishedAt,
+  transport:{faultBoundary:'APPLICATION_HTTP_RESPONSE_BODY_TO_QA_CLIENT',requestBodyFinished:true,responseHeadersObserved:true,httpStatus:200,bodyBytesConsumed:0,
+   semanticAckObserved:false,clientConnectionDestroyed:true,commandDigest:'e'.repeat(64),idempotencyKey:key,startedAt:'2026-11-24T21:40:00.010Z',cutAt:'2026-11-24T21:40:01.000Z',
+   headers:{Authorization:'DO_NOT_STORE_TOKEN'}},
+  beforeJournal:{uid:'DO_NOT_STORE_UID',path:'DO_NOT_STORE_PRIVATE_PATH',value:'DO_NOT_STORE_FIXTURE_VALUE'},afterJournal:{raw:'DO_NOT_STORE_JOURNAL'},
+  remoteAudit:{scenarioId:10199316,eventId,eventDigest,initialProviderExecutionId:providerExecutionId,idempotencyKey:key,
+   requestStartedAt,replayStartedAt,replayFinishedAt,requiredObservedThroughUtc:'2026-11-24T21:41:33.000Z',url:'https://DO_NOT_STORE_PRIVATE_URL'}};
+ raw.shopperRoleProof={schemaVersion:'cxorbia.f3.scoped-shopper-role-qa.v1',decision:'PASS_F3_QA_SHOPPER_ROLE_SCOPED',authentication:'FIREBASE_CUSTOM_TOKEN_QA_ONLY',
+  sameFixture:true,prepared:true,automaticUpsertProven:false,ordinaryPasswordProven:false,availabilityRemovalProven:true,
+  actors:[{uid:'DO_NOT_STORE_ACTOR_GT',country:'GT'},{uid:'DO_NOT_STORE_ACTOR_HN',country:'HN'}],blockedOperationalRequests:0,failures:[],
+  positiveAvailabilityTransitions:['GT','HN'],limitations:['automatic_missing_shopper_upsert','ordinary_password_login','Admin_UI_assignment_button','postulation_lifecycle'],
+  phases:['before','assigned'].map(phase=>({phase,sourceRevision:revision,countries:['GT','HN'].map(country=>({country,sourceRevision:revision,
+   available:phase==='before'?1:0,own:phase==='before'?0:1,foreignVisitCount:0,duplicateVisitCount:0,exactAvailableKeyset:true,exactOwnKeyset:true,passed:true,
+   ...(phase==='assigned'?{reloadVerified:true}:{}),expected:{availableIds:['DO_NOT_STORE_VISIT'],ownVisitIds:['DO_NOT_STORE_OTHER_VISIT']},dom:'DO_NOT_STORE_DOM',
+   network:{token:'DO_NOT_STORE_NETWORK'}}))})),cleanup:{complete:true,authDeleted:['DO_NOT_STORE_UID_GT','DO_NOT_STORE_UID_HN'],authAbsent:['DO_NOT_STORE_UID_GT','DO_NOT_STORE_UID_HN']}};
+ f.summarize=()=>summarizeTypedResult({resultText:JSON.stringify(raw),transport:{runId:f.args.run.id,runAttempt:1,jobId:f.args.jobs[0].id,jobName:f.args.jobs[0].name,
+  jobConclusion:f.args.jobs[0].conclusion,controlHead:f.args.run.head_sha,artifactId:f.args.artifacts[0].id,artifactDigest:f.args.artifacts[0].digest,
+  verifiedArchiveDigest:f.args.artifacts[0].digest,entry:'receipt.json'},expectedIdentity:{sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40)}});
+ return f;
+}
+test('F3 typed summary preserves client-loss Make handoff and Shopper before/assigned/reload scopes without private values',()=>{
+ const f=f3ScopedEvidenceFixture(),out=f.summarize(),lost=out.observations.clientResponseLoss,shopper=out.observations.shopperRoleProof;
+ assert.equal(out.state,'HOLD');assert.equal(out.fullDomain,false);assert.equal(out.newDomainMatches,0);assert.deepEqual(out.ownerSpecificReceipts,[]);
+ assert.equal(lost.eventId,f.rows[0].raw.clientResponseLoss.eventId);assert.equal(lost.remoteAudit.scenarioId,10199316);
+ assert.equal(lost.remoteAudit.initialProviderExecutionId,'c'.repeat(32));assert.equal(lost.remoteAudit.replayStartedAt,'2026-11-24T21:40:02.001Z');
+ assert.equal(lost.remoteAudit.requiredObservedThroughUtc,'2026-11-24T21:41:33.000Z');assert.equal(lost.remoteAudit.newScenarioRunRequired,false);
+ assert.equal(lost.transport.bodyBytesConsumed,0);assert.equal(lost.transport.semanticAckObserved,false);assert.equal(lost.remoteReplayWrites,null);
+ assert.equal(lost.remoteReplayWriteCountProven,false);assert.equal(lost.remoteExecutionAuditRequired,true);
+ assert.deepEqual(shopper.phases.map(p=>p.phase),['before','assigned']);assert.equal(shopper.phases[1].countries.every(c=>c.reloadVerified),true);
+ assert.equal(shopper.phases[0].countries.every(c=>c.exactAvailableKeyset&&c.exactOwnKeyset&&c.foreignVisitCount===0),true);
+ assert.equal(shopper.cleanup.authDeletedCount,2);assert.equal(shopper.authentication,'FIREBASE_CUSTOM_TOKEN_QA_ONLY');assert.equal(shopper.ordinaryPasswordProven,false);
+ assert.deepEqual(out.observations.unproven,['application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection']);
+ assert.doesNotMatch(JSON.stringify(out),/DO_NOT_STORE|https:\/\/|beforeJournal|afterJournal|availableIds|ownVisitIds/);
+});
+for(const [name,mutate] of [
+ ['claimed remote zero',p=>p.remoteReplayWrites=0],['claimed remote count proof',p=>p.remoteReplayWriteCountProven=true],
+ ['body consumed',p=>p.transport.bodyBytesConsumed=1],['semantic ACK already observed',p=>p.transport.semanticAckObserved=true],
+ ['foreign event',p=>p.remoteAudit.eventId='hfe-'+'f'.repeat(64)],['foreign execution',p=>p.remoteAudit.initialProviderExecutionId='f'.repeat(32)],
+ ['other run alias',p=>p.remoteAudit.idempotencyKey='f3-qa-99999999-1-field-1'],['replay before independent read',p=>p.independentReadbackAt='2026-11-24T21:40:03.001Z'],
+ ['missing audit window',p=>delete p.remoteAudit.requiredObservedThroughUtc]
+])test('F3 typed client-loss scope rejects '+name,()=>{const f=f3ScopedEvidenceFixture();mutate(f.rows[0].raw.clientResponseLoss);assert.throws(f.summarize,/F3_CLIENT_RESPONSE_LOSS_SCOPE/);});
+for(const [name,mutate] of [
+ ['ordinary password claim',p=>p.ordinaryPasswordProven=true],['missing after phase',p=>p.phases.pop()],['missing reload',p=>delete p.phases[1].countries[0].reloadVerified],
+ ['foreign visit',p=>p.phases[0].countries[0].foreignVisitCount=1],['different HR revision',p=>p.phases[1].countries[0].sourceRevision='1'.repeat(64)],
+ ['false positive availability',p=>p.phases[0].countries[0].available=0]
+])test('F3 typed Shopper PASS rejects '+name,()=>{const f=f3ScopedEvidenceFixture();mutate(f.rows[0].raw.shopperRoleProof);assert.throws(f.summarize,/F3_SHOPPER_ROLE_(?:PASS_SCOPE|AVAILABILITY)/);});
+test('F3 scoped Shopper HOLD preserves its exact negative without raw network payloads or invented denial evidence',()=>{
+ const f=f3ScopedEvidenceFixture(),p=f.rows[0].raw.shopperRoleProof;p.decision='HOLD_F3_QA_SHOPPER_ROLE';p.phases[1].countries[0].passed=false;
+ p.phases[1].countries[0].failure='FUNCTIONAL_DEFECT:F3_ROLE_OWN_VISIT_KEYSET:DO_NOT_STORE_DETAIL';p.failures=[p.phases[1].countries[0].failure];
+ const out=f.summarize();assert.equal(out.observations.shopperRoleProof.phases[1].countries[0].passed,false);
+ assert.equal(out.observations.shopperRoleProof.phases[1].countries[0].failureCode,'FUNCTIONAL_DEFECT:F3_ROLE_OWN_VISIT_KEYSET');
+ assert.equal(out.state,'HOLD');assert.doesNotMatch(JSON.stringify(out),/DO_NOT_STORE/);
+});
+test('F3 scope whitelist survives artifact incorporation and immutable indexed replay without new credit',async()=>{
+ const f=f3ScopedEvidenceFixture(),expected=f.summarize(),journalText=jsonBytes(f.args.journal),out=await incorporateTypedResults(f.args);
+ assert.deepEqual(out.failures,[]);assert.equal(out.incorporated.length,1);assert.equal(out.queue.size,0);assert.equal(f.files.size,1);
+ const entry=out.incorporated[0],bytes=f.files.get(entry.path),saved=JSON.parse(bytes);
+ assert.deepEqual(saved.observations.clientResponseLoss,expected.observations.clientResponseLoss);assert.deepEqual(saved.observations.shopperRoleProof,expected.observations.shopperRoleProof);
+ assert.equal(saved.state,'HOLD');assert.equal(saved.newDomainMatches,0);assert.equal(saved.fullDomain,false);assert.equal(entry.ownerReceiptCount,0);
+ assert.equal(saved.provenance.resultSha256,sha256(JSON.stringify(f.rows[0].raw)));assert.doesNotMatch(bytes,/DO_NOT_STORE/);
+ assert.equal(jsonBytes(f.args.journal),journalText);f.known.set(entry.path,bytes);
+ for(const c of [f.args.controls.descriptor,f.args.controls.pointer])c.currentFunctionalEvidenceIndex=out.index;
+ f.files.clear();const replay=await incorporateTypedResults(f.args);assert.deepEqual(replay.failures,[]);assert.equal(replay.incorporated.length,0);assert.equal(replay.queue.size,0);
+ assert.equal(f.downloads,1);assert.equal(f.files.size,0);assert.equal(f.known.get(entry.path),bytes);
 });

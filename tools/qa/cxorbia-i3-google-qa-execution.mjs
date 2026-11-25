@@ -46,6 +46,37 @@ export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readComm
   return start;
 }
 
+function readEncryptedPdfEvidence(bundle,raw,id,read){
+  const wanted=raw.failurePdf?.privateEvidence,refs=bundle.encryptedPdfObjects;
+  if(!wanted)return {status:'NOT_REQUESTED',objects:[]};
+  const entry=typeof wanted.entry==='string'&&/^private-session-[01]-(?:movements|dashboard)-pdf\.envelope\.json$/.test(wanted.entry)?wanted.entry:null;
+  const expectedHash=typeof wanted.sha256==='string'&&/^[a-f0-9]{64}$/.test(wanted.sha256)?wanted.sha256:null;
+  if(!entry||!expectedHash)return {status:'HOLD_INVALID_REFERENCE',objects:[],failureCode:'SOURCE_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_REFERENCE'};
+  if(!Array.isArray(refs))return {status:'HOLD_LEGACY_REFERENCE_UNBOUND',objects:[],failureCode:'SOURCE_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_GENERATION_MISSING'};
+  const ref=refs.find(x=>x?.entry===entry);
+  if(refs.length!==1||!ref)return {status:'HOLD_NOT_ARCHIVED',objects:[],failureCode:'PROVIDER_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_ARCHIVE'};
+  const item={entry,sha256:expectedHash,verified:false};
+  try{
+    const prefix='gs://'+bucket+'/cxorbia-i3-qa/'+id+'/'+entry+'#';
+    need(typeof ref.uri==='string'&&ref.uri.startsWith(prefix)&&/^[1-9]\d{7,19}$/.test(ref.uri.slice(prefix.length))&&
+      ref.generation===ref.uri.slice(prefix.length)&&ref.sha256===expectedHash,'GOOGLE_FINANCE_PRIVATE_EVIDENCE_BINDING');
+    item.uri=ref.uri;item.generation=ref.generation;
+    const meta=JSON.parse(read('gcloud',['storage','objects','describe',ref.uri,'--raw','--format=json']));
+    need(meta.bucket===bucket&&meta.name==='cxorbia-i3-qa/'+id+'/'+entry&&String(meta.generation)===ref.generation&&meta.timeCreated,
+      'GOOGLE_FINANCE_PRIVATE_EVIDENCE_OBJECT');
+    const bytes=read('gcloud',['storage','cat',ref.uri]);
+    need(hash(bytes)===expectedHash,'GOOGLE_FINANCE_PRIVATE_EVIDENCE_HASH');
+    const envelope=JSON.parse(bytes);
+    need(wanted.encrypted===true&&wanted.algorithm==='RSA-OAEP-SHA256+AES-256-GCM'&&envelope.version===1&&envelope.algorithm===wanted.algorithm&&
+      envelope.plainSha256===wanted.plainSha256&&/^[a-f0-9]{64}$/.test(String(envelope.plainSha256))&&
+      ['key','iv','tag','ciphertext'].every(k=>typeof envelope[k]==='string'&&envelope[k].length>0),'GOOGLE_FINANCE_PRIVATE_EVIDENCE_ENVELOPE');
+    item.verified=true;return {status:'VERIFIED',objects:[item]};
+  }catch(error){
+    const code=String(error?.message||'');item.failureCode=/^SOURCE_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_[A-Z_]+$/.test(code)?code:'PROVIDER_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_READBACK';
+    return {status:'HOLD_READBACK_UNCONFIRMED',objects:[item],failureCode:item.failureCode};
+  }
+}
+
 // Read both object generations independently. The caller supplies the approved
 // producer and transport commits, and the materialization from the live controls.
 export function readGoogleFinanceResult(uri,expected,read=readCommand){
@@ -65,6 +96,6 @@ export function readGoogleFinanceResult(uri,expected,read=readCommand){
     raw.externalExecution&&Object.entries(start).every(([k,v])=>raw.externalExecution[k]===v),'GOOGLE_QA_RESULT_IDENTITY');
   const transport={...start,provider:start.provider,jobName:job,jobConclusion:bundle.exitCode===0?'success':'failure',
     controlHead:start.controlSha,entry:'finance-ui-readonly.json',resultUri:uri,resultGeneration:result.generation,
-    bundleSha256:result.sha256,resultSha256:bundle.resultSha256};
+     bundleSha256:result.sha256,resultSha256:bundle.resultSha256,encryptedPdfEvidence:readEncryptedPdfEvidence(bundle,raw,result.id,read)};
   return {resultText,identityReadback:{entry:'identity-live-readback.json',resultUri:uri,bundleSha256:result.sha256,text:sealText},transport};
 }

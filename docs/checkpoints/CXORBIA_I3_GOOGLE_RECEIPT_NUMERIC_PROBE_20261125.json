@@ -1,0 +1,22 @@
+{
+  "kind": "CAUSAL_READONLY_EXISTING_OWNER_PROBE",
+  "syntheticOnly": true,
+  "externalCalls": 0,
+  "writes": 0,
+  "observations": [
+    {
+      "owner": "projectMaterialization",
+      "cloudUuidAsRunId": "REJECTED_AS_OUT_OF_ORDER",
+      "error": "SOURCE_FAILURE:OUT_OF_ORDER_MATERIALIZATION"
+    },
+    {
+      "owner": "projectCurrentAutomationReceipt",
+      "cloudCurrentReplacedByOlderGithubEvent": true
+    },
+    {
+      "owner": "pendingRuns",
+      "cloudUuidFloorPendingCount": 0,
+      "githubNumericFloorPendingCount": 1
+    }
+  ]
+}

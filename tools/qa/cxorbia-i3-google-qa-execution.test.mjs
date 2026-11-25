@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {readGoogleQaExecution} from './cxorbia-i3-google-qa-execution.mjs';
 
 const bucket='cxorbia-backend-dev_cloudbuild',id='5573055a-facf-48a5-8e80-2d9698b4c21b';
@@ -71,4 +75,76 @@ test('HR diagnostic retains only an owner-defined code and strips all dynamic de
   assert.equal(financeHrOwnerCode('HR_LIVE_VISIT_PERIOD_MISSING_private'),'HR_LIVE_VISIT_PERIOD_MISSING');
   assert.equal(financeHrOwnerCode('PRIVATE_ACCOUNT_OR_PROVIDER'),'OTHER');
   assert.equal(financeHrOwnerCode(''),'NO_OWNER_ERROR');
+});
+
+function googleArchiveShellFixture({producerStatus=13,readbackStatus=47}={}){
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'google-finance-archive-')),out=path.join(root,'out'),publicOut=path.join(out,'ui-readonly'),objects=path.join(root,'objects');
+ fs.mkdirSync(path.join(root,'tools/qa'),{recursive:true});fs.mkdirSync(publicOut,{recursive:true});fs.mkdirSync(objects);
+ const entry='private-session-0-movements-pdf.envelope.json',ciphertext=JSON.stringify({version:1,algorithm:'RSA-OAEP-SHA256+AES-256-GCM',key:'SYNTHETIC_WRAPPED_KEY',iv:'SYNTHETIC_IV',tag:'SYNTHETIC_TAG',ciphertext:'SYNTHETIC_CIPHERTEXT',plainSha256:'9'.repeat(64)})+'\n';
+ fs.writeFileSync(path.join(publicOut,entry),ciphertext);
+ const raw={privateDataExposed:false,decision:'HOLD_C09_C10_UI_READONLY',error:'FUNCTIONAL_DEFECT:C09_C10_EXPORT_PDF_CONTENT',failurePdf:{privateEvidence:{entry,sha256:digest(ciphertext),plainSha256:'9'.repeat(64),encrypted:true,algorithm:'RSA-OAEP-SHA256+AES-256-GCM'}}};
+ fs.writeFileSync(path.join(publicOut,'finance-ui-readonly.json'),JSON.stringify(raw));
+ fs.writeFileSync(path.join(root,'tools/qa/cxorbia-i3-finance-focal-execute.sh'),'exit '+producerStatus+'\n');
+ fs.writeFileSync(path.join(root,'tools/qa/cxorbia-i3-finance-current-readback.sh'),'exit '+readbackStatus+'\n');
+ const source=fs.readFileSync(new URL('./cxorbia-i3-finance-google-transport.sh',import.meta.url),'utf8'),tail=source.slice(source.indexOf('status=0\n'));
+ const prefix='gs://'+bucket+'/cxorbia-i3-qa/'+id;
+ const stub='put(){ local src="$1" dest="$2"; cp "$src" "$TEST_OBJECTS/$(basename "$dest")"; printf "%s#1795603001002000\\n" "$dest"; }\n';
+ const script=path.join(root,'transport-tail.sh');fs.writeFileSync(script,'set -Eeuo pipefail\n'+stub+'prefix="$TEST_PREFIX"\n'+tail);
+ const run=spawnSync('bash',[script],{cwd:root,encoding:'utf8',env:{PATH:process.env.PATH,FINAL_FOCAL_OUT:out,FOCAL_SOURCE:sourceShaForTest(),CXORBIA_GOOGLE_QA_START:env.CXORBIA_GOOGLE_QA_START,TEST_PREFIX:prefix,TEST_OBJECTS:objects}});
+ return {root,objects,entry,ciphertext,raw,run,cleanup:()=>fs.rmSync(root,{recursive:true,force:true})};
+}
+function sourceShaForTest(){return source;}
+test('failed identity readback cannot discard an existing PDF failure or replace its original exit code',()=>{
+ const f=googleArchiveShellFixture();try{
+  assert.equal(f.run.status,13,f.run.stderr);assert.equal(fs.existsSync(path.join(f.objects,'result.json')),true);
+  assert.equal(fs.readFileSync(path.join(f.objects,f.entry),'utf8'),f.ciphertext);
+  const bundle=JSON.parse(fs.readFileSync(path.join(f.objects,'result.json'),'utf8')),raw=JSON.parse(bundle.resultText),seal=JSON.parse(bundle.identityReadbackText);
+  assert.equal(bundle.exitCode,13);assert.equal(raw.error,f.raw.error);assert.equal(seal.decision,'HOLD_CURRENT_FINANCE_DEV_IDENTITY_READBACK');
+  assert.equal(seal.readbackExitCode,47);assert.notEqual(seal.runtimeTrafficExact,true);assert.notEqual(seal.hostingBeforeAfterSame,true);
+  assert.equal(bundle.encryptedPdfObjects.length,1);assert.equal(bundle.encryptedPdfObjects[0].entry,f.entry);
+  assert.equal(bundle.encryptedPdfObjects[0].sha256,digest(f.ciphertext));assert.match(bundle.encryptedPdfObjects[0].uri,/#1795603001002000$/);
+ }finally{f.cleanup();}
+});
+
+function encryptedResultFixture(){
+ const f=resultFixture(),entry='private-session-0-movements-pdf.envelope.json',generation='1795603001002000';
+ f.envelope={version:1,algorithm:'RSA-OAEP-SHA256+AES-256-GCM',plainSha256:'9'.repeat(64),key:'DO_NOT_STORE_WRAPPED_KEY',iv:'DO_NOT_STORE_IV',tag:'DO_NOT_STORE_TAG',ciphertext:'DO_NOT_STORE_CIPHERTEXT'};
+ f.envelopeBytes=JSON.stringify(f.envelope)+'\n';f.envelopeUri=f.resultUri.replace(/result\.json#\d+$/,entry+'#'+generation);
+ f.raw.stage='SESSION_1_MOVEMENT_EXPORT';f.raw.error='FUNCTIONAL_DEFECT:C09_C10_EXPORT_PDF_CONTENT';
+ f.raw.failurePdf={matches:false,parsed:true,missingCellCount:1,privateEvidence:{entry,sha256:digest(f.envelopeBytes),plainSha256:f.envelope.plainSha256,encrypted:true,algorithm:f.envelope.algorithm}};
+ f.bundle.resultText=JSON.stringify(f.raw);f.bundle.resultSha256=digest(f.bundle.resultText);
+ f.bundle.identityReadbackText=JSON.stringify({decision:'HOLD_CURRENT_FINANCE_DEV_IDENTITY_READBACK',sourceSha:source,readbackExitCode:47,error:'ENVIRONMENT_FAILURE:GOOGLE_FINANCE_IDENTITY_READBACK_FAILED',production:false,deploys:0});
+ f.bundle.sealSha256=digest(f.bundle.identityReadbackText);
+ f.bundle.encryptedPdfObjects=[{entry,uri:f.envelopeUri,generation,sha256:digest(f.envelopeBytes)}];
+ const originalRead=f.read;f.envelopeReads=0;f.read=(cmd,args)=>{
+  if(args.includes(f.envelopeUri)){f.envelopeReads++;return args[1]==='cat'?f.envelopeBytes:JSON.stringify({bucket,name:'cxorbia-i3-qa/'+id+'/'+entry,generation,timeCreated:'2026-11-25T10:46:00Z'});}
+  return originalRead(cmd,args);
+ };
+ return f;
+}
+test('Google PDF diagnostic retains verified immutable ciphertext locator, separate seal failure and original error',()=>{
+ const f=encryptedResultFixture(),s=summarizeGoogleFinanceResult({uri:f.resultUri,expectedIdentity:f.expected},f.read),e=s.provenance.encryptedPdfEvidence;
+ assert.equal(s.state,'HOLD');assert.equal(s.decision,'RECORDED_TYPED_RESULT_HOLD');assert.equal(s.newDomainMatches,0);assert.deepEqual(s.ownerSpecificReceipts,[]);
+ assert.deepEqual(s.failureCodes,['FUNCTIONAL_DEFECT:C09_C10_EXPORT_PDF_CONTENT']);assert.equal(s.observations.failurePdf.missingCellCount,1);
+ assert.equal(s.observations.sameArtifactReadback.failureCode,'ENVIRONMENT_FAILURE:GOOGLE_FINANCE_IDENTITY_READBACK_FAILED');assert.equal(s.observations.sameArtifactReadback.readbackExitCode,47);assert.equal(s.observations.sameArtifactReadback.verified,false);
+ assert.equal(e.status,'VERIFIED');assert.equal(e.objects[0].verified,true);assert.equal(e.objects[0].uri,f.envelopeUri);assert.equal(e.objects[0].generation,'1795603001002000');
+ assert.equal(e.objects[0].sha256,s.observations.failurePdf.privateEvidence.sha256);assert.equal(f.envelopeReads,2);
+ assert.equal(s.provenance.startGeneration,generation);assert.equal(s.provenance.runId,undefined);assert.equal(s.provenance.jobId,undefined);assert.equal(s.provenance.artifactId,undefined);
+ assert.doesNotMatch(JSON.stringify(s),/DO_NOT_STORE/);
+});
+for(const [name,alter] of [
+ ['changed ciphertext bytes',f=>{f.envelopeBytes+=' ';}],
+ ['different generation',f=>{f.bundle.encryptedPdfObjects[0].generation='1795603001009999';}],
+ ['different UUID',f=>{f.bundle.encryptedPdfObjects[0].uri=f.envelopeUri.replace(id,'52baa293-43b7-44a3-b52c-bd4ae17b0e87');}],
+ ['different declared hash',f=>{f.bundle.encryptedPdfObjects[0].sha256='0'.repeat(64);}]
+])test('Google ciphertext '+name+' stays unverified without discarding the public diagnosis',()=>{
+ const f=encryptedResultFixture();alter(f);const s=summarizeGoogleFinanceResult({uri:f.resultUri,expectedIdentity:f.expected},f.read);
+ assert.equal(s.provenance.encryptedPdfEvidence.status,'HOLD_READBACK_UNCONFIRMED');assert.equal(s.provenance.encryptedPdfEvidence.objects[0].verified,false);
+ assert.equal(s.observations.failurePdf.missingCellCount,1);assert.deepEqual(s.failureCodes,['FUNCTIONAL_DEFECT:C09_C10_EXPORT_PDF_CONTENT']);assert.equal(s.state,'HOLD');assert.doesNotMatch(JSON.stringify(s),/DO_NOT_STORE/);
+});
+test('legacy Google PDF locator is marked unbound and is not invented from an Actions artifact',()=>{
+ const f=encryptedResultFixture();delete f.bundle.encryptedPdfObjects;
+ const s=summarizeGoogleFinanceResult({uri:f.resultUri,expectedIdentity:f.expected},f.read);
+ assert.equal(s.provenance.encryptedPdfEvidence.status,'HOLD_LEGACY_REFERENCE_UNBOUND');assert.equal(f.envelopeReads,0);
+ assert.equal(s.observations.failurePdf.privateEvidence.referenceOnly,true);assert.equal(s.provenance.artifactId,undefined);assert.equal(s.provenance.jobId,undefined);
 });

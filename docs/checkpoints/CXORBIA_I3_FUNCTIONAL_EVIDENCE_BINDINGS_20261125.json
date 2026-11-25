@@ -1,0 +1,1180 @@
+{
+  "schemaVersion": "cxorbia.i3.frozen-task-evidence-bindings.v1",
+  "state": "HOLD",
+  "originalPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+  "matrixPatch": {
+    "functionalTaskEvidenceMappings": {
+      "D01": {
+        "taskId": "D01",
+        "originalPlanSha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c",
+        "acceptanceBindingSha256": "e34bf159dafeee79a2992e7b840a6b56bf6cc30209f9d5c60667097237459de5",
+        "completeTaskInventory": true,
+        "acceptanceKind": "FROZEN_DOCUMENT_AUTHORITY",
+        "authorityReceipt": {
+          "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+          "gitBlob": "b38b0747bf624ceaeb54c4c0e6168b76bcd79281",
+          "sha256": "87a8c107b90a3e737e31cc1dcfb64efc86bc2800f8166c4ab0b46b33e1a9acec"
+        },
+        "sourceDocumentSha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+        "requiredClauses": [
+          {
+            "id": "D01.exact_authorized_document_version",
+            "operationKind": "DOCUMENT_AUTHORITY"
+          },
+          {
+            "id": "D01.approval_country_project_scope",
+            "operationKind": "DOCUMENT_AUTHORITY"
+          }
+        ],
+        "traceabilityOwnerPaths": [
+          "app/core/automations.js",
+          "app/modules/cert.js"
+        ],
+        "production": false
+      }
+    }
+  },
+  "reusedDocumentaryTaskIds": [
+    "D01"
+  ],
+  "newFunctionalPasses": 0,
+  "immutableReferencesVerified": 22,
+  "preservedCumulativeTaskScopes": [
+    {
+      "taskId": "C01",
+      "acceptanceBindingSha256": "ad665a3ec68555b5c94e1fa55f1aa60a74dd4c37438805f7758354e20a7c7ebf",
+      "evidenceState": "PRESERVE_SCOPED_LIVE_PASS",
+      "evidenceReferences": [
+        {
+          "path": "CXORBIA_I3_A04_A05_C01_G05_LIVE_BLOCK_PASS_2026-10-17.json",
+          "gitBlob": "2b09022b62cb0650fcbe8fc44571c19563358745",
+          "sha256": "9d2b913877c41b042d6de681d605cd3d9bf213ec77720129da16068fff39f57d"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+          "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+          "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "RUN1746 passed the focal financial UI/provider proof; prior C01 owner parity preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Retain positive/blocked Dashboard and detail coverage only at evidenced scope; uncovered current eligible/blocked financial UI is still in finance residuals."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C02",
+      "acceptanceBindingSha256": "e80c621b5509993a3336f8a0d61dd25ccc9c76e1d95ea0d19d4acbf1a9707e95",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+          "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+          "sha256": "e06ad2e57a10c7ea95b904a0abff2bbac596f105297649ad8cbabb641b8a05bd"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Exact durable receipt/audit/visit24fields agree; Q60+Q145=Q205 read in two isolated app contexts and reload."
+      ],
+      "remainingOrMappingBoundary": [
+        "Original live reconciliation client ACK was not observed in RUN1962; no reconciliation replay/payment executed. Complete uncovered ACK/error/current UI clauses; do not repeat readback already proven."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C03",
+      "acceptanceBindingSha256": "d782d81842102ae85ffa0e92f6a8d023759205fc3fcd1a935e6536fa9a226651",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+          "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C09_C10_ADVANCE_UI_READONLY_SCOPE_20261125.json",
+          "gitBlob": "ea60a2701c24d65cc44d1132821b5fd28aa54e7d",
+          "sha256": "4f98c846a2a39259cfb5b720910b83e1303bbbd98904f8b11beedf723dc0a596"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Both distinct Q7300 advances located; RUN2783 second November advance metadata correction/readback/replay credited; first advance and totalQ14600 preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Finish current UI nature/amount/source coherence in two sessions and exports; no inferred allocation, third advance, income or payment."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C04",
+      "acceptanceBindingSha256": "0d9bfdb28bf27136cf1cefbd80dad518fa2dc91344b754cc6d8b37fc0bd00c6b",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+          "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+          "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Remote synthetic accounts/movements with ACK/audit/readback; independent Admin session, Q/L separation and exact cleanup."
+      ],
+      "remainingOrMappingBoundary": [
+        "RUN1992 explicitly leaves fullTasksClosed:false. Only missing whole-flow/permitted UI/role/error clauses may remain; preserve its four commands and two replays."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C05",
+      "acceptanceBindingSha256": "6d9fbf178b99dd8f62b679a5bab4b8aead58065f30323d59f91c033f06a8874c",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+          "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+          "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Create/apply CxC, financing creation and CxP apply; proper entity refs, replay0writes, remote persistence and independent context."
+      ],
+      "remainingOrMappingBoundary": [
+        "Remaining authorized obligations/right/payability/support scopes need exact evidence; do not infer all account/payment modes from four bounded commands."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C06",
+      "acceptanceBindingSha256": "85b017ce255c0b4399127d1ca997b88f2fb94af090305ebf71ef200b62aa2e89",
+      "evidenceState": "RESIDUAL_UNPROVEN",
+      "evidenceReferences": [
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+          "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Existing B5 benefits read/display scope and underlying finance provider proofs retained; no new money transfer."
+      ],
+      "remainingOrMappingBoundary": [
+        "Eligible and blocked individual liquidation via UI; durable support, ACK/readback/reload, internal payment vs external confirmation vs reconciliation distinction and no doublepayment."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C07",
+      "acceptanceBindingSha256": "8f71a1d7b0dc2c3e6cdafa1054bf8da4c9bc83ce7077ed1eb5f9508e5e75243f",
+      "evidenceState": "RESIDUAL_UNPROVEN",
+      "evidenceReferences": [
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+          "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Prior financial command and source-backed benefits scopes retained."
+      ],
+      "remainingOrMappingBoundary": [
+        "Exact selected/elegible same-currency batch, support, registration/query/export/reconcile, no duplicate/excluded payments, Admin/Shopper agreement; no complete task receipt identified in this bounded review."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C08",
+      "acceptanceBindingSha256": "6dcaa377e528db1257c4aebbc3c7eaa021ec9413e5f41e7b1371f9a7320c3601",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_FINANCE_SEPT2026_PAULA_SETTLEMENT_DIRECTIVE_OCTNOV_CXP_20261109.json",
+          "gitBlob": "99aa96cc66736f17c4e86893a93999428e54fb9b",
+          "sha256": "22a84e0f28066c4e6bf899283bd76fa5f621aba1943f29327cc04cffdbed005b"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+          "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "July/August approved cuts preserved; existing owner September settlement directive and exact inventory retained."
+      ],
+      "remainingOrMappingBoundary": [
+        "Resolve already-enumerated private identity pairs and exact per-visit source/amount authority. Do not reprove accepted historical cuts or infer external confirmation from totals/HR."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C09",
+      "acceptanceBindingSha256": "662727a030a44a59e4da308b757bd006c110441af289b48107b681343df477cf",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+          "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+          "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C09_C10_ADVANCE_UI_READONLY_SCOPE_20261125.json",
+          "gitBlob": "ea60a2701c24d65cc44d1132821b5fd28aa54e7d",
+          "sha256": "4f98c846a2a39259cfb5b720910b83e1303bbbd98904f8b11beedf723dc0a596"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2786_RUNNER_CONTINUITY_CORRECTION_20261125.json",
+          "gitBlob": "e127f2512b93e78644156889ee537f28385e2956",
+          "sha256": "ca0e211202fb8e2da9e689508e3161ba3125453ce5314e1510e77047867a3c7d"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "B5 Benefits functional acceptance and B6 Dashboard functional acceptance preserved; RUN2786 control flow reached preview/XLSX/printDOM before PDF failure."
+      ],
+      "remainingOrMappingBoundary": [
+        "Actual PDF content/extraction failure remains unresolved; current same-cut/currency/export and finance-only cross-role residuals remain. Do not reopen accepted B5/B6 merely because B8 settlement is open."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "C10",
+      "acceptanceBindingSha256": "3fdb26cef2ad7d3f90bea38fc1ee60b194419787d1d737bd583a0fbb78903f32",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+          "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+          "sha256": "e06ad2e57a10c7ea95b904a0abff2bbac596f105297649ad8cbabb641b8a05bd"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN1992_C04_C05_BOUNDED_CONTROL_SERIALIZATION_20261030.json",
+          "gitBlob": "65ff8cf5f6bac9daec5691a79f3cc4067aae4474",
+          "sha256": "316b5fb0d5a4bf9f9a4dca85d233b507f6db0fdde88a52037020bb2305222e5d"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "gitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b",
+          "sha256": "5017706260ae1c5b80dd24df66daeda5947739932125dba3fb5501039c3306c4"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C09_C10_ADVANCE_UI_READONLY_SCOPE_20261125.json",
+          "gitBlob": "ea60a2701c24d65cc44d1132821b5fd28aa54e7d",
+          "sha256": "4f98c846a2a39259cfb5b720910b83e1303bbbd98904f8b11beedf723dc0a596"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2786_RUNNER_CONTINUITY_CORRECTION_20261125.json",
+          "gitBlob": "e127f2512b93e78644156889ee537f28385e2956",
+          "sha256": "ca0e211202fb8e2da9e689508e3161ba3125453ce5314e1510e77047867a3c7d"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2787_ENVIRONMENT_NOT_STARTED_20261125.json",
+          "gitBlob": "ff4df8a5b51ccdcfb836b2cdf2bfe12fce7ed307",
+          "sha256": "36e1ea9682fcf84f2e4aa17a65f5a68b43912f14a9f787179698bc01efefc3e7"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Historical independent-session evidence for exact C02/C04/C05 scopes retained; existing operational/QA data boundaries preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "Current two-session finance/exactadvance/export verification not passed; RUN2787 did not start. Full terminal account/movement/liquidation/batch/support flow still requires uncovered evidence."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D01",
+      "acceptanceBindingSha256": "e34bf159dafeee79a2992e7b840a6b56bf6cc30209f9d5c60667097237459de5",
+      "evidenceState": "ACCEPTED_TASK_SCOPE_PRESERVED",
+      "evidenceReferences": [
+        {
+          "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+          "gitBlob": "b38b0747bf624ceaeb54c4c0e6168b76bcd79281",
+          "sha256": "87a8c107b90a3e737e31cc1dcfb64efc86bc2800f8166c4ab0b46b33e1a9acec"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Exact authoritative Instructivo Shopper.pdf identified by hash/version; approval recovered and GT/HN scope verified."
+      ],
+      "remainingOrMappingBoundary": [],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D02",
+      "acceptanceBindingSha256": "ee1e2966fcdf9891bf5820c0925c1ba4a8222a14874a6dc52d90f2cdd5c04d24",
+      "evidenceState": "PRESERVE_PARSER_AND_DOWNSTREAM_PROOFS",
+      "evidenceReferences": [
+        {
+          "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1753_2026-10-17.json",
+          "gitBlob": "673d1cf3e606ecc1750c5b66256c329408e13689",
+          "sha256": "d3910ffd65cf409d76d725bbb0fc0e1912502350fe200d862fdea95ebeff852f"
+        },
+        {
+          "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+          "gitBlob": "b38b0747bf624ceaeb54c4c0e6168b76bcd79281",
+          "sha256": "87a8c107b90a3e737e31cc1dcfb64efc86bc2800f8166c4ab0b46b33e1a9acec"
+        },
+        {
+          "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+          "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72",
+          "sha256": "6e4c551ebc674c09b49c1e404fa9c4a05b6812f0a675dda5dfac9a7ea6596f40"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Live PDF/DOCX parser smoke passed; D01 approved document and D03 fresh generation followed."
+      ],
+      "remainingOrMappingBoundary": [
+        "Do not treat historical PENDING_D01 as current pending. Mapping actual approved-PDF extraction and input-rejection clauses to original evidence remains a documentary crosswalk if required, not authority for rerunning generation."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D03",
+      "acceptanceBindingSha256": "0b24bc261c54d41270e885fb074af782d09962d4d8e5e699d535f6d81ecdc7cd",
+      "evidenceState": "ACCEPTED_PROVIDER_SCOPE_PRESERVED",
+      "evidenceReferences": [
+        {
+          "path": "CXORBIA_I3_D03_LIVE_FRESH_15Q_RUN1778_2026-10-17.json",
+          "gitBlob": "450209cdc91f5264a1d9df304d886bf6fc615d72",
+          "sha256": "6e4c551ebc674c09b49c1e404fa9c4a05b6812f0a675dda5dfac9a7ea6596f40"
+        },
+        {
+          "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+          "gitBlob": "b38b0747bf624ceaeb54c4c0e6168b76bcd79281",
+          "sha256": "87a8c107b90a3e737e31cc1dcfb64efc86bc2800f8166c4ab0b46b33e1a9acec"
+        },
+        {
+          "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+          "gitBlob": "288147c50f75b31433fca54e51606fa7914e17cb",
+          "sha256": "0fd58f4814bdddb2a1646803dba1307bbc1c212e0349c26469e80ff25a967f90"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Real Vertex15distinct questions with15references; durable readback,2firstwrites,zero-write replay and cleanup; taskProgress preserves live E2E pass."
+      ],
+      "remainingOrMappingBoundary": [
+        "No new generation/replacement-bank request; pending_review/source validation must be tied to original immutable D03 contract/result when machine-normalizing complete task."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D04",
+      "acceptanceBindingSha256": "b2ff0a65f36d48a29b265ed55360511199bdca5520aebeac57d5844113961572",
+      "evidenceState": "ACCEPTED_B4_AND_EDITOR_SCOPE_PRESERVED",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_C02_D04_SCOPED_PASS_RUN1962_20261029.json",
+          "gitBlob": "80cbc5a2a1c09402227ee3b0ac179d2cc707727c",
+          "sha256": "e06ad2e57a10c7ea95b904a0abff2bbac596f105297649ad8cbabb641b8a05bd"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+          "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c",
+          "sha256": "f49fcca43f9f11dbb84053cf26338b61b85b174992483441318c7add0f8ec611"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+          "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+          "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Real15Q editor changed content,version2,history,source,visibleACK,reload and independentcontext; later B4 acceptance preserves editor and bank mechanics."
+      ],
+      "remainingOrMappingBoundary": [
+        "Do not reopen editor or ask for routine human reapproval. Any residual server-role/reviewer boundary must remain scoped to A08/D05/release security, not erase existing edit PASS."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D05",
+      "acceptanceBindingSha256": "994c56407de886c3f60f30a483487ab0a9b91beeec04f9efed3e02467498666e",
+      "evidenceState": "ACCEPTED_B4_LIFECYCLE_SCOPE_PRESERVED",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D05_DEV_QA_POSITIVE_PUBLISH_CONFIGURE_RETIRE_PASS_20261101.json",
+          "gitBlob": "7600b971a7f98deb980ec3455c76a95e1f5901db",
+          "sha256": "04e425888d67672c7b24a645077f8456c7d522c45e86edb0237cf92cf68e62ed"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D05_NEGATIVE_SAFETY_CURRENT_SOURCE_PASS_RUN421569_20261105.json",
+          "gitBlob": "ac385bd0abdd961b7c8b1fbe86dcd78fd233d1ca",
+          "sha256": "b2438422413f1d02eb2ef096e5081fb9fa1732ef4a59446bc3324eb29664edf2"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D05_FLEX_OPTIONS_QA_RUN42277757800_20261106.json",
+          "gitBlob": "9b83f3639956e40d436814f12209506a9fd59b1c",
+          "sha256": "f49fcca43f9f11dbb84053cf26338b61b85b174992483441318c7add0f8ec611"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+          "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+          "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Prior publish/configure/retire ACK/readback,negative409,Adminreview and Shopper bank gating carried into accepted B4 functional block."
+      ],
+      "remainingOrMappingBoundary": [
+        "No blanket new cross-tenant/current authenticated negative proof invented. Preserve remaining release-security obligations independently; no real-bank publication or global recertification required to repeat accepted QA mechanics."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D06",
+      "acceptanceBindingSha256": "20cc616a2c1964a19cb05ed7fa7ab336fa4ea7c7f5cec179302846ed7a35759b",
+      "evidenceState": "ACCEPTED_B4_D06_PRESERVED",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+          "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37",
+          "sha256": "ac6d0d9a5a9782471ba9fb157b220d6b3e2500b7853f3ef75053435ab85d852e"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+          "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+          "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+        },
+        {
+          "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+          "gitBlob": "288147c50f75b31433fca54e51606fa7914e17cb",
+          "sha256": "0fd58f4814bdddb2a1646803dba1307bbc1c212e0349c26469e80ff25a967f90"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Current taskProgress explicitly ACCEPTED_B4_D06_PRESERVED_NO_REPEATED_BANK_ATTEMPTS; residuals=[] at this scoped task; historical records preserved."
+      ],
+      "remainingOrMappingBoundary": [
+        "D08 and release-security obligations remain separate. Do not repeat bank attempts or request new15QShopper exam on behalf of already accepted B4 scope; no bulk recertification authorized."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D07",
+      "acceptanceBindingSha256": "1c85fc5f11349049a85d4ef3854552ef1365a7269e72dec3e5ceeace3b53bb2a",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+          "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9",
+          "sha256": "6a5431d0d3a81c9f05e03d8a2587f0cd490d27b6f8e484181902a93c1a5f7f29"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2606_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E_20261118.json",
+          "gitBlob": "6e235a78ec05d6baa5ee7902749864e59c506298",
+          "sha256": "ac69a0b479aa83dd495ca4d3a42a419fad7678dbf937be09b0839aa8fd465fee"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Original authenticated7pagePDF open/download and latest scopedHTTP200 read preserved; TXT lifecycle not extrapolated to PDF."
+      ],
+      "remainingOrMappingBoundary": [
+        "Isolated PDF create,metadata,version,retirement,foreigndocument denial,durable readACK,visit/revision binding remain exact residuals."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    },
+    {
+      "taskId": "D08",
+      "acceptanceBindingSha256": "2fd8ea319063b984560970caa08953c0428e939ec42841621f11e5ef96fe27e9",
+      "evidenceState": "PARTIAL_PROVEN",
+      "evidenceReferences": [
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+          "gitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+          "sha256": "9d2c8a96186eadc4d2ed9981d442f66c3a5835bbb6052a24aa02162ce9e56e6f"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_D08_SCOPED_OBLIGATION_AUTHORITY_20261124.json",
+          "gitBlob": "c0acf2f60ee14597f2c6da397ff4c8a59e79d8c0",
+          "sha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2786_RUNNER_CONTINUITY_CORRECTION_20261125.json",
+          "gitBlob": "e127f2512b93e78644156889ee537f28385e2956",
+          "sha256": "ca0e211202fb8e2da9e689508e3161ba3125453ce5314e1510e77047867a3c7d"
+        },
+        {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2787_ENVIRONMENT_NOT_STARTED_20261125.json",
+          "gitBlob": "ff4df8a5b51ccdcfb836b2cdf2bfe12fce7ed307",
+          "sha256": "36e1ea9682fcf84f2e4aa17a65f5a68b43912f14a9f787179698bc01efefc3e7"
+        },
+        {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V402.json",
+          "gitBlob": "1e7fe2d080f29d8934de61aa6141bba60f107cee",
+          "sha256": "c9b1fcac4c2ee6d01e86abf3803e2552dd4c70054abfbaa26719695938753332"
+        }
+      ],
+      "preservedEvidenceScope": [
+        "Historical provider progress ACK/newsession/replay/isolation/negative/cleanup accepted; RUN2786 Admin course/evaluation progression partial and cleanup retained; runner rerender fixed source."
+      ],
+      "remainingOrMappingBoundary": [
+        "25 scoped D08 obligations require complete Admin/Shopper/Cliente UI/session/evaluation/resource/progress/edit/negative readback. RUN2787 not started gives no new credit; current UI retry after environment unlock."
+      ],
+      "acceptanceKind": "HISTORICAL_SCOPE_REFERENCE_ONLY",
+      "newFunctionalPass": false
+    }
+  ],
+  "scopedClauseBindings": [
+    {
+      "taskId": "D08",
+      "acceptanceBindingSha256": "2fd8ea319063b984560970caa08953c0428e939ec42841621f11e5ef96fe27e9",
+      "moduleDomain": "certifications",
+      "scopeContract": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_SCOPED_OBLIGATION_AUTHORITY_20261124.json",
+        "gitBlob": "c0acf2f60ee14597f2c6da397ff4c8a59e79d8c0",
+        "sha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0"
+      },
+      "knownClauseIds": [
+        "D08.admin.course",
+        "D08.admin.lesson",
+        "D08.admin.evaluation",
+        "D08.admin.resource",
+        "D08.admin.progress",
+        "D08.admin.new_session_replay",
+        "D08.shopper.course",
+        "D08.shopper.lesson",
+        "D08.shopper.evaluation",
+        "D08.shopper.resource",
+        "D08.shopper.progress",
+        "D08.shopper.new_session_replay",
+        "D08.cliente.course",
+        "D08.cliente.lesson",
+        "D08.cliente.evaluation",
+        "D08.cliente.resource",
+        "D08.cliente.progress",
+        "D08.cliente.new_session_replay",
+        "D08.admin.edit",
+        "D08.shopper.edit_denied",
+        "D08.cliente.edit_denied",
+        "D08.stale_version_denied",
+        "D08.other_learner_isolated",
+        "D08.wrong_audience_denied",
+        "D08.cleanup"
+      ],
+      "contractOwnerPaths": [
+        "app/modules/academia.js"
+      ],
+      "otherTraceabilityOwnerPaths": [
+        "app/core/automations.js",
+        "app/modules/cert.js",
+        "app/modules/cliente-extra.js"
+      ],
+      "completeTaskInventory": false,
+      "fullDomain": false,
+      "newFunctionalPass": false,
+      "meaning": "Frozen scoped clauses preserved; not a full-task mapping or an instruction to test every traceability owner."
+    }
+  ],
+  "unmappedTaskIds": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B09",
+    "B10",
+    "B11",
+    "B12",
+    "B13",
+    "B14",
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06",
+    "D07",
+    "D08",
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11"
+  ],
+  "rule": "Unmapped means technical linkage required; never repeat an accepted task solely to manufacture a newer receipt.",
+  "phaseAComplete": false,
+  "production": false,
+  "inputAuthority": {
+    "head": "f56d895fa8ae9be1181c77abfba34a8f217d0c31",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
+    "matrixGitBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0",
+    "matrixSha256": "9d91f7660cd23c14e204441c43fb0e1d4d2a6ac8da1eb381d02715d87b7f0b2c",
+    "cumulativeMap": {
+      "path": "docs/checkpoints/CXORBIA_I3_C_D_CUMULATIVE_EVIDENCE_MAP_20261125.json",
+      "gitBlob": "adb5aff6dd351791be05e28d76ffd2bb4f867bb5",
+      "sha256": "49edf4d348c47f3f44e7493e74996a52e1f3fb72d7e699fbf187c5422722dd55",
+      "taskCount": 18,
+      "scope": "DOCUMENTARY_CROSSWALK_NOT_FUNCTIONAL_RECEIPT",
+      "newFunctionalPasses": 0,
+      "production": false
+    }
+  },
+  "preservedAcceptedRuntimeScopes": [
+    {
+      "schemaVersion": "cxorbia.i3.immutable-accepted-scope-codec.v1",
+      "kind": "RUN2537_E05_ACCEPTED_HISTORY",
+      "state": "ACCEPTED_SCOPES_PRESERVED_CURRENT_CARRY_REQUIRED",
+      "taskId": "E05",
+      "acceptanceBindingSha256": "35fc1d3436b818d2479d30592eeb2356f7d6a0e719f60e5aefca49e0870928d0",
+      "originalAcceptance": "Alta/edición aprobada no depende de source por proyecto ni se vuelve local para habilitar controles; modos read-only sólo donde el contrato lo permite. Preservar legal/consentimiento no bloqueante según addendum 2026-09-18: no autoaceptar, no convertir ausencia de recibo legal en bloqueo de acceso o I4.",
+      "originalIdentity": {
+        "sourceSha": "90c45452a6bba0d2498c3cf792aa21c49219f0ac",
+        "sourceTree": "e2d2fa981282ef9736aba9fa06aa9735bf486c43",
+        "runtimeRevision": "cxorbia-live-hr-dev-00370-fl2",
+        "runtimeDigest": "sha256:396cd23f895a98606fa9ca238132a5515065c07fec632cd73c00cc2e6d6c639e",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/d3634e619b4ea61e",
+        "runId": "43772983839",
+        "runAttempt": "1"
+      },
+      "originalOperationKind": "MUTATION",
+      "originalDecision": "PASS_I3_TENANT_ADMIN_CONFIG_BRANDING_COMPLETE_CONTRACT",
+      "originalContract": {
+        "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+        "gitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c",
+        "moduleDomain": "tenant-admin-config-branding",
+        "contractSha256": "df7951c9ad6baabcf948d19ab94269da82c68043bf5d98e491c36577828ad878"
+      },
+      "inputEvidence": {
+        "mixed": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json",
+          "gitBlob": "8acdf92761f3e4a81a681b79a9875530a9624e99",
+          "sha256": "9681cf23096887a29b3ed05dc3079b153109d27d45efd8cc1dd389493f96addf"
+        },
+        "country": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+          "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+          "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17"
+        },
+        "contract": {
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261115-V320.json",
+          "gitBlob": "0162e85a19dc7a2c393d8efb98b81f3d5432323c",
+          "sha256": "b7d2dcee6bb395b8210a974ad6008b5186dd6dd9496e08c83b01b6c91c9ce72f"
+        }
+      },
+      "preservedFindingIds": [
+        "VRM-194",
+        "VRM-330"
+      ],
+      "scopedObligations": [
+        {
+          "id": "approved-config-admin-brand-views-before-and-after-reload",
+          "operationKind": "READ_ONLY",
+          "operationMeaning": "READING_EIGHT_APPROVED_SURFACES_ONLY_NOT_THE_ENTIRE_RUN",
+          "role": "super",
+          "originalScope": "APPROVED_CONNECTED_READONLY_VIEWS_AND_SYNTHETIC_PROJECT_COUNTRY_PROVIDER_UI",
+          "recordedContext": {
+            "periodId": "NOT_RECORDED_IN_VIEW_RECEIPT",
+            "tenantProjectObservation": {
+              "method": "POST",
+              "path": "/v1/cxorbia/commands",
+              "commandType": "hr.snapshot.reconcile",
+              "tenantId": "tya",
+              "projectId": "cinepolis",
+              "commandDigest": "2941488fbf5ecf49c5f072adfac8f5478934ad51b496b005b6f06bac02c68537",
+              "classification": "AUTHORIZED_HR_RECONCILIATION_NOT_CONFIGURATION_WRITE"
+            }
+          },
+          "owners": [
+            "app/modules/configuracion.js",
+            "app/modules/administrabilidad.js",
+            "app/modules/marca.js"
+          ],
+          "auth": {
+            "authenticated": true,
+            "role": "super",
+            "principalFingerprint": "94816a0e1151d44ce7",
+            "tenantExact": true,
+            "projectAuthorized": true,
+            "samePrincipalAfterReload": true
+          },
+          "readOnlyProof": {
+            "canonicalTenantAuthority": true,
+            "protectedRuntime": true,
+            "localStorageTruth": false,
+            "commandWritesEnabled": true,
+            "checksBeforeReload": [
+              {
+                "id": "config:centro",
+                "ok": true,
+                "marker": "#cfgBody",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:marca",
+                "ok": true,
+                "marker": "[data-config-locked=\"tenant-brand\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:plan",
+                "ok": true,
+                "marker": "[data-config-locked=\"plan\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:paises",
+                "ok": true,
+                "marker": "[data-project-config-authority=\"provider\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": "PROVIDER_WRITE_ENABLED"
+              },
+              {
+                "id": "config:listas",
+                "ok": true,
+                "marker": "[data-config-locked=\"listas\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:nda",
+                "ok": true,
+                "marker": "[data-config-locked=\"nda\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "administrabilidad",
+                "ok": true,
+                "marker": "[data-connected-admin-readonly=\"true\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "marca",
+                "ok": true,
+                "marker": "[data-connected-brand-readonly=\"true\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              }
+            ],
+            "checksAfterReload": [
+              {
+                "id": "config:centro",
+                "ok": true,
+                "marker": "#cfgBody",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:marca",
+                "ok": true,
+                "marker": "[data-config-locked=\"tenant-brand\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:plan",
+                "ok": true,
+                "marker": "[data-config-locked=\"plan\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:paises",
+                "ok": true,
+                "marker": "[data-project-config-authority=\"provider\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": "PROVIDER_WRITE_ENABLED"
+              },
+              {
+                "id": "config:listas",
+                "ok": true,
+                "marker": "[data-config-locked=\"listas\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "config:nda",
+                "ok": true,
+                "marker": "[data-config-locked=\"nda\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "administrabilidad",
+                "ok": true,
+                "marker": "[data-connected-admin-readonly=\"true\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              },
+              {
+                "id": "marca",
+                "ok": true,
+                "marker": "[data-connected-brand-readonly=\"true\"]",
+                "forbiddenControls": [],
+                "tenantVisible": true,
+                "countryBranch": null
+              }
+            ],
+            "configurationProjectionUnchanged": true,
+            "relevantLocalStorageKeysUnchanged": true,
+            "configurationMutationRequestsObserved": 0,
+            "mutations": [
+              {
+                "method": "POST",
+                "path": "/v1/cxorbia/commands",
+                "commandType": "hr.snapshot.reconcile",
+                "tenantId": "tya",
+                "projectId": "cinepolis",
+                "commandDigest": "2941488fbf5ecf49c5f072adfac8f5478934ad51b496b005b6f06bac02c68537",
+                "classification": "AUTHORIZED_HR_RECONCILIATION_NOT_CONFIGURATION_WRITE"
+              }
+            ],
+            "projectionSha256": "dbd997d7718e65a0bc022c83829324ea15d8c49eb7d05c16b1de00a3e99450fb",
+            "countryMutationTested": false
+          },
+          "projectCountryProviderBranchPresent": true,
+          "evidence": {
+            "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/tenant-admin-config-branding-domain.json",
+            "gitBlob": "8acdf92761f3e4a81a681b79a9875530a9624e99",
+            "sha256": "9681cf23096887a29b3ed05dc3079b153109d27d45efd8cc1dd389493f96addf",
+            "jsonPointer": "/0/readOnlyProof"
+          },
+          "observed": true
+        },
+        {
+          "id": "actual-add-remove-country-ui-currency-ack-readback",
+          "operationKind": "PROVIDER_WRITE",
+          "role": "super",
+          "scope": {
+            "tenantId": "tya",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1"
+          },
+          "scopeEvidence": {
+            "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+            "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+            "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+            "jsonPointer": "/cleanup/before/0/data"
+          },
+          "owners": [
+            "app/modules/configuracion.js"
+          ],
+          "steps": [
+            {
+              "label": "add-country",
+              "uiAction": true,
+              "providerAck": true,
+              "durableReadback": true,
+              "pageReload": true,
+              "idempotentReplay": true,
+              "providerWritesOnReplay": 0,
+              "countries": [
+                "GT",
+                "HN"
+              ],
+              "version": 2,
+              "commandDigest": "c9f68ddc8763778a1dbefff5a20e6395f82d82a76f0e3fb5698a216644faa087",
+              "remoteReceiptId": "tenants/tya/commandReceipts/b197ccf0adf7fd4fbca854a92c76b57982e0d185",
+              "idempotencyKey": "project.update:1rrtmcc",
+              "evidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/steps/0"
+              },
+              "remoteAckEvidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/cleanup/before/3"
+              },
+              "auditEvidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/cleanup/before/4"
+              }
+            },
+            {
+              "label": "remove-country",
+              "uiAction": true,
+              "providerAck": true,
+              "durableReadback": true,
+              "pageReload": true,
+              "idempotentReplay": true,
+              "providerWritesOnReplay": 0,
+              "countries": [
+                "GT"
+              ],
+              "version": 3,
+              "commandDigest": "0dd45f0dbe9f33f678003d8f736708cdf2b184d191be56191773fddbe50e8aaa",
+              "remoteReceiptId": "tenants/tya/commandReceipts/bc7ebfd76d8e931eb1534818d3a974fe5de0928c",
+              "idempotencyKey": "project.update:1q3qiky",
+              "evidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/steps/1"
+              },
+              "remoteAckEvidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/cleanup/before/1"
+              },
+              "auditEvidence": {
+                "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+                "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+                "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+                "jsonPointer": "/cleanup/before/2"
+              }
+            }
+          ],
+          "evidence": {
+            "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+            "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+            "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+            "jsonPointer": "/steps"
+          },
+          "observed": true
+        },
+        {
+          "id": "same-principal-reload-idempotence-cleanup",
+          "operationKind": "PROVIDER_WRITE",
+          "role": "super",
+          "scope": {
+            "tenantId": "tya",
+            "projectId": "prj-369e6d061c9dc27ed725",
+            "periodId": "setup-i3-country-43772983839-1"
+          },
+          "owners": [
+            "app/modules/configuracion.js"
+          ],
+          "samePrincipal": true,
+          "reloadProof": true,
+          "noDuplicateRegression": true,
+          "providerWritesOnReplay": [
+            0,
+            0
+          ],
+          "cleanup": {
+            "decision": "PASS_OWNED_FIXTURE_CLEANUP",
+            "deleted": 7,
+            "remaining": 0
+          },
+          "commercialProjectUnchanged": true,
+          "evidence": {
+            "path": "docs/checkpoints/CXORBIA_I3_RUN2537_VERIFIED_EVIDENCE_20261115/full-human-acceptance/tenant-readonly/project-country-live-proof.json",
+            "gitBlob": "d4ea8fc64fc435bb95159757fbbd47b4b1aa2873",
+            "sha256": "8c90d50bf724a8456a5e89c42f27b839c6db4931cc326906bf3eb84686f45d17",
+            "jsonPointer": "/cleanup"
+          },
+          "observed": true
+        }
+      ],
+      "ownerAndDependencyBytes": [
+        {
+          "path": "app/modules/configuracion.js",
+          "kind": "OWNER",
+          "acceptedGitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+          "acceptedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "acceptedServedSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+          "currentSha256": "6241a0f272cab3dc12476720d56d0fa6da6da4190cc352532022fd26f79df86d",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/modules/administrabilidad.js",
+          "kind": "OWNER",
+          "acceptedGitBlob": "080922b933a92a89911847e127ed06c7d4d507fd",
+          "acceptedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "acceptedServedSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "080922b933a92a89911847e127ed06c7d4d507fd",
+          "currentSha256": "0e2e591c8d73f2faf7924eb8e38813fed77b92676ac01220b4dbc5c74ded9f5a",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/modules/marca.js",
+          "kind": "OWNER",
+          "acceptedGitBlob": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+          "acceptedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "acceptedServedSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+          "currentSha256": "bfeb16f3244149f870dc1b796978863b4da5bcbda9a8981af0497b214ec50836",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/core/config.js",
+          "kind": "DEPENDENCY",
+          "acceptedGitBlob": "5446270196c99f01715f60d1ad65892d12a070db",
+          "acceptedSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "acceptedServedSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "5446270196c99f01715f60d1ad65892d12a070db",
+          "currentSha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/core/backend-protected-dev-mode.js",
+          "kind": "DEPENDENCY",
+          "acceptedGitBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+          "acceptedSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "acceptedServedSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "3924d7d02ea21f589e6be6d451dff740c884300a",
+          "currentSha256": "7067f539192a26c69f66a796a881b2024f0291a8ac9d132475a693c73152a3fe",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "kind": "DEPENDENCY",
+          "acceptedGitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "acceptedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "acceptedServedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "currentSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/config/runtime.js",
+          "kind": "DEPENDENCY",
+          "acceptedGitBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+          "acceptedSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "acceptedServedSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+          "currentSha256": "9f5f94475ca6ea194bd2b72519bfe5ade29a567397234493c0ed2bd1c915cc98",
+          "byteUnchanged": true
+        },
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "kind": "DEPENDENCY",
+          "acceptedGitBlob": "24e71f22fa5d678e79cde0d131d1ff0b4ce0be8b",
+          "acceptedSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "acceptedServedSha256": "cb49d8ea742b96ca867d5eeb8de96e28a66a603134df40ea7ffa1dbad05751cf",
+          "currentSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+          "currentGitBlob": "c97ffc18a2040a377e3ab5906071904d7bc5a166",
+          "currentSha256": "4fc4f5d269765a659edaa19a8c23c6c196abc89358d8edf283873e0a6136ba3d",
+          "byteUnchanged": false
+        }
+      ],
+      "changedDependencyPaths": [
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "changedOwnerPaths": [],
+      "currentReadbackRequiredForChangedScopes": true,
+      "carryForward": null,
+      "terminalOwnerReceipts": [],
+      "completeTaskInventory": false,
+      "fullTaskPass": false,
+      "newFunctionalPasses": 0,
+      "production": false,
+      "semantics": "Mechanical decoding of already accepted bytes. No new run, no missing value inferred, no READ_ONLY relabeling of the provider-write run, no unchanged-dependency assertion. Current carry must be bound separately to the same candidate."
+    }
+  ]
+}

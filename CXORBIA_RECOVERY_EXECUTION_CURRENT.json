@@ -388,8 +388,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
-          "gitBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V405.json",
+          "gitBlob": "3d73fb14a712897bcad4fefbd7640863712e2291",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -859,7 +859,7 @@
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-25T10:37:30.807977+00:00",
+  "asOf": "2026-11-25T11:23:47.792761+00:00",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -1567,7 +1567,7 @@
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
     "D03": "LIVE_E2E_PASS_RUN1778_FRESH_GENERATION_15Q_REPLAY_CLEANUP",
     "D04": "RUN1788_CONTENT_AND_RUN1797_NAME_PASS_PRESERVED__RUN1958_FALSE_UI_FAILURE_REPAIRED__RUN1962_VISIBLE_ACK_VERSION2_HISTORY_RELOAD_AND_INDEPENDENT_CONTEXT_PASS__D05_A08_D06_AND_HUMAN_PENDING",
-    "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING",
+    "E04": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_THREE_CLIENT_UI_ACTIONS_ADMIN_RECEPTION_ROLE_NEGATIVE_PASS_RUN2543_PRESERVED__CURRENT_SCOPE_CARRY_AND_AUTOMATED_UI_ACCEPTANCE_PENDING",
     "A09": "RUN1869_DEV_REVIEW_FLAGS_TWO_VISITS_PASS__THREE_VISIT_UI_ADMIN_SHOPPER_FOCAL_PASS__FULL_E2E_PENDING",
     "B11": "SOURCE_TESTS_8_OF_8_AND_4_OF_4_PASS__DEV_RUNTIME_00327_HEALTH_PASS_RUN1863__VRM287_DURABLE_2_VISITS_PASS_RUN1869__I3_E2E_PENDING",
     "B10": "SOURCE_PROVEN_RUN1799_6_OF_6__DEV_E2E_HUMAN_PENDING__TYaONLINE_LINK_PENDING",
@@ -2515,8 +2515,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
-    "gitBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V405.json",
+    "gitBlob": "3d73fb14a712897bcad4fefbd7640863712e2291"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4516,8 +4516,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
-    "matrixBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V405.json",
+    "matrixBlob": "3d73fb14a712897bcad4fefbd7640863712e2291",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -4526,7 +4526,7 @@
       "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN": 4,
       "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN": 1
     },
-    "derivedAt": "2026-11-25T10:37:30.807977+00:00",
+    "derivedAt": "2026-11-25T11:23:47.792761+00:00",
     "meaning": "CURRENT_PAIRED_DEV_EXACT_FUNCTIONAL_CLAUSES_PENDING"
   },
   "progressByStageSemantics": "HISTORICAL_SNAPSHOTS_NOT_RELEASE_AUTHORITY",
@@ -6415,12 +6415,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
-      "gitBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V405.json",
+      "gitBlob": "3d73fb14a712897bcad4fefbd7640863712e2291"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V731_2026-11-25.json",
-      "gitBlob": "15820f748f79646b950a5e52d87faaa316364d00"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V732_2026-11-25.json",
+      "gitBlob": "879511517208127615b27bbc9aaf34e3343e954c"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7236,9 +7236,9 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V731_2026-11-25.json",
-  "findingsLedgerExpectedGitBlob": "15820f748f79646b950a5e52d87faaa316364d00",
-  "nextFindingId": "VRM-377",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V732_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "879511517208127615b27bbc9aaf34e3343e954c",
+  "nextFindingId": "VRM-378",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
     "receiptPath": "docs/checkpoints/CXORBIA_I3_G03_CRM_PROVIDER_COMPOSITION_SOURCE_REPAIR_20261101.json",
@@ -8257,7 +8257,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V404.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V405.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -9444,7 +9444,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-25T10:37:30.807977+00:00",
+  "updatedAt": "2026-11-25T11:23:47.792761+00:00",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -10832,7 +10832,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "d908122556f6fe73c3e0dd0b0ed1a5136b94b3b0",
+  "moduleTruthExpectedGitBlob": "3d73fb14a712897bcad4fefbd7640863712e2291",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -27638,5 +27638,5 @@
     "production": false
   },
   "currentOperationalContinuityPath": "docs/checkpoints/CXORBIA_I3_CONTINUIDAD_OPERATIVA_20261125.md",
-  "currentTerminalAcceptanceLocalVerificationPath": "docs/checkpoints/CXORBIA_I3_PROCESS_ACCEPTANCE_LOCAL_VERIFICATION_20261125.json"
+  "currentTerminalAcceptanceLocalVerificationPath": "docs/checkpoints/CXORBIA_I3_PARALLEL_CLOSURE_DELTA_20261125.json"
 }

@@ -13,7 +13,7 @@ import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import {decryptCredentialBundle,internalEmail} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 import '../../app/core/shopper-credential-rule.js';
-import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS,a08ProvenanceCase,diagnoseCurrentProviderPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
+import {assessExactPasswordProof,assessCurrentProviderPasswordProof,sameKeeperSealedHashes,A08_PASSWORD_EXCEPTION_IDS,A08_PROVENANCE_TARGETS,a08ProvenanceCase,diagnoseCurrentProviderPasswordProof,publicA08ProvenanceDiagnostic} from './cxorbia-i3-a08-exact-password-proof.mjs';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
 const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
@@ -22,6 +22,8 @@ const OUT=String(process.env.R20_SAFE_OUT||((process.env.PHASEA_LIVE_OUT||'.tmp'
 const targetShopperId=String(process.env.R20_AUTHORIZED_TEST_SHOPPER_ID||'').trim();
 const currentProviderMode=process.env.R20_CREDENTIAL_AUTHORITY==='CURRENT_PROVIDER_VERIFIED_RULE_V1';
 const provenanceOnly=process.argv.includes('--provenance-only');
+const currentProviderAdc=process.argv.includes('--gt-current-provider-adc');
+if(currentProviderAdc&&(!currentProviderMode||targetShopperId!==A08_PROVENANCE_TARGETS.GT_EXCEPTION||String(process.env.R20_AUTHORIZED_TEST_LOGIN||'').trim()))throw Error('SOURCE_FAILURE:A08_GT_CURRENT_PROVIDER_ADC_SCOPE');
 if(provenanceOnly&&(!currentProviderMode||!a08ProvenanceCase(targetShopperId)))throw Error('SOURCE_FAILURE:A08_PROVENANCE_TARGET_NOT_AUTHORIZED');
 if(currentProviderMode&&!A08_PASSWORD_EXCEPTION_IDS.includes(targetShopperId))throw Error('SOURCE_FAILURE:A08_CURRENT_PROVIDER_TARGET_NOT_AUTHORIZED');
 const word=v=>String(v??'').trim();
@@ -44,16 +46,46 @@ if(!rootOk||!/^[0-9a-f]{40}$/.test(SOURCE)){
  emit('HOLD_R20_UNPINNED_SOURCE_OR_NONDEV_ORIGIN','SOURCE_FAILURE');process.exit(0);
 }
 const saFile=word(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-if(!saFile||!fs.existsSync(saFile)){
+if(!currentProviderAdc&&(!saFile||!fs.existsSync(saFile))){
  emit('HOLD_R20_NO_DEV_SERVICE_ACCOUNT','ENVIRONMENT_FAILURE');process.exit(0);
 }
-let sa,bundle;
-try{
- sa=JSON.parse(fs.readFileSync(saFile,'utf8'));
- if(sa.project_id!==PROJECT||!sa.private_key)throw Error('SCOPED_ACCOUNT_REQUIRED');
- bundle=decryptCredentialBundle({serviceAccount:sa});
-}catch{
- emit('HOLD_R20_SEALED_CREDENTIAL_PROVENANCE_UNAVAILABLE','ENVIRONMENT_FAILURE');process.exit(0);
+let sa,bundle={records:[]};
+if(currentProviderAdc){
+ receipt.providerCredentialMode='ADC_CURRENT_PROVIDER_GT_ONLY';receipt.sealCheck='NOT_READ';
+ // ADC/signBlob cannot decrypt the RSA legacy bundle. A private key, if already
+ // supplied, is checked and its seals retain their veto; decryption failure is
+ // never converted to an absent seal or a current-provider fallback.
+ let knownSealConflict=false;
+ try{
+  if(saFile&&fs.existsSync(saFile)){
+   sa=JSON.parse(fs.readFileSync(saFile,'utf8'));
+   if(Object.hasOwn(sa,'private_key')){
+    if(sa.project_id!==PROJECT||!sa.private_key)throw Error('SCOPED_ACCOUNT_REQUIRED');
+    bundle=decryptCredentialBundle({serviceAccount:sa});receipt.sealCheck='READ';
+   }
+  }
+ }catch{emit('HOLD_R20_SEALED_CREDENTIAL_PROVENANCE_UNAVAILABLE','ENVIRONMENT_FAILURE');process.exit(0);}
+ // This historical diagnostic is veto-only. Its positive booleans never stand
+ // in for a seal, current identity authority, or the real browser password test.
+ try{
+  const known=JSON.parse(fs.readFileSync(new URL('../../docs/checkpoints/CXORBIA_I3_RUN45518873588_ATTEMPT1_JOB138885588333_TYPED_RESULT.json',import.meta.url),'utf8'));
+  const rows=known.observations?.provenanceDiagnostics?.filter(x=>x.caseId==='GT_EXCEPTION')||[];
+  if(rows.length!==1)throw Error('KNOWN_SEAL_DIAGNOSTIC_MISSING');
+  const prior=rows[0].historicalSameUidProof||{};
+  receipt.knownHistoricalSealCheck='VETO_ONLY_NO_CURRENT_CREDIT';
+  knownSealConflict=prior.currentRuleRecipeMatches===false||prior.supportedSealCount>1||(prior.recordCount>0&&prior.uniqueSupportedSeal!==true);
+ }catch{
+  emit('HOLD_R20_KNOWN_SEAL_VETO_UNAVAILABLE','SOURCE_FAILURE');process.exit(0);
+ }
+ if(knownSealConflict){emit('HOLD_R20_KNOWN_SAME_UID_SEAL_CONFLICT','AUTH_FAILURE');process.exit(0);}
+}else{
+ try{
+  sa=JSON.parse(fs.readFileSync(saFile,'utf8'));
+  if(sa.project_id!==PROJECT||!sa.private_key)throw Error('SCOPED_ACCOUNT_REQUIRED');
+  bundle=decryptCredentialBundle({serviceAccount:sa});
+ }catch{
+  emit('HOLD_R20_SEALED_CREDENTIAL_PROVENANCE_UNAVAILABLE','ENVIRONMENT_FAILURE');process.exit(0);
+ }
 }
 const rule=globalThis.CX_SHOPPER_CREDENTIAL_RULE?.shopperCredentialRule;
 if(typeof rule!=='function'){
@@ -95,13 +127,16 @@ for(const m of sorted){
  const id=word(m.shopperId),profile=profiles.get(id);
  if(!profile||!id||(targetShopperId&&id!==targetShopperId))continue;
  stats.exactProfiles++;
+ if(currentProviderAdc&&profile.identityAuthority!=='tenant_adjudication'){
+  stats.credentialReasonCounts.CURRENT_PROVIDER_ADJUDICATION_AUTHORITY_REQUIRED=(stats.credentialReasonCounts.CURRENT_PROVIDER_ADJUDICATION_AUTHORITY_REQUIRED||0)+1;continue;
+ }
  const expected=rule(profile);
  const visible=word(m.visibleLogin||m.username||profile.visibleLogin||profile.username).toLowerCase();
  if(targetLogin&&visible!==targetLogin)continue;
  let principal=null,proof;
  if(currentProviderMode){
   let cross=null,adjudication=null,link=null;
-  const readState={complete:false,stage:'AUTH',crossExists:null,receiptExists:null,linkExists:null,linkDocumentId:null};
+  const readState={complete:false,stage:'AUTH',crossExists:null,receiptExists:null,receiptDocumentId:null,receiptDocumentPath:null,linkExists:null,linkDocumentId:null,linkDocumentPath:null,...(currentProviderAdc?{sealCheck:receipt.sealCheck}:{})};
   try{
    const tenant=getFirestore().collection('tenants').doc(TENANT);
    principal=await getAuth().getUser(m.uid);
@@ -111,13 +146,22 @@ for(const m of sorted){
    if(profile.identityAuthority==='tenant_adjudication'&&/^[a-f0-9]{40}$/.test(word(profile.identityAuthorityRef))){
     readState.stage='RECEIPT';
     const doc=await tenant.collection('commandReceipts').doc(profile.identityAuthorityRef).get();adjudication=doc.exists?doc.data():null;
-    readState.receiptExists=doc.exists;
-    if(/^irl_[a-f0-9]{32}$/.test(word(adjudication?.identityLinkId))){readState.stage='LINK';const ls=await tenant.collection('shopperIdentityLinks').doc(adjudication.identityLinkId).get();link=ls.exists?ls.data():null;readState.linkExists=ls.exists;readState.linkDocumentId=ls.id;}
+    readState.receiptExists=doc.exists;readState.receiptDocumentId=doc.id;readState.receiptDocumentPath=doc.ref?.path;
+    if(/^irl_[a-f0-9]{32}$/.test(word(adjudication?.identityLinkId))){readState.stage='LINK';const ls=await tenant.collection('shopperIdentityLinks').doc(adjudication.identityLinkId).get();link=ls.exists?ls.data():null;readState.linkExists=ls.exists;readState.linkDocumentId=ls.id;readState.linkDocumentPath=ls.ref?.path;}
    }
    readState.complete=true;readState.stage='COMPLETE';
    proof=assessCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal,expected,
-    cross,receipt:adjudication,link,sealedHashes:sameKeeperSealedHashes(bundle.records,m.uid)});
+    cross,receipt:adjudication,link,providerRead:readState,sealedHashes:sameKeeperSealedHashes(bundle.records,m.uid)});
   }catch{proof={allowed:false,ruleAvailable:expected?.ok===true,reason:'CURRENT_PROVIDER_PROVENANCE_READ_FAILED'};}
+  if(currentProviderAdc){
+   receipt.currentProviderDiagnostic=diagnoseCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal||{},expected,cross,receipt:adjudication,link},bundle.records,readState);
+   const h=receipt.currentProviderDiagnostic.historicalSameUidProof;
+   if(receipt.sealCheck==='READ'&&h.recordCount!==h.supportedSealCount){
+    proof={...proof,allowed:false,reason:'CURRENT_PROVIDER_SAME_UID_SEALED_HASH_CONFLICT'};
+    receipt.currentProviderDiagnostic=publicA08ProvenanceDiagnostic({...receipt.currentProviderDiagnostic,primaryReason:proof.reason,provenanceAllowed:false,
+      checks:{...receipt.currentProviderDiagnostic.checks,SAME_UID_SEAL_UNIQUE:false}});
+   }
+  }
   if(provenanceOnly)receipt.provenanceDiagnostics.push(diagnoseCurrentProviderPasswordProof({shopperId:id,uid:m.uid,member:m,profile,authUser:principal||{},expected,cross,receipt:adjudication,link},bundle.records,readState));
  }else proof=assessExactPasswordProof({shopperId:targetShopperId===id?id:'',expected,visibleLogin:visible,sealedHashes:sealed.get(visible)||[]});
  stats.credentialReasonCounts[proof.reason]=(stats.credentialReasonCounts[proof.reason]||0)+1;
@@ -140,7 +184,7 @@ for(const m of sorted){
   if(failed.length)continue;
   stats.authClaimMatch++;
  }catch{stats.credentialReasonCounts.AUTH_LOOKUP_FAILED=(stats.credentialReasonCounts.AUTH_LOOKUP_FAILED||0)+1;continue;}
- selected={login:visible,password:expected.password,shopperId:id,uid:m.uid,authBefore:principal,credentialProvenance:proof.provenance,canonicalLoginMatches:proof.canonicalLoginMatches,exactAliasAllowed:proof.exactAliasAllowed,durableProviderProof:proof.durableProviderProof===true,credentialHashSource:proof.credentialHashSource||'EXACT_C6_VISIBLE_LOGIN_SEAL'};
+ selected={login:visible,password:expected.password,shopperId:id,uid:m.uid,authBefore:principal,credentialProvenance:proof.provenance,canonicalLoginMatches:proof.canonicalLoginMatches,exactAliasAllowed:proof.exactAliasAllowed,durableProviderProof:proof.durableProviderProof===true,credentialHashSource:currentProviderAdc&&receipt.sealCheck==='NOT_READ'?'NOT_READ_CURRENT_PROVIDER_AUTHORITY':currentProviderAdc&&!proof.credentialHashMatches?'READ_NO_SAME_UID_SEAL':proof.credentialHashSource||'EXACT_C6_VISIBLE_LOGIN_SEAL'};
  break;
 }
 receipt.selection={...stats,selected:Boolean(selected),exactRequested:Boolean(targetLogin||targetShopperId),

@@ -1,0 +1,1615 @@
+{
+  "documentKind": "READ_ONLY_SCOPE_REVIEW_NOT_ACCEPTANCE_SCHEMA",
+  "generatedAtUtc": "2026-11-25T10:39:16.014570+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceCheckout": "/workspace/scratch/29d96d78cf7a/cxorbia",
+  "observedControlHead": "bc0551d77652728e59ea92e3acca9ca404980f21",
+  "matrixVersion": "V403",
+  "scope": "B01-B14 frozen HRAndVisitLifecycle",
+  "claims": {
+    "newFunctionalPass": 0,
+    "newDomainMatches": 0,
+    "providerCalls": 0,
+    "browserCalls": 0,
+    "sourceEdits": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "countingRule": "Preservar evidencia aceptada por cláusula. Bloques humanosB3/B7 no equivalen a tareasB03/B07. Una cláusula no emparejada en esta revisión no es un defecto nuevo ni mandato de repetir pruebas.",
+  "references": {
+    "MATRIX": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V403.json",
+      "gitBlob": "689a1ce8533e9913845dd772497098dc147f9b5b",
+      "sha256": "c90eb3035b957c70527b926fa5b13a9dc4a380857c4ea1c1724f1fcb89e0a677",
+      "matchesHeadBlob": true,
+      "scope": "Autoridad actual: conservar sus seis MATCH y cláusulas aceptadas; esta revisión no cambia estados.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "FROZEN": {
+      "path": "docs/checkpoints/CXORBIA_I3_FROZEN_FUNCTIONAL_TASK_CONTRACTS_20261125.json",
+      "gitBlob": "ca2bec67f3b55cf1da1438d3422a825137f0f2b6",
+      "sha256": "a8908d4879473ae3d0afe8d6dd4462788bc3f42409781db7ed766deee208e832",
+      "matchesHeadBlob": true,
+      "scope": "Texto de aceptación original, con bindings SHA256 por tarea.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "B7_LOCK": {
+      "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+      "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+      "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae",
+      "matchesHeadBlob": true,
+      "scope": "Aprobaciones humanas históricas B4/B5/B6/B7; el bloque B7 no equivale a la tarea B07.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2385": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2385_ACADEMY_B7_PROVIDER_QA_20261110.json",
+      "gitBlob": "193d188770b40bce5a3d03588317c9d894e0b9da",
+      "sha256": "7ff01dcd09dbe25afdd89a938c361d1f2cb01c681d20647f64ea4d0474614fb2",
+      "matchesHeadBlob": true,
+      "scope": "Postulación sintética: create/approve/reject, asignación y notificación atómicas, segundo Shopper excluido, ACK/readback interno, replay y cleanup; cero escrituras en HR externa.",
+      "jsonPointers": [
+        "/focalLiveQa/b7Postulations"
+      ],
+      "excerpts": {
+        "/focalLiveQa/b7Postulations": {
+          "shopperCreatedPostulation": true,
+          "adminApprovedPostulation": true,
+          "assignmentAndShopperNoticeAtomic": true,
+          "shopperNoticeTargetedExactly": true,
+          "secondShopperExcluded": true,
+          "adminRejectedOtherPostulation": true,
+          "rejectionNoApprovalNotice": true,
+          "createAndDecisionIdempotent": true,
+          "providerAckReadback": true,
+          "scope": "Focal provider with synthetic visits; NOT complete browser panel unread/reload/route/human acceptance"
+        }
+      }
+    },
+    "R2391": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+      "gitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+      "sha256": "9d2c8a96186eadc4d2ed9981d442f66c3a5835bbb6052a24aa02162ce9e56e6f",
+      "matchesHeadBlob": true,
+      "scope": "Cancelación y reprogramación con aprobación/rechazo, notificación, ACK/readback y replay internos; cancelación aprobada sigue pending_hr, sin ACK externo.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2400": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2400_B7_RESERVATION_TO_VISIT_DEV_QA_20261110.json",
+      "gitBlob": "2869cca685251222e2e6b6c3d4ac7a3cf824d599",
+      "sha256": "1259b045dcd85ececf7b7c87df3103c568b9c32e98f55af1b7683f65ee48cfd5",
+      "matchesHeadBlob": true,
+      "scope": "Reserva cruzada a visita real interna asignada, mismo dueño, Firestore independiente, audit/receipt, replay y cleanup. assignmentSyncStatus=pending_hr.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2409": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2409_B7_SHOPPER_NOTICE_UNREAD_ROUTE_DEV_QA_20261110.json",
+      "gitBlob": "9a65aaaae521125807e88d3bc5cd6d2b058a5e5b",
+      "sha256": "303cf122d5a670060431a8190a4776e8ac61715b692eda5276b8f379305e5760",
+      "matchesHeadBlob": true,
+      "scope": "Campanita autenticada: unread tras recarga, click a Mis Visitas, mark-read durable, recarga leída, aislamiento de otro Shopper y cleanup.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2472": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2472_B3_SCHEDULE_RESCHEDULE_CURRENT_DEV_ACK_PASS_20261112.json",
+      "gitBlob": "d9bdce7e0cd47e4684f59d6a38239fec1bf42707",
+      "sha256": "19dce74c9a42f7f87dbb873fd47f1b7d8e909d07308686342c4e2eaeef9dc937",
+      "matchesHeadBlob": true,
+      "scope": "Agenda y solicitud de reprogramación: dueño permitido/otro denegado, ACK/readback/replay y fecha original conservada en revisión; cero writes HR.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2479": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2479_B3_STORAGE_RULES_DEV_DEPLOY_CHECKIN_ACK_PASS_20261113.json",
+      "gitBlob": "29681f2247aba22d9854fc6a16567d1685b41972",
+      "sha256": "15cb1d51a5c836bf4d31861bed2f52e18f363640800e5c90c655adc7e588043c",
+      "matchesHeadBlob": true,
+      "scope": "Reglas Storage corregidas y publicadas; upload de evidencia sintética, objeto/metadata, ACL, ACK, readback Firestore, replay y cleanup. cameraUxTested=false y gpsUxTested=false.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2547": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_PAIRED_DEV_AND_SYNC_CONFIRM_GUARD_ACK_20261116.json",
+      "gitBlob": "1bcde95605f3f402d9e7aa6c2900357981048221",
+      "sha256": "0e105f2a5513302cf17bd0ba1ce95dcf4052c7b15fd6e41c5edb289a0d75ca0a",
+      "matchesHeadBlob": true,
+      "scope": "Dos ciclos de cancelación/reprogramación, nueva sesión, replay antiguo sin write ni reactivación de aviso; historial conservado; 29 documentos/2 Auth limpiados. No certifica ACK Excel.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2547_RAW": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2547_VERIFIED_EVIDENCE_20261116/notifications/result.json",
+      "gitBlob": "1ba0f3a52e73e1629f99188c99704da22e25f5e5",
+      "sha256": "e8b9c124a62359e4863f9de44e04d6ec09ae16f13cafa3bec13402c4411a38d3",
+      "matchesHeadBlob": true,
+      "scope": "Recibo crudo del ciclo duradero de notificaciones; no sustituye a una entrega externa.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "B11_R23": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_R23_GT_HN_SAME_REVISION_CHROMIUM_PASS_20261120.json",
+      "gitBlob": "f129f3c15113c34f7d199f8476c3b14827d6bc67",
+      "sha256": "15e44ed264736e4718734ce6759b877a1d6d0acd6a2d3f372105490ec940637d",
+      "matchesHeadBlob": true,
+      "scope": "Admin/Shopper KPIs GT/HN contra una misma revisión HR independiente, fuente d722756. PASS histórico antes del cambio a Excel operacional.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "B11_DASH": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_DASHBOARD_MIDIA_CURRENT_HR_44_VISITS_PASS_20261120.json",
+      "gitBlob": "ac2a3727a5610b6c065795daa26b2be78ece60bf",
+      "sha256": "7f3d9c1c0f5c017b3c09fc5d7edd83d32f42e7ca35afe18b790f98f7c877e998",
+      "matchesHeadBlob": true,
+      "scope": "Dashboard GT34/HN10 y Mi Día22 con keysets exactos contra la misma HR; bytes source/served iguales. PASS histórico preservado.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "B11_VISITS": {
+      "path": "docs/checkpoints/CXORBIA_I3_B11_VISITS_REPORTS_B14_TOOLBOX_SERVICE_READBACK_20261120.json",
+      "gitBlob": "dfbf2c55273861e91d69117569db0381c604ed67",
+      "sha256": "b74a6f713b2567ae27bfabd538e562b52bdd31a007bdc22151f891e9102f97de",
+      "matchesHeadBlob": true,
+      "scope": "Visitas GT34/HN10; Reportes realizadas17/5 y 50% exactos contra HR independiente. Cierra la antigua ausencia Visitas/Reportes de la fila anterior.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "CHROME_IMPORT": {
+      "path": "docs/checkpoints/CXORBIA_I3_WORK_CHROME_20261120/IMPORT_C3_MANIFEST.json",
+      "gitBlob": "78c5dddf1148b4542071d31975316a80d4fe8ac5",
+      "sha256": "9cc7b1e9c277d6e23eccce69288bab1d4db45d4e3d0e5e251faa584c67e464d5",
+      "matchesHeadBlob": true,
+      "scope": "Importación Work 28 casos: 20 focal PASS, 3 FAIL, 5 HOLD. No generalizar sus roles ni convertir los 3 FAIL históricos en pendientes actuales.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "RELOAD_FAIL": {
+      "path": "docs/checkpoints/CXORBIA_I3_B14_AUTHENTICATED_APP_ORIGINAL_AND_SHOPPER_RELOAD_20261120.json",
+      "gitBlob": "79909381be854bfbfe3e862f3680ee481bc9777e",
+      "sha256": "c1ed7f714cefa6d26df6884cb9e8ccb2d1ad529541cd4009a9e520b61ac84db1",
+      "matchesHeadBlob": true,
+      "scope": "GT11/GT12/HN06 fallaron la restauración automática de ruta; datos y período sí podían reabrirse. Diagnóstico histórico.",
+      "jsonPointers": [
+        "/reloads",
+        "/observedFailure"
+      ],
+      "excerpts": {
+        "/reloads": [
+          {
+            "id": "GT11",
+            "country": "GT",
+            "view": "visitas",
+            "ownerOk": true,
+            "before": {
+              "period": "cinepolis-2026-11",
+              "view": "visitas",
+              "savedView": "visitas",
+              "historyView": "visitas",
+              "periodInData": "cinepolis-2026-11",
+              "count": 3,
+              "reportMonth": null
+            },
+            "selected": {
+              "period": "cinepolis-2026-10",
+              "view": "visitas",
+              "savedView": "visitas",
+              "historyView": "visitas",
+              "periodInData": "cinepolis-2026-10",
+              "count": 1,
+              "reportMonth": null
+            },
+            "after": {
+              "period": "cinepolis-2026-10",
+              "view": "midia",
+              "savedView": "midia",
+              "historyView": "midia",
+              "periodInData": "cinepolis-2026-10",
+              "count": 0,
+              "reportMonth": null
+            },
+            "reopened": {
+              "period": "cinepolis-2026-10",
+              "view": "visitas",
+              "savedView": "visitas",
+              "historyView": "visitas",
+              "periodInData": "cinepolis-2026-10",
+              "count": 1,
+              "reportMonth": null
+            },
+            "pass": false
+          },
+          {
+            "id": "GT12",
+            "country": "GT",
+            "view": "mireportes",
+            "ownerOk": true,
+            "before": {
+              "period": "cinepolis-2026-11",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-11",
+              "count": null,
+              "reportMonth": false
+            },
+            "selected": {
+              "period": "cinepolis-2026-10",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "after": {
+              "period": "cinepolis-2026-10",
+              "view": "midia",
+              "savedView": "midia",
+              "historyView": "midia",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "reopened": {
+              "period": "cinepolis-2026-10",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "pass": false
+          },
+          {
+            "id": "HN06",
+            "country": "HN",
+            "view": "mireportes",
+            "ownerOk": true,
+            "before": {
+              "period": "cinepolis-2026-11",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-11",
+              "count": null,
+              "reportMonth": false
+            },
+            "selected": {
+              "period": "cinepolis-2026-10",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "after": {
+              "period": "cinepolis-2026-10",
+              "view": "midia",
+              "savedView": "midia",
+              "historyView": "midia",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "reopened": {
+              "period": "cinepolis-2026-10",
+              "view": "mireportes",
+              "savedView": "mireportes",
+              "historyView": "mireportes",
+              "periodInData": "cinepolis-2026-10",
+              "count": null,
+              "reportMonth": true
+            },
+            "pass": false
+          }
+        ],
+        "/observedFailure": "Stored route and visible history are correct after selecting October. After startup both become midia. Existing router mounts before protected HR is hydrated and the central re-render calls nav on the transient view."
+      }
+    },
+    "RELOAD_PASS": {
+      "path": "docs/checkpoints/CXORBIA_I3_B14_LIVE_REVISION_ROUTER_ACCEPTANCE_20261122.json",
+      "gitBlob": "c0a5a409ec476f63eeb782826640a6ab38a04b1c",
+      "sha256": "93ab832f0c636d205818ed31a86ed1f4680654b32c08b086a8451ae6fdc7725b",
+      "matchesHeadBlob": true,
+      "scope": "RUN45083484203: PASS autenticado Admin original GT/HN y tres recargas Shopper GT11/GT12/HN06. Sustituye los tres FAIL de ruta, no todo B14.",
+      "jsonPointers": [
+        "/appRun",
+        "/appDecision",
+        "/scope",
+        "/routerPass"
+      ],
+      "excerpts": {
+        "/appRun": 45083484203,
+        "/appDecision": "PASS_B14_APP_READ_AND_THREE_SCOPED_RELOADS",
+        "/scope": "AUTHENTICATED_ADMIN_CURRENT_ORIGINAL_GRAPH_READ_GT_HN_PLUS_3_SCOPED_SHOPPER_RELOADS_NOT_FULL_I3",
+        "/routerPass": [
+          "GT11",
+          "GT12",
+          "HN06"
+        ]
+      }
+    },
+    "F2_EXCEL": {
+      "path": "docs/checkpoints/CXORBIA_I3_F2_ORIGINAL_EXCEL_OPERATIONAL_DEV_PASS_20261123.json",
+      "gitBlob": "f3a5c421036967e6b22f515d66794a950155900f",
+      "sha256": "5f948ebcb125df47204ddfd9f9e789a6eff086be1f41838c430b6942395543f7",
+      "matchesHeadBlob": true,
+      "scope": "Cambio operativo a Excel publicado y leído remotamente; 38 country-periods y binding exacto. F3 remoto continúa sin prueba.",
+      "jsonPointers": [
+        "/devOperationalSelector",
+        "/devMaterialization",
+        "/continuingBlocker"
+      ],
+      "excerpts": {
+        "/devOperationalSelector": {
+          "decision": "PASS_F2_ORIGINAL_EXCEL_OPERATIONAL_DEV_REMOTE_READBACK__NOT_TERMINAL_I3_GO",
+          "runId": 45247697281,
+          "runNumber": 2749,
+          "jobId": 137948720508,
+          "controlSha": "71a0067038c7afac444b59f4b9005705199eb028",
+          "beforeProvider": "google_sheets",
+          "afterProvider": "excel_online",
+          "configWrites": 1,
+          "configReadbackVerified": true,
+          "periodJobs": 38,
+          "readbackPeriodJobs": 38,
+          "sourceRevision": "024984584fed32169a3580cd48d29c539f72af0c0bb45dd01b29d4558feeb480",
+          "hrRevision": "20f314f2d30713d1d9fbaeef35a473415745366da6a80631dbbe79a24ca443e6",
+          "bindingFingerprint": "14b80973401c2c3d8de350fc50abfae1731d9a0ea50aa22368e897cabf192bf1",
+          "sourceSwitch": true,
+          "qaTestsPass": 667,
+          "qaTestsFail": 0
+        },
+        "/devMaterialization": {
+          "decision": "PASS_I3_F2_READER_SOURCE_DEV_MATERIALIZATION",
+          "runId": 45245908604,
+          "runNumber": 2748,
+          "artifactId": 14854770999,
+          "builds": 1,
+          "runtimeDeploys": 1,
+          "hostingDeploys": 1,
+          "runtimeRevision": "cxorbia-live-hr-dev-00384-dmj",
+          "runtimeDigest": "sha256:d77bef8e601bc59224dc0e86f2e61e8df5fb714b98107d7c4a27937e1046f2eb",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/bf538792596bce30",
+          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795461326678000",
+          "verifiedServedAssetCount": 41,
+          "sourceHostedExact": true,
+          "runtimeTrafficExact": true
+        },
+        "/continuingBlocker": "PERSISTENCE_FAILURE_F3_BIDIRECTIONAL_REMOTE_ACK_REPLAY_CONFLICT_ECHO_UNPROVEN"
+      }
+    },
+    "R2755": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2755_EXISTING_DEV_READBACK_PASS_20261124.json",
+      "gitBlob": "de8db04d5f786e4cafbe4b0926a6c6fec565d4d2",
+      "sha256": "8745b17c4fadc88adfdc2dce1d596f1b7a836a7c5c9879a2ae2fb8a6d7400d58",
+      "matchesHeadBlob": true,
+      "scope": "DEV source/HR/scenario metadata exactos; readback actual sin redeploy ni escritura HR. No reabrir catálogo/binding ya demostrado.",
+      "jsonPointers": [
+        "/decision",
+        "/scope",
+        "/scenarioDimensionsProven",
+        "/configReadbackVerified",
+        "/readbackComplete"
+      ],
+      "excerpts": {
+        "/decision": "PASS_EXISTING_DEV_SOURCE_HR_AND_APPROVED_SCENARIO_METADATA",
+        "/scope": {
+          "environment": "cxorbia-backend-dev",
+          "region": "us-central1",
+          "service": "cxorbia-live-hr-dev",
+          "hostingSite": "cxorbia-backend-dev",
+          "hostingUrl": "https://cxorbia-backend-dev.web.app",
+          "tenantId": "tya",
+          "projectId": "cinepolis",
+          "projectPath": "tenants/tya/projects/cinepolis",
+          "fieldMask": [
+            "scenarioDimensions"
+          ],
+          "allowedConfigWrites": 1,
+          "authWrites": 0,
+          "hrOriginalWrites": 0,
+          "googleMirrorWrites": 0,
+          "visitWrites": 0,
+          "sourceSwitch": false,
+          "production": false,
+          "i4Authorized": false
+        },
+        "/scenarioDimensionsProven": true,
+        "/configReadbackVerified": true,
+        "/readbackComplete": true
+      }
+    },
+    "R2780": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+      "gitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+      "sha256": "540141fa8451733d09bff2b40df5b5a1de2497bb998dc909821c886ddb548110",
+      "matchesHeadBlob": true,
+      "scope": "Ventana Oct/Nov GT/HN88 visitas; histórico836/19 períodos/38country-periods; Sept explícito44; retorno a rolling; no certifica UI.",
+      "jsonPointers": [],
+      "excerpts": {}
+    },
+    "R2783": {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2783_CONTINUITY_METHOD_CLOSURE_20261124.json",
+      "gitBlob": "940fd451e53773409422c0d9ab96ca36fa4eb997",
+      "sha256": "7b19d140ef82d16f259a3fa4e6daa718bd44ccb9c65aefd7d18f8c1a972f808a",
+      "matchesHeadBlob": true,
+      "scope": "Recuperación exacta F3: 29 docs/1Auth retirados; no ACK de aplicación nuevo. Conserva HN ordinary-password y los cuatro bloques humanos.",
+      "jsonPointers": [
+        "/functionalEvidence",
+        "/humanPassPreserved"
+      ],
+      "excerpts": {
+        "/functionalEvidence": {
+          "runId": 45514816284,
+          "indexEntries": 6,
+          "pendingQueue": 0,
+          "financeMetadata": "PASS_SECOND_ADVANCE_14600_TOTAL_UNCHANGED",
+          "f3Recovery": "PASS_29_DOCUMENTS_1_AUTH_USER_REMOVED_APPLICATION_ACK_NOT_PROVED",
+          "a08": "HN_PASSWORD_SESSION_PASS_TWO_PROVENANCE_GATES_HOLD",
+          "d08": "FOUR_ADMIN_ACK_READBACK_PROOFS_REPLAY_RESPONSE_BODY_TIMEOUT_RECOVERY_REQUIRED"
+        },
+        "/humanPassPreserved": [
+          "B4",
+          "B5",
+          "B6",
+          "B7"
+        ]
+      }
+    },
+    "B10_ASSET": {
+      "path": "docs/checkpoints/CXORBIA_I3_B10_EXACT_DEV_ASSET_AND_QA_20261102.json",
+      "gitBlob": "739a4168374b67bffba01de75c9127f5856397cc",
+      "sha256": "1261524f454bc6f2db0793606f966f50c80b32e4da9811fbe872c82abd2449e8",
+      "matchesHeadBlob": true,
+      "scope": "Cuestionario: bytes servidos y tests de routing/config fail-closed; no ciclo completo de respuesta/submit/provider.",
+      "jsonPointers": [
+        "/proof",
+        "/moduleTransition",
+        "/evidenceCaveat"
+      ],
+      "excerpts": {
+        "/proof": {
+          "initialExactHostingDevRunId": 41517119181,
+          "canonicalNewQaRunId": 41524873910,
+          "canonicalNewQaConclusion": "success",
+          "questionnaire": {
+            "path": "app/modules/cuestionario-shopper.js",
+            "url": "https://cxorbia-backend-dev.web.app/modules/cuestionario-shopper.js",
+            "httpStatus": 200,
+            "sourceSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+            "servedSha256": "576272660a6b7cf96055587de39ee172df6ebc9147711a5cf0f17d0a8c943388",
+            "match": true
+          },
+          "relatedRoleAssets": [
+            {
+              "path": "app/modules/beneficios.js",
+              "sha256": "2c1763b65ef055eecd56e3622033d53c9946f679e758d06be797b7e854b6b419",
+              "match": true
+            },
+            {
+              "path": "app/core/backend-browser-auth.js",
+              "sha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+              "match": true
+            },
+            {
+              "path": "app/modules/clientes.js",
+              "sha256": "7260fa6c2ef5eccc0eea3cf43bc9cf5c06af2be4cc923742e45876e21480ad1e",
+              "match": true
+            }
+          ],
+          "sourceQa": [
+            {
+              "test": "tools/qa/cxorbia-i3-b10-external-provider-routing.test.mjs",
+              "status": "PASS"
+            },
+            {
+              "test": "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
+              "status": "PASS_AFTER_STALE_LITERAL_ORACLE_CORRECTION"
+            }
+          ],
+          "originalTestFailure": "The previous oracle asserted the superseded inline expression identity.projectConfig.cuestionario||{}; B10 uses resolveScopedQuestionnaire(identity.projectConfig) with fail-closed external provider authority.",
+          "testOwnerChangedOnly": true,
+          "productionCodeChanged": false
+        },
+        "/moduleTransition": {
+          "domain": "questionnaire-shopper",
+          "classificationBefore": "COMPOSED_NOT_DEPLOYED",
+          "classificationAfter": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "matchBefore": false,
+          "matchAfter": false,
+          "pending": [
+            "real Shopper role login and authorized click route",
+            "external/provider questionnaire link validity in project-period-visit context",
+            "human visual acceptance on exact DEV artifact"
+          ]
+        },
+        "/evidenceCaveat": "Source bytes and source QA alone do not prove the complete user action cycle or third-party provider ACK."
+      }
+    },
+    "B10_UI": {
+      "path": "docs/checkpoints/CXORBIA_I3_SHOPPER_D06_D07_B10_CHROME_READBACK_20261106.json",
+      "gitBlob": "1c9666a983ab80df5c612c18ff8cb479b122b7e9",
+      "sha256": "6a5431d0d3a81c9f05e03d8a2587f0cd490d27b6f8e484181902a93c1a5f7f29",
+      "matchesHeadBlob": true,
+      "scope": "Visita histórica muestra cuestionario completado pendiente revisión/submit; no formulario nuevo ni submit/ACK externo.",
+      "jsonPointers": [
+        "/observations/4"
+      ],
+      "excerpts": {
+        "/observations/4": {
+          "id": "D07_PDF_SHOPPER",
+          "status": "PASS_FOCAL_READER_ONLY",
+          "expected": "Real PDF opens under Shopper in both periods and pagination works.",
+          "observed": "Instructivo Shopper PDF is visible in OCT page1, page2 and page7; next control disabled at page7 of7. NOV opens page1 of7. Captures inspected internally.",
+          "octoberPagesVisuallyInspected": [
+            1,
+            2,
+            7
+          ],
+          "novemberPagesVisuallyInspected": [
+            1
+          ],
+          "notCertified": [
+            "Every pixel of every PDF page",
+            "Upload/version/retirement lifecycle",
+            "Remote reading acknowledgment",
+            "All other permissions and resource clauses"
+          ]
+        }
+      }
+    },
+    "F3_SOURCE": {
+      "path": "docs/checkpoints/CXORBIA_I3_VRM376_PUBLISHED_SOURCE_20261125.json",
+      "gitBlob": "01dd01d7fcbddc528472b7c083361f043948f599",
+      "sha256": "320fd83ad2b9136356033dc6ba5ef7e5dd652251db1177788a6a8a26147ef4b1",
+      "matchesHeadBlob": true,
+      "scope": "Fuente8d70 aprobada/105 tests; no despliegue ni ACK externo nuevos en este recibo.",
+      "jsonPointers": [
+        "/sourceSha",
+        "/sourceTree",
+        "/sourceTestsPass",
+        "/expectedNextVerification",
+        "/preservedHrPeriodWindow"
+      ],
+      "excerpts": {
+        "/sourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+        "/sourceTree": "5be93b3151578bc15f9cbe2f8d686e2ec663c72f",
+        "/sourceTestsPass": 105,
+        "/expectedNextVerification": "Use the existing single paired DEV lane, verify current HR window/history and exact deployed bytes, then the bounded F3 application endpoint. No domain promotion from source tests.",
+        "/preservedHrPeriodWindow": {
+          "schemaVersion": "cxorbia.i3.hr-period-window-dev.v1",
+          "decision": "PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ",
+          "findingId": "VRM-375",
+          "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+          "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+          "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+          "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca",
+          "runId": "45488581923",
+          "runAttempt": 1,
+          "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+          "rolling": {
+            "mode": "rolling_window",
+            "periodIds": [
+              "cinepolis-2026-10",
+              "cinepolis-2026-11"
+            ],
+            "referenceMonth": "2026-11",
+            "timeZone": "America/Guatemala",
+            "nextPeriodAvailable": false,
+            "countryPeriods": [
+              {
+                "countryCode": "GT",
+                "periodId": "cinepolis-2026-10"
+              },
+              {
+                "countryCode": "HN",
+                "periodId": "cinepolis-2026-10"
+              },
+              {
+                "countryCode": "GT",
+                "periodId": "cinepolis-2026-11"
+              },
+              {
+                "countryCode": "HN",
+                "periodId": "cinepolis-2026-11"
+              }
+            ],
+            "periodBindings": 4,
+            "visits": 88,
+            "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+            "sourceReadAt": "2026-11-24T21:18:39.199Z",
+            "externalReadCurrent": true
+          },
+          "history": {
+            "available": true,
+            "externalReadCurrent": false,
+            "visits": 836,
+            "periods": 19,
+            "countryPeriods": 38,
+            "originalSeedVisits": 836,
+            "seedBankVisits": 836,
+            "originalObservation": "2026-11-24T15:28:33.482Z",
+            "seedArtifactId": 14934489092,
+            "seedSnapshotSha256": "437426fb7e95fd2a7d9dfaa7d6740a7aa24e34a20a8ef54f61dfc63167589032"
+          },
+          "explicit": {
+            "mode": "explicit_period",
+            "periodIds": [
+              "cinepolis-2026-09"
+            ],
+            "referenceMonth": "2026-11",
+            "timeZone": "America/Guatemala",
+            "nextPeriodAvailable": false,
+            "countryPeriods": [
+              {
+                "countryCode": "GT",
+                "periodId": "cinepolis-2026-09"
+              },
+              {
+                "countryCode": "HN",
+                "periodId": "cinepolis-2026-09"
+              }
+            ],
+            "periodBindings": 2,
+            "visits": 44,
+            "revision": "d0409c48d4913428081bfce9d5c998d49ed1446110935bcd13ae581eedb886d2",
+            "sourceReadAt": "2026-11-24T21:19:06.621Z",
+            "externalReadCurrent": true
+          },
+          "returned": {
+            "mode": "rolling_window",
+            "periodIds": [
+              "cinepolis-2026-10",
+              "cinepolis-2026-11"
+            ],
+            "referenceMonth": "2026-11",
+            "timeZone": "America/Guatemala",
+            "nextPeriodAvailable": false,
+            "countryPeriods": [
+              {
+                "countryCode": "GT",
+                "periodId": "cinepolis-2026-10"
+              },
+              {
+                "countryCode": "HN",
+                "periodId": "cinepolis-2026-10"
+              },
+              {
+                "countryCode": "GT",
+                "periodId": "cinepolis-2026-11"
+              },
+              {
+                "countryCode": "HN",
+                "periodId": "cinepolis-2026-11"
+              }
+            ],
+            "periodBindings": 4,
+            "visits": 88,
+            "revision": "93c93314c69d6df42fac3d80153d0d4db2b2a2808aa342f37eb387465538b136",
+            "sourceReadAt": "2026-11-24T21:19:16.741Z",
+            "externalReadCurrent": true
+          },
+          "additionalHttpReads": 2,
+          "inventoryPolicy": {
+            "automaticMaxAgeMs": 86400000,
+            "manualDiscoverySourceTested": true,
+            "liveManualDiscoveryCertified": false
+          },
+          "firestoreWrites": 0,
+          "authWrites": 0,
+          "hrWrites": 0,
+          "commandPosts": 0,
+          "operationalImports": 0,
+          "production": false,
+          "fullDomain": false,
+          "authenticatedUiCertified": false,
+          "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+          "receiptBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+          "scope": "READ_WINDOW_AND_HISTORY_ONLY_NO_DOMAIN_PROMOTION"
+        }
+      }
+    },
+    "MAKE_READER": {
+      "path": "docs/checkpoints/CXORBIA_I3_MAKE_FOUR_SCOPE_READONLY_20261125.json",
+      "gitBlob": "1fc9d909ce0f8d7c5f8d84391ac3f6555be4a1bb",
+      "sha256": "0fe06a40fbb639d322421e3d4b447de48bafeda377a54e8027825d18905c3b66",
+      "matchesHeadBlob": true,
+      "scope": "Cuatro lecturas dobles Make GT/HN Oct/Nov PASS; no browser, write, application ACK ni certificación integral.",
+      "jsonPointers": [
+        "/scope",
+        "/allScopesPass",
+        "/limitations",
+        "/futureF3RemoteCleanupPlan/preconditions"
+      ],
+      "excerpts": {
+        "/scope": "DIRECT_MAKE_READER_ONLY_NOT_APPLICATION_ACK_OR_BROWSER_CERTIFICATION",
+        "/allScopesPass": true,
+        "/limitations": [
+          "Does not prove current application projection or authenticated UI",
+          "Does not prove F3 remote write ACK",
+          "Does not close I3 or authorize production"
+        ],
+        "/futureF3RemoteCleanupPlan/preconditions": {
+          "decision": "PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING",
+          "applicationAckProven": true,
+          "remoteValuesRestored": true,
+          "remoteRestoreReadbackDecision": "PASS_F3_EXACT_REMOTE_BASELINE_READBACK",
+          "cleanupFirestore": true,
+          "cleanupAuth": true,
+          "recoveryRequired": false,
+          "producerRunFinished": true,
+          "resultConsumerFinished": true
+        }
+      }
+    }
+  },
+  "tasks": [
+    {
+      "taskId": "B01",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "d1747af41f1735c0d67442bea38e221fbdd21afe60313adb0f77a2a4f35ec9aa",
+      "frozenAuthority": {
+        "id": "B01",
+        "stage": "I3",
+        "module": "Origen HR y caso Cayalá",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "depends": "G02,G05",
+        "action": "Cotejar source configurado, hoja, periodo y clave de fila de Cayalá con evidencia de la modificación reportada. No inventar titular, autor ni hora; no sustituir por una hoja homónima.",
+        "acceptance": "Origen exacto validado y controversia resuelta por evento/evidencia o decisión específica documentada; no se adjudica a caché sin prueba.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/hr-source.js",
+        "app/modules/operacion-extra.js",
+        "app/modules/proyectos.js",
+        "app/modules/rutas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "F2_EXCEL",
+        "R2755",
+        "R2780",
+        "MAKE_READER"
+      ],
+      "preservedScope": "Proveedor Excel operacional, binding por país/período, catálogo y lectura original exacta ya demostrados.",
+      "unmatchedOrCurrentResidualScope": "No se localizó en los recibos examinados una adjudicación exacta del caso Cayalá. La lectura técnica no demuestra actor, fecha ni legitimidad de aquel cambio. Recuperar su evidencia/decisión específica antes de pedir repetición general.",
+      "nextExistingQaCarryAndLimits": "El readback de la misma candidata conserva el lector; la QA F3 no adjudica un evento histórico de Cayalá.",
+      "matrixBindings": [
+        {
+          "domain": "canonical-hr-state-adapters",
+          "jsonPointer": "/modules/3",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "projects-periods-hr-source-wizard-multiproject",
+          "jsonPointer": "/modules/15",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Project-bound original Excel reader is proven by RUN2755; prior missing binding and Google fallback findings are historical.",
+            "Prove remaining project A/B isolation, internal/external lifecycle, periods/currencies/permissions, and external bidirectional runtime with remote ACK."
+          ],
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B02",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "6eb921928eb1ab430e696caed446c3d4455ee47e3f4511693742235fcad75357",
+      "frozenAuthority": {
+        "id": "B02",
+        "stage": "I3",
+        "module": "Último cambio válido",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "depends": "G02,G04",
+        "action": "Implementar evento por visita/campo con origen, autor conocido, before/after, revisión base, orden causal e idempotencia. No tratar readAt, modifiedTime global ni eco como hora real de edición.",
+        "acceptance": "Secuencias comparables eligen el último evento válido; concurrencia o temporalidad desconocida pasan a revisión sin sobrescritura silenciosa.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/hr-source.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "F3_SOURCE",
+        "R2547"
+      ],
+      "preservedScope": "Fuente/test del journal por campo y controles de idempotencia disponibles; la operación interna repetida preserva historial.",
+      "unmatchedOrCurrentResidualScope": "ACK remoto por campo, orden causal bidireccional, eco y conflicto entre cambios independientes siguen siendo cláusulas por acreditar; unknown/concurrent no puede transformarse en last-wins por hora inventada.",
+      "nextExistingQaCarryAndLimits": "F3 acredita journal y un sucesor plataforma GT, rechazo de base obsoleta, replay antiguo sin rollback; no inyecta cambio HR competidor ni pérdida real de respuesta.",
+      "matrixBindings": [
+        {
+          "domain": "canonical-hr-state-adapters",
+          "jsonPointer": "/modules/3",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "persistence-command-ack-boundary",
+          "jsonPointer": "/modules/13",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.",
+            "Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses."
+          ],
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B03",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "46e163e6d2a7f68f6ac9e44141fea622deb20bb001c8ccba77bcf94c696cd931",
+      "frozenAuthority": {
+        "id": "B03",
+        "stage": "I3",
+        "module": "Proveedor HR bidireccional",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | backend/runtime/hr-live-service/server.mjs:325–440",
+        "depends": "B02,G05",
+        "action": "Conectar el contrato al proveedor existente con permisos mínimos, cola/recibo durable y ACK remoto. Especificar qué campos editables viajan; separar lectura de escritura y no añadir un carril paralelo.",
+        "acceptance": "Una escritura autorizada cambia la fila correcta y su lectura posterior confirma valor/revisión; credenciales fuera del navegador; reintentos no duplican.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/hr-source.js",
+        "app/modules/integraciones.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "F2_EXCEL",
+        "R2755",
+        "MAKE_READER",
+        "F3_SOURCE",
+        "R2783"
+      ],
+      "preservedScope": "Reader/proyecto original ya en DEV, transporte aislado autorizado y recuperación del fixture anterior terminada. Lectura doble Make estable.",
+      "unmatchedOrCurrentResidualScope": "Aplicación→cola/journal→Make→Excel→readback independiente y ACK durable del run nuevo pendientes. pending_hr no es éxito externo.",
+      "nextExistingQaCarryAndLimits": "F3 usa endpoint de aplicación y recibos del mismo run por8campos GT/HN, confirmación remota, readback, restore y cleanup; preservar contratos de autenticación existentes.",
+      "matrixBindings": [
+        {
+          "domain": "canonical-hr-state-adapters",
+          "jsonPointer": "/modules/3",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "persistence-command-ack-boundary",
+          "jsonPointer": "/modules/13",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.",
+            "Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses."
+          ],
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B04",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "5fc677541fd55795a5a9b4468ab0126ce340e2a50412eb360fc8851fbc14a0ec",
+      "frozenAuthority": {
+        "id": "B04",
+        "stage": "I3",
+        "module": "Bitácora y resolución de conflictos",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "depends": "B02",
+        "action": "Persistir bitácora append-only por visita y exponerla al rol autorizado. Registrar efecto por campo, origen, actor disponible, causalidad, ACK y conflicto; conservar el estado previo.",
+        "acceptance": "La última asignación puede reconstruirse sin suposiciones. La edición reflejada no vuelve a ganar como cambio nuevo.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2385",
+        "R2400",
+        "R2547",
+        "F3_SOURCE"
+      ],
+      "preservedScope": "Audit/receipt y durabilidad interna de postulación/reserva/avisos/replay están demostrados por sus fixtures.",
+      "unmatchedOrCurrentResidualScope": "Reconstrucción del journal por campo externo, causalidad HR↔plataforma y eco sin nuevo evento aún no se acreditan por esos recibos internos.",
+      "nextExistingQaCarryAndLimits": "F3 verifica evento platform con actor exacto, before/after, digest, delivery y executionId; conservar eventos al incorporar recibo. HR-origin echo/concurrency no cubiertos aquí.",
+      "matrixBindings": [
+        {
+          "domain": "persistence-command-ack-boundary",
+          "jsonPointer": "/modules/13",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.",
+            "Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B05",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "f19cedc6083b80039a539f4506bc4c3f3c891570e264ca1874cacb368725d639",
+      "frozenAuthority": {
+        "id": "B05",
+        "stage": "I3",
+        "module": "Asignar y reasignar visita",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "depends": "A04,A05,B03,B04",
+        "action": "Usar el mismo comando desde Dashboard, Visitas, Postulaciones y Reservas. Mover la visita efectiva, no sólo la reserva. Mantener trazabilidad del titular previo y restricciones de datos.",
+        "acceptance": "La visita sale de disponibles y de activas del titular anterior, aparece una vez al nuevo, y Admin/HR coinciden. Los historiales autorizados no se pierden.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/operacion-extra.js",
+        "app/modules/reservas.js",
+        "app/modules/rutas.js",
+        "app/modules/visitas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2385",
+        "R2400",
+        "B7_LOCK"
+      ],
+      "preservedScope": "Aprobación de postulación asigna un solo dueño interno, excluye segundo Shopper y produce aviso exacto. Reserva cruzada produce visita real interna.",
+      "unmatchedOrCurrentResidualScope": "En los scopes examinados falta demostrar mismo comando por todas las entradas UI, transición dueñoA→B y convergencia externa. No invalidar el bloque humanoB7 para cubrir esta extensión.",
+      "nextExistingQaCarryAndLimits": "F3 nuevo verifica shopperId remoto; complemento Shopper verifica propio/ajeno, disponibles, keysets y reload antes/después. No botón Admin, no reasignaciónA→B ni postulación.",
+      "matrixBindings": [
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "shoppers-mi-visitas-profile",
+          "jsonPointer": "/modules/18",
+          "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; two exact Auth exceptions (shopper_gt_a092a0647f, shp-3669abbb015a); B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review.",
+            "preserved": "VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved. RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.",
+            "creditedClauseRefs": [
+              {
+                "clauseId": "A08.password.shopper_hn_3b3c2f5cc1",
+                "evidenceIndexKey": "45514816284/1/138871930190"
+              }
+            ]
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B06",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "395a356bdc158a7a9877bb6a0e0846bc787208d29734e87d6e1a5e40b90d1b13",
+      "frozenAuthority": {
+        "id": "B06",
+        "stage": "I3",
+        "module": "Postulaciones",
+        "owner_files": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "A05,B03",
+        "action": "Conservar CRUD demostrado; probar crear, editar, standby, rechazar, eliminar y aprobar contra visita elegible. Separar solicitud, decisión y sincronización.",
+        "acceptance": "Gestión ve el registro persistido; eliminación no reaparece; aprobar produce asignación única con ACK externo cuando aplica.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/postulaciones.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2385",
+        "R2391",
+        "B7_LOCK"
+      ],
+      "preservedScope": "Create/approve/reject, target exacto, otro Shopper excluido, ACK/readback/replay y cleanup internos ya probados; bloqueB7 preservado.",
+      "unmatchedOrCurrentResidualScope": "Aprobación con ACK Excel pendiente. Editar/standby/eliminar y ausencia tras recarga no se enlazaron individualmente en este conjunto de recibos; reconciliar la aceptaciónB7 antes de programar repetición.",
+      "nextExistingQaCarryAndLimits": "Carry directo de CRUD interno ya probado. F3 por campo no ejecuta el lifecycle de postulación; no atribuirle esa cobertura.",
+      "matrixBindings": [
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B07",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "0cfaf5ccc49e3aabae8a0f1f68f6ab31566a79ce3ea38828df10e822b3afd464",
+      "frozenAuthority": {
+        "id": "B07",
+        "stage": "I3",
+        "module": "Reservas y Asignación",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "B05",
+        "action": "Conservar reserva durable y probar la transición reserva→visita. Validar pendiente, aprobada, cambio de titular y eliminación según contrato; no repetir sólo visitWrite=false.",
+        "acceptance": "Una reserva aceptada produce la asignación real de la visita exacta; no hay doble ocupación ni reserva huérfana.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/reservas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2400",
+        "R2409",
+        "B7_LOCK"
+      ],
+      "preservedScope": "Reserva pending→cruzada y visita real asignada con readbackFirestore, audit y replay; campanita/recarga posterior también probadas.",
+      "unmatchedOrCurrentResidualScope": "assignmentSyncStatus=pending_hr conserva obligación externa. Nuevo dueño/eliminación sin huérfanos no se certifican globalmente por el solo casoR2400.",
+      "nextExistingQaCarryAndLimits": "Conservar transición interna y UIaviso; F3 puede acreditar transporte shopperId, pero no sustituye acciones de Reserva. B07 tarea es distinto del bloqueB7.",
+      "matrixBindings": [
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B08",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "44f669ff11408dcdc3cf1179c561c1c3d9b59f061c41775c4b848722c273e9a8",
+      "frozenAuthority": {
+        "id": "B08",
+        "stage": "I3",
+        "module": "Agenda, reprogramación y cancelación",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "B03,B04,B05",
+        "action": "Cubrir solicitudes Shopper, motivos humanos, decisión Admin, fechas elegibles, franjas/cortes y liberación de HR. Solicitud rechazada conserva la agenda; aprobada cambia con ACK.",
+        "acceptance": "Cada transición se ve en ambos roles y HR, con notificación y bitácora; liberar quita asignación real y habilita disponibilidad correcta.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/misvisitas.js",
+        "app/modules/postulaciones.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2391",
+        "R2472",
+        "R2547"
+      ],
+      "preservedScope": "Agenda y solicitud por dueño, denegación ajena, aprobación/rechazo, fecha original conservada, avisos durables y replay en nueva sesión ya probados.",
+      "unmatchedOrCurrentResidualScope": "Liberación/cambio de fecha en HR con ACK y lectura independiente; UI de motivos/fechas/cortes solo si aún no cubierta por aprobación original. Cancelación approved_pending_hr no completa el efecto externo.",
+      "nextExistingQaCarryAndLimits": "F3 escribe/restaura agendada y acredita proveedor por campo; no ejecuta decisión de cancelación/reprogramación ni aviso correspondiente.",
+      "matrixBindings": [
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "shoppers-mi-visitas-profile",
+          "jsonPointer": "/modules/18",
+          "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; two exact Auth exceptions (shopper_gt_a092a0647f, shp-3669abbb015a); B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review.",
+            "preserved": "VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved. RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.",
+            "creditedClauseRefs": [
+              {
+                "clauseId": "A08.password.shopper_hn_3b3c2f5cc1",
+                "evidenceIndexKey": "45514816284/1/138871930190"
+              }
+            ]
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B09",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "e51fd96a9105d3bdfefe0e3fb6df327b29b2befeae59275e3605778b8ce7fde1",
+      "frozenAuthority": {
+        "id": "B09",
+        "stage": "I3",
+        "module": "Realizada, check-in y evidencia",
+        "owner_files": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "A05,A08,B05",
+        "action": "Ejecutar casos elegibles de marcar realizada y check-in con cámara o archivo, GPS, fecha, visita, Storage y provider ACK; probar permiso denegado y fallo de carga.",
+        "acceptance": "Evidencia descargable vinculada a una visita y titular; fallo no crea éxito ni archivo huérfano; móvil y escritorio comprobados.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/integraciones.js",
+        "app/modules/misvisitas.js"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2479",
+        "R2472"
+      ],
+      "preservedScope": "StorageRules corregidas/publicadas; upload sintético, objeto/metadata, ACL, faltaACK denegada, readback, replay y limpieza exacta aprobados.",
+      "unmatchedOrCurrentResidualScope": "Interfaz real cámara/archivo/GPS, permiso denegado/fallo upload, revisión Admin y evidencias mobile/desktop no cubiertas por syntheticimage/GPS.",
+      "nextExistingQaCarryAndLimits": "F3 no cubre este contrato. Reutilizar el proveedor y reglas probadas; ejecutar solo cláusulas UI pendientes cuando exista superficie autenticada.",
+      "matrixBindings": [
+        {
+          "domain": "shoppers-mi-visitas-profile",
+          "jsonPointer": "/modules/18",
+          "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; two exact Auth exceptions (shopper_gt_a092a0647f, shp-3669abbb015a); B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review.",
+            "preserved": "VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved. RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.",
+            "creditedClauseRefs": [
+              {
+                "clauseId": "A08.password.shopper_hn_3b3c2f5cc1",
+                "evidenceIndexKey": "45514816284/1/138871930190"
+              }
+            ]
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B10",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "a61951f38c2b01b2ef8d7c4f5c026be670c06190c9494b6579e542406b28fb38",
+      "frozenAuthority": {
+        "id": "B10",
+        "stage": "I3",
+        "module": "Cuestionarios y revisión",
+        "owner_files": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "B09",
+        "action": "Usar programa publicado interno o fuente externa configurada, versión, pesos y evidencias. Completar cuestionario/revisión/submitir según cada proyecto; recuperar owner existente.",
+        "acceptance": "Versión visible a Shopper y Cliente coincide con Admin; cálculos y estado correctos; no se cuenta como submitida por un texto de interfaz.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/cliente-extra.js",
+        "app/modules/configuracion.js",
+        "app/modules/misvisitas.js"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "B10_ASSET",
+        "B10_UI"
+      ],
+      "preservedScope": "Cuestionario servido con routing/config fail-closed y QA; display histórico completado/pending-review consistente.",
+      "unmatchedOrCurrentResidualScope": "URL/provider válido para proyecto-período-visita, versión/pesos/evidencia y submit/review con ACK/readback independiente. No fabricar URL ni promover display a submit.",
+      "nextExistingQaCarryAndLimits": "F3 no cubre completar/revisar/enviar cuestionario ni la equivalencia Admin/Shopper/Cliente.",
+      "matrixBindings": [
+        {
+          "domain": "questionnaire-shopper",
+          "jsonPointer": "/modules/16",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "Authorized project-period-visit providerURL/version and correct shopperopen/submitted independent providerreadback; no fabricated questionnaire orURL.",
+            "preserved": "Exact served routing/config source and failclosed missinglink preserved."
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B11",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "0ed6eeb3a5e27ed1491de9089279db7be9fc033ee4a5ce5e2f803990b1046550",
+      "frozenAuthority": {
+        "id": "B11",
+        "stage": "I3",
+        "module": "Disponibilidad, periodos y KPIs",
+        "owner_files": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+        "depends": "A09,B05,B08",
+        "action": "Comparar elegibles/no asignadas y todas las fases contra la misma revisión externa, GT/HN y periodo vigente. Probar cambio de periodo y de proyecto, con drill-down de cada KPI.",
+        "acceptance": "Mi Día, Dashboard, Visitas, HR y reportes contienen las mismas claves y totales; no usar otro derivado del mismo snapshot local como oráculo independiente.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/cliente.js",
+        "app/modules/dashboard.js",
+        "app/modules/midia.js",
+        "app/modules/operacion-extra.js",
+        "app/modules/periodos.js",
+        "app/modules/visitas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "B11_R23",
+        "B11_DASH",
+        "B11_VISITS",
+        "F2_EXCEL",
+        "R2755",
+        "R2780",
+        "MAKE_READER"
+      ],
+      "preservedScope": "KPIs, Dashboard, MiDía, Visitas y Reportes fueron cotejados con HR independiente misma revisión; conservar esos PASS. Ventana/histórico original nuevo ya leídos.",
+      "unmatchedOrCurrentResidualScope": "El cambio posterior de proveedor/ventana requiere readback focal de la misma candidata contra HR actual; no puede usar dos proyecciones del mismo snapshot como independencia. Requisitos multiproyecto/roles restantes no se vuelven PASS por país.",
+      "nextExistingQaCarryAndLimits": "F3 Shopper compara disponibles/propias con HR independiente del fixture. No revalida automáticamente todas las pantallas del B11 histórico; conservarlas y comprobar solo dependencia cambiada.",
+      "matrixBindings": [
+        {
+          "domain": "dashboard-operation",
+          "jsonPointer": "/modules/7",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": {
+            "pending": "Uncovered role operations, Mi Dia handoffs, archive/delete and residual domain obligations.",
+            "preserved": "B6 acceptance and prior exact owner evidence preserved. RUN2547 current shared-provider VRM143 regression passed with29doc2Auth cleanup and0residue; RUN2548 current-source C3 and B11 raw18 cases passed. No new deployment is needed to prove those already completed scopes."
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "canonical-hr-state-adapters",
+          "jsonPointer": "/modules/3",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "shoppers-mi-visitas-profile",
+          "jsonPointer": "/modules/18",
+          "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; two exact Auth exceptions (shopper_gt_a092a0647f, shp-3669abbb015a); B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review.",
+            "preserved": "VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved. RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.",
+            "creditedClauseRefs": [
+              {
+                "clauseId": "A08.password.shopper_hn_3b3c2f5cc1",
+                "evidenceIndexKey": "45514816284/1/138871930190"
+              }
+            ]
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B12",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "60368a6b2408a4889a6715ca60a41c4088ad67822fdb9871723fe8c99e00acca",
+      "frozenAuthority": {
+        "id": "B12",
+        "stage": "I3",
+        "module": "Histórico y fuentes cargadas",
+        "owner_files": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs:53,190–192; proveedor Shopper y crosswalk | bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance",
+        "depends": "A03,A05",
+        "action": "Resolver selector y alimentación del histórico vacío conservando archivo aprobado. Resolver cuál owner registra rutas al final y evitar duplicación por montaje; no borrar implementaciones a ciegas.",
+        "acceptance": "Histórico Admin/Shopper muestra los periodos y visitas propios; owner servido documentado; cambios no pierden datos ni otro módulo aprobado.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/modules/historico.js",
+        "app/modules/operacion-extra.js",
+        "app/modules/rutas.js",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "MATRIX",
+        "RELOAD_FAIL",
+        "RELOAD_PASS",
+        "R2780",
+        "B10_UI"
+      ],
+      "preservedScope": "Dominio historical MATCH preservado; perfil conserva historia. GT11/GT12/HN06 tienen PASS posterior, no defectos abiertos. HRhistory836 y lectura explícitaSept44 probadas.",
+      "unmatchedOrCurrentResidualScope": "La propiedad final de router/ausencia de mounts duplicados y alcance Admin/Shopper deben enlazarse al recibo específico. La prueba de datos de ventana no reemplaza UI autenticada de nueva dependencia.",
+      "nextExistingQaCarryAndLimits": "Reutilizar los tresreloadPASS y la historia. ComplementoF3 prueba recarga propia en fixture; no reinicia el dominio historical ni reimporta historia.",
+      "matrixBindings": [
+        {
+          "domain": "historical",
+          "jsonPointer": "/modules/10",
+          "classification": "MATCH",
+          "currentResidualClauses": null,
+          "historicalMatchPreserved": true
+        },
+        {
+          "domain": "shoppers-mi-visitas-profile",
+          "jsonPointer": "/modules/18",
+          "classification": "SOURCE_FIXED_HOSTING_DEV_PUBLISHED_PENDING_AUTH_SHOPPER_B2_B3_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "A07 profile edit/completeness/ACK/newsession/Adminvisibility and other-shopperdenial; two exact Auth exceptions (shopper_gt_a092a0647f, shp-3669abbb015a); B3 UI camera/file/GPS,permission/uploadfailure and independentAdmin review.",
+            "preserved": "VRM328 twoactor active/history and Stivenreload; VRM320 focalvisual; RUN2387keeperroles; RUN2472schedule and RUN2479Storage/checkinACK/replay/negative/cleanup preserved. RUN2783 exact HN ordinary password, protected HR identity and restore/logout/relogin PASS preserved.",
+            "creditedClauseRefs": [
+              {
+                "clauseId": "A08.password.shopper_hn_3b3c2f5cc1",
+                "evidenceIndexKey": "45514816284/1/138871930190"
+              }
+            ]
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "base-router-shell-cache",
+          "jsonPointer": "/modules/1",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": {
+            "pending": "VRM134 comparable cold/warm initial load in relevant roles and only uncovered navigation/cache scenarios; integral acceptance.",
+            "preserved": "R20 ordinary credential login/logout/relogin and accepted session guards; restored-session samples are not global cold-login/p95 proof."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B13",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "787589af09344f378a86a2b6fa0cf1c62ce503872f7e61648f9086c0a8800d33",
+      "frozenAuthority": {
+        "id": "B13",
+        "stage": "I3",
+        "module": "Novedades, campanita y soporte",
+        "owner_files": "bridge protegido:78–86; gate humanAuthorityReady:317–361; watcher:32–98 | administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs:531–540; authority guard; workflow I3",
+        "depends": "A05,A08,B08",
+        "action": "Probar emisión, destinatario, nueva lectura individual y todas, recarga, navegación exacta y ticket/respuesta/cierre. Conservar ACK ya implementado y copia R22.",
+        "acceptance": "Campanita, Tablón y Mi Día muestran el mismo mensaje humano; readback persiste; ninguna notificación ajena; canal externo sólo enviado con recibo real.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/core/backend-bulletins.js",
+        "app/core/topbar.js",
+        "app/modules/midia.js",
+        "app/modules/novedades.js",
+        "app/modules/soporte.js"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "R2385",
+        "R2391",
+        "R2409",
+        "R2547"
+      ],
+      "preservedScope": "Emisión/destinatario exacto, clickruta, leeruna, recarga, aislamiento extranjero y secuencia de avisos sin reactivaroldnotice ya probados.",
+      "unmatchedOrCurrentResidualScope": "Leer todas, ticket/respuesta/cierre y canal externo real no se acreditan por estos recibos; su cobertura original debe reconciliarse antes de crear trabajo. No convertir notice interno en recibo de envío.",
+      "nextExistingQaCarryAndLimits": "F3 no cubre soporte ni notificación externa; conservar el ciclo de campanita ya acreditado.",
+      "matrixBindings": [
+        {
+          "domain": "visits-review-postulations-reservations",
+          "jsonPointer": "/modules/19",
+          "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+          "currentResidualClauses": {
+            "pending": "B3 camera/file/GPS/UI and permission/uploadfailure/Adminreview; B11 independentHR and B14 remoteHRACK/readback/keysets/oldnewowner/replay/conflict. pending_hr is not externalACK.",
+            "preserved": "B7 locked; RUN2385postulation,2391cancelreschedule,2400reservevisit,2409notice; B3 RUN2472schedule and2479checkin providers preserved."
+          },
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "dashboard-operation",
+          "jsonPointer": "/modules/7",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": {
+            "pending": "Uncovered role operations, Mi Dia handoffs, archive/delete and residual domain obligations.",
+            "preserved": "B6 acceptance and prior exact owner evidence preserved. RUN2547 current shared-provider VRM143 regression passed with29doc2Auth cleanup and0residue; RUN2548 current-source C3 and B11 raw18 cases passed. No new deployment is needed to prove those already completed scopes."
+          },
+          "historicalMatchPreserved": false
+        }
+      ]
+    },
+    {
+      "taskId": "B14",
+      "taskSet": "HRAndVisitLifecycle",
+      "acceptanceBindingSha256": "2daa6002b4b1c49a7ff199b4d4c633440dfafb5ff5ff1282c1a0bf4d15adf486",
+      "frozenAuthority": {
+        "id": "B14",
+        "stage": "I3",
+        "module": "Repetición, fallos y orden de eventos",
+        "owner_files": "backend/runtime/cxorbia-operational-command-provider-v1.mjs:247–291; backend/contracts/hr-bidirectional-assignment-sync-v1.json | backend/runtime/hr-live-service/server.mjs:325–440",
+        "depends": "B01,B03,B04,B05,B08,B11",
+        "action": "Ejecutar plataforma→HR y HR→plataforma con eventos posteriores y casos de concurrencia, eco, pérdida de respuesta y replay. Hacerlo en fixture autorizado que use el proveedor real.",
+        "acceptance": "Último evento válido gana; conflicto no se oculta; cero duplicados; error conserva estado/recibo y se recupera sin reimportar.",
+        "blocks_go": "Sí"
+      },
+      "ownerPaths": [
+        "app/modules/hr-source.js",
+        "app/modules/operacion-extra.js",
+        "app/modules/postulaciones.js",
+        "app/modules/reservas.js",
+        "app/modules/rutas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "reviewStatus": "SCOPED_EVIDENCE_MAP_NO_NEW_TASK_PASS",
+      "preservedEvidenceRefs": [
+        "F2_EXCEL",
+        "R2755",
+        "R2780",
+        "R2783",
+        "MAKE_READER",
+        "F3_SOURCE",
+        "RELOAD_PASS"
+      ],
+      "preservedScope": "Binding/reader operational/ventana/historia/transporte y limpieza anterior demostrados. TresrecargasrouterPASS;105tests de corrección focal fuente aprobados.",
+      "unmatchedOrCurrentResidualScope": "Cadena remota de aplicación aún pendiente; pérdida real de respuesta, cambioHR posterior, eco y conflicto concurrente no quedan probados por replay de un comando confirmado.",
+      "nextExistingQaCarryAndLimits": "F3 previsto cubre8campos,exactreplay,wrongpayload,stale-base,sucesorGT,no-rollback,restauración y recibos; retorna CLEANUP_PENDING hasta limpieza remota exacta. No fullB14PASS por ese resultado.",
+      "matrixBindings": [
+        {
+          "domain": "canonical-hr-state-adapters",
+          "jsonPointer": "/modules/3",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses."
+          ],
+          "historicalMatchPreserved": false
+        },
+        {
+          "domain": "persistence-command-ack-boundary",
+          "jsonPointer": "/modules/13",
+          "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+          "currentResidualClauses": [
+            "Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.",
+            "Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.",
+            "Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses."
+          ],
+          "historicalMatchPreserved": false
+        }
+      ]
+    }
+  ],
+  "supersededObligations": [
+    {
+      "oldObligation": "RUN2400: unread/click-route de campanita pendiente",
+      "newEvidenceRefs": [
+        "R2409",
+        "R2547"
+      ],
+      "currentTreatment": "Cubierto en el alcance explícito de esos recibos; no reiniciar campanita ni sus ciclos durables."
+    },
+    {
+      "oldObligation": "RUN2400 y recibos antiguos: bloque humanoB7 pendiente",
+      "newEvidenceRefs": [
+        "B7_LOCK",
+        "MATRIX",
+        "R2783"
+      ],
+      "currentTreatment": "AprobaciónB7 preservada. No equivale a fulltaskB07 ni al dominio completo."
+    },
+    {
+      "oldObligation": "Storage upload denegado por falta de rules de evidencia",
+      "newEvidenceRefs": [
+        "R2479"
+      ],
+      "currentTreatment": "Corrección publicada y upload/ACL/ACK/replay/cleanup probados; quedan UXcamera/GPS/errores, no el mismo bloqueo Storage sin drift."
+    },
+    {
+      "oldObligation": "B11Dashboard/MiDía: faltan Visitas y Reportes sobre mismaHR",
+      "newEvidenceRefs": [
+        "B11_VISITS"
+      ],
+      "currentTreatment": "RUN44817603113 cubrió esas dos superficies. Cambio posterior de fuente permite reproof focal, no negación del PASS histórico."
+    },
+    {
+      "oldObligation": "Work20nov GT11/GT12/HN06FAIL al recargar",
+      "newEvidenceRefs": [
+        "RELOAD_PASS"
+      ],
+      "currentTreatment": "RUN45083484203 de22nov PASS3/3. Reabrir solo con drift reproducible."
+    },
+    {
+      "oldObligation": "Reader operacional sigueGoogle; no existebinding original/catálogo",
+      "newEvidenceRefs": [
+        "F2_EXCEL",
+        "R2755"
+      ],
+      "currentTreatment": "Exceloperacional ya publicado, binding/catálogo leídos. Mantener ACKwrite como pendiente distinto."
+    },
+    {
+      "oldObligation": "Ventana/histórico/lectura antigua obligan nuevo diseño o reimport",
+      "newEvidenceRefs": [
+        "R2780"
+      ],
+      "currentTreatment": "VentanaOctNov88,historia836,Sept44yretorno probado; no reimportar ni recomponer para demostrarlo."
+    },
+    {
+      "oldObligation": "RUN2782 obliga volver a limpiar29docs/1Auth",
+      "newEvidenceRefs": [
+        "R2783"
+      ],
+      "currentTreatment": "Limpieza pasada cerrada; solo el run futuro genera autoridad de su propia limpieza, nunca reutilizar RUN2782 como autorización nueva."
+    }
+  ],
+  "existingQaOwners": [
+    {
+      "path": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "gitBlob": "bbdfb0d9d45bd0349357c7ab99c6a22285da45c2",
+      "sha256": "8274c2fc5fca5a324b48d5d3d83e38dbc0f939af08a8c8e5aa418c790e5508c0",
+      "matchesHeadBlob": true,
+      "scopeAndLines": "Endpoint F3; líneas353–367 ACK/evento/delivery/readback;397–416 casos yrestauración;402–403 excluyen pérdida real de respuesta;465 delimita cleanupremoto."
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f3-shopper-role-qa.mjs",
+      "gitBlob": "be20f80a75bc3c3386ce2705e7acafdadeca87cf",
+      "sha256": "786c3dcb2256f09a2d53fe9fb13d664ae4be54a65677511ce06eae1594f49d6f",
+      "matchesHeadBlob": true,
+      "scopeAndLines": "Complemento en mismofixture;35–39 contexto/keysets;105–139 fasesantes/asignado/reload y límites. Noautoupsert,passwordnormal,botónAdmin,postulación."
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-original-read-period-ui.mjs",
+      "gitBlob": "57516dff9b49b139f2f494087988e6222c47c60d",
+      "sha256": "76fe85ac15cef4645c5b663b879c9dcf02e99f9730169c08f649e996d5193da8",
+      "matchesHeadBlob": true,
+      "scopeAndLines": "Runner existente para lector originalautenticado y3recargas;112decision acotada. No escribir/duplicar otro runner."
+    }
+  ],
+  "nextExactAction": "Reutilizar el mismo carril de Work: publicar/verificar fuente8d70 y artefacto exactos, consumir F3raw+ShopperRole como scopes separados, esperar restauración/cleanup verificados, y acreditar únicamente casos probados contra aceptaciones originales. No ejecutar nuevos tests ni resetear el inventario desde esta revisión.",
+  "authorizationRequiredForThisReview": false
+}

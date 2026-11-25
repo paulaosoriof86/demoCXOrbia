@@ -47,10 +47,10 @@ jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg control "$prod
   '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:"recovery/cxorbia-phase-a-20260831",job:"i3-finance-focal-reproof",attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport}' > "$FINAL_FOCAL_OUT/start.json"
 put() {
   local src="$1" dest="$2" gen
-  gcloud storage cp --if-generation-match=0 "$src" "$dest" >&2
-  gen="$(gcloud storage objects describe "$dest" --raw --format='value(generation)')"
-  [[ "$gen" =~ ^[1-9][0-9]+$ ]]
-  gcloud storage cat "$dest#$gen" | cmp -s "$src" -
+  gcloud storage cp --if-generation-match=0 "$src" "$dest" >&2 || return
+  gen="$(gcloud storage objects describe "$dest" --raw --format='value(generation)')" || return
+  [[ "$gen" =~ ^[1-9][0-9]+$ ]] || return 1
+  gcloud storage cat "$dest#$gen" | cmp -s "$src" - || return
   printf '%s#%s\n' "$dest" "$gen"
 }
 export CXORBIA_GOOGLE_QA_START
@@ -60,16 +60,45 @@ status=0
 bash tools/qa/cxorbia-i3-finance-focal-execute.sh > "$FINAL_FOCAL_OUT/job.log" 2>&1 || status=$?
 public="$FINAL_FOCAL_OUT/ui-readonly"
 test -f "$public/finance-ui-readonly.json"
+readback_status=0
 if [[ ! -f "$public/identity-live-readback.json" ]]; then
-  bash tools/qa/cxorbia-i3-finance-current-readback.sh
+  bash tools/qa/cxorbia-i3-finance-current-readback.sh || readback_status=$?
 fi
+if [[ ! -f "$public/identity-live-readback.json" ]]; then
+  [[ "$readback_status" != 0 ]] || readback_status=1
+  jq -n --arg source "$FOCAL_SOURCE" --argjson code "$readback_status" \
+    '{decision:"HOLD_CURRENT_FINANCE_DEV_IDENTITY_READBACK",sourceSha:$source,readbackExitCode:$code,error:"ENVIRONMENT_FAILURE:GOOGLE_FINANCE_IDENTITY_READBACK_FAILED",runtimeTrafficExact:null,hostingBeforeAfterSame:null,production:false,deploys:0}' > "$public/identity-live-readback.json"
+fi
+[[ "$status" != 0 || "$readback_status" == 0 ]] || status="$readback_status"
 # Only the runner's public receipt and the sibling identity seal enter this bundle.
 # Any encrypted PDF diagnostic is archived as encrypted bytes with a create-only object.
+objects="$FINAL_FOCAL_OUT/encrypted-pdf-objects.jsonl"
+archive_errors="$FINAL_FOCAL_OUT/encrypted-pdf-archive-errors.jsonl"
+: > "$objects"
+: > "$archive_errors"
+archive_error() {
+  jq -cn --arg entry "$1" --arg code "$2" '{entry:(if $entry=="" then null else $entry end),code:$code}' >> "$archive_errors"
+  [[ "$status" != 0 ]] || status=1
+}
 while IFS= read -r -d '' encrypted; do
-  [[ "$(basename "$encrypted")" =~ ^[a-zA-Z0-9_.-]+$ ]]
-  put "$encrypted" "$prefix/$(basename "$encrypted")"
+  entry="$(basename "$encrypted")"
+  if [[ ! "$entry" =~ ^private-session-[01]-(movements|dashboard)-pdf\.envelope\.json$ ]]; then
+    archive_error '' SOURCE_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_NAME
+    continue
+  fi
+  encrypted_hash="$(sha256sum "$encrypted")"; encrypted_hash="${encrypted_hash%% *}"
+  if ! jq -e --arg entry "$entry" --arg hash "$encrypted_hash" '.failurePdf.privateEvidence | .entry==$entry and .sha256==$hash and .encrypted==true and .algorithm=="RSA-OAEP-SHA256+AES-256-GCM"' "$public/finance-ui-readonly.json" >/dev/null; then
+    archive_error "$entry" SOURCE_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_LOCAL_BINDING
+    continue
+  fi
+  if encrypted_uri="$(put "$encrypted" "$prefix/$entry")"; then
+    jq -cn --arg entry "$entry" --arg uri "$encrypted_uri" --arg generation "${encrypted_uri##*#}" --arg hash "$encrypted_hash" \
+      '{entry:$entry,uri:$uri,generation:$generation,sha256:$hash}' >> "$objects"
+  else
+    archive_error "$entry" PROVIDER_FAILURE:GOOGLE_FINANCE_PRIVATE_EVIDENCE_ARCHIVE
+  fi
 done < <(find "$public" -type f -name 'private-session-*-pdf.envelope.json' -print0)
-python3 - "$public" "$CXORBIA_GOOGLE_QA_START" "$status" > "$FINAL_FOCAL_OUT/result.json" <<'PY'
+python3 - "$public" "$CXORBIA_GOOGLE_QA_START" "$status" "$objects" "$archive_errors" > "$FINAL_FOCAL_OUT/result.json" <<'PY'
 import pathlib,sys,hashlib,json
 folder=pathlib.Path(sys.argv[1])
 def content(name):
@@ -78,8 +107,11 @@ def content(name):
 result,rhash=content('finance-ui-readonly.json')
 seal,shash=content('identity-live-readback.json')
 assert json.loads(result)['privateDataExposed'] is False
+def lines(name):
+    return [json.loads(line) for line in pathlib.Path(name).read_text().splitlines() if line.strip()]
 print(json.dumps(dict(schemaVersion='cxorbia.i3.google-finance-result.v1',startUri=sys.argv[2],exitCode=int(sys.argv[3]),
-                      resultText=result,resultSha256=rhash,identityReadbackText=seal,sealSha256=shash)))
+                      resultText=result,resultSha256=rhash,identityReadbackText=seal,sealSha256=shash,
+                      encryptedPdfObjects=lines(sys.argv[4]),encryptedPdfArchiveErrors=lines(sys.argv[5]))))
 PY
 uri="$(put "$FINAL_FOCAL_OUT/result.json" "$prefix/result.json")"
 printf 'RESULT %s\n' "$uri"

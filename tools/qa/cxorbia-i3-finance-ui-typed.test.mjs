@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {incorporateTypedResults} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
+import {financeHrOwnerCode} from './cxorbia-i3-finance-ui-readonly.mjs';
 const copy=x=>structuredClone(x);
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
 const identity={sourceSha:'a'.repeat(40),sourceTree:'b'.repeat(40),runtimeRevision:'cxorbia-live-hr-dev-00391-8mg',runtimeDigest:'sha256:'+'c'.repeat(64),hostingVersion:'sites/cxorbia-backend-dev/versions/511061474d07baca'};
@@ -101,4 +102,144 @@ test('failure stage survives typed recording while arbitrary route, suffix and H
   f.result.stage='SESSION_1_MOVEMENT_EXPORT';f.result.failureStage=f.result.stage;f.result.sessionAttempted=1;f.result.activeSessionProgress={auth:true,serverRows:true,dom:true,movementExport:false,private:'DO_NOT_STORE'};
   f.result.failureUi={available:true,route:'DO_NOT_STORE',role:'DO_NOT_STORE',movementRowCount:3,html:'DO_NOT_STORE',uid:'DO_NOT_STORE'};
   const r=summarize(f);assert.equal(r.observations.failureStage,'SESSION_1_MOVEMENT_EXPORT');assert.equal(r.observations.activeSessionProgress.movementExport,false);assert.equal(r.observations.failureUi.movementRowCount,3);assert.equal(r.observations.failureUi.route,null);assert(!JSON.stringify(r).includes('DO_NOT_STORE'));
+});
+
+function pdfFailureFixture(){
+  const f=fixture();f.result.decision='HOLD_C09_C10_UI_READONLY';f.transport.jobConclusion='failure';
+  f.result.sessions=[];f.result.independentAdminSessions=0;f.result.stage='SESSION_1_MOVEMENT_EXPORT';f.result.failureStage=f.result.stage;
+  f.result.error='FUNCTIONAL_DEFECT:C09_C10_PDF_CONTENT';f.result.errorSha256=hash(f.result.error);
+  f.result.networkFailure='ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST';f.result.network.unexpectedDenied=13;
+  f.result.failurePdf={matches:false,pages:1,textCharacters:350,textSha256:'1'.repeat(64),titleMatches:true,periodMatches:true,
+    titleMatchesIgnoringWhitespace:true,periodMatchesIgnoringWhitespace:true,missingCellCount:1,missingCellsTruncated:false,
+    missingCells:[{row:1,column:0,expectedCharacters:10,expectedSha256:'2'.repeat(64),matchesIgnoringWhitespace:true}],
+    bytes:2048,sha256:'3'.repeat(64),privateEvidence:{entry:'private-session-0-movements-pdf.envelope.json',sha256:'4'.repeat(64),plainSha256:'5'.repeat(64),encrypted:true,algorithm:'RSA-OAEP-SHA256+AES-256-GCM'}};
+  f.result.partialExportProof={decision:'PARTIAL_EXPORT_PROOF_PDF_PENDING',rows:3,semanticRowsSha256:'6'.repeat(64),
+    preview:{sha256:'7'.repeat(64),contentMatches:true},xlsx:{bytes:4096,sha256:'8'.repeat(64),parsed:true,contentMatches:true},
+    nativePrintDom:{sha256:'9'.repeat(64),contentMatches:true},pdf:{bytes:2048,sha256:'3'.repeat(64),pages:1,parsed:true,contentMatches:false}};
+  return f;
+}
+test('PDF failure preserves typed diagnostic and encrypted reference without replacing primary error or crediting partial export',()=>{
+  const f=pdfFailureFixture();
+  for(const item of [f.result.failurePdf,f.result.failurePdf.missingCells[0],f.result.failurePdf.privateEvidence,f.result.partialExportProof,f.result.partialExportProof.pdf]){
+    Object.assign(item,{text:'DO_NOT_STORE_PRIVATE_PDF_TEXT',url:'https://private.example.test/DO_NOT_STORE_ACCOUNT?token=DO_NOT_STORE_TOKEN',base64:'DO_NOT_STORE_PDF_BYTES',rawRows:['DO_NOT_STORE_FINANCE_ROW']});
+  }
+  f.result.networkFailure+=':DO_NOT_STORE_PRIVATE_SUFFIX';
+  const r=summarize(f);
+  assert.equal(r.classification,'FUNCTIONAL_DEFECT');assert.deepEqual(r.failureCodes,['FUNCTIONAL_DEFECT:C09_C10_PDF_CONTENT']);
+  assert.equal(r.observations.networkFailure,'ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST');
+  assert.equal(r.observations.failurePdf.missingCellCount,1);assert.equal(r.observations.failurePdf.missingCells[0].matchesIgnoringWhitespace,true);
+  assert.equal(r.observations.failurePdf.privateEvidence.entry,'private-session-0-movements-pdf.envelope.json');
+  assert.equal(r.observations.failurePdf.privateEvidence.sha256,'4'.repeat(64));assert.equal(r.observations.failurePdf.privateEvidence.referenceOnly,true);
+  assert.equal(r.observations.partialExportProof.decision,'PARTIAL_EXPORT_PROOF_PDF_PENDING');
+  assert.equal(r.observations.partialExportProof.xlsx.contentMatches,true);assert.equal(r.observations.partialExportProof.pdf.contentMatches,false);
+  assert.equal(r.decision,'RECORDED_TYPED_RESULT_HOLD');assert.equal(r.state,'HOLD');assert.equal(r.phaseAComplete,false);
+  assert.equal(r.ownerSpecificReceipts.length,0);assert.equal(r.privateValuesStored,false);assert(!JSON.stringify(r).includes('DO_NOT_STORE'));
+});
+test('PDF diagnostics bound cells and reject private paths, URLs, malformed hashes and false encryption metadata',async t=>{
+  for(const [name,mutate]of [
+    ['path traversal',x=>x.entry='../DO_NOT_STORE.pdf'],['private URL',x=>x.entry='https://private.example.test/DO_NOT_STORE.pdf'],
+    ['unscoped filename',x=>x.entry='private-customer-DO_NOT_STORE.pdf'],['plain attachment',x=>x.encrypted=false],
+    ['non-string filename',x=>x.entry=['private-session-0-movements-pdf.envelope.json']],
+    ['wrong algorithm',x=>x.algorithm='DO_NOT_STORE'],['bad envelope hash',x=>x.sha256='DO_NOT_STORE'],['bad plain hash',x=>x.plainSha256='DO_NOT_STORE']
+  ])await t.test(name,()=>{const f=pdfFailureFixture();mutate(f.result.failurePdf.privateEvidence);const r=summarize(f);assert.equal(r.observations.failurePdf.privateEvidence,null);assert(!JSON.stringify(r).includes('DO_NOT_STORE'));});
+  const f=pdfFailureFixture();f.result.failurePdf.missingCells=Array.from({length:80},(_,row)=>({row,column:0,expectedCharacters:10,expectedSha256:'DO_NOT_STORE',matchesIgnoringWhitespace:false,expectedValue:'DO_NOT_STORE'}));
+  f.result.failurePdf.sha256='DO_NOT_STORE';f.result.failurePdf.textSha256='DO_NOT_STORE';
+  const r=summarize(f);assert.equal(r.observations.failurePdf.missingCells.length,64);assert.equal(r.observations.failurePdf.missingCellsTruncated,true);
+  assert.equal(r.observations.failurePdf.sha256,null);assert.equal(r.observations.failurePdf.textSha256,null);assert.equal(r.observations.failurePdf.missingCells[0].expectedSha256,null);assert(!JSON.stringify(r).includes('DO_NOT_STORE'));
+});
+test('contradictory PDF, partial export or failure metadata cannot accompany a Finance PASS',async t=>{
+  for(const [name,mutate]of [
+    ['PDF diagnostic',r=>r.failurePdf=pdfFailureFixture().result.failurePdf],
+    ['partial export',r=>r.partialExportProof=pdfFailureFixture().result.partialExportProof],
+    ['secondary network failure',r=>r.networkFailure='ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST'],
+    ['primary failure',r=>r.error='FUNCTIONAL_DEFECT:C09_C10_PDF_CONTENT']
+    ,['HR owner diagnostic',r=>r.hrOwnerDiagnostic={authorityPresent:true,applied:false,ownerCode:'HR_LIVE_UNAVAILABLE'}]
+  ])await t.test(name,()=>{const f=fixture();mutate(f.result);assert.throws(()=>summarize(f),/MAPPING_FAILURE:TYPED_SUMMARY_FINANCE_UI_CONTRADICTORY_PASS/);});
+});
+test('new failed-PDF artifact survives the existing consumer pipeline as HOLD with exact diagnostics and no owner receipt',async()=>{
+  const f=pdfFailureFixture(),folder=fs.mkdtempSync(path.join(os.tmpdir(),'finance-ui-pdf-failure-'));
+  const resultText=JSON.stringify(f.result);fs.writeFileSync(path.join(folder,'finance-ui-readonly.json'),resultText);
+  const run={id:1,run_attempt:1,head_sha:f.transport.controlHead};
+  const job={id:2,name:'i3-finance-focal-reproof',status:'completed',conclusion:'failure',started_at:'2026-11-25T00:00:00Z',completed_at:'2026-11-25T00:01:00Z'};
+  const artifact={id:3,name:'cxorbia-i3-finance-focal-1',digest:f.transport.artifactDigest,created_at:'2026-11-25T00:00:59Z',expired:false,workflow_run:{id:1,head_sha:run.head_sha}};
+  const index={schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[],production:false},files=new Map();
+  const controls={descriptor:{currentFunctionalEvidenceIndex:index},pointer:{currentFunctionalEvidenceIndex:index,currentResultIncorporationQueue:[{runId:1,runAttempt:1,jobId:2,name:job.name}]}};
+  try{
+    const result=await incorporateTypedResults({api:async()=>{throw Error('No network permitted');},token:'synthetic',run,jobs:[job],artifacts:[artifact],controls,
+      journal:{artifacts:[artifact],pendingTypedResults:[{jobId:2,name:job.name}]},files,now:'2026-11-25T00:02:00Z',
+      download:async()=>({folder,digest:artifact.digest,cleanup:()=>{}}),producerLoader:async()=>({descriptor:{currentMaterialization:identity},pointer:{},matrix:{}})});
+    assert.equal(result.failures.length,0);assert.equal(result.incorporated.length,1);
+    const saved=JSON.parse([...files.entries()].find(([p])=>p.endsWith('_TYPED_RESULT.json'))[1]);
+    assert.equal(saved.provenance.resultSha256,hash(resultText));assert.equal(saved.decision,'RECORDED_TYPED_RESULT_HOLD');assert.equal(saved.classification,'FUNCTIONAL_DEFECT');
+    assert.equal(saved.observations.failurePdf.privateEvidence.sha256,'4'.repeat(64));assert.equal(saved.observations.failurePdf.missingCells[0].expectedSha256,'2'.repeat(64));
+    assert.equal(saved.observations.partialExportProof.pdf.contentMatches,false);assert.equal(saved.ownerSpecificReceipts.length,0);assert.equal(saved.newDomainMatches,0);
+  }finally{fs.rmSync(folder,{recursive:true,force:true});}
+});
+test('historical results without PDF diagnostics do not acquire invented diagnostic fields',()=>{
+  const f=fixture();f.result.decision='HOLD_C09_C10_UI_READONLY';const r=summarize(f);
+  for(const key of ['failurePdf','partialExportProof','networkFailure','hrOwnerDiagnostic'])assert.equal(Object.hasOwn(r.observations,key),false);
+  for(const key of ['failureCode','readbackExitCode'])assert.equal(Object.hasOwn(r.observations.sameArtifactReadback,key),false);
+});
+
+function hrOwnerFailureFixture(){
+  const f=fixture();f.result.decision='HOLD_C09_C10_UI_READONLY';f.transport.jobConclusion='failure';
+  Object.assign(f.result,{sessions:[],independentAdminSessions:0,stage:'SESSION_1_AUTH',failureStage:'SESSION_1_AUTH',sessionAttempted:1,
+    error:'ENVIRONMENT_FAILURE:C09_C10_UI_UNCONFIRMED',networkFailure:'ENVIRONMENT_FAILURE:C09_C10_UNEXPECTED_NETWORK_REQUEST',
+    activeSessionProgress:{auth:false,period:false,serverRows:false,dom:false,advancePair:false,movementExport:false,dashboard:false,finalRead:false},
+    failureUi:{available:true,firebaseUserPresent:true,contextAuthenticated:true,authorityApplied:false},
+    hrOwnerDiagnostic:{authorityPresent:true,applied:false,retryable:true,sourceReady:false,sourceBlocked:true,runtimeReady:true,
+      ownerCode:'HR_LIVE_HTTP_503',ownerErrorSha256:hash('SYNTHETIC_HR_OWNER_FAILURE'),authenticatedHrHttp:[200,503]}});
+  Object.assign(f.result.network,{automaticHrSuppressed:0,unexpectedDenied:4,allowedAuthRequests:5,routeControlFailures:0});
+  return f;
+}
+test('HR owner failure survives typed recording without changing the primary classification or giving export credit',()=>{
+  const f=hrOwnerFailureFixture();Object.assign(f.result.hrOwnerDiagnostic,{ownerError:'DO_NOT_STORE_RAW_ERROR',uid:'DO_NOT_STORE_UID',url:'https://private.invalid/DO_NOT_STORE_URL',details:{account:'DO_NOT_STORE_ACCOUNT'}});
+  const r=summarize(f),d=r.observations.hrOwnerDiagnostic;
+  assert.equal(r.classification,'ENVIRONMENT_FAILURE');assert.deepEqual(r.failureCodes,['ENVIRONMENT_FAILURE:C09_C10_UI_UNCONFIRMED']);
+  assert.equal(r.observations.failureStage,'SESSION_1_AUTH');assert.equal(r.observations.failureUi.contextAuthenticated,true);assert.equal(r.observations.failureUi.authorityApplied,false);
+  assert.equal(d.ownerCode,'HR_LIVE_HTTP_503');assert.equal(d.ownerErrorSha256,hash('SYNTHETIC_HR_OWNER_FAILURE'));assert.deepEqual(d.authenticatedHrHttp,[200,503]);
+  assert.equal(d.authorityPresent,true);assert.equal(d.applied,false);assert.equal(d.runtimeReady,true);assert.equal(d.available,null);
+  assert.equal(r.observations.independentAdminSessions,0);assert.deepEqual(r.observations.sessions,[]);assert.equal(r.decision,'RECORDED_TYPED_RESULT_HOLD');
+  assert.equal(r.state,'HOLD');assert.equal(r.phaseAComplete,false);assert.equal(r.newDomainMatches,0);assert.deepEqual(r.ownerSpecificReceipts,[]);assert.doesNotMatch(JSON.stringify(r),/DO_NOT_STORE|private\.invalid/);
+});
+test('every supported producer HR owner code remains exact, including sanitized dynamic prefixes and HTTP boundaries',async t=>{
+  const codes=['HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS','HR_LIVE_DUPLICATE_PERIOD_KEYS','HR_LIVE_NETWORK_FAILURE','HR_LIVE_NONEMPTY_REQUIRED','HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION','HR_LIVE_REVISION_PUBLICATION_MISMATCH','HR_LIVE_REVISION_READBACK_MISSING','HR_LIVE_REVISION_REQUIRED','HR_LIVE_SCOPE_MISMATCH','HR_LIVE_SOURCE_SAFE_REQUIRED','HR_LIVE_UNAVAILABLE','PROJECT_SCOPE_REQUIRED','CANONICAL_COMPOSER_V2_MISSING','CANONICAL_PERIOD_LOSS','CERTIFICATION_EVIDENCE_PROJECTOR_MISSING','BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED','BACKEND_REFRESH_READBACK_REVISION_MISMATCH','AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED','AUTH_FAILURE:SESSION_GENERATION_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SESSION_NO_LONGER_AUTHORIZED','AUTH_FAILURE:PROTECTED_STATE_PRINCIPAL_CHANGED_DURING_COMPOSITION','AUTH_FAILURE:SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH',
+    'CANONICAL_DYNAMIC_COMPOSITION_INVARIANT_DO_NOT_STORE_UID','HR_LIVE_VISIT_PERIOD_MISSING_DO_NOT_STORE_PERIOD','AUTH_FAILURE:SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED:DO_NOT_STORE_PRIVATE_DETAIL',
+    'HR_LIVE_HTTP_100','HR_LIVE_HTTP_599','HR_LIVE_REVISION_READBACK_HTTP_200','HR_LIVE_REVISION_READBACK_HTTP_599','UNKNOWN_DO_NOT_STORE',''];
+  for(const [index,raw]of codes.entries())await t.test('producer code '+index,()=>{
+    const f=hrOwnerFailureFixture(),expected=financeHrOwnerCode(raw);f.result.hrOwnerDiagnostic.ownerCode=expected;
+    const r=summarize(f);assert.equal(r.observations.hrOwnerDiagnostic.ownerCode,expected);assert.doesNotMatch(JSON.stringify(r),/DO_NOT_STORE/);
+    assert.equal(r.classification,'ENVIRONMENT_FAILURE');
+  });
+});
+test('HR owner whitelist rejects unsanitized codes, malformed values and arrays without exposing their contents',async t=>{
+  for(const value of ['HR_LIVE_HTTP_600','HR_LIVE_HTTP_099','HR_LIVE_HTTP_200:DO_NOT_STORE_UID','AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED:DO_NOT_STORE_UID','CANONICAL_DYNAMIC_COMPOSITION_INVARIANT_DO_NOT_STORE_UID','https://private.invalid/DO_NOT_STORE',42,['HR_LIVE_UNAVAILABLE'],{code:'DO_NOT_STORE'}])await t.test('reject code '+typeof value,()=>{
+    const f=hrOwnerFailureFixture();f.result.hrOwnerDiagnostic.ownerCode=value;const r=summarize(f);
+    assert.equal(r.observations.hrOwnerDiagnostic.ownerCode,null);assert.doesNotMatch(JSON.stringify(r),/DO_NOT_STORE|private\.invalid/);
+  });
+  for(const value of [null,[],['DO_NOT_STORE'],'DO_NOT_STORE']){const f=hrOwnerFailureFixture();f.result.hrOwnerDiagnostic=value;const r=summarize(f);assert.equal(r.observations.hrOwnerDiagnostic,null);assert.doesNotMatch(JSON.stringify(r),/DO_NOT_STORE/);}
+  const f=hrOwnerFailureFixture();Object.assign(f.result.hrOwnerDiagnostic,{applied:'true',authorityPresent:1,retryable:{private:'DO_NOT_STORE'},ownerErrorSha256:'DO_NOT_STORE_HASH',authenticatedHrHttp:[200,201,202,0,100,599,600,'503',-1,200.5]});
+  const d=summarize(f).observations.hrOwnerDiagnostic;assert.equal(d.applied,null);assert.equal(d.authorityPresent,null);assert.equal(d.retryable,null);assert.equal(d.ownerErrorSha256,null);
+  assert.deepEqual(d.authenticatedHrHttp,[202,0,100,599,null,null,null,null]);assert.equal(d.authenticatedHrHttp.length,8);
+  f.result.hrOwnerDiagnostic={available:false};const unavailable=summarize(f).observations.hrOwnerDiagnostic;
+  assert.equal(unavailable.available,false);assert.equal(unavailable.ownerCode,null);assert.equal(unavailable.authenticatedHrHttp,null);
+});
+test('HR owner diagnostic is incorporated through the existing consumer with zero exports and no new PASS',async()=>{
+  const f=hrOwnerFailureFixture(),folder=fs.mkdtempSync(path.join(os.tmpdir(),'finance-ui-hr-owner-')),resultText=JSON.stringify(f.result);
+  fs.writeFileSync(path.join(folder,'finance-ui-readonly.json'),resultText);
+  const run={id:1,run_attempt:1,head_sha:f.transport.controlHead};
+  const job={id:2,name:'i3-finance-focal-reproof',status:'completed',conclusion:'failure',started_at:'2026-11-25T00:00:00Z',completed_at:'2026-11-25T00:01:00Z'};
+  const artifact={id:3,name:'cxorbia-i3-finance-focal-1',digest:f.transport.artifactDigest,created_at:'2026-11-25T00:00:59Z',expired:false,workflow_run:{id:1,head_sha:run.head_sha}};
+  const index={schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[],production:false},files=new Map();
+  const controls={descriptor:{currentFunctionalEvidenceIndex:index},pointer:{currentFunctionalEvidenceIndex:index,currentResultIncorporationQueue:[{runId:1,runAttempt:1,jobId:2,name:job.name}]}};
+  try{
+    const result=await incorporateTypedResults({api:async()=>{throw Error('No network permitted');},token:'synthetic',run,jobs:[job],artifacts:[artifact],controls,
+      journal:{artifacts:[artifact],pendingTypedResults:[{jobId:2,name:job.name}]},files,now:'2026-11-25T00:02:00Z',
+      download:async()=>({folder,digest:artifact.digest,cleanup:()=>{}}),producerLoader:async()=>({descriptor:{currentMaterialization:identity},pointer:{},matrix:{}})});
+    assert.equal(result.failures.length,0);assert.equal(result.incorporated.length,1);assert.equal(result.queue.size,0);
+    const saved=JSON.parse([...files.entries()].find(([p])=>p.endsWith('_TYPED_RESULT.json'))[1]);
+    assert.equal(saved.provenance.resultSha256,hash(resultText));assert.equal(saved.observations.hrOwnerDiagnostic.ownerCode,'HR_LIVE_HTTP_503');
+    assert.equal(saved.observations.hrOwnerDiagnostic.applied,false);assert.deepEqual(saved.observations.sessions,[]);
+    assert.equal(saved.classification,'ENVIRONMENT_FAILURE');assert.equal(saved.decision,'RECORDED_TYPED_RESULT_HOLD');assert.equal(saved.newDomainMatches,0);assert.deepEqual(saved.ownerSpecificReceipts,[]);
+  }finally{fs.rmSync(folder,{recursive:true,force:true});}
 });

@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {publicA08ClauseRefs,projectCurrentScopedClauses,verifiedTypedReceipt,canonicalSha256,FINANCE_METADATA_SCOPE_PATH,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
 import {summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
+import {A08_GT_CURRENT_PROVIDER_MODE,diagnoseCurrentProviderPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 import {readScopedIndexResults,reconcileCurrentScopedClauses} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {jsonBytes,gitBlob,sha256,DESCRIPTOR,POINTER,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 const HN='shopper_hn_3b3c2f5cc1',GT='shopper_gt_a092a0647f',SHP='shp-3669abbb015a';
@@ -144,4 +145,97 @@ test('consumer repairs only stale next action via existing binder even without n
  const got=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T03:00:00Z'});assert.equal(got.changed,true);assert.equal(got.nextActionChanged,true);assert.deepEqual(got.changedDomains,[]);
  const d=JSON.parse(files.get(DESCRIPTOR)),p=JSON.parse(files.get(POINTER)),m=JSON.parse(files.get(d.moduleTruthPath)),l=JSON.parse(files.get(d.findingsLedgerPath));
  assert.equal(d.nextExactAction,p.nextExactAction);assert.equal(d.nextExactAction,m.nextExactAction);assert.equal(d.nextExactAction,l.nextExactAction);assert.equal(d.moduleTruthExpectedGitBlob,gitBlob(files.get(d.moduleTruthPath)));assert.equal(d.findingsLedgerExpectedGitBlob,gitBlob(files.get(d.findingsLedgerPath)));assertPreserved(before,{descriptor:d,pointer:p,matrix:m,ledger:l});
+});
+
+// Synthetic current GT provider/readback fixture. Identity authority is produced
+// by the real shared predicate; these data never contact Auth or a browser.
+function gtRaw(){
+ const rule='tya-shopper-primer-nombre-primer-apellido-v2',uid='qa-gt-keeper',login='qa.existing',ref='a'.repeat(40),linkId='irl_'+'b'.repeat(32);
+ const digest=x=>sha256(x),fingerprint=digest('cxorbia-provider-uid-v1\0'+uid);
+ const versions={credentialRuleVersion:rule,credentialSweepVersion:'cxorbia-durable-shopper-credential-sweep-v2',credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2',credentialPasswordRuleVersion:rule};
+ const common={tenantId:'tya',shopperId:GT,projectIds:['cinepolis'],visibleLogin:login,...versions};
+ const input={shopperId:GT,uid,member:{...common,active:true,role:'shopper',authNamespace:'shopper',credentialState:'enrolled',providerUidFingerprint:fingerprint,identityConsolidatedAt:'2026-01-01'},
+  profile:{...common,identityAuthority:'tenant_adjudication',identityAuthorityRef:ref,identityConsolidatedAt:'2026-01-01'},
+  authUser:{uid,disabled:false,email:digest('tya\0shopper\0'+login).slice(0,48)+'@auth.cxorbia.invalid',customClaims:{tenantId:'tya',shopperId:GT,projectIds:['cinepolis'],role:'shopper',authNamespace:'shopper'}},
+  cross:{tenantId:'tya',shopperId:GT,sourceStableKey:GT,providerUidFingerprint:fingerprint,identityAuthorityRef:ref},
+  receipt:{status:'committed',commandType:'shopper.identity.adjudicate',providerAck:true,identityConsolidated:true,shopperId:GT,keeperUidFingerprint:fingerprint,actorUid:'qa-super',commandDigest:'c'.repeat(64),identityLinkId:linkId},
+  link:{identityLinkId:linkId,tenantId:'tya',projectScope:'cinepolis',status:'active',canonicalShopperId:GT,authorityType:'tenant_adjudication',authorityRef:ref,providerAck:true,humanConfirmed:true,fuzzyMatching:false},
+  expected:{ok:true,ruleVersion:rule,login:'qa.current',password:'Qa123*'}};
+ const authorityPreflight=diagnoseCurrentProviderPasswordProof(input,[],{complete:true,stage:'COMPLETE',crossExists:true,receiptExists:true,linkExists:true,linkDocumentId:linkId,sealCheck:'NOT_READ'});
+ assert.equal(authorityPreflight.provenanceAllowed,true);
+ const a=raw();a.scope={executionMode:A08_GT_CURRENT_PROVIDER_MODE,exceptionShopperIds:[GT],apiOperation:null,storageOperation:null};
+ a.scopeDecision='PASS_I3_A08_GT_PASSWORD_CURRENT_PROVIDER';a.passwordProofs=[{shopperId:GT,caseId:'GT_EXCEPTION',pass:true,decision:'PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE',credentialProvenance:'CURRENT_DURABLE_PROVIDER_RULE_AND_EXACT_KEEPER_AUTH',currentProviderProofVerified:true,sealCheck:'NOT_READ',historicalSealUsedAsAuthority:false,identityAndHr:true,identityPreservedAfter:true,sessionLifecycle:{restore:true,logout:true,relogin:true},loginAttempts:2,evidenceSha256:'f'.repeat(64),authorityPreflight}];
+ a.preservedEvidence.push(preservedHn());a.errors=[];a.storageDiscovery={executed:false};a.storageProof={pass:false};
+ a.finalChecks={seal:true,gtPassword:true,passwords:false,apis:false,storage:false,requestedScopePass:true,pass:false,expectedAssetCount:48,servedAssetCount:48};
+ a.safety={production:false,loginAttempts:2,browserLaunches:1,hnLoginAttempts:0,legacyLoginAttempts:0,customTokensUsed:0,providerCommands:0,directAuthWrites:0,directFirestoreWrites:0,storageWrites:0,hrWrites:0,passwordChanges:0,passwordResets:0,fixtureCreates:0,builds:0,deploys:0};
+ return a;
+}
+function gtTransport(){const t=transport();return {...t,runId:45514816285,jobId:333,artifactId:444,controlHead:'e'.repeat(40),artifactDigest:'sha256:'+'d'.repeat(64),verifiedArchiveDigest:'sha256:'+'d'.repeat(64),jobConclusion:'success'};}
+function gtVerified(a=gtRaw(),t=gtTransport()){
+ const result=summarizeTypedResult({resultText:jsonBytes(a),transport:t,expectedIdentity:a}),entry=indexEntry(result,t.runId,t.jobId);
+ Object.assign(entry,{controlHead:t.controlHead,artifactId:t.artifactId,artifactDigest:t.artifactDigest});
+ return {entry,result};
+}
+test('GT typed proof projects its own exact clause and clears only the verified password obligation',()=>{
+ const item=gtVerified(),gt=item.result.observations.acceptedClauseRefs.filter(x=>x.caseId===GT&&x.clauseId==='A08.password.'+GT);
+ assert.equal(gt.length,1);assert.equal(gt[0].evidence.kind,'VERIFIED_CURRENT_GT_PASSWORD_TYPED_RESULT');
+ assert.equal(gt[0].evidence.entrySha256,'f'.repeat(64));assert.equal(gt[0].evidence.controlHead,gtTransport().controlHead);
+ const p=project(matrix(),[item]);const auth=p.matrix.modules[0].currentResidualClauses,shopper=p.matrix.modules[1].currentResidualClauses;
+ assert.equal(auth.pending.includes(GT),false);assert.equal(auth.pending.includes(HN),false);assert.equal(auth.pending.includes(SHP),true);assert.match(auth.pending,/API\/Firestore\/Storage/);
+ assert.match(shopper.pending,/one exact Auth exception/);assert.ok(shopper.pending.includes(SHP));assert.match(shopper.pending,/A07.*B3/);
+ assert.equal(auth.creditedClauseRefs.some(x=>x.clauseId==='A08.password.'+GT&&x.evidenceIndexKey===item.entry.key),true);
+ assert.equal(item.result.state,'HOLD');assert.equal(item.result.newDomainMatches,0);assert.deepEqual(item.result.ownerSpecificReceipts,[]);assert.deepEqual(p.matrix.classificationCounts,matrix().classificationCounts);
+});
+test('GT alone preserves an unproved HN exception and later HN credit is order independent',()=>{
+ const a=gtRaw();a.preservedEvidence=[];const gt=gtVerified(a),first=project(matrix(),[gt]);
+ assert.equal(first.matrix.modules[0].currentResidualClauses.pending.includes(GT),false);assert.equal(first.matrix.modules[0].currentResidualClauses.pending.includes(HN),true);
+ assert.match(first.matrix.modules[1].currentResidualClauses.pending,/two exact Auth exceptions/);
+ const hn=verified().slice(0,1),second=project(first.matrix,hn);assert.equal(second.matrix.modules[0].currentResidualClauses.pending.includes(HN),false);
+ assert.match(second.matrix.modules[1].currentResidualClauses.pending,/one exact Auth exception/);
+});
+test('GT retirement is idempotent when HN was already projected and Legacy stays open',()=>{
+ const item=gtVerified(),hnFirst=project().matrix,p=project(hnFirst,[item]);
+ const again=project(p.matrix,[item,item]);assert.equal(again.changed,false);assert.deepEqual(again.matrix,p.matrix);
+ assert.ok(again.matrix.modules[0].currentResidualClauses.pending.includes(SHP));assert.ok(!again.matrix.modules[0].currentResidualClauses.pending.includes(GT));
+ assert.deepEqual(p.matrix.modules.find(m=>m.domain==='benefits'),matrix().modules.find(m=>m.domain==='benefits'));
+});
+for(const [name,change]of [
+ ['missing final artifact seal',a=>a.sameArtifactAfter=false],['missing HR proof',a=>a.passwordProofs[0].identityAndHr=false],
+ ['missing restore',a=>a.passwordProofs[0].sessionLifecycle.restore=false],['legacy attempt',a=>a.safety.legacyLoginAttempts=1],
+ ['diagnostic substituted',a=>{a.passwordProofs[0].authorityPreflight.provenanceAllowed=false;}],
+])test('GT clause is absent for '+name,()=>{const a=gtRaw();change(a);assert.equal(publicA08ClauseRefs(a,gtTransport()).some(x=>x.clauseId==='A08.password.'+GT),false);});
+test('GT failed producer cannot get credit even if its raw scoped decision claimed PASS',()=>{
+ const item=gtVerified(gtRaw(),{...gtTransport(),jobConclusion:'failure'});
+ assert.equal(item.result.observations.gtPasswordVerified,false);assert.equal(item.result.observations.acceptedClauseRefs.some(x=>x.clauseId==='A08.password.'+GT),false);
+ assert.equal(project(matrix(),[item]).matrix.modules[0].currentResidualClauses.pending.includes(GT),true);
+});
+for(const [name,change]of [
+ ['archive',x=>x.result.observations.acceptedClauseRefs.at(-1).evidence.artifactDigest='sha256:'+'0'.repeat(64)],
+ ['identity',x=>x.result.identity.observed.runtimeDigest='sha256:'+'0'.repeat(64)],
+ ['index job',x=>x.entry.jobId=999],['same artifact',x=>x.result.observations.sameArtifactAfter=false],
+])test('GT projection rejects tampered '+name,()=>{const item=gtVerified();change(item);assert.throws(()=>project(matrix(),[item]),/A08_REFERENCE_NOT_EXACT/);});
+test('GT public reference excludes raw identities, credentials, private paths and unsupported Google provenance',()=>{
+ const a=gtRaw();Object.assign(a.passwordProofs[0],{password:'DO_NOT_COPY_SECRET',uid:'DO_NOT_COPY_UID',privatePath:'DO_NOT_COPY_PATH'});
+ assert.doesNotMatch(JSON.stringify(publicA08ClauseRefs(a,gtTransport())),/DO_NOT_COPY/);
+ assert.equal(publicA08ClauseRefs(a,{...gtTransport(),provider:'GOOGLE_CLOUD_SHELL'}).some(x=>x.clauseId==='A08.password.'+GT),false);
+});
+test('GT scoped receipt updates every existing nextAction without adding a new progress projection',()=>{
+ const f=controlsFixture(),p=project(f.matrix,[gtVerified()]),out={descriptor:f.descriptor,pointer:f.pointer,ledger:f.ledger,matrix:p.matrix};
+ const before=structuredClone(out);for(const c of Object.values(out))c.nextExactAction=c.exactNextAction='stale GT password obligation';
+ const got=projectCurrentResidualNextAction(out);assert.equal(got.changed,true);
+ for(const c of Object.values(out)){assert.equal(c.nextExactAction,out.pointer.nextExactAction);assert.ok(c.nextExactAction.includes(SHP));assert.ok(!c.nextExactAction.includes(GT));assert.equal(Object.hasOwn(c,'currentScopedContractClosure'),false);}
+ assertPreserved(before,out);
+});
+test('consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once',async()=>{
+ const controls=controlsFixture(),item=gtVerified(),bytes=jsonBytes(item.result),files=new Map(),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[item.entry]};
+ controls.readBytes=async p=>{assert.equal(p,item.entry.path);return bytes;};controls.blobs=new Map([[item.entry.path,item.entry.gitBlob]]);
+ const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
+ const first=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T10:00:00Z'});
+ assert.equal(first.changed,true);assert.equal(first.upgraded,0);
+ const descriptor=JSON.parse(files.get(DESCRIPTOR)),pointer=JSON.parse(files.get(POINTER)),m=JSON.parse(files.get(descriptor.moduleTruthPath)),ledger=JSON.parse(files.get(descriptor.findingsLedgerPath));
+ const pending=m.modules.find(x=>x.domain==='auth-protected-data-runtime').currentResidualClauses.pending;
+ assert.ok(!pending.includes(GT));assert.ok(pending.includes(SHP));
+ for(const c of [descriptor,pointer,m,ledger]){assert.ok(!c.nextExactAction.includes(GT));assert.ok(c.nextExactAction.includes(SHP));}
+ const replay=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T10:00:00Z'});
+ assert.equal(replay.changed,false);assert.equal(replay.upgraded,0);
 });

@@ -1,0 +1,51 @@
+{
+  "targetPath": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+  "baseHeadInspected": "bc0551d77652728e59ea92e3acca9ca404980f21",
+  "operations": [
+    {
+      "op": "test",
+      "path": "/taskProgress/E04",
+      "value": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_NPS_NOTES_MEETINGS_DURABLE_OPEN__HUMAN_PENDING"
+    },
+    {
+      "op": "replace",
+      "path": "/taskProgress/E04",
+      "value": "F12_CLIENT_SOURCE_ABSENT_LIVE_PASS_RUN1797__F09_THREE_CLIENT_UI_ACTIONS_ADMIN_RECEPTION_ROLE_NEGATIVE_PASS_RUN2543_PRESERVED__CURRENT_SCOPE_CARRY_AND_AUTOMATED_UI_ACCEPTANCE_PENDING"
+    }
+  ],
+  "evidenceRefs": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN2543_C3_CERTIFY_ATTEMPT_20261116.json",
+      "gitBlob": "95f4e793563a0507567830c46226bd8bc9ed8075",
+      "sha256": "976c3242c01fbbfe6d08ddd4834f4ec354029fdf15f638a4f05d41534b66d86e",
+      "bytes": 4614,
+      "gitReadAt": "bc0551d77652728e59ea92e3acca9ca404980f21",
+      "jsonPointer": "/steps/F09",
+      "recordedIdentity": {},
+      "recordedDecision": {
+        "decision": "PASS_I3_F09_UI_PROVIDER_NEW_SESSION_PRIVACY_REPLAY_CLEANUP"
+      }
+    },
+    {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V730_2026-11-25.json",
+      "gitBlob": "b523e2ba9484bdef6685727162ae7188b6155125",
+      "sha256": "c01d10b8f182bc1f9e35f8a7d5e1dcf8c27571062d21895b47574466bd3c0014",
+      "bytes": 2838331,
+      "gitReadAt": "bc0551d77652728e59ea92e3acca9ca404980f21",
+      "jsonPointer": "/findings/VRM-346/state"
+    },
+    {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V403.json",
+      "gitBlob": "689a1ce8533e9913845dd772497098dc147f9b5b",
+      "sha256": "c90eb3035b957c70527b926fa5b13a9dc4a380857c4ea1c1724f1fcb89e0a677",
+      "bytes": 2538679,
+      "gitReadAt": "bc0551d77652728e59ea92e3acca9ca404980f21",
+      "jsonPointer": "/modules/5/currentResidualClauses",
+      "recordedIdentity": {},
+      "recordedDecision": {}
+    }
+  ],
+  "newFunctionalPasses": 0,
+  "fullE04Pass": false,
+  "production": false
+}

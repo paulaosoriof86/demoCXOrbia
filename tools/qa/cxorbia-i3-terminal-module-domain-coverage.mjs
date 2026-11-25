@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {validateTerminalAcceptedReceipt} from './cxorbia-i3-c3-finalize-module-truth.mjs';
+import {DOCUMENT_AUTHORITY_KIND,validateD01DocumentAuthorityBinding} from './cxorbia-i3-document-authority-task-binding.mjs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
@@ -56,6 +57,18 @@ export function evaluateFrozenTaskCoverage({matrix,receipts=[],identity={}}){
  const mappings=matrix.functionalTaskEvidenceMappings||{};
  for(const task of contracts.tasks){
   const mapping=mappings[task.taskId],missing=[],reject=[];
+  // The original D01 contract is document/version/approval authority. Reuse
+  // that immutable accepted proof without manufacturing a runtime execution.
+  // This explicit branch does not change any functional receipt validator.
+  if(mapping?.acceptanceKind===DOCUMENT_AUTHORITY_KIND){
+   const documentProof=validateD01DocumentAuthorityBinding({task,mapping,matrix});
+   if(!documentProof.pass)fail('C3_PROCESS_TASK_UNPROVEN:'+task.taskId);
+   tasks.push({taskId:task.taskId,taskSet:task.taskSet,status:documentProof.pass?'GO':'HOLD',
+    acceptanceBindingSha256:task.acceptanceBindingSha256,mappingSha256:taskMappingSha256(mapping),
+    missingClauses:documentProof.pass?[]:(mapping.requiredClauses||[]).map(c=>c.id),
+    mappingFailures:documentProof.failures,documentaryEvidence:documentProof});
+   continue;
+  }
   const bad=code=>reject.push(code);
   if(!mapping)bad('MAPPING_MISSING');
   else{

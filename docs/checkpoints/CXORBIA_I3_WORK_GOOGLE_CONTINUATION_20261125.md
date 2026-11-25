@@ -10,7 +10,15 @@ Base remota y local verificada para esta actualización documental: `b0ab4eda59c
 
 Resultado de este tramo: **I3 / HOLD**. Cero nuevos builds, despliegues, pruebas funcionales, cambios IAM o PASS. El bloqueo de facturación de Actions permanece registrado; la alternativa autorizada es Google y su acceso aún debe verificarse. No exigir arreglar primero GitHub si la ejecución Google puede acreditarse de forma equivalente.
 
+## Actualización verificada posterior
+
+Work acreditó acceso Chrome/Cloud Shell y firma QA temporal en `CXORBIA_I3_GOOGLE_DEV_PREFLIGHT_20261125.json`; su concesión vence a las 12:33:59 UTC del 25-11-2026 (06:33:59 Guatemala). Publicó después el transporte Google de Finanzas en `5b1efc041a4ac4b67ae68c1b9c1a0e45e3ed7ebf`. Conservar esos cambios al integrar el delta paralelo. Los resultados funcionales y la materialización pendiente se incorporan sólo por recibo real. La sesión paralela preserva ahora diagnóstico PDF, scopes Shopper/F3, D01 y E05 histórico; no solicitar a Paula otro traspaso ni repetir un intento que ya esté en curso.
+
+El resultado real Google de Finanzas `1795604796669348` ya está incorporado: HOLD en SESSION_1_AUTH, sin exportaciones. Conservar el recibo y los cambios posteriores `05d055e91` (Node 24 y diagnóstico HR). Revisar intento activo antes de repetir; el siguiente resultado debe conservar ese diagnóstico en el normalizador vigente.
+
 ## Prompt para Work
+
+> **Actualización del trabajo paralelo:** antes de publicar o incorporar, resolver HEAD vivo y leer `CXORBIA_I3_PARALLEL_CLOSURE_DELTA_20261125.json` y `CXORBIA_I3_GOOGLE_RECEIPT_COMPATIBILITY_20261125.md`. La sesión paralela corrigió controles/normalización y conservó producto/DEV. La revisión reprodujo tres problemas al colocar UUID en campos numéricos de Actions: rechazo de materialización, ocultación de runs pendientes y reemplazo por recibos antiguos. Preservar los deltas y adaptar esa sucesión real antes de consumir Google. No solicitar a Paula otro prompt por esta actualización.
 
 Continúa CXOrbia Recovery — Go-Live dentro de este mismo Project. Paula ya autorizó operar directamente en su Chrome con la extensión conectada, abrir tú las pestañas, usar Google Cloud y publicar las correcciones DEV pendientes. Ejecuta el trabajo: no devuelvas solamente un plan ni solicites nuevamente esa autorización. Soy Paula; mi intervención se limita a un inicio de sesión o permiso que técnicamente solo pueda conceder la titular y, al final, la autorización productiva del artefacto certificado. No me encargues abrir pestañas ni copiar comandos técnicos.
 

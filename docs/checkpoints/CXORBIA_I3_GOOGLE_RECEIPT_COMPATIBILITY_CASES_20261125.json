@@ -1,0 +1,40 @@
+{
+  "kind": "FOCAL_REVIEW_REQUIREMENTS_AND_NEGATIVE_CASES_NOT_NEW_RECEIPT_SCHEMA",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "examinedControl": "bc0551d77652728e59ea92e3acca9ca404980f21",
+  "scope": "Preparation for the existing Work-owned Google executor; no second executor, candidate, workflow or alternative schema",
+  "providerCallsPerformed": 0,
+  "repositoryChangesPerformed": 0,
+  "nativeReceiptReadyInCurrentCxOwners": false,
+  "localProbe": "numeric_ordering_probe.json",
+  "requirements": [
+    "Keep technical execution provider distinct from HR provider excel_online.",
+    "Keep true provider identity and execution resource; never invent a numeric GitHub run/job/artifact for a Google execution.",
+    "Retain the legitimate Actions scan cursor separately from the current materialization identity when providers differ.",
+    "Use exact predecessor receipt and expected control HEAD for succession; do not order cross-provider IDs numerically or rely only on timestamps.",
+    "Keep producer/source/request binding separate from live control HEAD used for CAS incorporation.",
+    "Verify native build metadata, successful relevant step, attached identity, resolved source, logs, artifact generation and SHA256.",
+    "Require paired runtime digest/revision/traffic, Hosting version/release, exact served bytes and same HR revision before serving aliases change.",
+    "Keep source approval, DEV deployment, functional acceptance and certified production artifact distinct.",
+    "Preserve accepted history artifact14934489092 identity/digest/snapshot validations and idempotent readback across transport changes.",
+    "Project descriptor, pointer, matrix, ledger, queue, index and active aliases atomically; retain history and exact replay detection.",
+    "A Google success may remove the need to wait for Actions, but it does not prove Actions billing resolved.",
+    "Maintain I4 exact-artifact authorization and no rebuild; Google admission must not fabricate a Gate21 run."
+  ],
+  "cases": [
+    {"id":"G01_UUID_MATERIALIZATION", "mutation":"Use real-shaped Cloud Build UUID in old numeric runId path", "currentObserved":"OUT_OF_ORDER_MATERIALIZATION", "required":"Accept only through explicit validated provider binding and legitimate predecessor succession; never coerce UUID to number"},
+    {"id":"G02_ACTIONS_CURSOR", "mutation":"Current seal is Google and an earlier legitimate GitHub run is completed without journal", "currentObserved":"UUID floor hides the GitHub run; numeric baseline finds it", "required":"Preflight still discovers and incorporates the unconsumed GitHub result"},
+    {"id":"G03_LATE_GITHUB_EVENT", "mutation":"Drain an older GitHub journal after Google becomes current", "currentObserved":"Old comparator can replace current Google automation", "required":"Retain historical evidence without rolling back current execution/materialization"},
+    {"id":"G04_RETURN_TO_ACTIONS", "mutation":"Next legitimate deployment returns from Google to Actions", "required":"Use explicit predecessor and CAS succession; neither provider is permanently preferred and no clock-only ordering"},
+    {"id":"G05_REPLAY_TAMPER", "mutation":"Replay the same execution with identical bytes, then with changed receipt hash", "required":"First is NOOP; changed bytes fail without mutating history or controls"},
+    {"id":"G06_WRONG_BINDING", "mutation":"Change project, source/tree, service identity, requested scope or predecessor", "required":"Reject before incorporation; producer must prove the source and request it actually ran"},
+    {"id":"G07_PROVIDER_FAILURE", "mutation":"Build succeeds but deploy/readback step fails or never starts", "required":"Record environment or partial-deploy failure; never create functional PASS or promote serving aliases without readback"},
+    {"id":"G08_ARTIFACT_GENERATION", "mutation":"Correct object path with another generation, digest, size or execution window", "required":"Reject; do not accept latest-by-name or unchecked worker self-report"},
+    {"id":"G09_PAIRED_MISMATCH", "mutation":"Runtime reflects successor but Hosting remains predecessor, traffic differs or one served asset is missing", "required":"HOLD precise partial-deploy state and require exact readback; no full paired PASS"},
+    {"id":"G10_HR_HISTORY", "mutation":"Replace accepted artifact14934489092 or its snapshot bytes, observation or revision during transport adaptation", "required":"Preserve original verification and reject substitution; no operational reimport"},
+    {"id":"G11_CAS_AND_ALIAS", "mutation":"Control HEAD changes before incorporation, or one active alias retains the predecessor", "required":"CAS rejects stale write; re-resolve from live controls and prove complete projection without reopening accepted scopes"},
+    {"id":"G12_TYPED_IDENTITY", "mutation":"Queue/index/normalizer receives equal-looking IDs from different providers or NaN ordering", "required":"No collision, silent loss, wrong request retirement or older result overriding newer exact scope"},
+    {"id":"G13_CERTIFICATION_SCOPE", "mutation":"Offer DEV evidence ZIP or runtime image digest as certified I4 TAR, or omit explicit approval", "required":"Reject production admission and preserve exact certified-artifact boundary"}
+  ]
+}

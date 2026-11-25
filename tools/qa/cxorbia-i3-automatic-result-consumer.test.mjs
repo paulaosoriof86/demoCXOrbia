@@ -42,6 +42,24 @@ test('interruption after deploy: exact receipt advances DEV without altering six
 test('replay of exact run/attempt/receipt is a no-op, and does not create another successor',()=>{
  const {out,bundle}=project();const again=projectMaterialization(out,bundle);assert.equal(again.noop,true);
 });
+test('metadata permission denial keeps E08 unproved without asserting an absent or unconfigured mailbox',()=>{
+ const f=fixture();f.mailbox={secretMetadataOutcome:'PERMISSION_DENIED',mailboxEnabled:false,sendEnabled:false};
+ const {out}=project(f);
+ for(const name of ['descriptor','pointer','ledger','matrix']){
+  const c=out[name];
+  assert.ok(!c.activeBlockers.includes('E08_MAILBOX_UNCONFIGURED'));
+  assert.ok(c.activeBlockers.includes('E08_MAILBOX_CONFIGURATION_AND_EXTERNAL_ACK_UNPROVEN'));
+  assert.ok(c.activeBlockers.includes('UNCOVERED_FUNCTIONAL_CONTRACT_CLAUSES'));
+  assert.equal(c.state,'HOLD');
+  if(c.currentMailboxEnvironmentHold){
+   assert.equal(c.currentMailboxEnvironmentHold.secretMetadataOutcome,'PERMISSION_DENIED');
+   assert.match(c.currentMailboxEnvironmentHold.reason,/key existence is not established/);
+  }
+ }
+ assert.equal(out.pointer.authorizationI4,false);
+ assert.deepEqual(out.matrix.modules.filter(m=>m.classification==='MATCH').map(m=>m.domain),f.controls.matrix.modules.filter(m=>m.classification==='MATCH').map(m=>m.domain));
+ assert.deepEqual(out.descriptor.currentC3PreterminalAudit,f.controls.descriptor.currentC3PreterminalAudit);
+});
 test('a lower attempt of the same run cannot supersede the current attempt',()=>{
  const {out,bundle}=project();out.descriptor.currentMaterialization.runAttempt=2;assert.throws(()=>projectMaterialization(out,bundle),/OUT_OF_ORDER/);
 });

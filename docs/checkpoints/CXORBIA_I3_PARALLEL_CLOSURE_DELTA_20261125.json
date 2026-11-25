@@ -1,0 +1,385 @@
+{
+  "schemaVersion": "cxorbia.i3.process-binding-finance-continuity.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "baseControlSha": "f56d895fa8ae9be1181c77abfba34a8f217d0c31",
+  "observedAt": "2026-11-25T11:23:47.792761+00:00",
+  "authority": "PAULA_20261125_PARALLEL_CLOSURE_WHILE_EXISTING_WORK_PUBLISHES",
+  "classification": "MAPPING_FAILURE",
+  "sourceOwners": [
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "beforeGitBlob": "91b949838d52c7bef3222a75191e403d90e1d1ee",
+      "afterGitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+      "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+    },
+    {
+      "path": "firebase/auth-dev-tools/cxorbia-i3-a08-residual-password-api-storage-readonly.mjs",
+      "beforeGitBlob": "f3baeb727b6a475e4faa21cf779240899a1c539a",
+      "afterGitBlob": "62d0cdf70336f00351eac782d41e83cbbaa814c3",
+      "sha256": "762aabce7c5bf178fe29f3cb4eca7c290a85101d6655bb929bfba22555c31e12"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a08-exact-password-proof.mjs",
+      "beforeGitBlob": "4115ae330391e81fd43499d2d7f002a7d976be38",
+      "afterGitBlob": "eb21a45336698f6ed42d3340eccdc53eaaa5a0ff",
+      "sha256": "843eaf2b2ff1b3e4fdbca5723db42fa47615eabf30dd8c6065241f2ce30f1b66"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a08-historical-ack.test.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "26b048d7d48acdd7f3d17cc1ccc7be94f01b24d0",
+      "sha256": "f932dcd2ec495aa8ff4cdd28fa5fbfbf8e65377763d999ffdee10ba1ff842906"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-a08-provenance-readonly.test.mjs",
+      "beforeGitBlob": "7c88a9b2719f47cc4ebf2cf0d337b4a6024890ce",
+      "afterGitBlob": "458e40cd90e15130618b4f52cde305f81115be37",
+      "sha256": "41cd1603a7c6b726963a390496995c53cbc5ce56f1bbdcfcb4e7972c3d909081"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-automatic-result-consumer.test.mjs",
+      "beforeGitBlob": "265e30271b0b1fc73646b76727e0fdef725eb6f9",
+      "afterGitBlob": "4abbeae678e3419c13afa8658941ff621bbe6d64",
+      "sha256": "cefd1a69b2ebc28ce8f4e27f3cf3e426372b4937b449c8a619026f9bb794df25"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "beforeGitBlob": "bbdfb0d9d45bd0349357c7ab99c6a22285da45c2",
+      "afterGitBlob": "9206bdaa51c4ebc0beb642677457ce69e225920b",
+      "sha256": "91b6e29bac2d30af68b2dbbaa9e2b8fae10dfa29dbb652bd479d310c8d8f6689"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-bind-frozen-task-evidence.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "e93bd49b4b59c03b4c2fd2dd6ef033ea6eff1af5",
+      "sha256": "3ff0f92e51c4e65e6447f6b1155184234f442a4e92a39af8ea0c9808bf861214"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-current-control-projection.mjs",
+      "beforeGitBlob": "332603d0c7f4862cae7c1f8e75d8655bdbe42e3c",
+      "afterGitBlob": "c957ede94074024d21dbe80a02902eb49b5cc6e1",
+      "sha256": "4ab74dda66ad676452eb79a85d8e573804e30f0351acceb8d11feb2fd1d632c2"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-document-authority-task-binding.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "7832bb66422a4b3d82ebee493258d4e7271c8ccb",
+      "sha256": "ec555969684944c938952e81ead4581d562ccd4f52f926827ab0dd941f77bb79"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-document-authority-task-binding.test.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "3be8c93eebc4c5196cfb4e413d73fb476833099a",
+      "sha256": "6fbd522a81ee435bc9626e6a51c63ff474942186272a485e6b62496187f24a92"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs",
+      "beforeGitBlob": "1396974d7ecb7e1eb0ef887f5058e5192d4bbd96",
+      "afterGitBlob": "1c20fb1295b95f78cdaf7636a620eade7d5346cf",
+      "sha256": "4aea7918890b53b070ddb92580b00418b3d66cd4eca8673517a175b6d81f3ed0"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-finance-google-transport.sh",
+      "beforeGitBlob": "bdbbb106fde453230d744b0836e1776da000c292",
+      "afterGitBlob": "2666769675c0a77093184ee4c855345413ade492",
+      "sha256": "68dbf561e18fcdce633a28448f39477b013761c07c14d3ad9bdd670843febf59"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-finance-ui-typed.test.mjs",
+      "beforeGitBlob": "41f70536b886b3d8303cfeab3f1cffddd66b4d65",
+      "afterGitBlob": "5c70d836b3c20cbb13703b4019cbb118b012bf1a",
+      "sha256": "b2aeae6ddb3943b0e4956b0cbf36d48cb3282eec7b063950ccba9967b2fec051"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-google-qa-execution.mjs",
+      "beforeGitBlob": "20e4275fee0c246eb6a7968b5b0ed8acafcd6d56",
+      "afterGitBlob": "8e96a690986ffb559093e43e28a991652f27d5ad",
+      "sha256": "0f6f1d21020b084f20df16a789b121ee0b17cdb72bee42b6d951cbced1476cf0"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-google-qa-execution.test.mjs",
+      "beforeGitBlob": "0f8384f222159bf853d7a3eb407ac376abe0e84c",
+      "afterGitBlob": "20e9ba6aa0f5d5c5b081d92e29009359509f0105",
+      "sha256": "7151d2cc5ba304db1083726950a32c469be5428737c63192b2f286ef6d72fa96"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
+      "beforeGitBlob": "75b200ab36dd17508700f312122842b91942fb8f",
+      "afterGitBlob": "e9947281fa2955e2cfaf1bd7e37b6568d6de56d3",
+      "sha256": "8cc3d10cbfdffee410206044f2fc7a51f6f47c7502252d799129e5c23021a033"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-run2537-accepted-scope-codec.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "8c11276ce34866e28c94b78ce7845b1f03236c5b",
+      "sha256": "b4c2f1d601a82d4286bba184757a59692132f79c04e5ab4292412647013044b1"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-run2537-accepted-scope-codec.test.mjs",
+      "beforeGitBlob": null,
+      "afterGitBlob": "ac57326e572474089ad55a2d31f387010b01feff",
+      "sha256": "f23e846c4bab0370c7c46911f2d02637ec69d4cb6dd5390707ec532bf778fdca"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-scoped-clause-projection.mjs",
+      "beforeGitBlob": "a6d6455ecf721cfd6c81c8d5eaf4788434c8a94d",
+      "afterGitBlob": "88b7fa438c0c7d392e6ee1766fdcaf22e3ebbd4e",
+      "sha256": "d9e71ed9b6f9bfdb3918f3c5f438d474f7a8812b48182f3fb509a3a45c8f71b7"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-scoped-clause-projection.test.mjs",
+      "beforeGitBlob": "0390532e03b7644005da56e71a543a718310fc84",
+      "afterGitBlob": "d8d39abee0e4ecd76d77a9c42d2dfeba91e330f6",
+      "sha256": "34e9a8aeaecba1baeeabb1b86dfe773c5bdc9c8296cba98b51c2fbc1ccbb3ba9"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-human-contract.mjs",
+      "beforeGitBlob": "aeabaaafcd1d18d685e774fa7da221219423ebfa",
+      "afterGitBlob": "76ed4c1bc80c4852090924a425b95e46d9c8159e",
+      "sha256": "d404ce55aa275759c71cf80f51e56e1021a57a29a4424237f89719052ab8d0d3"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-terminal-module-domain-coverage.mjs",
+      "beforeGitBlob": "17767b889f160779f3d3b0eb011df868e9351de8",
+      "afterGitBlob": "d1bb09bf2e0aeb99b845bd1513123046ab5e1cd0",
+      "sha256": "ffc2a0191727e56737d1a3f5dd9cd22fd3a12aa2e251778d00c51c11dd0d6bf7"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-typed-result-summary.mjs",
+      "beforeGitBlob": "0d269b0a4dc6715ccb56ec04f8273a3aa7f06fe5",
+      "afterGitBlob": "d8afe793699e395d1c9cb4d8ebb98461e7712983",
+      "sha256": "e42119bc730a8f7f37bda81833023ce8412fdf2f2e12b5324f568d7d94bf7b4c"
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-typed-result-wiring.test.mjs",
+      "beforeGitBlob": "068ee8daa42235194ce5d5ea999e76405b8e5c10",
+      "afterGitBlob": "2f878409e03b52731eea5a1049443c833d36712d",
+      "sha256": "bbd1b3f40baacdb4dd30c3b821c98408f8728cae6e49f8ece631c8f4d8105c3c"
+    }
+  ],
+  "productSourceSha": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "servedSourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "productFilesChanged": 0,
+  "newFunctionalExecutions": 0,
+  "newFunctionalPasses": 0,
+  "newModuleMatches": 0,
+  "newDeploys": 0,
+  "production": false,
+  "i4Authorized": false,
+  "phaseAComplete": false,
+  "corrections": [
+    {
+      "scope": "D01_DOCUMENT_AUTHORITY",
+      "result": "EXISTING_ACCEPTANCE_BOUND_WITH_EXACT_DOCUMENT_RECEIPT",
+      "newApproval": false,
+      "mappingPath": "docs/checkpoints/CXORBIA_I3_FUNCTIONAL_EVIDENCE_BINDINGS_20261125.json"
+    },
+    {
+      "scope": "FINANCE_PDF_TYPED_DIAGNOSTICS",
+      "result": "FIXED_SOURCE_PROVEN_EXISTING_CONSUMER_PRESERVES_DIAGNOSTICS",
+      "functionalPdfResult": "PENDING_BOUND_REMOTE_UI_EXECUTION",
+      "historicalRun2786SummaryUnchanged": true
+    },
+    {
+      "scope": "NEXT_ACTION_AND_MAILBOX_LABELS",
+      "result": "FIXED_SOURCE_PROVEN_GOOGLE_AUTHORIZATION_RESPECTED_KEY_EXISTENCE_NOT_INFERRED",
+      "billingResolved": false
+    },
+    {
+      "scope": "E04_F09_ACTIVE_TASK_PROGRESS",
+      "result": "ACCEPTED_F09_RUN2543_SCOPE_RESTORED_TO_ACTIVE_PROGRESS",
+      "newFunctionalPass": false,
+      "fullE04Pass": false,
+      "proofPath": "docs/checkpoints/CXORBIA_I3_E04_SCOPED_PROGRESS_RECONCILIATION_20261125.json"
+    },
+    {
+      "scope": "F3_CLIENT_RESPONSE_LOSS_AND_SHOPPER_SCOPE",
+      "result": "QA_ONLY_ACTUAL_CLIENT_BODY_LOSS_IN_EXISTING_FIRST_COMMAND_REQUIRES_REAL_EXECUTION",
+      "newFixtureFieldWrites": 0,
+      "semanticAckFromHttpStatus": false,
+      "remoteReplayWrites": null,
+      "remoteReplayCountProven": false,
+      "makeAuditScenario": 10199316,
+      "makeAuditMode": "READ_EXISTING_EXECUTIONS_AND_MODULES_FOR_EMITTED_EVENT_WINDOW_NO_NEW_RUN",
+      "externalProviderResponseLossProven": false,
+      "focusedAgentTests": 171,
+      "independentReview": "NO_BLOCKING_DEFECT_IN_SCOPE_DUPLICATION_TIMEOUT_ACK_CLEANUP_WHITELIST",
+      "limits": [
+        "Application-to-client loss only; not Make-to-backend loss",
+        "Shopper uses synthetic QA custom tokens; ordinary login/upsert/postulation/Admin assignment are separate contracts"
+      ]
+    },
+    {
+      "scope": "E05_RUN2537_HISTORICAL_CODEC",
+      "result": "THREE_ACCEPTED_SCOPES_DECODED_FROM_EXACT_ORIGINAL_BYTES",
+      "proofPath": "docs/checkpoints/CXORBIA_I3_RUN2537_E05_NORMALIZED_ACCEPTED_SCOPES_20261125.json",
+      "newFunctionalPass": false,
+      "fullTaskPass": false,
+      "changedOwnerPaths": [],
+      "changedDependencyPaths": [
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "currentCarryRequired": true
+    },
+    {
+      "scope": "A08_GT_CURRENT_PROVIDER_HISTORICAL_ACK",
+      "result": "QA_AUTHORITY_CONTRACT_REUSES_ACCEPTED_HISTORICAL_RECEIPT_BINDING",
+      "inlineAbsentOnly": true,
+      "explicitFalseNullOrNonbooleanRejected": true,
+      "fullUidClaimsFirstNameCrosswalkReceiptAliasGuardsPreserved": true,
+      "adcMode": "GT_ONLY_CURRENT_PROVIDER_AUTHORITY",
+      "legacySealedModeChanged": false,
+      "unreadSealState": "NOT_READ",
+      "knownOrSuppliedConflictingSealVetoPreserved": true,
+      "passwordResetOrAuthWrites": 0,
+      "newFunctionalPass": false,
+      "localCombinedTests": 533,
+      "googleExecutionProvenanceAndNeutralNonceStillRequired": true,
+      "currentGtReadbackStillRequired": true,
+      "legacyRemainsHold": true,
+      "pendingGtRetirementWired": true,
+      "retirementRequiresVerifiedSameArtifactReceipt": true,
+      "projectionFocusedTests": 48
+    },
+    {
+      "scope": "GOOGLE_FINANCE_RESULT_ARCHIVE_PRESERVATION",
+      "result": "FAILED_IDENTITY_READBACK_CANNOT_DISCARD_EXISTING_DIAGNOSIS_OR_REPLACE_PRIMARY_FAILURE",
+      "originalFailurePreserved": true,
+      "identityReadbackFailureRetainedAsHold": true,
+      "encryptedPdfBinding": [
+        "actualGcsObjectUri",
+        "generation",
+        "sha256",
+        "independentReadback"
+      ],
+      "missingOrChangedPrivateObject": "PUBLIC_DIAGNOSTIC_PRESERVED_PRIVATE_REFERENCE_UNCONFIRMED",
+      "missingSealCannotCreditPass": true,
+      "providerCallsInPreparation": 0,
+      "integratedTests": 235,
+      "newFunctionalPass": false
+    },
+    {
+      "scope": "FINANCE_HR_OWNER_DIAGNOSTIC_CONTINUITY",
+      "result": "CURRENT_PRODUCER_HR_DIAGNOSTIC_SURVIVES_TYPED_INCORPORATION",
+      "sourceProducerCommit": "05d055e91fe2c93de196e7a36de45cd225dbc519",
+      "originalFailureAndHoldPreserved": true,
+      "rawIdentityUrlsOrErrorDetailsCopied": false,
+      "historicalReceiptShapePreserved": true,
+      "contradictoryPassRejected": true,
+      "remoteFunctionalPass": false
+    }
+  ],
+  "verification": {
+    "combinedFocalTests": 297,
+    "combinedFocalPassed": 297,
+    "combinedFocalFailed": 0,
+    "beforeFailureCases": {
+      "d01": 2,
+      "financeIncludingSubtests": 16,
+      "continuityProjection": 2
+    },
+    "gateCommandCount": 60,
+    "gateReportedTests": 2626,
+    "gateStatus": "PASS_LOCAL_CANONICAL_TEST_AND_SYNTAX_COMMANDS",
+    "gateReportedFailures": 0,
+    "gateLogSha256": "d5e6942b6fc8df649f8ca935bdd46bd25a497cf8ff70eb6756d77457a2066af4",
+    "gateTestCountMeaning": "Reported executions across required commands; includes repeated suites, not a unique-test count.",
+    "reconciledBase": "f56d895fa8ae9be1181c77abfba34a8f217d0c31",
+    "integratedF3FinanceGoogleE05Tests": 196,
+    "integratedF3FinanceGoogleE05Passed": 196,
+    "integratedF3FinanceGoogleE05Failed": 0,
+    "integratedF3FinanceGoogleE05LogSha256": "793e3a40e9f561e1023680c0d16a79d05dd1ddff66dbdf843edb646b25448e50",
+    "finalRequiredGate": "PASS_REQUIRED_COMMANDS_THEN_FINAL_WHITELIST_FOCAL_REGRESSION",
+    "integratedA08GoogleFinanceTests": 533,
+    "integratedA08GoogleFinancePassed": 533,
+    "integratedA08GoogleFinanceFailed": 0,
+    "integratedGtProjectionTests": 193,
+    "integratedGtProjectionPassed": 193,
+    "integratedGtProjectionFailed": 0,
+    "gateReportedPasses": 2626,
+    "finalFocalReportedTests": 236,
+    "finalFocalReportedPasses": 236,
+    "finalFocalReportedFailures": 0,
+    "finalFocalLogSha256": "6387f4bda5c9448e9a88d8ec2a75c4cbcd5eb01d94f1d09c0b814e6e0c7fcf85",
+    "finalCompositionNote": "Required60commands passed before final HR diagnostic whitelist addition; final focal tests cover Finance/Google/typed summaries/incorporation/scoped projections after that addition. No functional live credit.",
+    "workflowValidation": {
+      "yaml": "PASS",
+      "bytes": 501078,
+      "existingModifiedJobsShellBlocks": 8,
+      "shellSyntax": "PASS"
+    },
+    "latestRebase": "CONTROL_AND_AGENT_INSTRUCTIONS_ONLY_NO_CODE_CHANGE_SINCE_FINAL_FOCAL"
+  },
+  "preserved": {
+    "domainMatchCount": 6,
+    "acceptedBlocks": [
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "immutableReferencesVerified": 22,
+    "preservedCDTaskScopes": 18,
+    "preservedD08ScopedClauses": 25,
+    "D06Accepted": true,
+    "D06NewBankAttemptsRequired": false
+  },
+  "googleExecutionCompatibility": {
+    "status": "FINANCE_GOOGLE_RESULT_REALLY_EXECUTED_INCORPORATED_HOLD_MATERIALIZATION_ADMISSION_STILL_PENDING",
+    "reviewPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_RECEIPT_COMPATIBILITY_20261125.md",
+    "reproducedNumericIdentifierHazards": 3,
+    "mustNotReplaceNumericGithubAliasesWithCloudUuid": true,
+    "workFinanceTransportSha": "5b1efc041a4ac4b67ae68c1b9c1a0e45e3ed7ebf"
+  },
+  "nextExactAction": "Resolve live HEAD and any active Google attempt. Both Finance Google results are incorporated HOLD at SESSION_1_AUTH, including Node24 HRHTTP200/sourceBlocked/authorityAbsent. Read existing raw denialKinds/deniedRequests before another session. Work has exact client-extra PDF date owner before/after synthetic proof; retain it in the same approved product successor with F3, then paired DEV deploy and actual Finance/PDF/HR E2E. Current control delta preserves diagnostics, authority and evidence; no operational PASS or deploy granted. Complete remaining original scoped contracts and Google receipt admission. I4 needs exact certified artifact and explicit authorization.",
+  "cumulativeMaps": {
+    "CD": "docs/checkpoints/CXORBIA_I3_C_D_CUMULATIVE_EVIDENCE_MAP_20261125.json",
+    "B": "docs/checkpoints/CXORBIA_I3_B_PROCESS_EVIDENCE_MAP_20261125.json",
+    "AE": "docs/checkpoints/CXORBIA_I3_A_E_CUMULATIVE_CLAUSE_MAP_20261125.json",
+    "meaning": "Evidence and residual scopes for all52original tasks; not52newtests, not52newPASS, notcomplete runtime bindings.",
+    "minimalCurrentReadbacks": "docs/checkpoints/CXORBIA_I3_ACCEPTED_SCOPES_MINIMAL_READBACKS_20261125.json",
+    "minimalReadbackEvidenceObjectsVerified": 46,
+    "minimalReadbackGroups": 13,
+    "newJobsCreated": 0
+  },
+  "originalPreparationBase": "bc0551d77652728e59ea92e3acca9ca404980f21",
+  "reconciliation": {
+    "remoteAdvanceDetectedBeforeWrite": true,
+    "preservedRemoteCommit": "f56d895fa8ae9be1181c77abfba34a8f217d0c31",
+    "googlePreflightPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_DEV_PREFLIGHT_20261125.json",
+    "keptWorkNextActionAndTests": true,
+    "historicalV404V731Unchanged": true,
+    "productSourceChanged": false,
+    "preservedRemoteCommits": [
+      "0bbf1dc2485f4ada78ecef522ad47df5f93d6b15",
+      "5b1efc041a4ac4b67ae68c1b9c1a0e45e3ed7ebf",
+      "744807d855b22ccaac47bb4d8eeb9220c29afd36",
+      "05d055e91fe2c93de196e7a36de45cd225dbc519",
+      "f56d895fa8ae9be1181c77abfba34a8f217d0c31"
+    ],
+    "keptWorkGoogleFinanceTransport": true,
+    "preservedRealGoogleFinanceReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
+    "keptWorkNode24AndHrOwnerDiagnostic": true,
+    "preservedFinanceNode24Result": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795605397678784_TYPED_RESULT.json",
+    "preservedFinancePrintDateOwnerProof": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_PRINT_DATE_OWNER_20261125.json"
+  },
+  "concurrentWorkObserved": {
+    "googleFinanceExecuted": true,
+    "resultPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795604796669348_TYPED_RESULT.json",
+    "decision": "HOLD_C09_C10_UI_READONLY",
+    "stage": "SESSION_1_AUTH",
+    "firebaseUserPresent": true,
+    "contextAuthenticated": true,
+    "hrAuthorityApplied": false,
+    "unexpectedDenied": 4,
+    "exportsReached": false,
+    "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+    "productPublished": false,
+    "nextTransportSha": "05d055e91fe2c93de196e7a36de45cd225dbc519",
+    "node24Required": true,
+    "node24SessionResult": "HOLD_SESSION_1_AUTH_HR_HTTP200_SOURCE_BLOCKED_AUTHORITY_ABSENT",
+    "syntheticPdfDateDefectReproducedByWork": true,
+    "productFixNotYetDeployed": true
+  }
+}

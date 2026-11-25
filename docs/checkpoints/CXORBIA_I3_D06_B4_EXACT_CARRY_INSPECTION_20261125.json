@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "cxorbia.i3.d06-existing-acceptance-carry-inspection.v1",
+  "state": "HOLD",
+  "scope": "EXACT_SCOPE_CARRY_PREPARATION_NOT_NEW_FUNCTIONAL_TEST",
+  "acceptedBusinessState": "ACCEPTED_B4_D06_PRESERVED_NO_REPEATED_BANK_ATTEMPTS",
+  "functionalResidualsAlreadyRecorded": [],
+  "bankAttemptRepeatsRequired": false,
+  "acceptedSource": "b390a1e996f01896d86d4bc1b1147a0dd2a40942",
+  "servedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+  "pendingSource": "8d70a09d1c58d31f5f4b0926f519bb7ac6695749",
+  "evidence": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_B4_B5_B6_FUNCTIONAL_BLOCK_ACCEPTANCE_20261110.json",
+      "gitBlob": "d30a2bf0d4fca2968310c7405a77d5c278516a31",
+      "sha256": "6d5678a616376e6a4d9ec769afef668bbec7832ac37b5791dcc811bddbf28fae"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_D06_AUTHORIZED_ATTEMPTS_CHROME_E2E_20261106.json",
+      "gitBlob": "478cf7be22694b47e0120c7ed49acf61365e2b37",
+      "sha256": "ac6d0d9a5a9782471ba9fb157b220d6b3e2500b7853f3ef75053435ab85d852e"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json",
+      "gitBlob": "8fb6033e4868bb7eff57e53c37bd1953bd27ffc6",
+      "sha256": "540141fa8451733d09bff2b40df5b5a1de2497bb998dc909821c886ddb548110"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_REVIEW_MAIL_FINANCE_PUBLISHED_SOURCE_20261124.json",
+      "gitBlob": "ee4ce95740c9b22b4d5e2a618fc68b356c7ec51d",
+      "sha256": "deb1fb56781b9f078d3f7687c83bca1a0d4402ada4bf5c45812cb2ff6e2e182d"
+    }
+  ],
+  "ownerAndDependencyComparison": [
+    {
+      "path": "app/modules/cert.js",
+      "acceptedBlob": "0adc3eaaf5ab5f505d3e8eda63b2eb3d02dd0573",
+      "servedBlob": "337420953e88ea107b41db198df063e25c368274",
+      "pendingBlob": "337420953e88ea107b41db198df063e25c368274",
+      "servedSha256": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+      "unchangedSinceAccepted": false,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "TWO_APPROVED_RECERTIFICATION_WORDING_CHANGES",
+      "currentMatrixApprovedSource": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+      "currentMatrixApprovedBlob": "337420953e88ea107b41db198df063e25c368274",
+      "individualServedHashInReceipt": "51b0a06b53cdf38437137a390cd624bb6270721b973eebd1d03e425dfce6f344",
+      "individualServedReadbackVerified": true
+    },
+    {
+      "path": "app/modules/misvisitas.js",
+      "acceptedBlob": "416c5051b47427a457381ba5e9f0fb61f83c73ea",
+      "servedBlob": "003843ecc87c8e052002270697862da6d0b82949",
+      "pendingBlob": "003843ecc87c8e052002270697862da6d0b82949",
+      "servedSha256": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+      "unchangedSinceAccepted": false,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "TWO_APPROVED_HR_REVIEW_PRESENTATION_INSERTIONS",
+      "currentMatrixApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "currentMatrixApprovedBlob": "003843ecc87c8e052002270697862da6d0b82949",
+      "individualServedHashInReceipt": "ca1254fb97997e9421925ccb3741ff9c457597270880eae7d1e449bcccdea0ce",
+      "individualServedReadbackVerified": true
+    },
+    {
+      "path": "app/core/backend-certifications.js",
+      "acceptedBlob": "c935a483c5edcda08076c0b13e43bb6001053dc6",
+      "servedBlob": "c935a483c5edcda08076c0b13e43bb6001053dc6",
+      "pendingBlob": "c935a483c5edcda08076c0b13e43bb6001053dc6",
+      "servedSha256": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+      "unchangedSinceAccepted": true,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "EXACT_UNCHANGED",
+      "currentMatrixApprovedSource": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+      "currentMatrixApprovedBlob": "c935a483c5edcda08076c0b13e43bb6001053dc6",
+      "individualServedHashInReceipt": "826b6775b2be46c606d271e04085fee2d4a34bab778c05fa6ad88dc00a1d05ad",
+      "individualServedReadbackVerified": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "acceptedBlob": "0cc3fb952cbb19687e416ae55f72c4e831ab0f99",
+      "servedBlob": "0cc3fb952cbb19687e416ae55f72c4e831ab0f99",
+      "pendingBlob": "0cc3fb952cbb19687e416ae55f72c4e831ab0f99",
+      "servedSha256": "89697ee52b62fd5eec333125ae0a194cae303d263623cde349928ef5c1b1305b",
+      "unchangedSinceAccepted": true,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "EXACT_UNCHANGED",
+      "currentMatrixApprovedSource": "792f223b14c24c061c0e0a1ba82afafedd9808c6",
+      "currentMatrixApprovedBlob": "0cc3fb952cbb19687e416ae55f72c4e831ab0f99",
+      "individualServedHashInReceipt": null,
+      "individualServedReadbackVerified": false
+    },
+    {
+      "path": "app/data/tya-certification-carryover-source-safe.js",
+      "acceptedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "servedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "pendingBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "servedSha256": "849ea952b75f0a3d8d615565f9efb3f97cbeb3029c548d105a8febcdc723be27",
+      "unchangedSinceAccepted": true,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "EXACT_UNCHANGED",
+      "currentMatrixApprovedSource": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "currentMatrixApprovedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "individualServedHashInReceipt": null,
+      "individualServedReadbackVerified": false
+    },
+    {
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "acceptedBlob": "2cc10d7b008b4e42446ab2b70bca7f5a0fe65d26",
+      "servedBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+      "pendingBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+      "servedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+      "unchangedSinceAccepted": false,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "CLIENT_SELF_SCOPE_AND_HR_ACK_GUARD_CHANGES",
+      "currentMatrixApprovedSource": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "currentMatrixApprovedBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+      "individualServedHashInReceipt": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+      "individualServedReadbackVerified": true
+    },
+    {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "acceptedBlob": "9646c36c89917d7e910f1a4dcfcfa5c6ed44a6a9",
+      "servedBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "pendingBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "servedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+      "unchangedSinceAccepted": false,
+      "unchangedFromServedToPending": true,
+      "deltaClassification": "PERIOD_READ_SELECTION_AND_RECOMPOSITION_LOGIC_CHANGED",
+      "currentMatrixApprovedSource": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+      "currentMatrixApprovedBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "individualServedHashInReceipt": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+      "individualServedReadbackVerified": true
+    }
+  ],
+  "fullUnchangedCarryCanBeClaimed": false,
+  "reason": "Four exact source files differ from B4. The protected HR bridge has real period/recomposition changes. Do not set ownerAndDependenciesUnchanged:true. Existing task acceptance remains preserved; current readback of shared changed dependencies can be supplied by the already-planned HR/UI functional run.",
+  "nextProofScope": [
+    "Use the same candidate and exact future DEV receipt.",
+    "Consume already-planned authenticated current HR/Shopper reload proof for period scope and protected read model; do not create another bank attempt.",
+    "Reconcile original B4/D06 business clauses separately from D08; the accepted bank lifecycle is not reopened by missing task typing.",
+    "If current readback detects actual certification eligibility drift, fix that exact shared owner and reprove only the affected clause."
+  ],
+  "newFunctionalPasses": 0,
+  "newModuleMatches": 0,
+  "remoteWrites": 0,
+  "production": false
+}
