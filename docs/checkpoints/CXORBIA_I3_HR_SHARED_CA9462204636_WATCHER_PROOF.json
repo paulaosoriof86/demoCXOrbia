@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-shared-refresh-source-proof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParent": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "servedReference": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "scope": "SOURCE_ONLY_OFFLINE_SYNTHETIC_PROVIDER_AND_FIRESTORE_BOUNDARIES",
+  "preEditTruth": "CXORBIA_I3_HR_SHARED_REFRESH_PRE_EDIT_TRUTH_20261125.json",
+  "productOwners": {
+    "app/adapters/tya-live-source-refresh-watch-v2.js": "54f8eb57f42478e197eed8bbfe0de60261e0472e54c2df85fa5a5acddfc33359",
+    "backend/runtime/hr-live-service/server.mjs": "669f9fe712ce77d36238f736ef881f3e3492cd97118e610cdb2f7221aabb10a7",
+    "backend/runtime/hr-live-service/hr-read-model.mjs": "8690546a28941dc0dde19fbcb3686fa3e82704cecf62822490eec7b95bdbcf42"
+  },
+  "productHashQualification": "Server and hr-read-model digests listed here are before composing the separate durable recovery hunks; combined successor owner hashes supersede these partial hashes.",
+  "testReport": {
+    "tests": 133,
+    "pass": 133,
+    "fail": 0,
+    "skip": 0,
+    "node": "24.22.3",
+    "newSourceCases": 7,
+    "externalServicesContacted": 0
+  },
+  "result": {
+    "authenticatedSessionRequests": 2,
+    "additionalPresentationReads": 3,
+    "fixtureExternalRefreshes": 1,
+    "deniedCallerExternalReads": 0,
+    "sourceKeyChange": "offline source revision A to B after due observation",
+    "fencing": "write ACK invalidates all instances, overlapping stale owner cannot mark current",
+    "providerFailure": "valid last-confirmed timestamp preserved, shared backoff, no stale data for strict operations",
+    "deferredEditor": "Closing an editor rechecks the shared revision without bypassing its interval; guarded writes and deliberate manual refresh stay strict."
+  },
+  "consumerEvidence": {
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+    "matrixBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373",
+    "checks": "Direct HR URL and registered Excel provider invocations in matrix-listed frontend module owners; this static inventory alone does not assert an executed UI trace per route. Dynamic test covers two authenticated browsers plus three protected reads.",
+    "moduleOwners": {
+      "app/modules/midia.js": {
+        "domain": "dashboard-operation",
+        "blob": "b17a2224170d23c3a9152628003115a1edfbd471",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/dashboard.js": {
+        "domain": "dashboard-operation",
+        "blob": "7eb138b1e1912f9cc11a643d8de134336ab16a5d",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/proyectos.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "c59f4ce02115227ea74ff1d73b2cb14dd85a4e8e",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/periodos.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "25d39e553da379d113dad8a6db8a1d70554c4cd7",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/historico.js": {
+        "domain": "historical",
+        "blob": "842df3520ffa05d27e04b10c8fc225f023e4f304",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/hr-source.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "d3a5321d02022c9dc5810de89b4a441429a7463e",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/proyecto-wizard.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "268824309cfe1d99a6ecb6224bb7031a01bb8c0b",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/visitas.js": {
+        "domain": "visits-review-postulations-reservations",
+        "blob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/visita-detalle.js": {
+        "domain": "visits-review-postulations-reservations",
+        "blob": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/revision-admin.js": {
+        "domain": "visits-review-postulations-reservations",
+        "blob": "08ff500706238b82add2ba45ce01c0b7da38f4ec",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/cuestionario-shopper.js": {
+        "domain": "questionnaire-shopper",
+        "blob": "5f5609aa91fe3d0c3682e1dc13a1d69443bed00b",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/postulaciones.js": {
+        "domain": "visits-review-postulations-reservations",
+        "blob": "08f22e63957392036a697b81aa79858964026d4b",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/shoppers.js": {
+        "domain": "shoppers-mi-visitas-profile",
+        "blob": "0b6585b25eba379b27c938f388dc698a4afb41cf",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/misvisitas.js": {
+        "domain": "shoppers-mi-visitas-profile",
+        "blob": "003843ecc87c8e052002270697862da6d0b82949",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/beneficios.js": {
+        "domain": "benefits",
+        "blob": "c7060562558f307b9b037e929a6fa7e179db1826",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/tablon.js": {
+        "domain": "documents-resources",
+        "blob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/cert.js": {
+        "domain": "certifications",
+        "blob": "337420953e88ea107b41db198df063e25c368274",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/documentos.js": {
+        "domain": "documents-resources",
+        "blob": "7572b99223222f052824bdf075e76a5e7f53fea0",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/academia.js": {
+        "domain": "certifications",
+        "blob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/soporte.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "ce46ad2fe4ad28e70588fae72e4d391dd372009e",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/operacion-extra.js": {
+        "domain": "reports-admin-shopper",
+        "blob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/finanzas.js": {
+        "domain": "finance-core-liquidation-costs",
+        "blob": "9bd11970cf0acb4e0c19df331bf9eade76e2ba90",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/configuracion.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "33bd5e8d14860f50b706f7d4194c3754424cb8ea",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/saas-console.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "e5fa0e57083d4affdc044f3c32eeffd1c96980b5",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/cliente.js": {
+        "domain": "client-portal-reportkit",
+        "blob": "c3802b25e05851d1abff99adab793d323b52b0f0",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/cliente-extra.js": {
+        "domain": "client-portal-reportkit",
+        "blob": "b87de5036fab23c8f3f0633b0fd03f663ea4c755",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/cliente-insights.js": {
+        "domain": "client-portal-reportkit",
+        "blob": "f0f5f278117738eae1bf19453c144c95c536a341",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/novedades.js": {
+        "domain": "documents-resources",
+        "blob": "735f977d139415807938fd29f4e03b1ecb3edefe",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/clientes.js": {
+        "domain": "client-portal-reportkit",
+        "blob": "28afb209ff3b882f322d2ba9a3f40c18997effef",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/importador.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/comercial.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/crm.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "187d7af112cccbe06d27c9a72bb69dc440b7fe67",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/marketing.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/reservas.js": {
+        "domain": "visits-review-postulations-reservations",
+        "blob": "37e4305161c93cbdae0fd5cbe20a55216f59206b",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/integraciones.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "3ae0a0423fc84681388425665d36e6fe64b383b3",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/automatizaciones.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "a28a2354bd4a0132cd788abfa3842a796005be32",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/correo.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "ad93adc638bf873f6b6c647a8a769b549baa7f1e",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/marca.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "a53957b4fb74dfe62c3ea2cb03cff758c7238ea0",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/diagnostico.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "23f1bd5b72738d18e78d23a6af77ba2833279d65",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/administrabilidad.js": {
+        "domain": "base-router-shell-cache",
+        "blob": "080922b933a92a89911847e127ed06c7d4d507fd",
+        "directProviderRouteMatches": []
+      },
+      "app/modules/rutas.js": {
+        "domain": "projects-periods-hr-source-wizard-multiproject",
+        "blob": "5ad69a8bad0dc02b58ca8b06145a74f0a4ddd51e",
+        "directProviderRouteMatches": []
+      }
+    }
+  },
+  "excelDetection": {
+    "mechanism": "Existing original Excel reader invoked by the elected server worker on a due protected metadata check. Explicit reads or authorized commands can observe sooner.",
+    "visibleBrowserDefaultPollMs": 300000,
+    "projectMinimumFreshIntervalMs": 300000,
+    "noVisibleClients": "Automatic polling provides no upper bound without a visible eligible session. A later visible eligible session observes when due.",
+    "inventoryCacheMaxAgeMs": 86400000,
+    "inventoryNote": "Worksheet-list discovery is cached separately. Explicit manual refresh requests inventory revalidation.",
+    "externalCellEditLatencyMs": null,
+    "externalCellEditLatencyMeasured": false,
+    "webhookClaimed": false
+  },
+  "liveDeployment": false,
+  "makeRuns": 0,
+  "phaseAComplete": false
+}

@@ -1,0 +1,1690 @@
+TAP version 13
+# Subtest: B14 project config requires independent Excel Online binding and mapping for each country
+ok 1 - B14 project config requires independent Excel Online binding and mapping for each country
+  ---
+  duration_ms: 2.707574
+  type: 'test'
+  ...
+# Subtest: B14 resolves exact original workbook and stable monthly tab separately for GT and HN, with no writes
+ok 2 - B14 resolves exact original workbook and stable monthly tab separately for GT and HN, with no writes
+  ---
+  duration_ms: 3.388506
+  type: 'test'
+  ...
+# Subtest: B14 discovers a new monthly worksheet after provider registry refresh, without changing project config
+ok 3 - B14 discovers a new monthly worksheet after provider registry refresh, without changing project config
+  ---
+  duration_ms: 1.154969
+  type: 'test'
+  ...
+# Subtest: B14 aggregates multiple scenario tabs for one country and month without choosing a first sheet
+ok 4 - B14 aggregates multiple scenario tabs for one country and month without choosing a first sheet
+  ---
+  duration_ms: 10.013925
+  type: 'test'
+  ...
+# Subtest: B14 detects new monthly tabs by provider IDs and month semantics without identical names
+ok 5 - B14 detects new monthly tabs by provider IDs and month semantics without identical names
+  ---
+  duration_ms: 1.625742
+  type: 'test'
+  ...
+# Subtest: B14 newly discovered month without a period shell stays unbound, never silently assigned
+ok 6 - B14 newly discovered month without a period shell stays unbound, never silently assigned
+  ---
+  duration_ms: 0.316155
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for wrong country
+ok 7 - B14 fails closed for wrong country
+  ---
+  duration_ms: 0.338468
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for missing private binding
+ok 8 - B14 fails closed for missing private binding
+  ---
+  duration_ms: 0.450392
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for foreign workbook scope
+ok 9 - B14 fails closed for foreign workbook scope
+  ---
+  duration_ms: 0.691177
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for disabled integration
+ok 10 - B14 fails closed for disabled integration
+  ---
+  duration_ms: 0.921416
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for unapproved HR writes
+ok 11 - B14 fails closed for unapproved HR writes
+  ---
+  duration_ms: 0.790052
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for wrong mapping
+ok 12 - B14 fails closed for wrong mapping
+  ---
+  duration_ms: 0.377335
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for missing workbook
+ok 13 - B14 fails closed for missing workbook
+  ---
+  duration_ms: 0.457613
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for duplicated worksheet
+ok 14 - B14 fails closed for duplicated worksheet
+  ---
+  duration_ms: 0.683156
+  type: 'test'
+  ...
+# Subtest: B14 fails closed for missing version
+ok 15 - B14 fails closed for missing version
+  ---
+  duration_ms: 0.61785
+  type: 'test'
+  ...
+# Subtest: B14 frontend and source contract expose country-scoped Excel without raw workbook URLs
+ok 16 - B14 frontend and source contract expose country-scoped Excel without raw workbook URLs
+  ---
+  duration_ms: 3.737489
+  type: 'test'
+  ...
+# Subtest: month policy uses configured timezone, adjacent months, year rollover and explicit historical demand
+ok 17 - month policy uses configured timezone, adjacent months, year rollover and explicit historical demand
+  ---
+  duration_ms: 16.367965
+  type: 'test'
+  ...
+# Subtest: explicit current-period selection has the same plan/revision identity as the routine window
+ok 18 - explicit current-period selection has the same plan/revision identity as the routine window
+  ---
+  duration_ms: 5.275292
+  type: 'test'
+  ...
+# Subtest: a verified new month is discovered from metadata, cached, rebound with real document stamps and never persisted
+ok 19 - a verified new month is discovered from metadata, cached, rebound with real document stamps and never persisted
+  ---
+  duration_ms: 11.083589
+  type: 'test'
+  ...
+# Subtest: incomplete inventory cannot establish next-month absence and ambiguous future scenario cannot auto-bind
+ok 20 - incomplete inventory cannot establish next-month absence and ambiguous future scenario cannot auto-bind
+  ---
+  duration_ms: 1.936239
+  type: 'test'
+  ...
+# Subtest: configured original Excel project resolves two independent source-bound country/periods
+ok 21 - configured original Excel project resolves two independent source-bound country/periods
+  ---
+  duration_ms: 0.881017
+  type: 'test'
+  ...
+# Subtest: HTTP aliases and internal reads share the same operational plan identity
+ok 22 - HTTP aliases and internal reads share the same operational plan identity
+  ---
+  duration_ms: 2.679132
+  type: 'test'
+  ...
+# Subtest: 19 registered months select six country-period bindings and read three metadata snapshots and a new plan detects changed source metadata
+ok 23 - 19 registered months select six country-period bindings and read three metadata snapshots and a new plan detects changed source metadata
+  ---
+  duration_ms: 5.152161
+  type: 'test'
+  ...
+# Subtest: original Excel values become the sourceSafe operational snapshot without provider writes
+ok 24 - original Excel values become the sourceSafe operational snapshot without provider writes
+  ---
+  duration_ms: 7.907856
+  type: 'test'
+  ...
+# Subtest: Excel snapshot preserves arbitrary project scenario dimensions without substitution
+ok 25 - Excel snapshot preserves arbitrary project scenario dimensions without substitution
+  ---
+  duration_ms: 6.964799
+  type: 'test'
+  ...
+# Subtest: Excel snapshot preserves an explicit empty catalog despite populated visit values
+ok 26 - Excel snapshot preserves an explicit empty catalog despite populated visit values
+  ---
+  duration_ms: 3.225367
+  type: 'test'
+  ...
+# Subtest: Excel snapshot does not manufacture a catalog omitted by project metadata
+ok 27 - Excel snapshot does not manufacture a catalog omitted by project metadata
+  ---
+  duration_ms: 3.90062
+  type: 'test'
+  ...
+# Subtest: legacy Google selection cannot silently pass as operational Excel
+ok 28 - legacy Google selection cannot silently pass as operational Excel
+  ---
+  duration_ms: 0.254114
+  type: 'test'
+  ...
+# Subtest: old durable row absent from current Excel remains untouched but does not block live reading
+ok 29 - old durable row absent from current Excel remains untouched but does not block live reading
+  ---
+  duration_ms: 1.523321
+  type: 'test'
+  ...
+# Subtest: provider revision without independent proof cannot publish a snapshot
+ok 30 - provider revision without independent proof cannot publish a snapshot
+  ---
+  duration_ms: 0.814669
+  type: 'test'
+  ...
+# Subtest: three historical documents for one original HR row retain the exact live owner and all aliases
+ok 31 - three historical documents for one original HR row retain the exact live owner and all aliases
+  ---
+  duration_ms: 1.912364
+  type: 'test'
+  ...
+# Subtest: a source-row clone with a conflicting cinema AND branch is blocked rather than silently joined
+ok 32 - a source-row clone with a conflicting cinema AND branch is blocked rather than silently joined
+  ---
+  duration_ms: 1.145005
+  type: 'test'
+  ...
+# Subtest: two equally authoritative HR owner documents for the same original row fail closed
+ok 33 - two equally authoritative HR owner documents for the same original row fail closed
+  ---
+  duration_ms: 1.801251
+  type: 'test'
+  ...
+# Subtest: a moved original Excel row uses three exact business keys, never a foreign coordinate
+ok 34 - a moved original Excel row uses three exact business keys, never a foreign coordinate
+  ---
+  duration_ms: 13.824973
+  type: 'test'
+  ...
+# Subtest: a contradictory active legacy row is not silently dropped even with a strong replacement
+ok 35 - a contradictory active legacy row is not silently dropped even with a strong replacement
+  ---
+  duration_ms: 3.133531
+  type: 'test'
+  ...
+# Subtest: historical two-document cohort with obsolete foreign row preserves one canonical owner and both aliases
+ok 36 - historical two-document cohort with obsolete foreign row preserves one canonical owner and both aliases
+  ---
+  duration_ms: 2.886988
+  type: 'test'
+  ...
+# Subtest: moved historical row with two equivalent durable aliases selects one approved canonical owner
+ok 37 - moved historical row with two equivalent durable aliases selects one approved canonical owner
+  ---
+  duration_ms: 6.049672
+  type: 'test'
+  ...
+# Subtest: moved historical row with two competing canonical durable owners still fails closed
+ok 38 - moved historical row with two competing canonical durable owners still fails closed
+  ---
+  duration_ms: 1.535189
+  type: 'test'
+  ...
+# Subtest: same cinema and cut preserve owner when the scenario and combo are edited
+ok 39 - same cinema and cut preserve owner when the scenario and combo are edited
+  ---
+  duration_ms: 1.336146
+  type: 'test'
+  ...
+# Subtest: unprefixed legacy HR document is preserved without inventing an extra active visit
+ok 40 - unprefixed legacy HR document is preserved without inventing an extra active visit
+  ---
+  duration_ms: 1.099869
+  type: 'test'
+  ...
+# Subtest: different month scenario, cinema and film do not require historical reconciliation
+ok 41 - different month scenario, cinema and film do not require historical reconciliation
+  ---
+  duration_ms: 1.140668
+  type: 'test'
+  ...
+# Subtest: same cinema and cut can have two distinct source rows in one month
+ok 42 - same cinema and cut can have two distinct source rows in one month
+  ---
+  duration_ms: 1.050766
+  type: 'test'
+  ...
+# Subtest: two visits in the same country/month/cinema/cut never reuse a single durable visit ID
+ok 43 - two visits in the same country/month/cinema/cut never reuse a single durable visit ID
+  ---
+  duration_ms: 1.607605
+  type: 'test'
+  ...
+# Subtest: F3 journal creates independent field intents for the exact historical period; no UI success before remote ACK
+ok 44 - F3 journal creates independent field intents for the exact historical period; no UI success before remote ACK
+  ---
+  duration_ms: 22.122623
+  type: 'test'
+  ...
+# Subtest: F3 journal rejects a changed payload under the same idempotency key
+ok 45 - F3 journal rejects a changed payload under the same idempotency key
+  ---
+  duration_ms: 1.139246
+  type: 'test'
+  ...
+# Subtest: F3 journal rejects stale per-field base and creates zero intent/visit writes
+ok 46 - F3 journal rejects stale per-field base and creates zero intent/visit writes
+  ---
+  duration_ms: 0.422361
+  type: 'test'
+  ...
+# Subtest: F3 journal does not overwrite an unsettled field with a different command
+ok 47 - F3 journal does not overwrite an unsettled field with a different command
+  ---
+  duration_ms: 1.054221
+  type: 'test'
+  ...
+# Subtest: F3 existing assignment command queues the same field journal instead of claiming remote success
+ok 48 - F3 existing assignment command queues the same field journal instead of claiming remote success
+  ---
+  duration_ms: 0.952351
+  type: 'test'
+  ...
+# Subtest: F3 provider ACK waits for separately invoked readback; stale immediate reads cause no second PATCH
+ok 49 - F3 provider ACK waits for separately invoked readback; stale immediate reads cause no second PATCH
+  ---
+  duration_ms: 7.755742
+  type: 'test'
+  ...
+# Subtest: F3 lost response recovers from exact remote receipt without repeating a PATCH
+ok 50 - F3 lost response recovers from exact remote receipt without repeating a PATCH
+  ---
+  duration_ms: 4.700787
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay tool_contract B14_WRITER_TOOLBOX_CONTRACT
+ok 51 - F3 pending diagnostic preserves safe cause and recovery-only replay tool_contract B14_WRITER_TOOLBOX_CONTRACT
+  ---
+  duration_ms: 3.973827
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay initialize B14_WRITER_TOOLBOX_INITIALIZE
+ok 52 - F3 pending diagnostic preserves safe cause and recovery-only replay initialize B14_WRITER_TOOLBOX_INITIALIZE
+  ---
+  duration_ms: 6.936757
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay list_tools B14_WRITER_TOOLBOX_LISTTOOLS
+ok 53 - F3 pending diagnostic preserves safe cause and recovery-only replay list_tools B14_WRITER_TOOLBOX_LISTTOOLS
+  ---
+  duration_ms: 4.489346
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay target_contract B14_FIELD_TARGET_SCOPE
+ok 54 - F3 pending diagnostic preserves safe cause and recovery-only replay target_contract B14_FIELD_TARGET_SCOPE
+  ---
+  duration_ms: 1.357708
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay tool_call B14_WRITER_TOOLBOX_REQUEST_UNCERTAIN
+ok 55 - F3 pending diagnostic preserves safe cause and recovery-only replay tool_call B14_WRITER_TOOLBOX_REQUEST_UNCERTAIN
+  ---
+  duration_ms: 2.163614
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay write_field HR_FIELD_WRITER_EXCEPTION
+ok 56 - F3 pending diagnostic preserves safe cause and recovery-only replay write_field HR_FIELD_WRITER_EXCEPTION
+  ---
+  duration_ms: 1.208939
+  type: 'test'
+  ...
+# Subtest: F3 pending diagnostic preserves safe cause and recovery-only replay write_field HR_FIELD_WRITER_EXCEPTION
+ok 57 - F3 pending diagnostic preserves safe cause and recovery-only replay write_field HR_FIELD_WRITER_EXCEPTION
+  ---
+  duration_ms: 4.363981
+  type: 'test'
+  ...
+# Subtest: F3 plain reflection without remote event receipt never becomes remote write ACK
+ok 58 - F3 plain reflection without remote event receipt never becomes remote write ACK
+  ---
+  duration_ms: 0.718888
+  type: 'test'
+  ...
+# Subtest: F3 remote changed base yields explicit conflict with zero write requests
+ok 59 - F3 remote changed base yields explicit conflict with zero write requests
+  ---
+  duration_ms: 0.803733
+  type: 'test'
+  ...
+# Subtest: F3 foreign scope ACK is never accepted
+ok 60 - F3 foreign scope ACK is never accepted
+  ---
+  duration_ms: 2.196823
+  type: 'test'
+  ...
+# Subtest: F3 matching HR echo preserves pending intent, appends observation and invents no edit or write ACK
+ok 61 - F3 matching HR echo preserves pending intent, appends observation and invents no edit or write ACK
+  ---
+  duration_ms: 3.338172
+  type: 'test'
+  ...
+# Subtest: F3 divergent external edit is an auditable causal conflict and prevents automatic dispatch
+ok 62 - F3 divergent external edit is an auditable causal conflict and prevents automatic dispatch
+  ---
+  duration_ms: 2.458618
+  type: 'test'
+  ...
+# Subtest: F3 external field event has observation time only; later platform change follows exact field predecessor
+ok 63 - F3 external field event has observation time only; later platform change follows exact field predecessor
+  ---
+  duration_ms: 1.131444
+  type: 'test'
+  ...
+# Subtest: F3 browser adapter rejects a Firestore-only ACK for field events and accepts exact remote proof
+ok 64 - F3 browser adapter rejects a Firestore-only ACK for field events and accepts exact remote proof
+  ---
+  duration_ms: 2.57572
+  type: 'test'
+  ...
+# Subtest: F3 command boundary takes historical period and base fields from that exact live visit
+ok 65 - F3 command boundary takes historical period and base fields from that exact live visit
+  ---
+  duration_ms: 2.562791
+  type: 'test'
+  ...
+# Subtest: F3 existing command HTTP route returns 202 while writer is not provisioned; no success claim
+ok 66 - F3 existing command HTTP route returns 202 while writer is not provisioned; no success claim
+  ---
+  duration_ms: 3.942231
+  type: 'test'
+  ...
+# Subtest: F3 existing command HTTP route dispatches and replays exact remote receipts without extra writes
+ok 67 - F3 existing command HTTP route dispatches and replays exact remote receipts without extra writes
+  ---
+  duration_ms: 3.3915
+  type: 'test'
+  ...
+# Subtest: F3 private target resolves both countries and historical/current period bindings without caller coordinates
+ok 68 - F3 private target resolves both countries and historical/current period bindings without caller coordinates
+  ---
+  duration_ms: 8.760942
+  type: 'test'
+  ...
+# Subtest: F3 Graph clear encodes functional null as empty string and date readback accepts Excel serial
+ok 69 - F3 Graph clear encodes functional null as empty string and date readback accepts Excel serial
+  ---
+  duration_ms: 0.212042
+  type: 'test'
+  ...
+# Subtest: F3 private target rejects a changed row business owner and disabled writer capability before a write
+ok 70 - F3 private target rejects a changed row business owner and disabled writer capability before a write
+  ---
+  duration_ms: 1.196881
+  type: 'test'
+  ...
+# Subtest: F3 shopper alias is explicit, scoped and idempotent; an existing different owner blocks all writes
+ok 71 - F3 shopper alias is explicit, scoped and idempotent; an existing different owner blocks all writes
+  ---
+  duration_ms: 0.949687
+  type: 'test'
+  ...
+# Subtest: F3 target cannot reinterpret a newly changed HR shopper label as the event base
+ok 72 - F3 target cannot reinterpret a newly changed HR shopper label as the event base
+  ---
+  duration_ms: 1.171864
+  type: 'test'
+  ...
+# Subtest: F3 remote receipt without a proven provider execution identifier remains pending
+ok 73 - F3 remote receipt without a proven provider execution identifier remains pending
+  ---
+  duration_ms: 0.813627
+  type: 'test'
+  ...
+# Subtest: F3 server captures command dependencies per request and defaults writer capability off
+ok 74 - F3 server captures command dependencies per request and defaults writer capability off
+  ---
+  duration_ms: 1.283148
+  type: 'test'
+  ...
+# Subtest: F3 recovery distinguishes remote receipt plus stale before read from proven divergent value
+ok 75 - F3 recovery distinguishes remote receipt plus stale before read from proven divergent value
+  ---
+  duration_ms: 1.388844
+  type: 'test'
+  ...
+# Subtest: F3 server turns only independently proved changed-base target guard into terminal conflict without Make
+ok 76 - F3 server turns only independently proved changed-base target guard into terminal conflict without Make
+  ---
+  duration_ms: 1.544823
+  type: 'test'
+  ...
+# Subtest: F3 QA window and explicit historical request each read only their own country periods under external_read_only
+ok 77 - F3 QA window and explicit historical request each read only their own country periods under external_read_only
+  ---
+  duration_ms: 33.929366
+  type: 'test'
+  ...
+# Subtest: F3 QA window and explicit historical request each read only their own country periods under bidirectional_gated
+ok 78 - F3 QA window and explicit historical request each read only their own country periods under bidirectional_gated
+  ---
+  duration_ms: 4.082547
+  type: 'test'
+  ...
+# Subtest: F3 read policy cannot imply write permission when country setting disagrees
+ok 79 - F3 read policy cannot imply write permission when country setting disagrees
+  ---
+  duration_ms: 1.028113
+  type: 'test'
+  ...
+# Subtest: F3 server resolves configured Excel QA scope while preserving the legacy Google adapter guard
+ok 80 - F3 server resolves configured Excel QA scope while preserving the legacy Google adapter guard
+  ---
+  duration_ms: 4.362459
+  type: 'test'
+  ...
+# Subtest: F3 private mapping remains exact: unknown library cannot borrow the approved country columns
+ok 81 - F3 private mapping remains exact: unknown library cannot borrow the approved country columns
+  ---
+  duration_ms: 2.111747
+  type: 'test'
+  ...
+# Subtest: F3 read range belongs to the private country binding and cannot be overridden by a caller
+ok 82 - F3 read range belongs to the private country binding and cannot be overridden by a caller
+  ---
+  duration_ms: 3.055596
+  type: 'test'
+  ...
+# Subtest: cold protected projection revalidates the discovered sheet locally; strict reads still require inventory
+ok 83 - cold protected projection revalidates the discovered sheet locally; strict reads still require inventory
+  ---
+  duration_ms: 33.434076
+  type: 'test'
+  ...
+# Subtest: same binding shares the active source read without an extra refresh
+ok 84 - same binding shares the active source read without an extra refresh
+  ---
+  duration_ms: 6.019278
+  type: 'test'
+  ...
+# Subtest: different binding waits for its prior owner and returns only the newly resolved source
+ok 85 - different binding waits for its prior owner and returns only the newly resolved source
+  ---
+  duration_ms: 0.884061
+  type: 'test'
+  ...
+# Subtest: failed prior owner cannot serve its expired cache as the current source
+ok 86 - failed prior owner cannot serve its expired cache as the current source
+  ---
+  duration_ms: 0.42824
+  type: 'test'
+  ...
+# Subtest: a second concurrent source change fails once without retrying or serving another binding
+ok 87 - a second concurrent source change fails once without retrying or serving another binding
+  ---
+  duration_ms: 1.153007
+  type: 'test'
+  ...
+# Subtest: VRM-134 coalesces independent protected HR and principal reads without returning before both
+ok 88 - VRM-134 coalesces independent protected HR and principal reads without returning before both
+  ---
+  duration_ms: 1.015875
+  type: 'test'
+  ...
+# Subtest: VRM-134 rejects protected request if principal check fails
+ok 89 - VRM-134 rejects protected request if principal check fails
+  ---
+  duration_ms: 0.671348
+  type: 'test'
+  ...
+# Subtest: VRM-134 public HR read never calls protected identity and retains freshness route
+ok 90 - VRM-134 public HR read never calls protected identity and retains freshness route
+  ---
+  duration_ms: 0.33968
+  type: 'test'
+  ...
+# Subtest: VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+ok 91 - VRM-134 exposes non-sensitive source refresh stages and protected timing only to verified path
+  ---
+  duration_ms: 2.073391
+  type: 'test'
+  ...
+# Subtest: VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+ok 92 - VRM-134 protected metadata read verifies identity and HR without repeating protected Firestore overlay
+  ---
+  duration_ms: 0.485976
+  type: 'test'
+  ...
+# Subtest: VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+ok 93 - VRM-134 registry identity and live HR read start concurrently, then both settle before validation
+  ---
+  duration_ms: 0.870622
+  type: 'test'
+  ...
+# Subtest: VRM-134 source read failure waits for the other process before cleanup
+ok 94 - VRM-134 source read failure waits for the other process before cleanup
+  ---
+  duration_ms: 0.513025
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 reads36 tabs in one bounded batch and preserves response order
+ok 95 - VRM-134 R20 reads36 tabs in one bounded batch and preserves response order
+  ---
+  duration_ms: 5.105904
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 covers small and partial waves without extra or missing tabs
+ok 96 - VRM-134 R20 covers small and partial waves without extra or missing tabs
+  ---
+  duration_ms: 22.830173
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 failed batch waits for its peer and starts no later wave
+ok 97 - VRM-134 R20 failed batch waits for its peer and starts no later wave
+  ---
+  duration_ms: 10.142844
+  type: 'test'
+  ...
+# Subtest: VRM-134 R20 authentication and missing metadata fail before batch reads
+ok 98 - VRM-134 R20 authentication and missing metadata fail before batch reads
+  ---
+  duration_ms: 0.840167
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity batching preserves chronological latest nonempty contacts
+ok 99 - VRM-134 identity batching preserves chronological latest nonempty contacts
+  ---
+  duration_ms: 14.740771
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity failure waits for its peer and never publishes a partial identity file
+ok 100 - VRM-134 identity failure waits for its peer and never publishes a partial identity file
+  ---
+  duration_ms: 3.854311
+  type: 'test'
+  ...
+# Subtest: VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+ok 101 - VRM-134 identity registry-only route performs no batch reads and retains auth boundary
+  ---
+  duration_ms: 1.687944
+  type: 'test'
+  ...
+# Subtest: VRM356 identity retries only the identical rejected Sheets GET and preserves its result
+ok 102 - VRM356 identity retries only the identical rejected Sheets GET and preserves its result
+  ---
+  duration_ms: 1.054051
+  type: 'test'
+  ...
+# Subtest: VRM356 identity exhausted quota terminates after seven attempts within the global deadline
+ok 103 - VRM356 identity exhausted quota terminates after seven attempts within the global deadline
+  ---
+  duration_ms: 0.583949
+  type: 'test'
+  ...
+# Subtest: VRM356 identity honors Retry-After seconds and HTTP date without exceeding deadline
+ok 104 - VRM356 identity honors Retry-After seconds and HTTP date without exceeding deadline
+  ---
+  duration_ms: 0.488579
+  type: 'test'
+  ...
+# Subtest: VRM356 identity rejects writes and does not retry non429 errors
+ok 105 - VRM356 identity rejects writes and does not retry non429 errors
+  ---
+  duration_ms: 0.393208
+  type: 'test'
+  ...
+# Subtest: VRM356 identity cannot restart an expired global read budget
+ok 106 - VRM356 identity cannot restart an expired global read budget
+  ---
+  duration_ms: 0.152594
+  type: 'test'
+  ...
+# Subtest: VRM356 identity range batches preserve129 rows and bounded URLs including long quoted titles
+ok 107 - VRM356 identity range batches preserve129 rows and bounded URLs including long quoted titles
+  ---
+  duration_ms: 1.14835
+  type: 'test'
+  ...
+# Subtest: VRM356 identity rejects incomplete or reordered batch results and accepts a truly empty range
+ok 108 - VRM356 identity rejects incomplete or reordered batch results and accepts a truly empty range
+  ---
+  duration_ms: 0.248636
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 retries only the identical rejected Sheets GET and preserves its result
+ok 109 - VRM356 R20 retries only the identical rejected Sheets GET and preserves its result
+  ---
+  duration_ms: 0.357385
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 exhausted quota terminates after seven attempts within the global deadline
+ok 110 - VRM356 R20 exhausted quota terminates after seven attempts within the global deadline
+  ---
+  duration_ms: 0.250218
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 honors Retry-After seconds and HTTP date without exceeding deadline
+ok 111 - VRM356 R20 honors Retry-After seconds and HTTP date without exceeding deadline
+  ---
+  duration_ms: 0.395812
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 rejects writes and does not retry non429 errors
+ok 112 - VRM356 R20 rejects writes and does not retry non429 errors
+  ---
+  duration_ms: 0.336265
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 cannot restart an expired global read budget
+ok 113 - VRM356 R20 cannot restart an expired global read budget
+  ---
+  duration_ms: 0.091154
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 range batches preserve129 rows and bounded URLs including long quoted titles
+ok 114 - VRM356 R20 range batches preserve129 rows and bounded URLs including long quoted titles
+  ---
+  duration_ms: 2.443075
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 rejects incomplete or reordered batch results and accepts a truly empty range
+ok 115 - VRM356 R20 rejects incomplete or reordered batch results and accepts a truly empty range
+  ---
+  duration_ms: 0.172404
+  type: 'test'
+  ...
+# Subtest: VRM356 identity requests exact physical grid bounds before strict provider validation
+ok 116 - VRM356 identity requests exact physical grid bounds before strict provider validation
+  ---
+  duration_ms: 3.418991
+  type: 'test'
+  ...
+# Subtest: VRM356 identity intersects row and column caps without changing raw titles
+ok 117 - VRM356 identity intersects row and column caps without changing raw titles
+  ---
+  duration_ms: 0.504352
+  type: 'test'
+  ...
+# Subtest: VRM356 identity rejects missing ambiguous or invalid geometry before any values request
+ok 118 - VRM356 identity rejects missing ambiguous or invalid geometry before any values request
+  ---
+  duration_ms: 11.720376
+  type: 'test'
+  ...
+# Subtest: VRM356 identity still rejects grid shrinkage after metadata instead of accepting shorter ranges
+ok 119 - VRM356 identity still rejects grid shrinkage after metadata instead of accepting shorter ranges
+  ---
+  duration_ms: 2.071788
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 requests exact physical grid bounds before strict provider validation
+ok 120 - VRM356 R20 requests exact physical grid bounds before strict provider validation
+  ---
+  duration_ms: 5.357914
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 intersects row and column caps without changing raw titles
+ok 121 - VRM356 R20 intersects row and column caps without changing raw titles
+  ---
+  duration_ms: 0.311418
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 rejects missing ambiguous or invalid geometry before any values request
+ok 122 - VRM356 R20 rejects missing ambiguous or invalid geometry before any values request
+  ---
+  duration_ms: 7.24476
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 still rejects grid shrinkage after metadata instead of accepting shorter ranges
+ok 123 - VRM356 R20 still rejects grid shrinkage after metadata instead of accepting shorter ranges
+  ---
+  duration_ms: 0.21044
+  type: 'test'
+  ...
+# Subtest: VRM356 four fresh observations consume16 independent Sheets reads instead of48 and preserve every tab
+ok 124 - VRM356 four fresh observations consume16 independent Sheets reads instead of48 and preserve every tab
+  ---
+  duration_ms: 7.10871
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 exhausted quota and incomplete batches never fall back to GViz
+ok 125 - VRM356 R20 exhausted quota and incomplete batches never fall back to GViz
+  ---
+  duration_ms: 0.422141
+  type: 'test'
+  ...
+# Subtest: VRM356 child error marker retains safe provider metadata and rejects forged or raw stderr
+ok 126 - VRM356 child error marker retains safe provider metadata and rejects forged or raw stderr
+  ---
+  duration_ms: 0.467608
+  type: 'test'
+  ...
+# Subtest: VRM356 identity preserves provider classification for body-timeout
+ok 127 - VRM356 identity preserves provider classification for body-timeout
+  ---
+  duration_ms: 0.514247
+  type: 'test'
+  ...
+# Subtest: VRM356 identity preserves provider classification for body-aborted-signal
+ok 128 - VRM356 identity preserves provider classification for body-aborted-signal
+  ---
+  duration_ms: 0.564471
+  type: 'test'
+  ...
+# Subtest: VRM356 identity preserves provider classification for late-complete-body
+ok 129 - VRM356 identity preserves provider classification for late-complete-body
+  ---
+  duration_ms: 0.092827
+  type: 'test'
+  ...
+# Subtest: VRM356 identity preserves provider classification for 429-body-timeout
+ok 130 - VRM356 identity preserves provider classification for 429-body-timeout
+  ---
+  duration_ms: 0.075591
+  type: 'test'
+  ...
+# Subtest: VRM356 identity malformed200 JSON remains an integrity failure without retry
+ok 131 - VRM356 identity malformed200 JSON remains an integrity failure without retry
+  ---
+  duration_ms: 0.182378
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 preserves provider classification for body-timeout
+ok 132 - VRM356 R20 preserves provider classification for body-timeout
+  ---
+  duration_ms: 0.085065
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 preserves provider classification for body-aborted-signal
+ok 133 - VRM356 R20 preserves provider classification for body-aborted-signal
+  ---
+  duration_ms: 0.064255
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 preserves provider classification for late-complete-body
+ok 134 - VRM356 R20 preserves provider classification for late-complete-body
+  ---
+  duration_ms: 0.055361
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 preserves provider classification for 429-body-timeout
+ok 135 - VRM356 R20 preserves provider classification for 429-body-timeout
+  ---
+  duration_ms: 0.090263
+  type: 'test'
+  ...
+# Subtest: VRM356 R20 malformed200 JSON remains an integrity failure without retry
+ok 136 - VRM356 R20 malformed200 JSON remains an integrity failure without retry
+  ---
+  duration_ms: 0.180756
+  type: 'test'
+  ...
+# Subtest: strict commands/probes never fall back to a durable view if provider fails
+ok 137 - strict commands/probes never fall back to a durable view if provider fails
+  ---
+  duration_ms: 5.810691
+  type: 'test'
+  ...
+# Subtest: forceFresh always wins over presentation recovery, including a newly recovered cache
+ok 138 - forceFresh always wins over presentation recovery, including a newly recovered cache
+  ---
+  duration_ms: 0.939853
+  type: 'test'
+  ...
+# Subtest: presentation can recover instantly on a cold process without initiating an external read
+ok 139 - presentation can recover instantly on a cold process without initiating an external read
+  ---
+  duration_ms: 1.540186
+  type: 'test'
+  ...
+# Subtest: missing recoverable view requires the real provider, never the build bootstrap
+ok 140 - missing recoverable view requires the real provider, never the build bootstrap
+  ---
+  duration_ms: 2.102584
+  type: 'test'
+  ...
+# Subtest: parallel presentation selection performs reads only before authentication
+ok 141 - parallel presentation selection performs reads only before authentication
+  ---
+  duration_ms: 1.238352
+  type: 'test'
+  ...
+# Subtest: corrupt durable content is not displayed; an independent fresh provider read can recover the view
+ok 142 - corrupt durable content is not displayed; an independent fresh provider read can recover the view
+  ---
+  duration_ms: 0.489531
+  type: 'test'
+  ...
+# Subtest: live cache retains its strict existing five-second window
+ok 143 - live cache retains its strict existing five-second window
+  ---
+  duration_ms: 0.495319
+  type: 'test'
+  ...
+# Subtest: restored source is rehashed and binding rechecked before cache publication
+ok 144 - restored source is rehashed and binding rechecked before cache publication
+  ---
+  duration_ms: 1.641575
+  type: 'test'
+  ...
+# Subtest: only explicit readModel=1 presentation requests enable recovery; forced reads and auth remain strict
+ok 145 - only explicit readModel=1 presentation requests enable recovery; forced reads and auth remain strict
+  ---
+  duration_ms: 2.754753
+  type: 'test'
+  ...
+# Subtest: recovered UI cannot be upgraded to live by bridge overrides and retains its observation time
+ok 146 - recovered UI cannot be upgraded to live by bridge overrides and retains its observation time
+  ---
+  duration_ms: 12.004284
+  type: 'test'
+  ...
+# Subtest: fresh observation of the same revision clears stale warnings without changing content
+ok 147 - fresh observation of the same revision clears stale warnings without changing content
+  ---
+  duration_ms: 1.598993
+  type: 'test'
+  ...
+# Subtest: a different deferred revision cannot refresh the timestamp or freshness of the currently displayed view
+ok 148 - a different deferred revision cannot refresh the timestamp or freshness of the currently displayed view
+  ---
+  duration_ms: 2.053712
+  type: 'test'
+  ...
+# Subtest: visible global badge identifies last synchronization and does not claim current live data
+ok 149 - visible global badge identifies last synchronization and does not claim current live data
+  ---
+  duration_ms: 27.558171
+  type: 'test'
+  ...
+# Subtest: existing browser bridge opts into read model, watcher requests shared synchronization automatically, and commands do not opt in
+ok 150 - existing browser bridge opts into read model, watcher requests shared synchronization automatically, and commands do not opt in
+  ---
+  duration_ms: 2.424367
+  type: 'test'
+  ...
+# Subtest: durable reader keys reuse source hashes but recompute the selected mapping for every binding
+ok 151 - durable reader keys reuse source hashes but recompute the selected mapping for every binding
+  ---
+  duration_ms: 1.054732
+  type: 'test'
+  ...
+# Subtest: protected presentation reads overlap auth, but no persistence occurs before both succeed
+ok 152 - protected presentation reads overlap auth, but no persistence occurs before both succeed
+  ---
+  duration_ms: 2.121171
+  type: 'test'
+  ...
+# Subtest: rejected principal cannot cause a cache write even when the HR task finishes afterwards
+ok 153 - rejected principal cannot cause a cache write even when the HR task finishes afterwards
+  ---
+  duration_ms: 0.58421
+  type: 'test'
+  ...
+# Subtest: anonymous opt-in, probes and recovered views never persist; explicit authenticated fresh presentation may
+ok 154 - anonymous opt-in, probes and recovered views never persist; explicit authenticated fresh presentation may
+  ---
+  duration_ms: 1.583119
+  type: 'test'
+  ...
+# Subtest: binding change after protected verification aborts before publication
+ok 155 - binding change after protected verification aborts before publication
+  ---
+  duration_ms: 0.843091
+  type: 'test'
+  ...
+# Subtest: visible historical rows survive a fresh window without entering command authority or resurrecting a deleted row
+ok 156 - visible historical rows survive a fresh window without entering command authority or resurrecting a deleted row
+  ---
+  duration_ms: 4.042688
+  type: 'test'
+  ...
+# Subtest: history from a different scope is rejected before atomic publication
+ok 157 - history from a different scope is rejected before atomic publication
+  ---
+  duration_ms: 0.950719
+  type: 'test'
+  ...
+# Subtest: an explicit historical view pauses automatic polling and its manual refresh keeps the same period
+ok 158 - an explicit historical view pauses automatic polling and its manual refresh keeps the same period
+  ---
+  duration_ms: 3.54803
+  type: 'test'
+  ...
+# Subtest: watcher handoff reuses its verified provider revision instead of forcing a second read
+ok 159 - watcher handoff reuses its verified provider revision instead of forcing a second read
+  ---
+  duration_ms: 0.4418
+  type: 'test'
+  ...
+# Subtest: actual C6 shell releases an atomic last-confirmed view and does not remount on repeated ready events
+ok 160 - actual C6 shell releases an atomic last-confirmed view and does not remount on repeated ready events
+  ---
+  duration_ms: 3.067564
+  type: 'test'
+  ...
+# Subtest: actual watcher preserves stale freshness, confirms same revision and converges after one different-revision composition
+ok 161 - actual watcher preserves stale freshness, confirms same revision and converges after one different-revision composition
+  ---
+  duration_ms: 4.323732
+  type: 'test'
+  ...
+# Subtest: watcher-triggered bridge refresh discards prior prefetch and requests strict authenticated presentation
+ok 162 - watcher-triggered bridge refresh discards prior prefetch and requests strict authenticated presentation
+  ---
+  duration_ms: 0.878543
+  type: 'test'
+  ...
+# Subtest: a recovered snapshot without a history bank still marks every visible visit as stale
+ok 163 - a recovered snapshot without a history bank still marks every visible visit as stale
+  ---
+  duration_ms: 1.919074
+  type: 'test'
+  ...
+# Subtest: manual refresh discovers new tabs while automatic polling retains its inventory cache
+ok 164 - manual refresh discovers new tabs while automatic polling retains its inventory cache
+  ---
+  duration_ms: 2.814481
+  type: 'test'
+  ...
+# Subtest: history survives restart and window replacement, but never grants external authority
+ok 165 - history survives restart and window replacement, but never grants external authority
+  ---
+  duration_ms: 18.275722
+  type: 'test'
+  ...
+# Subtest: an explicitly empty period erases its last historical visit without touching other periods
+ok 166 - an explicitly empty period erases its last historical visit without touching other periods
+  ---
+  duration_ms: 5.302773
+  type: 'test'
+  ...
+# Subtest: invalid or incomplete history coverage is rejected before any write
+ok 167 - invalid or incomplete history coverage is rejected before any write
+  ---
+  duration_ms: 1.698249
+  type: 'test'
+  ...
+# Subtest: history replay writes nothing; identical content reuses immutable chunks for a newer observation
+ok 168 - history replay writes nothing; identical content reuses immutable chunks for a newer observation
+  ---
+  duration_ms: 6.056872
+  type: 'test'
+  ...
+# Subtest: late old history reader cannot overwrite a newer-started read, including publication CAS
+ok 169 - late old history reader cannot overwrite a newer-started read, including publication CAS
+  ---
+  duration_ms: 5.15136
+  type: 'test'
+  ...
+# Subtest: historical seed cannot replace an existing observation and rejects missing provenance
+ok 170 - historical seed cannot replace an existing observation and rejects missing provenance
+  ---
+  duration_ms: 2.76655
+  type: 'test'
+  ...
+# Subtest: failed historical chunk batch keeps the previous readable period intact
+ok 171 - failed historical chunk batch keeps the previous readable period intact
+  ---
+  duration_ms: 195.702066
+  type: 'test'
+  ...
+# Subtest: cold process restores validated snapshot, exact maps and original observation time without a provider
+ok 172 - cold process restores validated snapshot, exact maps and original observation time without a provider
+  ---
+  duration_ms: 2.360723
+  type: 'test'
+  ...
+# Subtest: payload over one MiB is recovered from bounded immutable shards; no document approaches Firestore limit
+ok 173 - payload over one MiB is recovered from bounded immutable shards; no document approaches Firestore limit
+  ---
+  duration_ms: 90.300343
+  type: 'test'
+  ...
+# Subtest: failed shard batch never publishes a partial new snapshot or changes the prior pointer
+ok 174 - failed shard batch never publishes a partial new snapshot or changes the prior pointer
+  ---
+  duration_ms: 110.953829
+  type: 'test'
+  ...
+# Subtest: unchanged revision advances only confirmed observation metadata and reuses immutable content
+ok 175 - unchanged revision advances only confirmed observation metadata and reuses immutable content
+  ---
+  duration_ms: 0.919614
+  type: 'test'
+  ...
+# Subtest: repeat presentation of the same observation performs no additional durable write
+ok 176 - repeat presentation of the same observation performs no additional durable write
+  ---
+  duration_ms: 0.354201
+  type: 'test'
+  ...
+# Subtest: different tenant, project, binding or reader cannot recover another scoped snapshot
+ok 177 - different tenant, project, binding or reader cannot recover another scoped snapshot
+  ---
+  duration_ms: 0.641764
+  type: 'test'
+  ...
+# Subtest: corrupt or missing shard is rejected before exposing content
+ok 178 - corrupt or missing shard is rejected before exposing content
+  ---
+  duration_ms: 1.376525
+  type: 'test'
+  ...
+# Subtest: expired or future observation is never returned as a recovered valid view
+ok 179 - expired or future observation is never returned as a recovered valid view
+  ---
+  duration_ms: 0.357076
+  type: 'test'
+  ...
+# Subtest: late prior read cannot replace a more recent observation; ambiguous equal-start revisions fail closed
+ok 180 - late prior read cannot replace a more recent observation; ambiguous equal-start revisions fail closed
+  ---
+  duration_ms: 0.500917
+  type: 'test'
+  ...
+# Subtest: pointer CAS rejects a slower reader even when it finishes writing shards after the newer reader
+ok 181 - pointer CAS rejects a slower reader even when it finishes writing shards after the newer reader
+  ---
+  duration_ms: 0.871402
+  type: 'test'
+  ...
+# Subtest: bootstrap, recovered data or invalid timestamps cannot be republished as a new external observation
+ok 182 - bootstrap, recovered data or invalid timestamps cannot be republished as a new external observation
+  ---
+  duration_ms: 0.327412
+  type: 'test'
+  ...
+# Subtest: oversized or foreign manifest is rejected before chunk allocation
+ok 183 - oversized or foreign manifest is rejected before chunk allocation
+  ---
+  duration_ms: 0.82247
+  type: 'test'
+  ...
+# Subtest: one local configuration retains the exact observed worksheet binding when its stable content revision is unchanged
+ok 184 - one local configuration retains the exact observed worksheet binding when its stable content revision is unchanged
+  ---
+  duration_ms: 0.982316
+  type: 'test'
+  ...
+# Subtest: two Cloud Run callers, concurrent navigation and staggered session polls use one external observation for a shared revision
+ok 185 - two Cloud Run callers, concurrent navigation and staggered session polls use one external observation for a shared revision
+  ---
+  duration_ms: 7.89683
+  type: 'test'
+  ...
+# Subtest: a verified ACK invalidates the shared projection for the next presentation before the timer
+ok 186 - a verified ACK invalidates the shared projection for the next presentation before the timer
+  ---
+  duration_ms: 0.560294
+  type: 'test'
+  ...
+# Subtest: a late refresh that began before an ACK cannot mark the old revision current
+ok 187 - a late refresh that began before an ACK cannot mark the old revision current
+  ---
+  duration_ms: 0.672199
+  type: 'test'
+  ...
+# Subtest: external failure serves only a confirmed timestamp, throttles other workers, then discovers subsequent changes
+ok 188 - external failure serves only a confirmed timestamp, throttles other workers, then discovers subsequent changes
+  ---
+  duration_ms: 0.660132
+  type: 'test'
+  ...
+# Subtest: a missing or expired durable body requires a new external observation
+ok 189 - a missing or expired durable body requires a new external observation
+  ---
+  duration_ms: 0.31295
+  type: 'test'
+  ...
+# Subtest: binding errors fail closed even when a saved revision exists
+ok 190 - binding errors fail closed even when a saved revision exists
+  ---
+  duration_ms: 0.341352
+  type: 'test'
+  ...
+# Subtest: the served watcher routes two independent authenticated clients through the real shared presentation handler
+ok 191 - the served watcher routes two independent authenticated clients through the real shared presentation handler
+  ---
+  duration_ms: 406.147392
+  type: 'test'
+  ...
+# Subtest: A05 builds HR candidate without publishing CX.data
+ok 192 - A05 builds HR candidate without publishing CX.data
+  ---
+  duration_ms: 1.310508
+  type: 'test'
+  ...
+# Subtest: A05 reconcile validates session and revision before publish
+ok 193 - A05 reconcile validates session and revision before publish
+  ---
+  duration_ms: 0.226333
+  type: 'test'
+  ...
+# Subtest: A05 publication precedes authority-ready events
+ok 194 - A05 publication precedes authority-ready events
+  ---
+  duration_ms: 0.131063
+  type: 'test'
+  ...
+# Subtest: A05 backend refresh awaits atomic composition readback
+ok 195 - A05 backend refresh awaits atomic composition readback
+  ---
+  duration_ms: 0.128539
+  type: 'test'
+  ...
+# Subtest: A05 human gate and watcher require same-revision atomic authority
+ok 196 - A05 human gate and watcher require same-revision atomic authority
+  ---
+  duration_ms: 0.17726
+  type: 'test'
+  ...
+# Subtest: VRM134 ready event wakes the pending 325ms readiness poll immediately
+ok 197 - VRM134 ready event wakes the pending 325ms readiness poll immediately
+  ---
+  duration_ms: 3.429998
+  type: 'test'
+  ...
+# Subtest: VRM134 ready event wakes the capped 2000ms readiness poll immediately
+ok 198 - VRM134 ready event wakes the capped 2000ms readiness poll immediately
+  ---
+  duration_ms: 6.634352
+  type: 'test'
+  ...
+# Subtest: VRM134 duplicate ready events retain one immediate callback and one reconciliation
+ok 199 - VRM134 duplicate ready events retain one immediate callback and one reconciliation
+  ---
+  duration_ms: 0.79536
+  type: 'test'
+  ...
+# Subtest: VRM134 passive focus does not replace a pending readiness timer
+ok 200 - VRM134 passive focus does not replace a pending readiness timer
+  ---
+  duration_ms: 0.866946
+  type: 'test'
+  ...
+# Subtest: VRM134 active reconciliation is not interrupted or overlapped
+ok 201 - VRM134 active reconciliation is not interrupted or overlapped
+  ---
+  duration_ms: 0.916278
+  type: 'test'
+  ...
+# Subtest: VRM134 waking a poll does not bypass principal authorization
+ok 202 - VRM134 waking a poll does not bypass principal authorization
+  ---
+  duration_ms: 0.916359
+  type: 'test'
+  ...
+# Subtest: VRM134 waking a poll does not bypass dependency readiness
+ok 203 - VRM134 waking a poll does not bypass dependency readiness
+  ---
+  duration_ms: 0.70631
+  type: 'test'
+  ...
+# Subtest: VRM134 a fresh applied authority still ignores passive readiness echoes
+ok 204 - VRM134 a fresh applied authority still ignores passive readiness echoes
+  ---
+  duration_ms: 0.604509
+  type: 'test'
+  ...
+# Subtest: VRM364 routine HR refresh keeps an already released shell mounted
+ok 205 - VRM364 routine HR refresh keeps an already released shell mounted
+  ---
+  duration_ms: 1.934116
+  type: 'test'
+  ...
+# Subtest: VRM364 paired authority events release a blocked shell only once
+ok 206 - VRM364 paired authority events release a blocked shell only once
+  ---
+  duration_ms: 0.905943
+  type: 'test'
+  ...
+# Subtest: preserves previously durable visit and exact canonical shopper identity
+ok 207 - preserves previously durable visit and exact canonical shopper identity
+  ---
+  duration_ms: 2.961899
+  type: 'test'
+  ...
+# Subtest: source shopper/date changes do not change visit business key
+ok 208 - source shopper/date changes do not change visit business key
+  ---
+  duration_ms: 0.245811
+  type: 'test'
+  ...
+# Subtest: a new exact source visit gets deterministic ID with complete durable index
+ok 209 - a new exact source visit gets deterministic ID with complete durable index
+  ---
+  duration_ms: 0.601916
+  type: 'test'
+  ...
+# Subtest: fail closed on absent or ambiguous durable identities and source duplicates
+ok 210 - fail closed on absent or ambiguous durable identities and source duplicates
+  ---
+  duration_ms: 0.906404
+  type: 'test'
+  ...
+# Subtest: refuses unaccounted active historical visit rather than duplicate it
+ok 211 - refuses unaccounted active historical visit rather than duplicate it
+  ---
+  duration_ms: 4.948241
+  type: 'test'
+  ...
+# Subtest: tenant/project/period/country boundaries are mandatory
+ok 212 - tenant/project/period/country boundaries are mandatory
+  ---
+  duration_ms: 0.275265
+  type: 'test'
+  ...
+# Subtest: DEV readback proves bounded actual provider reads and complete registered country coverage
+ok 213 - DEV readback proves bounded actual provider reads and complete registered country coverage
+  ---
+  duration_ms: 16.977141
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects full historical scan
+ok 214 - DEV proof rejects full historical scan
+  ---
+  duration_ms: 1.012991
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects missing country
+ok 215 - DEV proof rejects missing country
+  ---
+  duration_ms: 0.436692
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects unrecorded tab
+ok 216 - DEV proof rejects unrecorded tab
+  ---
+  duration_ms: 0.684878
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects HR write
+ok 217 - DEV proof rejects HR write
+  ---
+  duration_ms: 0.494578
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects provider error
+ok 218 - DEV proof rejects provider error
+  ---
+  duration_ms: 0.272501
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects foreign visit
+ok 219 - DEV proof rejects foreign visit
+  ---
+  duration_ms: 0.31943
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects historical row
+ok 220 - DEV proof rejects historical row
+  ---
+  duration_ms: 0.3603
+  type: 'test'
+  ...
+# Subtest: DEV proof rejects stale view
+ok 221 - DEV proof rejects stale view
+  ---
+  duration_ms: 0.329105
+  type: 'test'
+  ...
+# Subtest: accepted seed retains original evidence while a newer observed deletion can reduce history
+ok 222 - accepted seed retains original evidence while a newer observed deletion can reduce history
+  ---
+  duration_ms: 17.692844
+  type: 'test'
+  ...
+# Subtest: history readback rejects wrong accepted artifact digest
+ok 223 - history readback rejects wrong accepted artifact digest
+  ---
+  duration_ms: 0.59786
+  type: 'test'
+  ...
+# Subtest: history readback rejects foreign historical period
+ok 224 - history readback rejects foreign historical period
+  ---
+  duration_ms: 0.449421
+  type: 'test'
+  ...
+# Subtest: history readback rejects empty history at unchanged observation
+ok 225 - history readback rejects empty history at unchanged observation
+  ---
+  duration_ms: 0.483141
+  type: 'test'
+  ...
+# Subtest: history readback rejects invented seed observation time
+ok 226 - history readback rejects invented seed observation time
+  ---
+  duration_ms: 0.543941
+  type: 'test'
+  ...
+# Subtest: configured private workbook and exact mapping feed readers without exposing private references
+ok 227 - configured private workbook and exact mapping feed readers without exposing private references
+  ---
+  duration_ms: 2.099149
+  type: 'test'
+  ...
+# Subtest: an unconfigured project fails after its exact project lookup without borrowing another binding
+ok 228 - an unconfigured project fails after its exact project lookup without borrowing another binding
+  ---
+  duration_ms: 1.015945
+  type: 'test'
+  ...
+# Subtest: missing project rejects safely
+ok 229 - missing project rejects safely
+  ---
+  duration_ms: 0.344376
+  type: 'test'
+  ...
+# Subtest: missing private doc rejects safely
+ok 230 - missing private doc rejects safely
+  ---
+  duration_ms: 0.296126
+  type: 'test'
+  ...
+# Subtest: foreign tenant rejects safely
+ok 231 - foreign tenant rejects safely
+  ---
+  duration_ms: 0.292521
+  type: 'test'
+  ...
+# Subtest: contradictory project list rejects safely
+ok 232 - contradictory project list rejects safely
+  ---
+  duration_ms: 0.434389
+  type: 'test'
+  ...
+# Subtest: disabled rejects safely
+ok 233 - disabled rejects safely
+  ---
+  duration_ms: 0.318749
+  type: 'test'
+  ...
+# Subtest: remote write enabled rejects safely
+ok 234 - remote write enabled rejects safely
+  ---
+  duration_ms: 0.288315
+  type: 'test'
+  ...
+# Subtest: wrong mapping rejects safely
+ok 235 - wrong mapping rejects safely
+  ---
+  duration_ms: 3.748436
+  type: 'test'
+  ...
+# Subtest: ambiguous workbook rejects safely
+ok 236 - ambiguous workbook rejects safely
+  ---
+  duration_ms: 0.569317
+  type: 'test'
+  ...
+# Subtest: empty workbook rejects safely
+ok 237 - empty workbook rejects safely
+  ---
+  duration_ms: 0.592582
+  type: 'test'
+  ...
+# Subtest: internal source rejects safely
+ok 238 - internal source rejects safely
+  ---
+  duration_ms: 0.362864
+  type: 'test'
+  ...
+# Subtest: partial operational source must not fallback rejects safely
+ok 239 - partial operational source must not fallback rejects safely
+  ---
+  duration_ms: 0.607334
+  type: 'test'
+  ...
+# Subtest: binding fingerprint observes submillisecond changes and rejects missing timestamp
+ok 240 - binding fingerprint observes submillisecond changes and rejects missing timestamp
+  ---
+  duration_ms: 1.377167
+  type: 'test'
+  ...
+# Subtest: cache is never used before private scope validation and changed binding forces read
+ok 241 - cache is never used before private scope validation and changed binding forces read
+  ---
+  duration_ms: 0.603147
+  type: 'test'
+  ...
+# Subtest: both readers consume exact env and a mid-read configuration change prevents publishing cache
+ok 242 - both readers consume exact env and a mid-read configuration change prevents publishing cache
+  ---
+  duration_ms: 2.319173
+  type: 'test'
+  ...
+# Subtest: only absent binding is created; independent readback and replay have no additional writes
+ok 243 - only absent binding is created; independent readback and replay have no additional writes
+  ---
+  duration_ms: 1.445016
+  type: 'test'
+  ...
+# Subtest: existing private configuration is never overwritten
+ok 244 - existing private configuration is never overwritten
+  ---
+  duration_ms: 0.360501
+  type: 'test'
+  ...
+# Subtest: project drift blocks repair before create
+ok 245 - project drift blocks repair before create
+  ---
+  duration_ms: 3.731911
+  type: 'test'
+  ...
+# Subtest: live proof must bind exact private readback, both readers and fingerprint
+ok 246 - live proof must bind exact private readback, both readers and fingerprint
+  ---
+  duration_ms: 0.887325
+  type: 'test'
+  ...
+# Subtest: A08 reuses the exact just-verified protected HR revision without a second meta GET
+ok 247 - A08 reuses the exact just-verified protected HR revision without a second meta GET
+  ---
+  duration_ms: 4.610184
+  type: 'test'
+  ...
+# Subtest: A08 ordinary polling still performs fresh HR meta GET after bootstrap reuse
+ok 248 - A08 ordinary polling still performs fresh HR meta GET after bootstrap reuse
+  ---
+  duration_ms: 2.033131
+  type: 'test'
+  ...
+# Subtest: A08 newer HR revision delegates a protected reconcile without a direct snapshot overwrite
+ok 249 - A08 newer HR revision delegates a protected reconcile without a direct snapshot overwrite
+  ---
+  duration_ms: 2.082724
+  type: 'test'
+  ...
+# Subtest: A08 mismatched published revision blocks protected watcher reads
+ok 250 - A08 mismatched published revision blocks protected watcher reads
+  ---
+  duration_ms: 2.390638
+  type: 'test'
+  ...
+# Subtest: A08 stale verification cannot suppress the meta GET
+ok 251 - A08 stale verification cannot suppress the meta GET
+  ---
+  duration_ms: 1.143943
+  type: 'test'
+  ...
+# Subtest: A08 different principal cannot suppress the meta GET
+ok 252 - A08 different principal cannot suppress the meta GET
+  ---
+  duration_ms: 1.097054
+  type: 'test'
+  ...
+# Subtest: A08 other project cannot reuse a revision from this protected context
+ok 253 - A08 other project cannot reuse a revision from this protected context
+  ---
+  duration_ms: 1.325651
+  type: 'test'
+  ...
+# Subtest: A08 other tenant cannot reuse a revision from this protected context
+ok 254 - A08 other tenant cannot reuse a revision from this protected context
+  ---
+  duration_ms: 1.31876
+  type: 'test'
+  ...
+# Subtest: A08 unauthenticated human context never makes a live HR request
+ok 255 - A08 unauthenticated human context never makes a live HR request
+  ---
+  duration_ms: 1.020842
+  type: 'test'
+  ...
+# Subtest: A08 non-protected preview preserves its original watcher fetch
+ok 256 - A08 non-protected preview preserves its original watcher fetch
+  ---
+  duration_ms: 1.795002
+  type: 'test'
+  ...
+# Subtest: A08 keeps independent HR revision validation before atomic publication
+ok 257 - A08 keeps independent HR revision validation before atomic publication
+  ---
+  duration_ms: 0.276026
+  type: 'test'
+  ...
+# Subtest: VRM364 same-revision protected polling finishes the updating badge
+ok 258 - VRM364 same-revision protected polling finishes the updating badge
+  ---
+  duration_ms: 1.008994
+  type: 'test'
+  ...
+# Subtest: VRM364 fresh HR read clears its stale warning and preserves unrelated warnings
+ok 259 - VRM364 fresh HR read clears its stale warning and preserves unrelated warnings
+  ---
+  duration_ms: 1.567938
+  type: 'test'
+  ...
+# Subtest: VRM364 editing defers protected recomposition and closing rereads the newest revision
+ok 260 - VRM364 editing defers protected recomposition and closing rereads the newest revision
+  ---
+  duration_ms: 1.316868
+  type: 'test'
+  ...
+# Subtest: VRM364 visible modal also defers and a reverted source causes no stale recomposition
+ok 261 - VRM364 visible modal also defers and a reverted source causes no stale recomposition
+  ---
+  duration_ms: 1.314564
+  type: 'test'
+  ...
+# Subtest: VRM364 closing an editor never reuses the former authenticated context
+ok 262 - VRM364 closing an editor never reuses the former authenticated context
+  ---
+  duration_ms: 1.183181
+  type: 'test'
+  ...
+# Subtest: VRM-370 historical RUN2768 materializer reproduces the exact shopper stage failure with no shoppers or writes
+ok 263 - VRM-370 historical RUN2768 materializer reproduces the exact shopper stage failure with no shoppers or writes
+  ---
+  duration_ms: 27.765316
+  type: 'test'
+  ...
+# Subtest: VRM-370 current runtime materializer keeps the original hash and provider evidence; same-revision shopper stage commits with zero writes
+ok 264 - VRM-370 current runtime materializer keeps the original hash and provider evidence; same-revision shopper stage commits with zero writes
+  ---
+  duration_ms: 9.088483
+  type: 'test'
+  ...
+# Subtest: VRM-370 current runtime revision remains stable across timestamps and reacts to exact HR/identity changes; other adapters retain their payload
+ok 265 - VRM-370 current runtime revision remains stable across timestamps and reacts to exact HR/identity changes; other adapters retain their payload
+  ---
+  duration_ms: 6.152994
+  type: 'test'
+  ...
+# Subtest: VRM372 default watcher and deployed entrypoint use a five-minute automatic interval
+ok 266 - VRM372 default watcher and deployed entrypoint use a five-minute automatic interval
+  ---
+  duration_ms: 3.971224
+  type: 'test'
+  ...
+# Subtest: VRM372 hidden automatic triggers perform zero external reads; explicit refresh remains available
+ok 267 - VRM372 hidden automatic triggers perform zero external reads; explicit refresh remains available
+  ---
+  duration_ms: 2.415173
+  type: 'test'
+  ...
+# Subtest: VRM372 focus, visibility, auth and timer events coalesce within one scoped interval
+ok 268 - VRM372 focus, visibility, auth and timer events coalesce within one scoped interval
+  ---
+  duration_ms: 1.750426
+  type: 'test'
+  ...
+# Subtest: VRM372 a newly visible overdue session asks the authenticated project synchronizer to refresh if due
+ok 269 - VRM372 a newly visible overdue session asks the authenticated project synchronizer to refresh if due
+  ---
+  duration_ms: 2.219776
+  type: 'test'
+  ...
+# Subtest: VRM372 manual refresh bypasses the automatic interval and then suppresses a duplicate automatic read
+ok 270 - VRM372 manual refresh bypasses the automatic interval and then suppresses a duplicate automatic read
+  ---
+  duration_ms: 1.299983
+  type: 'test'
+  ...
+# Subtest: VRM372 provider failure is visible and does not create a focus/visibility retry storm
+ok 271 - VRM372 provider failure is visible and does not create a focus/visibility retry storm
+  ---
+  duration_ms: 1.640174
+  type: 'test'
+  ...
+# Subtest: VRM372 automatic attempt keys do not cross tenant, project, actor, role or auth namespace
+ok 272 - VRM372 automatic attempt keys do not cross tenant, project, actor, role or auth namespace
+  ---
+  duration_ms: 1.99819
+  type: 'test'
+  ...
+# Subtest: VRM372 a last-confirmed durable bootstrap never postpones the first external check
+ok 273 - VRM372 a last-confirmed durable bootstrap never postpones the first external check
+  ---
+  duration_ms: 1.247235
+  type: 'test'
+  ...
+# Subtest: VRM372 exact fresh protected bootstrap shares its real read timestamp with automatic scheduling
+ok 274 - VRM372 exact fresh protected bootstrap shares its real read timestamp with automatic scheduling
+  ---
+  duration_ms: 1.186115
+  type: 'test'
+  ...
+# Subtest: VRM372 invalid or future freshness timestamps never suppress the initial read
+ok 275 - VRM372 invalid or future freshness timestamps never suppress the initial read
+  ---
+  duration_ms: 3.014635
+  type: 'test'
+  ...
+# Subtest: VRM372 closing a deferred editor rereads the latest revision inside the automatic interval
+ok 276 - VRM372 closing a deferred editor rereads the latest revision inside the automatic interval
+  ---
+  duration_ms: 2.510534
+  type: 'test'
+  ...
+# Subtest: VRM372 concurrent triggers share the existing in-flight check
+ok 277 - VRM372 concurrent triggers share the existing in-flight check
+  ---
+  duration_ms: 1.252443
+  type: 'test'
+  ...
+# Subtest: VRM372 unauthenticated human and internal project never trigger external HR
+ok 278 - VRM372 unauthenticated human and internal project never trigger external HR
+  ---
+  duration_ms: 0.995595
+  type: 'test'
+  ...
+# Subtest: VRM372 malformed configured intervals fall back safely and valid configuration is retained
+ok 279 - VRM372 malformed configured intervals fall back safely and valid configuration is retained
+  ---
+  duration_ms: 7.877491
+  type: 'test'
+  ...
+# Subtest: VRM372 a ready event from another role or namespace cannot postpone the current context check
+ok 280 - VRM372 a ready event from another role or namespace cannot postpone the current context check
+  ---
+  duration_ms: 1.945292
+  type: 'test'
+  ...
+1..280
+# tests 280
+# suites 0
+# pass 280
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1015.667029

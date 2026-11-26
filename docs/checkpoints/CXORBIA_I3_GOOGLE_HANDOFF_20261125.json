@@ -2,8 +2,8 @@
   "schemaVersion": "cxorbia.i3.google-work-handoff.v1",
   "iteration": "I3",
   "state": "HOLD",
-  "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
-  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "source": "ca94622046360c0122b79e8c4a27e2d72277277e",
+  "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
   "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
@@ -677,6 +677,32 @@
       "mode": "BOUNDED_GT_ESCENARIO_L2",
       "nativeExecutionStarted": false,
       "production": false
+    },
+    "sharedHrSource": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+      "gitBlob": "9398129399234196bb9697ea45e80768000f8ade",
+      "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+      "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+      "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SCOPE.json",
+      "sourceTestsPass": 280,
+      "sourceTestsFail": 0,
+      "production": false,
+      "state": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "pairedDeploy": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V427.json",
+      "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V754_2026-11-25.json",
+      "sourcePublicationParent": "fb7f80287f81691338fd868fc36881fc84781e0e",
+      "newF3Dispatch": false,
+      "liveBoundedCellResult": null,
+      "lastMakePreflight": {
+        "checkedAt": "2026-11-26T02:43:07Z",
+        "balanceCredits": 1037,
+        "refreshRequiredBeforeDispatch": true
+      },
+      "lastNativeAccess": "Connected Chrome listed the DEV Cloud Shell but control timed out. Alternate Cloud Shell returned HTTP 403.",
+      "newCellMutation": false,
+      "priorAttemptCleanup": "1795653493842440 COMPLETE"
     }
   },
   "lastChromeConnection": {
@@ -689,9 +715,9 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
-    "deployment": "E10 is paired and verified in DEV. Reuse the published source and digest.",
+    "deployment": "After sealing any active native test on the served predecessor, stage the approved HR successor pinned in confirmed.sharedHrSource and deploy only via the existing paired DEV lane. Record serving runtime, digest, Hosting version, and the paired receipt before DEV acceptance of the new readers.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
-    "f3": "Read current Make capacity and only sentinel/empty writer window, bind the readback to the published QA commit. On its own native checkout run only the bounded job against DEV 5670f782. Audit the complete writer/reader window after native restoration and before deleting exactly owned Make keys. Keep E2E and I4 on HOLD.",
+    "f3": "Use detached QA producer fb7f80287f81691338fd868fc36881fc84781e0e against the currently served d727f3be pair. Refresh balance and verify exclusive writer, full Make window and sentinel before dispatch. Reserve 100 of 350 credits for recovery. Seal and verify the two physical PATCH results, independent GETs and full restoration before exact-key cleanup. Recheck source and receipt before any retry.",
     "googleExecution": {
       "servedProducer": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
       "financeTransportFilesFromValidatedControl": [

@@ -1,0 +1,62 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "control": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "scope": "Automatic protected presentation HR refresh",
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+  "sourceRows": [
+    {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "domain": "canonical-hr-state-adapters",
+      "approvedBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "f9ApprovedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
+      "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "lastServedBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "currentBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "lastServedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "controlBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "servedSourceBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "sha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "approvedBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "f9ApprovedBlob": null,
+      "f9ApprovedSource": null,
+      "lastServedBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "currentBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "lastServedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "controlBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "servedSourceBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "sha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "approvedBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "f9ApprovedBlob": null,
+      "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "lastServedBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "currentBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "lastServedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "classification": "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E",
+      "controlBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "servedSourceBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "sha256": "ee3ea572fef61b3f643e709b74fec3779575f9f5c15502db78ff008fa876f253"
+    }
+  ],
+  "preEditClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "evidence": "CXORBIA_I3_HR_READ_AND_F3_SCOPE_CORRECTION_20261125.json",
+  "observations": [
+    "Every visible browser scope runs its own five-minute automatic metadata fresh=1. buildSnapshot forceFresh takes refreshSnapshot regardless of the process cache. inFlight is process-local.",
+    "Protected presentations currently support last-confirmed data. The per-process memo can predate the latest confirmed revision in another instance.",
+    "Authentication, explicit remote proof, external observation time and strict commands remain separate conditions."
+  ],
+  "observedAt": "2026-11-26T02:42:49.569393+00:00",
+  "providerCalls": 0
+}

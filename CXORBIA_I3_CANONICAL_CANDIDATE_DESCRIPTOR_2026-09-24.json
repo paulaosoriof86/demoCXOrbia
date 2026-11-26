@@ -217,15 +217,15 @@
     "promotionRule": "PRESERVE_LIVE_AUTHORITATIVE_C3_ALIASES_UNTIL_21_OF_21_AND_GATE20_21; THIS_LATEST_RUN_RECEIPT_SUPERSEDES_2482_FOR_Q2_COUNTS_ONLY",
     "nextExactAction": "I3-Q2 path-bound source and served-owner proof for 7 provenance and 51 served owner paths, rerun canonical C3 and only promote evidenced MATCH; then Q3 Admin-Shopper-HR cross-role, Q4 finance, Q5 21-domain functional visual, Q6 exact artifact Gate20/21; I4 requires explicit authorization"
   },
-  "status": "HOLD_I3_GTHN_DEV_MATERIALIZED",
+  "status": "HOLD_I3_GTHN_PENDING_DEV",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
-  "productTreeAuthority": "e8bf021e54e84cb52a925824ffc02527f5073164",
-  "predecessorProductSourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V753_2026-11-25.json",
-  "findingsLedgerExpectedGitBlob": "5f15db5a5ae84ffb2687b78ccc60b902208a7f25",
+  "productSourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+  "productTreeAuthority": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+  "predecessorProductSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V754_2026-11-25.json",
+  "findingsLedgerExpectedGitBlob": "c20dff729ee85f11a10f53f8f6bd4810fd94d076",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -244,11 +244,11 @@
     "observedC3ArtifactDigest": "sha256:515da7c9963e851fc1b3bec03bc00624955592cd900e88346b0b46df12f7d083",
     "observedResult": "THREE_PATHS_MATCHED_PRETERMINAL_HOLD"
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V427.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD",
+  "activeBlocker": "P0_PROVEN_HR_INTERNAL_SHARED_READ_PENDING_PAIRED_DEV_AND_FUNCTIONAL_CLOSURE",
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: Use the exact currently served DEV candidate. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+  "exactNextAction": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source ca94622046360c0122b79e8c4a27e2d72277277e after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -898,7 +898,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "productSourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -3041,7 +3041,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373",
+  "moduleTruthExpectedGitBlob": "5caa4ebc1e4bf1afee5a3ffb39f6d60f3ea9cb2b",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -12726,7 +12726,7 @@
   },
   "postDeployRunSeal": {
     "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
-    "mode": "CURRENT_SOURCE_SERVING",
+    "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
     "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
     "runNumber": null,
     "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
@@ -15523,7 +15523,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3: Use the exact currently served DEV candidate. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+    "exactPending": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source ca94622046360c0122b79e8c4a27e2d72277277e after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
     "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
     "production": false
   },
@@ -17282,7 +17282,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3: Use the exact currently served DEV candidate. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+  "nextExactAction": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source ca94622046360c0122b79e8c4a27e2d72277277e after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -17764,7 +17764,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-25T23:42:29.046Z",
+  "updatedAt": "2026-11-26T02:56:36.519Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18787,12 +18787,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
-      "gitBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V427.json",
+      "gitBlob": "5caa4ebc1e4bf1afee5a3ffb39f6d60f3ea9cb2b"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V753_2026-11-25.json",
-      "gitBlob": "5f15db5a5ae84ffb2687b78ccc60b902208a7f25"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V754_2026-11-25.json",
+      "gitBlob": "c20dff729ee85f11a10f53f8f6bd4810fd94d076"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -36038,8 +36038,8 @@
     "schemaVersion": "cxorbia.i3.mailbox-environment-hold.v1",
     "state": "HOLD_MAIL_UNCONFIGURED",
     "classification": "ENVIRONMENT_FAILURE",
-    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
-    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
     "failedRunId": 45420999212,
     "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
     "reason": "Mailbox environment observation only; authenticated functional E08 proof remains required.",
@@ -36477,7 +36477,7 @@
         "productionChanged": false
       }
     },
-    "immediateAction": "I3: Use the exact currently served DEV candidate. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+    "immediateAction": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source ca94622046360c0122b79e8c4a27e2d72277277e after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -36628,7 +36628,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3: Use the exact currently served DEV candidate. The reading window, retained history and explicit older-period read are verified in their recorded scope. Execute only active bound requests and the following current residuals. FINANCE_RESIDUAL: RUN2595 closed lookup of the two owner-described advance identities and exact September reconciliation inventory. Resolve the private enumerated identity pairs, current amount/source/payability; application links are absent in the collections read. Finish uncovered eligible/blocked UI, role/session/reload/replay/support clauses. No inferred payment, allocation, third advance or bank transfer. D08: D08 original Shopper/Cliente UI/course/lesson/evaluation/resource/progress/new-session/replay and uncovered resource/edit-role/stale-version boundaries only. Preserve recorded Admin progress/session/replay/tagged draft edit at source1691; no resource or other-role credit from that archive. Future execution must bind the actual new pair; do not replay the old1691 request as a fresh order. F3: Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts. Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses. A08: Only exact RUN2222 Auth exceptions shopper_gt_a092a0647f,shp-3669abbb015a and uncovered A08 API/Firestore/Storage role denials. Also retain the currentResidualClauses of base-router-shell-cache, client-portal-reportkit, core-config-data-router-permissions, dashboard-operation, documents-resources, human-runtime-domain-consistency, persistence-command-ack-boundary, projects-periods-hr-source-wizard-multiproject, questionnaire-shopper, shoppers-mi-visitas-profile, visits-review-postulations-reservations. E08: resolve the authenticated mailbox/provider configuration and prove the authorized external ACK; retain its HOLD until verified. After the existing business-process contracts and open P0 are satisfied, complete C3/Gate20/Gate21 on the same artifact. Preserve all accepted scoped evidence and B4/B5/B6/B7. Production DO_NOT_TOUCH; I4 requires explicit exact-artifact authorization.",
+    "immediateAction": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source ca94622046360c0122b79e8c4a27e2d72277277e after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -37627,5 +37627,245 @@
     "sourceTestsPass": 17,
     "sourceTestsFail": 0,
     "production": false
+  },
+  "pendingDevSuccessor": {
+    "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
+    "scope": "RUNTIME_AND_HOSTING",
+    "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+    "predecessorProductSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+    "proofReceiptBlob": "9398129399234196bb9697ea45e80768000f8ade",
+    "sourceTestsPass": 280,
+    "sourceTestsFail": 0,
+    "allowedProductFiles": [
+      "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "backend/runtime/hr-live-service/server.mjs"
+    ],
+    "allowedTestFiles": [
+      "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+      "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+      "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+      "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+      "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs"
+    ],
+    "rulesDeploys": 0,
+    "storageRulesDeploys": 0,
+    "devPublished": false,
+    "production": false,
+    "servingRuntimeSeal": {
+      "schemaVersion": "cxorbia.i3.postdeploy-consistency-seal.v1",
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "runNumber": null,
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "artifactDigest": "sha256:f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+      "receiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+      "liveE2e": "EXACT_DEV_READBACK_FUNCTIONAL_CLAUSES_PENDING",
+      "hrLiveVerified": true,
+      "certifiable": false,
+      "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED",
+      "gate20": "HOLD",
+      "gate21": "HOLD",
+      "production": false,
+      "executionProvider": "GOOGLE_CLOUD_BUILD",
+      "executionBinding": {
+        "executionProvider": "GOOGLE_CLOUD_BUILD",
+        "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+        "runAttempt": 1,
+        "runNumber": null,
+        "project": "cxorbia-backend-dev",
+        "projectNumber": "87461567267",
+        "projectMetadataSha256": "ab08f4058a7f2bc002603cfd6230adce716650b6a59f58d3968af6e2e9a7b661",
+        "location": "global",
+        "resourceName": "projects/87461567267/locations/global/builds/5670f782-19af-47aa-bdda-47cf94c689f2",
+        "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+        "stepId": "vrm154-156-dev-materialization",
+        "jobConclusion": "success",
+        "workflow": {
+          "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+          "job": "vrm154-156-dev-materialization",
+          "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+          "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+        },
+        "nativeStepSha256": "54f7acb0aad379214b3d941d0aed283ff28c3cd2d467505fd789c7ed3203515e",
+        "producerControlHead": "304a5f093703aca37fb0d6ac75b6a4fd0081f542",
+        "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+        "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+        "request": {
+          "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+          "field": "pendingDevSuccessor",
+          "gitBlob": "a23584fbec9511b1142a1e0b36b790f877667c74",
+          "sha256": "488d6a60bfdb03c88aeefd81e1722cb92948b6766551dbc5257eb4b607df79b5"
+        },
+        "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+        "predecessorReceiptBlob": "09b9dab404e4dd5c76ed64e8c8a930e15c0f68bf",
+        "predecessorExecution": {
+          "provider": "GOOGLE_CLOUD_BUILD",
+          "runId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+          "runAttempt": 1
+        },
+        "startedAt": "2026-11-25T23:37:34.164285813Z",
+        "completedAt": "2026-11-25T23:42:10.350236Z",
+        "buildMetadataSha256": "cbd6d5197a4e234e8e9d352531e9568185e147511cea9d20e4d6fe9e85cc4e44",
+        "nativeLogsSha256": "cae97f2c9c2ed541f18687f39d59a05f0d8bc129767cd5c5dcabe8afdd3d092c",
+        "sourceObject": {
+          "bucket": "cxorbia-backend-dev_cloudbuild",
+          "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
+          "generation": "1795638786579207",
+          "size": 5960554,
+          "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39",
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz#1795638786579207"
+        },
+        "evidenceObject": {
+          "bucket": "cxorbia-backend-dev_cloudbuild",
+          "name": "cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip",
+          "generation": "1795650129757606",
+          "size": 5588,
+          "sha256": "f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip#1795650129757606"
+        },
+        "artifactManifest": {
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/artifacts-5670f782-19af-47aa-bdda-47cf94c689f2.json#1795650129910522",
+          "sha256": "7b914afacbe77463eaa75b4bdf7722681a9dd79e2fa390f520ce69c6987d9835"
+        },
+        "artifactDigest": "sha256:f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+        "nativeBuildVerified": true,
+        "scope": "I3_PAIRED_DEV",
+        "production": false
+      }
+    },
+    "servingPairedMaterialization": {
+      "builds": 1,
+      "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+      "hostingDeploys": 1,
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+      "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+      "production": false,
+      "runtimeDeploys": 1,
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "scenarioDimensionsProven": true,
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "storageRulesDeploys": 0,
+      "buildProvenance": {
+        "id": "748ebf68-744a-43b5-9c08-f6251e363059",
+        "status": "SUCCESS",
+        "project": "cxorbia-backend-dev",
+        "location": "global",
+        "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+        "sourceObject": {
+          "bucket": "cxorbia-backend-dev_cloudbuild",
+          "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
+          "generation": "1795638786579207",
+          "size": 5960554,
+          "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
+        },
+        "productSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+        "productTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+        "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-d727f3be67a4-google-1795638772206249",
+        "digest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+        "startedAt": "2026-11-25T20:33:07.647131654Z",
+        "completedAt": "2026-11-25T20:34:09.372841Z"
+      },
+      "executionProvider": "GOOGLE_CLOUD_BUILD",
+      "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "runAttempt": 1,
+      "verifiedServedAssetCount": 50,
+      "sourceHostedExact": true,
+      "runtimeTrafficExact": true,
+      "productionUnchanged": true,
+      "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "firestoreRulesDeploys": 0,
+      "hrWrites": 0,
+      "runNumber": null,
+      "jobConclusion": "success",
+      "executionBinding": {
+        "executionProvider": "GOOGLE_CLOUD_BUILD",
+        "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+        "runAttempt": 1,
+        "runNumber": null,
+        "project": "cxorbia-backend-dev",
+        "projectNumber": "87461567267",
+        "projectMetadataSha256": "ab08f4058a7f2bc002603cfd6230adce716650b6a59f58d3968af6e2e9a7b661",
+        "location": "global",
+        "resourceName": "projects/87461567267/locations/global/builds/5670f782-19af-47aa-bdda-47cf94c689f2",
+        "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+        "stepId": "vrm154-156-dev-materialization",
+        "jobConclusion": "success",
+        "workflow": {
+          "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+          "job": "vrm154-156-dev-materialization",
+          "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+          "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+        },
+        "nativeStepSha256": "54f7acb0aad379214b3d941d0aed283ff28c3cd2d467505fd789c7ed3203515e",
+        "producerControlHead": "304a5f093703aca37fb0d6ac75b6a4fd0081f542",
+        "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+        "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+        "request": {
+          "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+          "field": "pendingDevSuccessor",
+          "gitBlob": "a23584fbec9511b1142a1e0b36b790f877667c74",
+          "sha256": "488d6a60bfdb03c88aeefd81e1722cb92948b6766551dbc5257eb4b607df79b5"
+        },
+        "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_18d8d2fd-0e77-4692-a910-904c1bc66238_AUTOMATIC_DEV_RECEIPT.json",
+        "predecessorReceiptBlob": "09b9dab404e4dd5c76ed64e8c8a930e15c0f68bf",
+        "predecessorExecution": {
+          "provider": "GOOGLE_CLOUD_BUILD",
+          "runId": "18d8d2fd-0e77-4692-a910-904c1bc66238",
+          "runAttempt": 1
+        },
+        "startedAt": "2026-11-25T23:37:34.164285813Z",
+        "completedAt": "2026-11-25T23:42:10.350236Z",
+        "buildMetadataSha256": "cbd6d5197a4e234e8e9d352531e9568185e147511cea9d20e4d6fe9e85cc4e44",
+        "nativeLogsSha256": "cae97f2c9c2ed541f18687f39d59a05f0d8bc129767cd5c5dcabe8afdd3d092c",
+        "sourceObject": {
+          "bucket": "cxorbia-backend-dev_cloudbuild",
+          "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
+          "generation": "1795638786579207",
+          "size": 5960554,
+          "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39",
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz#1795638786579207"
+        },
+        "evidenceObject": {
+          "bucket": "cxorbia-backend-dev_cloudbuild",
+          "name": "cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip",
+          "generation": "1795650129757606",
+          "size": 5588,
+          "sha256": "f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/paired-evidence.zip#1795650129757606"
+        },
+        "artifactManifest": {
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/5670f782-19af-47aa-bdda-47cf94c689f2/artifacts-5670f782-19af-47aa-bdda-47cf94c689f2.json#1795650129910522",
+          "sha256": "7b914afacbe77463eaa75b4bdf7722681a9dd79e2fa390f520ce69c6987d9835"
+        },
+        "artifactDigest": "sha256:f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+        "nativeBuildVerified": true,
+        "scope": "I3_PAIRED_DEV",
+        "production": false
+      },
+      "controlHeadAtDeploy": "304a5f093703aca37fb0d6ac75b6a4fd0081f542",
+      "artifactDigest": "sha256:f0b932c11aae5591eff2ac1686855299e873a93a3963acdf275f18eabbd25346",
+      "artifactDigestType": "GOOGLE_CLOUD_BUILD_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+      "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+      "hrLiveVerified": true,
+      "state": "PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING",
+      "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+      "fullTaskClosed": false
+    }
   }
 }

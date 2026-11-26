@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "cxorbia.i3.module-truth.focal.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "capturedAt": "2026-11-26T02:43:06.456568+00:00",
+  "controlHead": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "controlTree": "dcbd3472d35bbc5daa1f51b1441733d8e56e829e",
+  "module": "canonical-hr-state-adapters",
+  "authority": [
+    {
+      "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+      "gitBlob": "681aaee176ede81bbf2b4a941fe553b2ca354cb8"
+    },
+    {
+      "path": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+      "gitBlob": "45851507284735ea7080ce3231236bcb90589fe8"
+    },
+    {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+      "gitBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373"
+    },
+    {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V753_2026-11-25.json",
+      "gitBlob": "5f15db5a5ae84ffb2687b78ccc60b902208a7f25"
+    }
+  ],
+  "source": {
+    "sha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "tree": "e8bf021e54e84cb52a925824ffc02527f5073164"
+  },
+  "serving": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "executionProvider": "GOOGLE_CLOUD_BUILD",
+    "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "runAttempt": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
+    "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+    "verifiedServedAssetCount": 50,
+    "mode": "CURRENT_SOURCE_SERVING",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+  },
+  "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "f9Authority": "Historical baseline; governed by the currently approved exact DEV pair and matrix",
+  "evidence": {
+    "reproduction": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_COLD_INVENTORY_REPRO_20261125.mjs",
+    "decision": "P0_REPRODUCED_COLD_INVENTORY_BLOCKS_DURABLE_PRESENTATION",
+    "cold": {
+      "warmInventory": false,
+      "prewarmedCountryEntries": 0,
+      "availableDurableModelStub": true,
+      "calls": [
+        "stub_inventory_failure"
+      ],
+      "error": "PROVIDER_FAILURE:OFFLINE_INVENTORY_UNAVAILABLE",
+      "resultOrigin": null,
+      "firestoreReads": 3,
+      "durableModelReached": false,
+      "externalRowsRead": false
+    },
+    "warm": {
+      "warmInventory": true,
+      "prewarmedCountryEntries": 2,
+      "availableDurableModelStub": true,
+      "calls": [
+        "durable_model_read"
+      ],
+      "error": null,
+      "resultOrigin": "durable_internal_snapshot",
+      "firestoreReads": 4,
+      "durableModelReached": true,
+      "externalRowsRead": false
+    },
+    "networkCalls": 0,
+    "providerWrites": 0,
+    "newLiveOutageObserved": false
+  },
+  "allowlist": [
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "approvedGitBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "sourceSha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6",
+      "headMatchesApproved": true
+    },
+    {
+      "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "approvedGitBlob": "d997b9338c584299b21e0f4b62e74d607cca7184",
+      "sourceSha256": "2da9a1497b40b1ceeb1ce555e9c7c6b27e46e52b9a7d8888620fc92d9e696749",
+      "headMatchesApproved": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "approvedGitBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "sourceSha256": "ee3ea572fef61b3f643e709b74fec3779575f9f5c15502db78ff008fa876f253",
+      "headMatchesApproved": true
+    }
+  ],
+  "productMutationAtCapture": false,
+  "production": false
+}

@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-durable-cold-inventory.source-proof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "observedAt": "2026-11-26T02:48:19.326432+00:00",
+  "controlHead": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "sourceAtInspection": {
+    "sha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "tree": "e8bf021e54e84cb52a925824ffc02527f5073164"
+  },
+  "servingAtInspection": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "executionProvider": "GOOGLE_CLOUD_BUILD",
+    "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "runAttempt": 1,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
+    "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+    "verifiedServedAssetCount": 50,
+    "mode": "CURRENT_SOURCE_SERVING",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+  },
+  "f9": {
+    "release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "path": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+    "retrievedAtSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "manifestBlob": "74195357d4d915dad9aeb5c3a0d0fb21f773eca5"
+  },
+  "moduleTruth": {
+    "priorCaptureSha256": "06bd153595dc81e692b5dd5ac597579db2d5c2ec540630d560209db787111afe",
+    "classification": "TRUE_FUNCTIONAL_DEFECT",
+    "module": "canonical-hr-state-adapters",
+    "exactOwners": [
+      {
+        "path": "backend/runtime/hr-live-service/server.mjs",
+        "approvedGitBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+        "sourceSha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6",
+        "headMatchesApproved": true,
+        "f9GitBlob": null,
+        "newSha256": "bbf91f813604f6c13fb49f28f8aeb0f654af04c1feff9afbc60b7c243e06b0cb",
+        "newGitBlob": "1865b62ad4ad518815b34ae467ad43c56508780e"
+      },
+      {
+        "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+        "approvedGitBlob": "d997b9338c584299b21e0f4b62e74d607cca7184",
+        "sourceSha256": "2da9a1497b40b1ceeb1ce555e9c7c6b27e46e52b9a7d8888620fc92d9e696749",
+        "headMatchesApproved": true,
+        "f9GitBlob": null,
+        "newSha256": "90ea8471df44e5a24555669d8392fc97284ca30f53eabc7deef1c1c5a1980e26",
+        "newGitBlob": "32a97b47e68190f6d9fe58141ddb698ef0f8eb0d"
+      },
+      {
+        "path": "backend/runtime/hr-live-service/hr-read-model.mjs",
+        "approvedGitBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+        "sourceSha256": "ee3ea572fef61b3f643e709b74fec3779575f9f5c15502db78ff008fa876f253",
+        "headMatchesApproved": true,
+        "f9GitBlob": null,
+        "newSha256": "d0b088f290904073e7ef633ad6f1120af161c9901e2ed27e3dc81ed8908ea9c3",
+        "newGitBlob": "845f0ab451710435e40bb55ebc306cb2d311e1df"
+      }
+    ]
+  },
+  "originalReproduction": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_COLD_INVENTORY_REPRO_20261125.mjs",
+    "sha256": "8cfe97d5880d2bcea8dc6b092691a949dc719264a61e99b048edd194feedd4b3",
+    "before": {
+      "warmInventory": false,
+      "prewarmedCountryEntries": 0,
+      "availableDurableModelStub": true,
+      "calls": [
+        "stub_inventory_failure"
+      ],
+      "error": "PROVIDER_FAILURE:OFFLINE_INVENTORY_UNAVAILABLE",
+      "resultOrigin": null,
+      "firestoreReads": 3,
+      "durableModelReached": false,
+      "externalRowsRead": false
+    },
+    "afterSameFixtureCorrectedExpectation": {
+      "warmInventory": false,
+      "prewarmedCountryEntries": 0,
+      "availableDurableModelStub": true,
+      "calls": [
+        "durable_model_read"
+      ],
+      "error": null,
+      "resultOrigin": "durable_internal_snapshot",
+      "firestoreReads": 4,
+      "durableModelReached": true,
+      "externalRowsRead": false
+    },
+    "beforeWarm": {
+      "warmInventory": true,
+      "prewarmedCountryEntries": 2,
+      "availableDurableModelStub": true,
+      "calls": [
+        "durable_model_read"
+      ],
+      "error": null,
+      "resultOrigin": "durable_internal_snapshot",
+      "firestoreReads": 4,
+      "durableModelReached": true,
+      "externalRowsRead": false
+    },
+    "afterWarm": {
+      "warmInventory": true,
+      "prewarmedCountryEntries": 2,
+      "availableDurableModelStub": true,
+      "calls": [
+        "durable_model_read"
+      ],
+      "error": null,
+      "resultOrigin": "durable_internal_snapshot",
+      "firestoreReads": 4,
+      "durableModelReached": true,
+      "externalRowsRead": false
+    }
+  },
+  "roundtrip": {
+    "decision": "PASS_COLD_FULL_PROJECTION_ROUNDTRIP_OFFLINE",
+    "method": "Real provider plan, discovered period, owner/mapping fingerprint, runtime materialize, protected publication helper, gzip chunks, pointer, new process context and binding revalidation. Firestore memory double; no live provider or credentials.",
+    "sourceRevision": "30257763e6f2d5cd5cf6caefae6bc5041926e681784d5eaf87f05236d4d77c05",
+    "restoredRevision": "30257763e6f2d5cd5cf6caefae6bc5041926e681784d5eaf87f05236d4d77c05",
+    "observedFullBinding": "3998ef4dc8f74419e02d159a58ded3df18b74e1f56760cef2c6d6bb33a584add",
+    "recoveredFullBinding": "3998ef4dc8f74419e02d159a58ded3df18b74e1f56760cef2c6d6bb33a584add",
+    "sameObservationTime": true,
+    "nextMonthPreserved": true,
+    "externalReadCurrent": false,
+    "confirmedOrigin": "durable_internal_snapshot",
+    "simulatedFirestoreDocuments": 3,
+    "presentationExternalRequests": 0,
+    "strictReadCallsToOfflineInventory": 1,
+    "strictFailure": "PROVIDER_FAILURE:INVENTORY_OFFLINE",
+    "providerWrites": 0,
+    "liveReads": 0,
+    "newLiveClaims": 0
+  },
+  "testCommand": "node --test --test-reporter=tap backend/runtime/hr-live-service/test/{hr-read-model,hr-read-model-integration,cxorbia-f3-scoped-excel-read,cxorbia-vrm134-runtime-latency,cxorbia-b14-excel-country-binding,cxorbia-excel-operational-source-v1}.test.mjs tools/qa/{cxorbia-i3-project-hr-binding,cxorbia-i3-vrm370-excel-runtime-revision,cxorbia-i3-hr-period-window-dev-readback,cxorbia-i3-f2-excel-operational-lineage-v1}.test.mjs",
+  "tests": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "tapSha256": "cb0fda92614fdd7486f28f1cfc10d5c647c6cefe69a57da4e0ac4708ce3a7fcd"
+  },
+  "scope": "Focal correction verified on source in isolation using synthetic provider and Firestore tests. Production and DEV not touched by these tests. No operational domain or functional LIVE credit.",
+  "compatibility": "Read models remain bound to exact reader and mapping hashes. Initial protected confirmation on a new owner generation is required to seed that generation; older stored projections and confirmed history remain intact.",
+  "networkCalls": 0,
+  "makeCredits": 0,
+  "sourcePatchSha256": "ea9fd584835ed7899f532b7073cf9ccedaa92e4d19343cc22fbfc5e9a6f1d508",
+  "newPhaseACertificates": 0,
+  "production": false
+}

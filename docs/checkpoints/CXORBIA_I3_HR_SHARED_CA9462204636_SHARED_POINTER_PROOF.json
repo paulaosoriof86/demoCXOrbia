@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-shared-pointer.source-proof.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "parentSourceProofSha256": "75c6a79052d66e9ffcfda61a5636a6ff5c342027b8e24dc4420a1a3a130eb49c",
+  "scope": "Source-only offline. A warm presentation reader must observe a newer shared durable pointer published under the same exact binding.",
+  "owner": "backend/runtime/hr-live-service/server.mjs",
+  "baseSourceSha256": "bbf91f813604f6c13fb49f28f8aeb0f654af04c1feff9afbc60b7c243e06b0cb",
+  "correctedSourceSha256": "128f0a2d8349cd914d4c9cebc794c046584b9cbdcb44cbe40175418856b69873",
+  "incrementalPatchSha256": "76ec8cc01dbb6c7cd9383fc6eaae750c23a885f26364419b08244747db997285",
+  "before": {
+    "regression": "warm process returned earlier cached revision after another instance published a new revision",
+    "negativeTapSha256": "735b7e686c72e7f3817a38604bed00994b9578b2549719224f5b89fcd7acbbe7"
+  },
+  "after": {
+    "regression": "same warm process returned the independently published revision from the durable pointer without calling provider inventory",
+    "tapSha256": "5aaa85a345e78c9eeaf2fcee808386cf00297daa0e9bfa878c477b5df7d3bde3",
+    "testsPassed": 194,
+    "testsFailed": 0
+  },
+  "coldRoundTrip": {
+    "decision": "PASS_COLD_FULL_PROJECTION_ROUNDTRIP_OFFLINE",
+    "method": "Real provider plan, discovered period, owner/mapping fingerprint, runtime materialize, protected publication helper, gzip chunks, pointer, new process context and binding revalidation. Firestore memory double; no live provider or credentials.",
+    "sourceRevision": "30257763e6f2d5cd5cf6caefae6bc5041926e681784d5eaf87f05236d4d77c05",
+    "restoredRevision": "30257763e6f2d5cd5cf6caefae6bc5041926e681784d5eaf87f05236d4d77c05",
+    "observedFullBinding": "3998ef4dc8f74419e02d159a58ded3df18b74e1f56760cef2c6d6bb33a584add",
+    "recoveredFullBinding": "3998ef4dc8f74419e02d159a58ded3df18b74e1f56760cef2c6d6bb33a584add",
+    "sameObservationTime": true,
+    "nextMonthPreserved": true,
+    "externalReadCurrent": false,
+    "confirmedOrigin": "durable_internal_snapshot",
+    "simulatedFirestoreDocuments": 3,
+    "presentationExternalRequests": 0,
+    "strictReadCallsToOfflineInventory": 1,
+    "strictFailure": "PROVIDER_FAILURE:INVENTORY_OFFLINE",
+    "providerWrites": 0,
+    "liveReads": 0,
+    "newLiveClaims": 0
+  },
+  "makeCredits": 0,
+  "newLiveClaims": 0,
+  "production": false
+}
