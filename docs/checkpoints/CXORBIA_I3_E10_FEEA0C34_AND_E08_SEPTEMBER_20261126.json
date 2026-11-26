@@ -120,6 +120,36 @@
       ],
       "gcsPrefix": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/",
       "allObjectsIndependentlyRevalidated": true
+    },
+    "confirmedHistoryPerVisit": {
+      "method": "The existing confirmed HR history reader verified chunk, compressed and decoded hashes for the GT and HN September pointers. Match the original visit ID before scoped row IDs or aliases. Exact IDs selected one original row for each residual GT visit. Unqualified alias overlap alone selected 2, 3 and 3 candidates and was discarded.",
+      "periodId": "cinepolis-2026-09",
+      "verifiedHistoryVisits": 44,
+      "observationRevision": "ae6146cde74e9b05677878751b99e3af0f33e723828f19dabef081264f761ce3",
+      "exactRowsForResiduals": 3,
+      "historicalShopperMatchesScopedReconciliationAndPreviouslyVerifiedCanonical": 2,
+      "historicalIdEqualsCurrentVisitIdForShopper": 0,
+      "historicalAssignmentsCorroboratedSeparatelyFromGlobalIdentity": 2,
+      "missingAuthorizedAliasAndHistoricalShopperDifferentFromReconciliation": 1,
+      "currentIdentityMatchesOrUnambiguousAliases": 41,
+      "sourceLimits": "Two historical identities corroborated for these individual visits. Current IDs differ from historical assignments. One residual has different historical and reconciliation IDs without an authorized link. This read model cannot adjudicate a new global alias, payment or eligibility.",
+      "identityWrites": 0,
+      "financeWrites": 0,
+      "payabilityAssertions": 0,
+      "evidence": [
+        {
+          "name": "september-three-history.json",
+          "generation": "1795719569309145",
+          "sha256": "2e366b577f8674c5aff6d71094e2b77c39ef82ffabefab23c793235406d041c1"
+        },
+        {
+          "name": "september-three-exact-history.json",
+          "generation": "1795719599298780",
+          "sha256": "1ab4e39cd230e017398d0738aff33c8f95974b4315603793916c42c9f5fa5282"
+        }
+      ],
+      "gcsPrefix": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/",
+      "byteReadbackVerified": true
     }
   },
   "e08": {
