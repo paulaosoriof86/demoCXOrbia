@@ -196,3 +196,87 @@ test('A09/B11 revision drift between preflight and confirmation fails closed',as
 });
 
 
+
+
+// Manual HR refresh must request a real fresh observation and validate the
+// published result; a successful durable presentation is not a fresh read.
+const protectedBridgeSource=readFileSync(new URL('../../app/adapters/tya-protected-auth-hr-authority-bridge-v2.js',import.meta.url),'utf8');
+const queryStart=protectedBridgeSource.indexOf('function queryUrl(');
+const queryEnd=protectedBridgeSource.indexOf('\nasync function fetchHr(',queryStart);
+assert.ok(queryStart>=0&&queryEnd>queryStart);
+const actualProtectedHrQuery=new Function('endpointFor',protectedBridgeSource.slice(queryStart,queryEnd)+'\nreturn queryUrl;')(
+  ()=>'/api/tenants/tya/projects/cinepolis/hr-live'
+);
+function manualRefreshHarness({externalReadCurrent,authorityPatch={},publishedRevision=REV,selectedPeriod=null,internal=false,transportError=null}={}){
+  const h=harness(),requests=[];
+  h.window.CX_PROTECTED_AUTH_HR_AUTHORITY={applied:true,externalReadCurrent:false,sourceRevision:REV,
+    ...(selectedPeriod?{readScope:{mode:'explicit_period',requestedPeriodId:selectedPeriod}}:{})};
+  h.window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY=async(reason,options={})=>{
+    const url=actualProtectedHrQuery({},options),query=new URL(url,'https://example.invalid').searchParams;
+    requests.push({reason,options,url});
+    if(transportError)throw Error(transportError);
+    const authority={applied:true,externalReadCurrent:externalReadCurrent??query.get('fresh')==='1',sourceRevision:REV,
+      ...(options.periodId?{readScope:{mode:'explicit_period',requestedPeriodId:options.periodId}}:{}),
+      ...(internal?{internalProjectAuthority:true,hrAuthority:false,externalReadCurrent:false,sourceRevision:null}:{}),...authorityPatch};
+    h.data.previewMeta.sourceRevision=publishedRevision;
+    h.window.CX_PROTECTED_AUTH_HR_AUTHORITY=authority;
+    return {ok:true,result:authority};
+  };
+  return {...h,requests};
+}
+
+test('manual HR refresh sends fresh=1 through the real protected bridge query and accepts an unchanged verified revision',async()=>{
+  const h=manualRefreshHarness();
+  await h.node('vRefreshHR').fire('click');
+  assert.equal(h.requests.length,1);
+  const query=new URL(h.requests[0].url,'https://example.invalid').searchParams;
+  assert.equal(query.get('fresh'),'1');assert.equal(query.get('readModel'),'1');assert.equal(query.get('protectedState'),'1');
+  assert.equal(h.data.previewMeta.sourceRevision,REV,'unchanged content can still have a newly confirmed read');
+  assert.ok(h.toasts.some(t=>t.kind==='ok'&&t.message==='HR viva actualizada'));
+  assert.deepEqual(h.navs,['visitas']);assert.equal(h.calls.length,0,'read-only refresh sends no write command');
+  assert.equal(h.node('vRefreshHR').disabled,false);
+});
+
+test('manual HR refresh rejects a durable last-confirmed result despite ok=true',async()=>{
+  const h=manualRefreshHarness({externalReadCurrent:false});
+  await h.node('vRefreshHR').fire('click');
+  assert.equal(h.toasts.some(t=>t.kind==='ok'),false);
+  assert.ok(h.toasts.some(t=>t.kind==='err'));
+  assert.deepEqual(h.navs,[]);assert.equal(h.calls.length,0);assert.equal(h.node('vRefreshHR').disabled,false);
+});
+
+test('manual HR refresh requires applied authority and its exact published revision',async()=>{
+  for(const options of [{authorityPatch:{applied:false}},{authorityPatch:{sourceRevision:null}},
+    {authorityPatch:{sourceRevision:'not-a-revision'}},{publishedRevision:'a'.repeat(64)}]){
+    const h=manualRefreshHarness(options);
+    await h.node('vRefreshHR').fire('click');
+    assert.equal(h.toasts.some(t=>t.kind==='ok'),false);
+    assert.equal(h.navs.length,0);assert.equal(h.calls.length,0);
+  }
+});
+
+test('manual HR refresh preserves an explicitly selected historical period and verifies its response scope',async()=>{
+  const selectedPeriod='cinepolis-2026-05',h=manualRefreshHarness({selectedPeriod});
+  await h.node('vRefreshHR').fire('click');
+  const query=new URL(h.requests[0].url,'https://example.invalid').searchParams;
+  assert.equal(query.get('fresh'),'1');assert.equal(query.get('hrPeriodId'),selectedPeriod);
+  assert.ok(h.toasts.some(t=>t.kind==='ok'));assert.equal(h.calls.length,0);
+  const foreign=manualRefreshHarness({selectedPeriod,authorityPatch:{readScope:{mode:'rolling_window'}}});
+  await foreign.node('vRefreshHR').fire('click');
+  assert.equal(foreign.toasts.some(t=>t.kind==='ok'),false);assert.equal(foreign.navs.length,0);
+});
+
+test('manual refresh preserves internal-project authority without claiming an external HR read',async()=>{
+  const h=manualRefreshHarness({internal:true});
+  await h.node('vRefreshHR').fire('click');
+  assert.ok(h.toasts.some(t=>t.kind==='ok'&&t.message==='Vista interna actualizada'));
+  assert.equal(h.toasts.some(t=>t.message==='HR viva actualizada'),false);
+  assert.equal(h.calls.length,0);assert.equal(h.node('vRefreshHR').disabled,false);
+});
+
+test('manual HR refresh failure keeps the button usable and never reports success',async()=>{
+  const h=manualRefreshHarness({transportError:'HR_LIVE_HTTP_503'});
+  await h.node('vRefreshHR').fire('click');
+  assert.equal(h.toasts.some(t=>t.kind==='ok'),false);assert.equal(h.navs.length,0);
+  assert.equal(h.node('vRefreshHR').disabled,false);assert.equal(h.calls.length,0);
+});

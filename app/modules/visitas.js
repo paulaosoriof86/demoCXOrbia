@@ -419,7 +419,24 @@ CX.module('visitas', ({data,role,ui})=>{
       <div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Visita guardada','ok');this.closest('.cx-ov').remove()">💾 Guardar</button></div>`);
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editor(all.find(z=>z.id===b.dataset.edit))));
     document.getElementById('addV')?.addEventListener('click',()=>editor(null));
-    document.getElementById('vRefreshHR')?.addEventListener('click',async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Actualizando…';try{const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_manual_hr_refresh');if(!r?.ok)throw new Error(r?.error||r?.reason||'Lectura HR no confirmada');CX.ui.toast('HR viva actualizada','ok');CX.router.nav('visitas');}catch(error){CX.ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}finally{b.disabled=false;b.textContent='🔄 Actualizar desde HR';}});
+    document.getElementById('vRefreshHR')?.addEventListener('click',async e=>{
+      const b=e.currentTarget;b.disabled=true;b.textContent='Actualizando…';
+      try{
+        const selected=window.CX_PROTECTED_AUTH_HR_AUTHORITY?.readScope;
+        const periodId=selected?.mode==='explicit_period'?selected.requestedPeriodId:null;
+        const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_manual_hr_refresh',{
+          forceFresh:true,...(periodId?{periodId}:{})
+        });
+        const authority=r?.result,revision=String(authority?.sourceRevision||'');
+        const internal=authority?.internalProjectAuthority===true&&authority.hrAuthority===false;
+        if(r?.ok!==true||authority?.applied!==true||(!internal&&(authority.externalReadCurrent!==true||
+          !/^[a-f0-9]{64}$/.test(revision)||String(CX.data?.previewMeta?.sourceRevision||'')!==revision||
+          (periodId&&authority.readScope?.requestedPeriodId!==periodId))))
+          throw new Error(r?.error||r?.reason||'Lectura HR fresca no confirmada');
+        CX.ui.toast(internal?'Vista interna actualizada':'HR viva actualizada','ok');CX.router.nav('visitas');
+      }catch(error){CX.ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}
+      finally{b.disabled=false;b.textContent='🔄 Actualizar desde HR';}
+    });
     document.getElementById('vReconcileHr')?.addEventListener('click',async e=>{
       const button=e.currentTarget;
       button.disabled=true;
