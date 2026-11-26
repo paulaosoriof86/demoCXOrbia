@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-read-and-f3-scope-correction.v1",
+  "observedAt": "2026-11-26T02:34:48.083434+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceHead": "66a1d7dec9abe72657e0ce8a4672dff33490a67c",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "workOrder": "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md",
+  "boundedProbePlan": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+  "coldReadProof": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_COLD_INVENTORY_REPRO_20261125.json",
+  "periodWindow": {
+    "previousCurrentNextCalendarMonth": true,
+    "onlyIfAvailable": true,
+    "olderPeriodExplicitOnly": true,
+    "acceptedObservedWindowVisits": 88,
+    "acceptedRetainedHistoryVisits": 836,
+    "acceptedRetainedHistoryPeriods": 19,
+    "acceptedExplicitSeptemberVisits": 44,
+    "authority": "docs/checkpoints/CXORBIA_I3_VRM375_HR_PERIOD_WINDOW_SCOPE_20261124.json"
+  },
+  "readArchitecture": {
+    "protectedPresentationRequestsDurableReadModel": true,
+    "allExternalReadsOnlyFromOneSharedSyncOwner": false,
+    "humanWatcherForcesExternalFresh": true,
+    "humanWatcherDefaultMs": 300000,
+    "cacheDefaultMs": 5000,
+    "cacheMaxMs": 15000,
+    "forcedFreshBypassesTtl": true,
+    "inFlightSharedAcrossInstances": false,
+    "coldInventoryBlocksDurableRecoveryReproduced": true,
+    "newPolicy": "One internal shared durable protected projection for modules; centralize required external synchronization and preserve strict command/verification freshness."
+  },
+  "latestProviderObservation": {
+    "from": "2026-11-26T02:11:00Z",
+    "writerScenarioId": 10199316,
+    "writerExecutions": 0,
+    "readerScenarioId": 10200465,
+    "readerExecutions": 0,
+    "availableCredits": 1040,
+    "autoPurchasingActivated": false,
+    "newScenarioRunsByThisReview": 0
+  },
+  "limits": {
+    "offlineP0NotLiveOutage": true,
+    "boundedModeImplemented": false,
+    "boundedModeExecuted": false,
+    "productCodeChanged": false,
+    "newDeployment": false,
+    "providerWriteCertified": false,
+    "fullB14Closed": false,
+    "phaseAComplete": false,
+    "creditPurchaseRequiredForPlannedScopeOnObservedBalance": false
+  },
+  "owners": [
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "sha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6",
+      "gitBlob": "28fd70391211019d3d12364d803c9db813ad5122",
+      "matchesServedSource": true
+    },
+    {
+      "path": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "sha256": "2da9a1497b40b1ceeb1ce555e9c7c6b27e46e52b9a7d8888620fc92d9e696749",
+      "gitBlob": "d997b9338c584299b21e0f4b62e74d607cca7184",
+      "matchesServedSource": true
+    },
+    {
+      "path": "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "sha256": "ee3ea572fef61b3f643e709b74fec3779575f9f5c15502db78ff008fa876f253",
+      "gitBlob": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "matchesServedSource": true
+    },
+    {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "sha256": "529cf0d43607fc85ba9d999ccc5f8a9dd000cf95c549a761b9549a7c0f22ee70",
+      "gitBlob": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "matchesServedSource": true
+    },
+    {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "sha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+      "gitBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "matchesServedSource": true
+    }
+  ]
+}

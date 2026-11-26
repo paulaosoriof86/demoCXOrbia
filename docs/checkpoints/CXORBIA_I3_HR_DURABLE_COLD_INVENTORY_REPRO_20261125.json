@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "cxorbia.hr-durable-cold-inventory-offline-proof.v1",
+  "observedAt": "2026-11-26T02:33:26.928Z",
+  "repository": "/workspace/scratch/e5035dbed194/cxorbia",
+  "head": "66a1d7dec9abe72657e0ce8a4672dff33490a67c",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "decision": "P0_REPRODUCED_COLD_INVENTORY_BLOCKS_DURABLE_PRESENTATION",
+  "failureClass": "FUNCTIONAL_DEFECT",
+  "clock": {
+    "fixedAt": "2026-11-26T02:00:00Z",
+    "reason": "Deterministic existing November fixture; no external clock needed"
+  },
+  "method": {
+    "realFunctions": [
+      "server.buildSnapshot",
+      "server.resolveProjectHrReadBinding",
+      "server.loadExcelMappingLibrary",
+      "resolveExcelOriginalProjectPlan",
+      "resolveCountryHrPeriodBinding",
+      "f3FixtureDocuments"
+    ],
+    "mockedBoundaries": [
+      "Firestore document reads from actual synthetic fixture documents",
+      "provider inventory success/unavailable",
+      "final durable model read returns available valid-origin sentinel"
+    ],
+    "limit": "Proves the real resolver prevents reaching durable recovery. Does not claim a fresh live outage or re-test persisted chunk/hash validation."
+  },
+  "assertionsPassed": 7,
+  "cold": {
+    "warmInventory": false,
+    "prewarmedCountryEntries": 0,
+    "availableDurableModelStub": true,
+    "calls": [
+      "stub_inventory_failure"
+    ],
+    "error": "PROVIDER_FAILURE:OFFLINE_INVENTORY_UNAVAILABLE",
+    "resultOrigin": null,
+    "firestoreReads": 3,
+    "durableModelReached": false,
+    "externalRowsRead": false
+  },
+  "warm": {
+    "warmInventory": true,
+    "prewarmedCountryEntries": 2,
+    "availableDurableModelStub": true,
+    "calls": [
+      "durable_model_read"
+    ],
+    "error": null,
+    "resultOrigin": "durable_internal_snapshot",
+    "firestoreReads": 4,
+    "durableModelReached": true,
+    "externalRowsRead": false
+  },
+  "sources": [
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "sha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6",
+      "matchesServedSource": true
+    },
+    {
+      "file": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "sha256": "2da9a1497b40b1ceeb1ce555e9c7c6b27e46e52b9a7d8888620fc92d9e696749",
+      "matchesServedSource": true
+    },
+    {
+      "file": "backend/runtime/cxorbia-country-hr-binding-v1.mjs",
+      "sha256": "b0c1908f5d6a366258f337a5cbb71a02b6615bf7b57f283ffba2f67d11025a45",
+      "matchesServedSource": true
+    },
+    {
+      "file": "backend/runtime/hr-live-service/hr-read-model.mjs",
+      "sha256": "ee3ea572fef61b3f643e709b74fec3779575f9f5c15502db78ff008fa876f253",
+      "matchesServedSource": true
+    },
+    {
+      "file": "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+      "sha256": "a0e2dc578800d61f60a0ccf93b3ce80dc90e867341b75585b5e119594aa6e09f",
+      "matchesServedSource": true
+    },
+    {
+      "file": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "sha256": "3ec801e4cef4f879724ba168ebdaeea0d3169e0770bbda46386332b70fd533af",
+      "matchesServedSource": false
+    },
+    {
+      "file": "docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json",
+      "sha256": "9276e4b72e67a33ac74dc3342fb6c7ca9223a770f0adaec3f46294b5f96a694a",
+      "matchesServedSource": true
+    }
+  ],
+  "blockedNetworkAttempts": 0,
+  "networkCalls": 0,
+  "providerWrites": 0,
+  "repositoryWrites": 0,
+  "credentialReads": 0,
+  "exactOwners": [
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "buildSnapshot",
+      "lines": [
+        719,
+        727,
+        734
+      ]
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "function": "resolveProjectHrReadBinding",
+      "lines": [
+        280,
+        281
+      ]
+    },
+    {
+      "file": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+      "function": "resolveExcelOriginalProjectPlan",
+      "lines": [
+        210,
+        214,
+        215,
+        228,
+        232
+      ]
+    }
+  ],
+  "coverageGap": {
+    "file": "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "line": 27,
+    "description": "The existing cold-presentation test replaces the whole binding resolver with a constant binding, hiding its external inventory dependency."
+  }
+}

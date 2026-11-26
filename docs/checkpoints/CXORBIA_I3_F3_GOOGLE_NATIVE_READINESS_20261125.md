@@ -23,13 +23,13 @@ The existing transport dispatches F3, verifies its config against the paired rec
 
 `CXORBIA_I3_F3_GOOGLE_NATIVE_TESTS_20261125.tap`: **219 tests, 219 PASS, zero failure/skip**. Includes native identity rejection, changed bytes/fixture/live pins, unsupported ACK and missing role captures, complete control-package dry run, real in-memory Git CAS/readback, replay no-op and concurrent-writer rejection. Existing F3, shopper, Finance/Google and scoped-projection tests remain passing. Shell and Node syntax checks and compact current authority guard passed.
 
-## Exact next action
+## Exact next action — corrected after Paula paused Work
 
-Run the existing `i3-b14-qa-provider-proof` job via `cxorbia-i3-finance-google-transport.sh` on the published current control package and the same served DEV, after resolving the observed Make capacity requirement below. Native F3 uses `FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY` for three new disposable QA identities and does not require `iam.serviceAccounts.signBlob`. The original custom-token path alone checks its existing signing permission. The forwarded request for a two-hour signing window remains a request, not a grant. Do not repeat the already completed recovery of native attempt `1795653493842440`.
+The purchase/full1184-run instruction is superseded by `CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md`. Preserve the original cost estimate as historical cost projection of that runner, not an unavoidable gate. Prepare and verify the single-cell scoped mode described in `CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json` within the same runner/transport/consumer. It is not implemented or executed yet. The plan estimates182–200credits and allocates350including recovery, versus1040available; no credit purchase is required for that scope on the observed balance.
 
-For a successful endpoint chain, independently inspect all Make executions in the response-loss/replay interval, verify the exact owned datastore keys, restore the baseline and read cleanup absence. Only those observations can settle remote physical write count and cleanup. HR durable recovery, provider-response loss, human concurrent editing, external-origin echo and the remaining business clauses retain their existing residuals; they are not credited by this transport change.
+The exact owned recovery of native attempt1795653493842440 is COMPLETE; do not repeat it. Native F3 uses synthetic-password QA, without a new signBlob grant. Scope proofs accumulate; a focal success cannot close all B14, other fields/countries/roles, or PhaseA. No automatic full1184rerun follows it.
 
-No production mutation, new candidate, workflow, product build, real-data import or broader gate reopening is included.
+The same Work order includes the reproduced cold-presentation defect: inventory resolution can fail before durable model recovery. Reproduction: `CXORBIA_I3_HR_DURABLE_COLD_INVENTORY_REPRO_20261125.mjs` and `.json`. This is offline composition evidence, not a reported live outage; no product correction is yet asserted. Preserve the three-period window and strict command ACK/freshness contracts while centralizing shared reads.
 
 ## Same-attempt preparation: remove the temporary-signing dependency
 
@@ -62,7 +62,7 @@ At 19:50:09 Guatemala the Make connector verified deletion of exactly the failed
 - `CXORBIA_I3_F3_NATIVE_1795653493842440_OWNED_CLEANUP_20261125.json`
 - `CXORBIA_I3_F3_NATIVE_1795653493842440_COMPLETE_QA_RECOVERY_20261125.json`
 
-### Capacity and access required for the next full execution
+### Historical capacity preparation — superseded by the corrected Work order
 
 Make organization `4090072` (AyS - TyA), Core, had 1,040 available credits, with automatic purchases disabled. The full current F3 route is estimated at 1,184 credits before variable UI/inventory/retry costs. This is a projection from code and observed unit costs, not an observed new quota failure. A new full F3 execution has not been started after recovery; do not spend the restoration budget on an incomplete run.
 
@@ -70,7 +70,7 @@ The minimal proposed capacity addition is a one-time purchase of 1,000 credits. 
 
 Evidence: `CXORBIA_I3_F3_MAKE_CAPACITY_ESTIMATE_20261125.json` and `CXORBIA_I3_F3_MAKE_CAPACITY_PREPARATION_20261125.json`.
 
-Next: finish the Make billing sign-in; inspect and authorize the minimum exact one-time purchase, read back capacity; run the existing native F3 job using the same fixture contract and served DEV with the published corrected runner. Audit the complete Make window for original/replay writes, restore all eight values, verify exact cleanup, and incorporate the native result through the existing atomic consumer. Credit only proven clauses.
+Historical next action withdrawn: Make sign-in is now completed. Do not purchase credits or launch the full route on the basis of this earlier projection. Follow the corrected exact next action and Work order above; retain all source, provider, cleanup and evidence boundaries.
 
 ### Other Phase A residuals remain explicit
 

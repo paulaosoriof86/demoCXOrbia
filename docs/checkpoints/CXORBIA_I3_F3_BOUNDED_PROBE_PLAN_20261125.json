@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "cxorbia.f3.bounded-single-cell-probe-plan.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "executionStatus": "PLAN_ONLY_WORK_PAUSED",
+  "implemented": false,
+  "executed": false,
+  "purchases": 0,
+  "intent": "Verify the repaired provider on one exact synthetic cell through the existing application command, preserve all accepted evidence, then extend only uncovered clauses incrementally.",
+  "servedProduct": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "newProductCandidate": false,
+    "buildOrDeployRequiredForQaMode": false
+  },
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "f3-qa-20261124",
+    "periodId": "f3-qa-20261124-2026-11",
+    "countryCode": "GT",
+    "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+    "fieldKey": "escenario",
+    "worksheetName": "CXR_B14_QA_GT_20261119",
+    "cell": "L2",
+    "values": [
+      "CXOrbia QA Escenario A",
+      "CXOrbia QA Escenario B",
+      "CXOrbia QA Escenario A"
+    ],
+    "fixtureManifestPath": "docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json",
+    "fixturePolicy": "Same authorized fixture and manifest; new native invocation owner after previous cleanup PASS. HN and all other fields remain baseline controls; no operational rows.",
+    "expectedPhysicalPatches": 2,
+    "physicalPatchMeaning": "One A-to-B change and one deliberate B-to-A restoration, each through its own application command/event. Replays and negative cases must issue zero PATCH.",
+    "authentication": "Existing synthetic-password Admin QA only; no Shopper browser preparation or new Shopper Auth principals in this bounded scope.",
+    "shopperUi": false
+  },
+  "existingExecution": {
+    "runner": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+    "entry": "--f3-endpoint",
+    "nativeJob": "i3-b14-qa-provider-proof",
+    "transport": "tools/qa/cxorbia-i3-finance-google-transport.sh",
+    "consumer": "tools/qa/cxorbia-i3-automatic-result-consumer.mjs",
+    "consumerFunction": "consumeGoogleF3Result",
+    "typedKind": "F3_ENDPOINT",
+    "nativeKey": "GOOGLE_CLOUD_SHELL/<startGeneration>",
+    "newWorkflow": false,
+    "newTransport": false,
+    "newCandidate": false
+  },
+  "sequence": [
+    "Read exact served identity and existing writer metadata; verify QA roots and old remote keys absent. Create only the existing owned fixture/Admin resources.",
+    "Read both fixture rows as remoteBaseline and run existing initial reconciliation; preserve original baseline and journal.",
+    "Execute GT escenario A-to-B using executeField with real client-body loss and the existing postWithLostClientResponse helper. Verify remote committed journal and independent source read before exactly one identical-object/idempotency-key replay.",
+    "Verify replay leaves journal attempts unchanged and obtain independent source equality. Leave physical replay write count pending until complete independent Make execution audit.",
+    "Recommended scoped negatives before restoration: same key with altered payload must reject; a new key carrying the original stale base/revision must reject. Neither may create a remote PATCH.",
+    "Restore the same cell B-to-A through executeField, then run existing restored reconciliation. Recommended old committed replay after restoration must leave A unchanged; use the existing final baseline read to prove no rollback.",
+    "Compare all eight original baseline field values with the final fresh read. Preserve native evidence and execute exact owner/lease/lock/CAS cleanup; preserve all resources on any uncertain outcome.",
+    "Independently audit the complete Make window and exact keys, verify two physical PATCH total and zero replay/negative PATCH. Delete only the two owned event keys and one owned field-head key after readback, then verify absence and preserve sentinel."
+  ],
+  "costEstimate": {
+    "status": "CODE_DERIVED_ESTIMATE_NOT_MEASURED_FULL_RUN_INVOICE",
+    "unitCostsObserved": {
+      "countryPeriodReaderCredits": 3,
+      "writerInspectCredits": 10,
+      "writerWriteFieldCredits": 23,
+      "writerWriteQualification": "23 observed on the failed404 path; successful-path billing not yet measured."
+    },
+    "minimalCore": {
+      "projectSnapshots": 15,
+      "countriesPerProjectSnapshot": 2,
+      "targetResolutionCountryReaderRuns": 2,
+      "totalReaderRuns": 32,
+      "readerCredits": 96,
+      "writerRuns": 6,
+      "writerCredits": 86,
+      "scenarioRuns": 38,
+      "totalCredits": 182
+    },
+    "recommendedWithThreeNegatives": {
+      "additionalCommandSnapshots": 3,
+      "additionalReaderRuns": 6,
+      "additionalCredits": 18,
+      "totalReaderRuns": 38,
+      "totalWriterRuns": 6,
+      "totalScenarioRuns": 44,
+      "totalCredits": 200
+    },
+    "nominalPlanningRangeCredits": [
+      182,
+      200
+    ],
+    "additionalBoundedCosts": {
+      "extraPostInspectionsForTwoWritesMaximumEstimatedCredits": 40,
+      "restoreTransportRecoveryTwoExtraAttemptsEstimatedCredits": 38,
+      "metadataInventoryAndOtherOrganizationWorkloads": "Not included; observe existing capacity and preserve reserve."
+    },
+    "plannedAllocationIncludingRestorationReserveCredits": 350,
+    "availableCreditsAtPriorReadback": 1040,
+    "noPurchaseNeededForThisScopeOnObservedBalance": true,
+    "remainingAfter350Allocation": 690,
+    "budgetPolicy": "350 is a planned allocation, not authorization to keep trying or a hard stop that abandons a mutated fixture. Preserve a restoration/cleanup reserve; never start another field/country or a fresh-key retry to consume remaining budget. Confirm current balance once before dispatch; do not purchase or enable autoPurchase.",
+    "assumptions": [
+      "Same two-country, single-period synthetic fixture.",
+      "No Shopper browser navigations or full17-change loop.",
+      "One successful physical write per intended change; no concurrent workload depletion.",
+      "Existing helpers retained, including their repeated independent reads; no product read/cache optimization is required for this scoped estimate."
+    ]
+  },
+  "requiredQaChanges": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json",
+      "change": "Bind an explicit bounded execution scope to the existing versioned QA config; keep product/paired receipt/fixture pins unchanged. Do not select scope by an unbound environment toggle."
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "change": "Add one explicit same-entry bounded branch using existing baseline/reconcile/executeField/lost-body/replay/restoration/cleanup helpers. Skip Shopper UI and all other fields/countries. Serialize exact scope, two expected legitimate events, observed cases and remaining clauses. Use a distinct scoped producer decision; never return the full-chain decision for this branch."
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-finance-google-transport.sh",
+      "change": "Read the bound mode from the existing config, retain exact native pins/archive/readback, and validate the bounded success contract separately from the full mode. The bounded mode must not require unexecuted Shopper screenshots or Shopper PASS. Full-mode checks remain intact."
+    },
+    {
+      "path": "tools/qa/cxorbia-i3-typed-result-summary.mjs",
+      "change": "Recognize the explicit bounded decision and whitelist its exact field/country/period, case and event evidence. Preserve application ACK only within that scope and expose unproved clauses. Keep state HOLD, fullDomain=false, phaseAComplete=false, newDomainMatches=0 and zero owner-specific closure receipts."
+    }
+  ],
+  "existingOwnersExpectedUnchanged": [
+    "tools/qa/cxorbia-i3-google-qa-execution.mjs already permits receipt-only archives and requires role captures only when a Shopper PASS is claimed; verify this in focused tests.",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.mjs already consumes F3 native scoped results atomically; reuse its entry/key/index/CAS without a new consumer.",
+    "tools/qa/cxorbia-i3-scoped-clause-projection.mjs retains F3 boundaries; do not create a domain PASS."
+  ],
+  "focusedValidation": [
+    "Bounded branch performs exactly two intended application field changes and no Shopper UI; wrong field/country/mode is rejected.",
+    "Full mode retains existing cases and gates.",
+    "Typed bounded result cannot promote full B14, missing physical-write audit, Shopper evidence or PhaseA.",
+    "Native receipt-only bounded archive incorporates once; same result replay is a no-op; source/config/fixture mismatch fails before provider writes.",
+    "Failure after mutation retains journal/Auth/bindings until baseline and exact cleanup are proven."
+  ],
+  "boundaries": {
+    "scopedProofOnly": true,
+    "fullB14": false,
+    "phaseAComplete": false,
+    "existingPassReexecuted": false,
+    "full1184RunRequiredAfterward": false,
+    "remainingWork": "Only uncovered original clauses, accumulated incrementally under the same candidate and evidence index; do not require the original full route again by default.",
+    "uncovered": [
+      "HN cell writes",
+      "other field kinds including date/shopper/combos",
+      "Shopper UI and positive availability transition",
+      "Make-to-backend response-loss injection",
+      "human external concurrent edit atomicity",
+      "external-origin echo",
+      "historical-period live fixture",
+      "private-notes behavior",
+      "ordinary operational credentials and automatic missing-Shopper upsert"
+    ]
+  },
+  "periodContractObserved": {
+    "status": "ALREADY_IMPLEMENTED_IN_SERVED_SOURCE_NO_NEW_DRIFT_PROVEN",
+    "owner": "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "function": "selectHrPeriodWindow",
+    "routine": "previous/current/next month in configured timezone, only if registered",
+    "historical": "one explicitly selected historical period on demand",
+    "noGeneralHistoryRowSweep": true
+  },
+  "prohibitedActions": [
+    "No new product/candidate/workflow or Graph credential extraction.",
+    "No production deploy, real-data reimport or operational HR writes.",
+    "No removal of ACK, independent read, idempotency, observed-base conflict, journal, lease or exact cleanup safeguards.",
+    "No claim that1184credits is the price of one cell, an unavoidable gate, or a prerequisite to continue.",
+    "No purchasing or autoPurchase changes from this plan."
+  ],
+  "sourceEvidence": [
+    "docs/checkpoints/CXORBIA_I3_F3_MAKE_CAPACITY_ESTIMATE_20261125.json",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs:readLive/reconcile/executeField/postWithLostClientResponse",
+    "backend/runtime/hr-live-service/server.mjs:command configure/writeOriginalHrField",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs:executeExcelFieldEventThroughMake",
+    "2071dccf52f65b704de421c377d9504a9f95ba01 prior exact cleanup PASS"
+  ]
+}

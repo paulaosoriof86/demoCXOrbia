@@ -645,6 +645,22 @@
       "currentReadiness": "docs/checkpoints/CXORBIA_I3_F3_GOOGLE_NATIVE_READINESS_20261125.md",
       "nextFullRunStarted": false,
       "b14Closed": false,
+      "phaseAComplete": false,
+      "currentExecutionOrder": "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md"
+    },
+    "hrReadAndF3ScopeCorrection20261125": {
+      "order": "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md",
+      "boundedProbePlan": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+      "coldReadReproduction": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_COLD_INVENTORY_REPRO_20261125.json",
+      "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "workPausedByUser": true,
+      "newProductCode": false,
+      "boundedModeImplemented": false,
+      "newProviderExecution": false,
+      "currentCreditPurchaseRequired": false,
+      "classification": "FUNCTIONAL_DEFECT",
+      "coldRecoveryP0Fixed": false,
+      "fullB14Closed": false,
       "phaseAComplete": false
     }
   },
@@ -660,7 +676,7 @@
     "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
     "deployment": "E10 is paired and verified in DEV. Reuse the published source and digest.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
-    "f3": "Continue from docs/checkpoints/CXORBIA_I3_F3_GOOGLE_NATIVE_READINESS_20261125.md and the linked capacity/access readback. Native attempt1795653493842440 is recorded FAIL and its exact QA recovery is COMPLETE; do not repeat it. The corrected Make URLs and null-safe runner are published. Native F3 uses three new synthetic password QA identities, so this F3 path needs no new signBlob grant. Verify adequate Make capacity before the next full execution, then use the same source-bound config, current paired DEV5670f782 and existing isolated native F3 job for remote ACK, independent readback, replay, conflict/echo, restoration and exact cleanup. Consume the new immutable result through the existing consumer; preserve all accepted scopes.",
+    "f3": "Apply the user correction in docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. Do not buy credits or dispatch the historical full1184 F3 run. Prepare and verify the bounded same-runner single-cell mode, then execute its authenticated change/ACK/lost-response replay/restore/cleanup within a planned350-credit allocation using current capacity. Preserve scoped evidence and complete only uncovered clauses. Correct the reproduced cold durable-read/inventory coupling in its exact owner; centralize shared external refresh without weakening freshness, binding or write guards. Preserve one candidate and current DEV pair until the controlled successor is approved and served.",
     "googleExecution": {
       "servedProducer": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
       "financeTransportFilesFromValidatedControl": [
@@ -681,7 +697,7 @@
       "predecessorOnly": true,
       "pairedReceiptForCurrentDev": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json"
     },
-    "recoveryOnReconnect": "Read the current guard and native receipt, then execute the remaining scoped functional proofs. Use the current source for E10 authenticated import and provider ACK; no operational reimports."
+    "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,
@@ -708,5 +724,12 @@
     "state": "CHROME_AND_CLOUD_SHELL_VERIFIED_FOR_E10_PUBLICATION",
     "control": "304a5f093703aca37fb0d6ac75b6a4fd0081f542",
     "nativeResult": "5670f782-19af-47aa-bdda-47cf94c689f2"
-  }
+  },
+  "historicalNextInstructions": [
+    {
+      "supersededBy": "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md",
+      "reason": "User paused the expensive full-run and requested a complete corrected Work prompt; smaller scoped proof and shared HR reads take precedence.",
+      "f3": "Continue from docs/checkpoints/CXORBIA_I3_F3_GOOGLE_NATIVE_READINESS_20261125.md and the linked capacity/access readback. Native attempt1795653493842440 is recorded FAIL and its exact QA recovery is COMPLETE; do not repeat it. The corrected Make URLs and null-safe runner are published. Native F3 uses three new synthetic password QA identities, so this F3 path needs no new signBlob grant. Verify adequate Make capacity before the next full execution, then use the same source-bound config, current paired DEV5670f782 and existing isolated native F3 job for remote ACK, independent readback, replay, conflict/echo, restoration and exact cleanup. Consume the new immutable result through the existing consumer; preserve all accepted scopes."
+    }
+  ]
 }

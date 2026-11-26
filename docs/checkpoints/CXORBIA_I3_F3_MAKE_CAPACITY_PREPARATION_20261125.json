@@ -34,28 +34,8 @@
       "concurrent organization activity"
     ],
     "possibleExtraPostReadCredits": 340,
-    "fullRunStartedAfterCleanup": false
-  },
-  "proposedCapacity": {
-    "oneTimeCredits": 1000,
-    "expectedBalanceWithoutOtherConsumption": 2040,
-    "automaticPurchaseRequested": false,
-    "purchaseCount": 0,
-    "subscriptionChanges": 0,
-    "actualCheckoutPrice": "NOT_OBSERVED",
-    "currencyAndTax": "NOT_OBSERVED",
-    "spendingAuthorization": "NOT_GRANTED"
-  },
-  "browserAccess": {
-    "observedZone": "eu2.make.com",
-    "account": "aysseguros2009@gmail.com",
-    "state": "EMAIL_PASSWORD_SIGN_IN_REQUIRED",
-    "googleSsoResult": "Make reported account uses email and password; existing account selected through Google basic-profile sign-in",
-    "passwordEnteredByAssistant": false,
-    "passwordResetAttempted": false,
-    "signInFormPrepared": true,
-    "connectorBillingOperationsAvailable": false,
-    "manualHandoffRequested": false
+    "fullRunStartedAfterCleanup": false,
+    "scope": "HISTORICAL_FULL_RUN_NOT_CURRENT_EXECUTION_ORDER"
   },
   "completedCleanup": {
     "attempt": "1795653493842440",
@@ -76,7 +56,6 @@
     "newCandidate": false,
     "newTransport": false
   },
-  "nextExactAction": "After Make email/password sign-in, inspect the smallest one-time credit addition; obtain explicit merchant/item/spending-limit approval before payment; verify actual capacity. Then execute only the existing native F3 job on this paired DEV with the published repaired runner/provider, independently audit the complete provider window, restore the baseline and verify cleanup, and consume the exact immutable result. Preserve original FAIL and prior scoped PASS.",
   "officialBillingRulesSource": "https://help.make.com/extra-credits",
   "independentCostReview": {
     "doubleCountFound": false,
@@ -84,5 +63,58 @@
     "existingSupportedFullScopeModeWithinObservedBalance": false,
     "existingSupportedFocalMakeWriteReplayRestoreMode": false,
     "qualification": "The historical default Google Sheets probe does not prove the Excel/Make owner or application ACK; fixed historical recovery modes do not write HR. No new mode or scope reduction is proposed."
+  },
+  "historicalNextExactAction": "After Make email/password sign-in, inspect the smallest one-time credit addition; obtain explicit merchant/item/spending-limit approval before payment; verify actual capacity. Then execute only the existing native F3 job on this paired DEV with the published repaired runner/provider, independently audit the complete provider window, restore the baseline and verify cleanup, and consume the exact immutable result. Preserve original FAIL and prior scoped PASS.",
+  "nextExactAction": "Apply the user correction in docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. Do not buy credits or dispatch the historical full1184 F3 run. Prepare and verify the bounded same-runner single-cell mode, then execute its authenticated change/ACK/lost-response replay/restore/cleanup within a planned350-credit allocation using current capacity. Preserve scoped evidence and complete only uncovered clauses. Correct the reproduced cold durable-read/inventory coupling in its exact owner; centralize shared external refresh without weakening freshness, binding or write guards. Preserve one candidate and current DEV pair until the controlled successor is approved and served.",
+  "supersededFullRunPreparation": {
+    "by": "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md",
+    "priorObservationRetained": true,
+    "purchaseProposalWithdrawn": true,
+    "signInCompleted": true,
+    "availableCreditsAtLatestReadback": 1040,
+    "newF3WriterExecutionsSince20261126T021100Z": 0,
+    "newReaderExecutionsSince20261126T021100Z": 0,
+    "oneCellModePlan": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+    "modeNotYetImplemented": true,
+    "purchases": 0
+  },
+  "historicalProposedCapacity": {
+    "oneTimeCredits": 1000,
+    "expectedBalanceWithoutOtherConsumption": 2040,
+    "automaticPurchaseRequested": false,
+    "purchaseCount": 0,
+    "subscriptionChanges": 0,
+    "actualCheckoutPrice": "NOT_OBSERVED",
+    "currencyAndTax": "NOT_OBSERVED",
+    "spendingAuthorization": "NOT_GRANTED"
+  },
+  "proposedCapacity": {
+    "purchaseRequiredForCurrentPlannedScope": false,
+    "purchaseCount": 0,
+    "automaticPurchaseRequested": false,
+    "boundedPlan": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+    "plannedAllocationCredits": 350,
+    "modeImplemented": false
+  },
+  "historicalBrowserAccess": {
+    "observedZone": "eu2.make.com",
+    "account": "aysseguros2009@gmail.com",
+    "state": "EMAIL_PASSWORD_SIGN_IN_REQUIRED",
+    "googleSsoResult": "Make reported account uses email and password; existing account selected through Google basic-profile sign-in",
+    "passwordEnteredByAssistant": false,
+    "passwordResetAttempted": false,
+    "signInFormPrepared": true,
+    "connectorBillingOperationsAvailable": false,
+    "manualHandoffRequested": false
+  },
+  "browserAccess": {
+    "observedZone": "eu2.make.com",
+    "organizationId": 4090072,
+    "state": "SIGNED_IN_DASHBOARD_OBSERVED",
+    "signInCompletedByUser": true,
+    "passwordEnteredByAssistant": false,
+    "passwordResetAttempted": false,
+    "manualHandoffPending": false,
+    "connectorBillingOperationsAvailable": false
   }
 }
