@@ -1,0 +1,158 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "checkedAt": "2026-11-26T03:00:34.150Z",
+  "authorityControl": "6fe5b16f2f4664d58b396767cca204b5d772ad75",
+  "source": "ca94622046360c0122b79e8c4a27e2d72277277e",
+  "boundedQaProducer": "fb7f80287f81691338fd868fc36881fc84781e0e",
+  "scopedComponentReceipt": "docs/checkpoints/CXORBIA_I3_D08_E10_COMPONENT_READBACK_20261125.json",
+  "sourceReceipt": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+  "qaFixture": {
+    "country": "GT",
+    "field": "escenario",
+    "cell": "L2",
+    "actualRun": null,
+    "baselineRevision": null,
+    "remoteAck": null,
+    "remoteRestoration": null,
+    "replaysExecuted": 0,
+    "physicalPatchCallsInWindow": 0,
+    "certifiedCellCases": [],
+    "ownedCleanupRequired": false,
+    "priorAttempt": "1795653493842440",
+    "priorCleanupStatus": "COMPLETE"
+  },
+  "make": {
+    "organizationId": 4090072,
+    "availableCredits": 1037,
+    "autoPurchasingActivated": false,
+    "window": {
+      "from": "2026-11-26T02:11:00Z",
+      "to": "2026-11-26T03:00:34.150Z"
+    },
+    "writer": {
+      "id": 10199316,
+      "executions": []
+    },
+    "reader": {
+      "id": 10200465,
+      "executions": []
+    },
+    "dataStoreId": 213856,
+    "storeTotal": 1,
+    "storeKeys": [
+      {
+        "key": "757bfe4bd75b",
+        "recordType": "sentinel"
+      }
+    ],
+    "observedWriterCredits": 0,
+    "observedReaderCredits": 0,
+    "scopedBudget": {
+      "execution": 250,
+      "recovery": 100
+    },
+    "checkAgainBeforeDispatch": true
+  },
+  "environment": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "operation": "Control existing native Google DEV runner in Cloud Shell",
+    "chrome": "Three DEV terminals listed. Claim/DOM access timed out at Emulation.setFocusEmulationEnabled when checked again.",
+    "alternateSurface": "Cloud Shell HTTP 403",
+    "newTransport": false
+  },
+  "next": [
+    "Use the fresh canonical guard, then the native F3 producer checked out at the exact bounded QA commit against the currently paired DEV predecessor. Read Make balance, writer/reader executions and sentinel again immediately before dispatch.",
+    "After any changes, recover and seal the precise baseline. Inspect the whole writer/reader window (through at least 90 s after the run) and HTTP modules 36/43, link each physical change/restore to the correct event and cell, distinguish independent reads, count credits and replay/rejection PATCHes. Remove only the verified owned event/head keys and confirm sentinel and absent owned keys.",
+    "Materialize the pinned HR source through its existing paired DEV job once any active test on the predecessor is sealed. Verify actual cold protected read and one shared refresh across two authenticated sessions. Preserve authenticated D08 request and E10 durable binding residual."
+  ],
+  "i4Authorized": false,
+  "phaseAComplete": false,
+  "production": false,
+  "preparedSourceArchive": {
+    "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+    "productFiles": 3523,
+    "dockerCopyInputs": 28,
+    "inputPaths": [
+      "app",
+      "backend",
+      ".firebaserc",
+      "firebase.json",
+      "firestore.rules",
+      "storage.rules",
+      "tools/hr-source",
+      "tools/qa/tya-live-hr-read-probe-gate.mjs"
+    ],
+    "sha256": "b31cbb3158931ec8382e6771c499026e74b8759b98fe61af22393de2f12e52c9",
+    "size": 5967037,
+    "production": false
+  },
+  "pairedSourceChecks": {
+    "decision": "PASS_EXISTING_PAIRED_DEV_JOB_OFFLINE_SOURCE_CHECKS",
+    "control": "6fe5b16f2f4664d58b396767cca204b5d772ad75",
+    "source": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+    "checkedCommand": "bash tools/qa/cxorbia-i3-paired-source-checks.sh",
+    "receipts": {
+      "paired-source-checks/finance-regression.log": "270b6c61e891f91092bcdb126341daeb26f72ec248a8558a7af55fff0b6be2c8",
+      "paired-source-checks/gthn-source-tests.log": "957048148477edd2f5a2c8c7e2ff99bb6d70617a78b26e263b6adbd6e0893eee",
+      "paired-source-checks/source-contract.json": "bba978fe61379ee08eae45e50d96fa98ed0dc1a08e1f1fc851b372ac4a68444c",
+      "paired-source-checks/vrm168-regression.json": "fd728f8506a824cd91fb3514f0a2d2b0b1e0d32d32a03bc771735e49145bdfee",
+      "paired-source-checks/vrm174-finance-read-model.json": "1d7016c2fed335be52d0ff76d7ce98fdb03d22e93eb371f1c5071bf6c69d3c13",
+      "paired-source-checks/vrm256-midia-current-period.log": "25d1088cc9aa2024f2bcb3ade70dbeef78f088dd7fef9364a393faf936269ab2",
+      "paired-source-checks/vrm257-benefits-payment-label.log": "3568bd6cc61f53e06bdfed7815700ace24ab55b2b46e4d94833ea9c482b8b2b0",
+      "paired-source-checks/vrm259-postulations-rail-badge.log": "ec07791eaa358afbcdf44fcc4451a2bf9f44f367c12be588f549152f6348488d"
+    },
+    "sourceAssets": 50,
+    "runtimeDeployment": false,
+    "hostingDeployment": false,
+    "production": false
+  },
+  "guardReadback": {
+    "head": "6fe5b16f2f4664d58b396767cca204b5d772ad75",
+    "controlTree": "d005986f873ed6313c64bdf008898d8e31545bf8",
+    "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "productSource": {
+      "sha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+      "tree": "94f000488c34cdbc507ecc2e54a5d07f26539a56"
+    },
+    "serving": {
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+      "executionProvider": "GOOGLE_CLOUD_BUILD",
+      "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+      "runAttempt": 1,
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795650077089000",
+      "hrRevision": "ee7dfcd000e00248fdc7d722985a24a7f5d5d6606cee4700dc0d554481532d84",
+      "verifiedServedAssetCount": 50,
+      "mode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+      "receiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+    },
+    "pendingDevSuccessor": {
+      "state": "P0_PROVEN_PENDING_DEV_MATERIALIZATION",
+      "scope": "RUNTIME_AND_HOSTING",
+      "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+      "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+      "predecessorProductSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "proofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+      "proofReceiptBlob": "9398129399234196bb9697ea45e80768000f8ade",
+      "devPublished": false,
+      "imageBuild": {},
+      "launchTag": null
+    },
+    "matchedDomains": [
+      "benefits",
+      "historical",
+      "identity-membership-roll-forward",
+      "phase-a-supporting-core",
+      "reports-admin-shopper",
+      "tenant-admin-config-branding"
+    ],
+    "authorizationI4": false
+  }
+}

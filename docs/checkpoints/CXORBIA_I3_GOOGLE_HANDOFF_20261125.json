@@ -703,7 +703,8 @@
       "lastNativeAccess": "Connected Chrome listed the DEV Cloud Shell but control timed out. Alternate Cloud Shell returned HTTP 403.",
       "newCellMutation": false,
       "priorAttemptCleanup": "1795653493842440 COMPLETE"
-    }
+    },
+    "hrDeltaAndF3Cut": "docs/checkpoints/CXORBIA_I3_HR_DELTA_AND_F3_NATIVE_CUT_20261125.json"
   },
   "lastChromeConnection": {
     "googleConsolesOpened": true,
