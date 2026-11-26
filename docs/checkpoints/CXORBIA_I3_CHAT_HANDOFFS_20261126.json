@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.i3.chat-handoffs.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "inspectedControl": "085f8532cbb509494afbf4bf2d9a97d2d63a316e",
+  "policy": {
+    "id": "PORT-DEC-040",
+    "chat": "Investiga y prepara propuestas aisladas.",
+    "work": "Integra, ejecuta y publica por el carril autorizado.",
+    "portTech": "Audita de manera independiente.",
+    "hrAuthority": "La configuración interna se adapta a la fuente original por proyecto y periodo. Un alias de lectura no habilita escritura."
+  },
+  "archive": {
+    "filename": "CXORBIA_CHAT_HANDOFFS_20261126.zip",
+    "sha256": "9d7268aedd9cdc5fead23f19df6956231068b26efdefe6163fdea17a7378cd52",
+    "handoffSha256": "6d10ac460ed40b22a5ca0383bd525d902ac23dd722518f6f78151e8a52ba6767",
+    "manifestSha256": "dac7515989546ee3299de2705d3c70fcab85b0dd2c443d7d9a4cdb401786cfbf",
+    "inventory": {
+      "e10-core.mjs": "f493f44cf8d42c95ffaec51a3f7c603038fc8ca3060b955bf9efd5bac045a45a",
+      "e10-core.test.mjs": "20f146be66be18ca61fadad0d42b506335d408364d6a58615061dddb834b0748",
+      "graph-direct.mjs": "ee99adac75989a93556fe6d68f7f9971e0ef785b63c7e07d2bf721128c4f0442",
+      "graph-direct.test.mjs": "4d6cbfab16c5198d2524ee80d99290e0c670b197290bcc90ee96e08d762ba2bd",
+      "hr-policy.mjs": "3bfff4d3e9b1d80576a55c2cbae6827ff4c4c9520536c739d375f00f3e8bab42",
+      "hr-policy.test.mjs": "cc0a60186b41a9f2082a4edaf5c9daaf660f384d9023070d2b4cae1427721990",
+      "e10-ui-reference.js": "eef109d2a1b0d4590c4be04d84e3419d295f2fe5a9ac5702c7e6b6af8c3267d2",
+      "e10-ui-reference.test.cjs": "321d40aa12ada97813be6d024b3413283474e440f107f45b5498383d5998fb6c",
+      "propose-diff.py": "ff360fb7411dba2d2daa06a427566c44049bba52d2fa89655b2deb690b8da512",
+      "xlsx-fixture-probe.py": "e161f92438ee978123603ee5fe6734e333a3bf86b3e071662dfe642c795d2af9",
+      "run-local-tests.sh": "e781801d96ec3331d76fcafcfd02bf41d7a1adc19540009a0a6748a186b6d753",
+      "strict-hr-read.sh": "c71eaa52d65cf12f5a6ebe9f662c927d5529d7caa29e0d758be2bd9a75ec427d",
+      "strict-hr-read.test.sh": "58433d36fe3695763345b7b16a2082528d743a7281d938470e0f42f90363cdac",
+      "e10-core.tap": "340b634fb459d965fdaa6de4d112e5b82ea4f4b8d2598c2b2984f11b2d66c5f1",
+      "e10-ui.tap": "123e9750fdff82d246cfadebdca3f3d09cfda15fb790fb3338ad645cc5ad3635",
+      "graph-direct.tap": "abeb9bf29c3fc5727cab8f86865ce2d0abb478fa7c471eb65bf1427ee5a155b5",
+      "hr-policy.tap": "8e1b119b5d8dcb52d6c04b3a42ad65d1b25492a1fd3643d4af94401fda8f0d55",
+      "combined-local-tests.log": "b57e0fa04a21315370626908d66d375aea53912791676c6a5eada42bc108231d",
+      "strict-hr-read.log": "433f9277f2e2d5bf28a4d98e6184aaea1ed2a28d4d79ab5826466886e97964dd",
+      "xlsx-fixture.log": "17a1e00691ef4da2372e974667586bcae870ff32f5f5bc446b68a7e3c09cfba7",
+      "HANDOFF.md": "6d10ac460ed40b22a5ca0383bd525d902ac23dd722518f6f78151e8a52ba6767"
+    },
+    "manifestContentsVerified": true,
+    "attachmentByteMatch": true,
+    "credentialPatternFindings": 0,
+    "execution": "offline isolated tests, no provider connections",
+    "testResults": {
+      "node": 33,
+      "ooxml": 3,
+      "shell": 3,
+      "failed": 0
+    }
+  },
+  "dispositions": [
+    {
+      "id": "CX-CHAT-HO-E10-20261126-01",
+      "disposition": "SUBSTANTIAL_CHANGE",
+      "evidence": "Generated diff passed git apply --check. Fixture-only gate, hardcoded period and project-wide 501-document scan do not implement the operational contract. UI, provider, readback and Firestore rules require integration. Retain deterministic plan and scoped receipts."
+    },
+    {
+      "id": "CX-CHAT-HO-CI-20261126-02",
+      "disposition": "aprovechable",
+      "evidence": "Google executor owner changed since proposed blob. Keep native predecessor checks and share the active two probes in the existing seal owner. No product rebuild for QA changes."
+    },
+    {
+      "id": "CX-CHAT-HO-GRAPH-20261126-03",
+      "disposition": "DEPENDENCY",
+      "evidence": "Read-only probe logic is reusable. Access to the exact GT item returned 403. Owner, drive type and permissions remain to be established using the authorized identity. Keep shared reader."
+    },
+    {
+      "id": "CX-CHAT-HO-HR-20261126-04",
+      "disposition": "aprovechable",
+      "evidence": "Contextual mapping and durable Firestore lease already served. Preserve both. The proposed memory Map cannot enforce cross-instance admission. Retry/cost and cold/response-body proofs are residual."
+    }
+  ],
+  "makeBalanceAtReadback": {
+    "credits": 389,
+    "autoPurchasing": false,
+    "priorReceiptCredits": 392,
+    "differenceAttribution": "unattributed",
+    "newScenarioDispatches": 0
+  },
+  "functionalClausesNewlyCertified": 0,
+  "newProductDeployments": 0,
+  "production": false
+}

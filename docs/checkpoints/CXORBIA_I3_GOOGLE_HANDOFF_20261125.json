@@ -890,6 +890,11 @@
     "microsoftAndSync72874c08": {
       "path": "docs/checkpoints/CXORBIA_I3_HR_SYNC_AND_DIRECT_MS_GT_20261126.json",
       "gitBlob": "669bf444bf1893daaa2be2499aab6b8eed0cc6c4"
+    },
+    "portDec040ChatHandoffs": {
+      "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
+      "gitBlob": "e6b6f313f640e1e0f609b11fd48851ff28cb2bb4",
+      "decisionId": "PORT-DEC-040"
     }
   },
   "lastChromeConnection": {
