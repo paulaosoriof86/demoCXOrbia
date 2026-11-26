@@ -14,7 +14,11 @@ const groups=[['cinemaId','quincena','escenario'],['sucursal','quincena','escena
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const validScope=s=>s&&/^[a-z0-9_-]+$/i.test(str(s.tenantId))&&/^[a-z0-9_-]+$/i.test(str(s.projectId));
 const validPeriod=(p,v)=>str(v).startsWith(p+'-')&&/^20\d{2}-(0[1-9]|1[0-2])$/.test(str(v).slice(p.length+1));
-const stamp=s=>({seconds:s?.updateTime?.seconds??null,nanoseconds:s?.updateTime?.nanoseconds??null});
+const stamp=s=>{
+ const t=s?.updateTime;
+ if(!Number.isSafeInteger(t?.seconds)||!Number.isInteger(t?.nanoseconds)||t.nanoseconds<0||t.nanoseconds>=1e9)fail('VERSION_UNVERIFIABLE');
+ return {seconds:t.seconds,nanoseconds:t.nanoseconds};
+};
 function matchDurable(source,scope,previous,{sourceSiblings=1}={}){
  // Original row identity is a stronger join than financial state, and must
  // preserve ALL historical documents that refer to the same HR row.
@@ -171,7 +175,7 @@ export function selectHrPeriodWindow({projectId,periodIds,timeZone='UTC',request
   ...(historical?{requestedPeriodId}:{}),catalogPeriodIds:catalog};
 }
 
-export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),readInventory,inventoryCache,discoveryContexts}={}){
+export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),readInventory,inventoryCache,discoveryContexts,localOnly=false}={}){
  if(!db?.doc||!validScope(scope))fail('INVALID_SCOPE');
  // HTTP route flags do not change the identity of an operational source.
  const requestedPeriodId=str(scope.hrPeriodId||'');
@@ -191,7 +195,10 @@ export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),r
    !['external_read_only','bidirectional_gated'].includes(source.writePolicy)||!Array.isArray(source.countryBindings))fail('SOURCE_POLICY');
  const timeZone=raw.hrReadWindow?.timeZone||source.timeZone||raw.timeZone||raw.timezone||'UTC';
  const reference=selectHrPeriodWindow({projectId:scope.projectId,periodIds:[],timeZone,now});
- const wanted=[reference.previousPeriodId,reference.currentPeriodId,reference.nextPeriodId,...(requestedPeriodId?[requestedPeriodId]:[])];
+ if(requestedPeriodId&&!validPeriod(scope.projectId,requestedPeriodId))fail('PERIOD_SELECTION');
+ const routine=[reference.previousPeriodId,reference.currentPeriodId,reference.nextPeriodId];
+ const wanted=[...routine,...(requestedPeriodId?[requestedPeriodId]:[])];
+ const localAnchors=[];
  const countries=[...(raw.countries||[])].sort(),jobs=[],settings=[],configured=[],discoveries={};
  if(!countries.length||new Set(countries).size!==countries.length||countries.length!==source.countryBindings.length)fail('COUNTRY_SCOPE');
  for(const countryCode of countries){
@@ -206,6 +213,10 @@ export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),r
   const periods=[...new Set(row.periodSheets.map(x=>str(x.periodId)))].sort();
   if(!periods.every(x=>validPeriod(scope.projectId,x)))fail('PERIOD_IDS');
   settings.push({countryCode,stamp:stamp(s),periods});
+  // Firestore updateTime binds the complete setting (including its registry).
+  // A last-confirmed lookup never needs to resolve an unrelated period.
+  localAnchors.push([countryCode,found[0].providerBindingId,row.mappingRef,sha([row.driveId,row.itemId])]);
+  if(localOnly)continue;
   let discovery=discoveryContexts?.[countryCode];
   if(!discovery&&typeof readInventory==='function'&&wanted.some(p=>!periods.includes(p))){
    const anchor=await resolveCountryHrPeriodBinding({db,...scope,countryCode,periodId:periods.at(-1),purpose:'operational'});
@@ -234,6 +245,11 @@ export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),r
   if(discovery)discoveries[countryCode]=discovery;
   configured.push({countryCode,periods:[...new Set([...periods,...(discovery?.entries||[]).map(x=>x.periodId)])].sort()});
  }
+ // The same local configuration key identifies the last confirmed automatic
+ // window, even when its exact worksheet list required provider discovery.
+ const localBindingFingerprint=sha({tenantId:scope.tenantId,projectId:scope.projectId,projectStamp:stamp(project),timeZone,referenceMonth:reference.referenceMonth,
+   explicitPeriod:requestedPeriodId&&!routine.includes(requestedPeriodId)?requestedPeriodId:null,settings,localAnchors});
+ if(localOnly)return {scope,proof:{providerType:'excel_online',localBindingFingerprint,bindingFingerprint:localBindingFingerprint}};
  const readScope=selectHrPeriodWindow({projectId:scope.projectId,periodIds:configured.flatMap(c=>c.periods),timeZone,requestedPeriodId,now});
  if(readScope.mode==='rolling_window')delete scope.hrPeriodId;
  if(!readScope.periodIds.length)fail('NO_REGISTERED_PERIOD_IN_WINDOW');
@@ -247,6 +263,7 @@ export async function resolveExcelOriginalProjectPlan({db,scope,now=new Date(),r
    bindingFingerprints:jobs.map(x=>x.proof.bindingFingerprint),periodCount:new Set(jobs.map(x=>x.scope.periodId)).size,
    jobCount:jobs.length,hrWrites:false,production:false};
  proof.bindingFingerprint=sha(proof);
+ proof.localBindingFingerprint=localBindingFingerprint;
  return {scope,project:raw,proof,readScope,discoveryContexts:discoveries,periodCatalog:readScope.catalogPeriodIds.map(periodId=>({tenantId:scope.tenantId,projectId:scope.projectId,id:periodId,periodId,key:periodId.slice(-7),periodKey:periodId.slice(-7),externalReadCurrent:readScope.periodIds.includes(periodId)})),bindings:jobs};
 }
 async function limited(items,limit,fn){

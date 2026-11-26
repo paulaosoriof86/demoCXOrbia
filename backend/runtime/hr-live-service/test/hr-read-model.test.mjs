@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey,HR_READ_MODEL_CHUNK_BYTES} from '../hr-read-model.mjs';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createDurableHrReadModel,createConfirmedHrHistory,readSharedHrProjection,invalidateSharedHrSync,hrReadModelKey,HR_READ_MODEL_CHUNK_BYTES} from '../hr-read-model.mjs';
 
 const clone=x=>x===undefined?undefined:structuredClone(x);
 const hash=x=>crypto.createHash('sha256').update(String(x)).digest('hex');
@@ -209,4 +211,132 @@ test('oversized or foreign manifest is rejected before chunk allocation',async()
     const reads=db.reads;await assert.rejects(store.read(key),/HR_READ_MODEL_MANIFEST/);
     assert.equal(db.reads-reads,2);
   }
+});
+
+test('one local configuration retains the exact observed worksheet binding when its stable content revision is unchanged',async()=>{
+ const db=new DB(),store=createDurableHrReadModel({db,now:()=>5000});
+ const first=observation('same'),second=observation('same',{read:4000,start:3000});
+ for(const [n,current] of [first,second].entries()){
+   current.bindingProof={bindingFingerprint:hash('exact-sheet-'+n),localBindingFingerprint:key.bindingFingerprint};
+   current.discoveryContexts={GT:{inventoryHash:hash('inventory-'+n)}};
+   const receipt=await store.publish(key,current);assert.equal(receipt.reused,false);
+   const saved=await store.read(key);assert.equal(saved.revision,current.revision);
+   assert.equal(saved.bindingProof.bindingFingerprint,current.bindingProof.bindingFingerprint);
+   assert.deepEqual(saved.discoveryContexts,current.discoveryContexts);assert.equal(saved.loadedAt,current.loadedAt);
+ }
+ await assert.rejects(store.publish(key,{...first,sourceReadStartedAt:second.sourceReadStartedAt}),/EXTERNAL_OBSERVATION_REQUIRED/);
+ await assert.rejects(store.publish(key,{...first,loadedAt:second.loadedAt,sourceReadStartedAt:second.sourceReadStartedAt}),/CONCURRENT_REVISION/);
+ const [name,p]=pointer(db);db.docs.set(name,{...p,sourceBindingFingerprint:first.bindingProof.bindingFingerprint});
+ await assert.rejects(store.read(key),/SOURCE_BINDING/);
+});
+
+function sharedProject(){
+  const db=new DB(),scope={tenantId:'qa-tenant',projectId:'qa-projection'},bindingKey=hash('reader+local-binding');
+  let clock=Date.parse('2026-11-26T02:45Z'),rows='A',saved=null,calls=0,remote=async()=>{};
+  const read=async()=>saved&&{...saved,externalReadCurrent:false,origin:'durable_internal_snapshot'};
+  const refresh=async()=>{
+    const start=clock,value=rows;calls++;await remote();
+    const current={revision:hash(value),sourceReadStartedAt:start,loadedAt:clock,externalReadCurrent:true};
+    saved=current;return current;
+  };
+  const opts={db,scope,bindingKey,now:()=>clock,read,refresh,delay:()=>new Promise(r=>setTimeout(r,1))};
+  return {opts,observe:(poll=true)=>readSharedHrProjection({...opts,poll}),calls:()=>calls,
+    advance:n=>clock+=n,edit:value=>{rows=value;},setRemote:fn=>remote=fn,
+    invalidate:()=>invalidateSharedHrSync(db,scope,opts.now),drop:()=>{saved=null;}};
+}
+test('two Cloud Run callers, concurrent navigation and staggered session polls use one external observation for a shared revision',async()=>{
+  const h=sharedProject();
+  let admit,release;const started=new Promise(r=>admit=r),pending=new Promise(r=>release=r);
+  h.setRemote(()=>{admit();return pending;});
+  const first=h.observe();await started;
+  const simultaneous=[h.observe(),h.observe(false),h.observe(false)];
+  release();const results=await Promise.all([first,...simultaneous]);
+  assert.equal(h.calls(),1);assert.ok(results.every(x=>x.revision===hash('A')));
+  assert.equal(results.filter(x=>x.externalReadCurrent===true).length,1);
+  h.advance(100000);assert.equal((await h.observe()).externalReadCurrent,false);
+  h.edit('B');assert.equal((await h.observe(false)).revision,hash('A'));
+  h.advance(200000);const changes=await Promise.all([h.observe(),h.observe()]);
+  assert.deepEqual(changes.map(x=>x.revision),[hash('B'),hash('B')]);assert.equal(h.calls(),2);
+  assert.equal((await h.observe(false)).revision,hash('B'));assert.equal(h.calls(),2);
+});
+test('a verified ACK invalidates the shared projection for the next presentation before the timer',async()=>{
+  const h=sharedProject();await h.observe();h.edit('B');
+  await h.invalidate();const read=await h.observe(false);
+  assert.equal(read.revision,hash('B'));assert.equal(h.calls(),2);
+  await h.observe();assert.equal(h.calls(),2);
+});
+test('a late refresh that began before an ACK cannot mark the old revision current',async()=>{
+  const h=sharedProject();
+  let admit,release;const started=new Promise(r=>admit=r),pending=new Promise(r=>release=r);
+  h.setRemote(()=>{admit();return pending;});const first=h.observe();await started;
+  h.edit('B');await h.invalidate();release();
+  await assert.rejects(first,/SHARED_INVALIDATED_DURING_REFRESH/);
+  assert.equal((await h.observe()).revision,hash('B'));assert.equal(h.calls(),2);
+});
+test('external failure serves only a confirmed timestamp, throttles other workers, then discovers subsequent changes',async()=>{
+  const h=sharedProject(),first=await h.observe();h.advance(300001);h.setRemote(async()=>{throw Error('PROVIDER_FAILURE:EXCEL_DOWN');});
+  const fallback=await h.observe(),other=await h.observe();
+  for(const result of [fallback,other]){assert.equal(result.loadedAt,first.loadedAt);assert.equal(result.externalReadCurrent,false);assert.equal(result.sharedRefreshFailed,true);}
+  assert.equal(h.calls(),2);h.advance(30001);h.edit('B');h.setRemote(async()=>{});
+  assert.equal((await h.observe()).revision,hash('B'));assert.equal(h.calls(),3);
+});
+test('a missing or expired durable body requires a new external observation',async()=>{
+  const h=sharedProject();await h.observe();h.drop();h.advance(24*60*60*1000+1);h.edit('B');
+  assert.equal((await h.observe(false)).revision,hash('B'));assert.equal(h.calls(),2);
+});
+test('binding errors fail closed even when a saved revision exists',async()=>{
+  const h=sharedProject();await h.observe();h.advance(300001);
+  h.setRemote(async()=>{throw Error('MAPPING_FAILURE:HR_SHARED_BINDING_CHANGED');});
+  await assert.rejects(h.observe(),/HR_SHARED_BINDING_CHANGED/);
+  await assert.rejects(h.observe(),/SHARED_REFRESH_VALIDATION_FAILED/);
+  assert.equal(h.calls(),2);
+});
+
+test('the served watcher routes two independent authenticated clients through the real shared presentation handler',async()=>{
+  const server=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
+  const begin=server.indexOf('async function sharedPresentation('),end=server.indexOf('function setCommonHeaders(',begin);
+  assert.ok(begin>=0&&end>begin);
+  const watcher=fs.readFileSync(new URL('../../../../app/adapters/tya-live-source-refresh-watch-v2.js',import.meta.url),'utf8');
+  const project=sharedProject(),{scope,db}=project.opts,actors=[],requests=[];
+  const local={scope,proof:{providerType:'excel_online',localBindingFingerprint:hash('local')}};
+  let resolutions=0,saved=null;
+  function instance(){
+    return new Function('verifiedProtectedPrincipal','resolveProjectHrReadBinding','durableHrReadContext',
+      'crypto','readSharedHrProjection','recoverHrReadModel','buildSnapshot','persistHrReadModel',
+      server.slice(begin,end)+'\nreturn sharedPresentation;')(
+      async req=>{const uid=req.headers.Authorization.replace(/^Bearer /,'');if(!['s1','s2'].includes(uid))throw Error('AUTH_FAILURE:DENIED');actors.push(uid);return {uid,db};},
+      async (_,options)=>{assert.equal(options.localOnly,true);resolutions++;return local;},
+      ()=>({key:{readerFingerprint:hash('reader')}}),crypto,readSharedHrProjection,
+      async (_,options)=>{assert.equal(options.durableOnly,true);return saved&&{...saved,externalReadCurrent:false};},
+      async options=>{assert.equal(options.forceFresh,true);const observed=await project.opts.refresh();return {...observed,loadedAt:Date.now(),bindingProof:local.proof};},
+      async (_,value)=>{saved={...value};return {published:true};});
+  }
+  function session(uid,handler){
+    const context={authenticated:true,tenantId:scope.tenantId,projectIds:[scope.projectId],role:'shopper',authNamespace:'shopper'};
+    const CX={data:{currentProjectId:scope.projectId,projects:[],_visitas:[],previewMeta:{sourceRevision:hash('A')}},
+      dataSource:{sourceRef:'hr-live-all-periods+firestore-authenticated-exact-overlay',badge:()=>({})},backendAuth:{context:()=>context}};
+    const win={CX,addEventListener(){},firebase:{auth:()=>({currentUser:{uid,getIdToken:async()=>uid}})},
+      CX_PROTECTED_AUTH_HR_AUTHORITY:{applied:true,atomicPublication:true,sourceRevision:hash('A')}};
+    vm.runInNewContext(watcher,{window:win,CX,document:{addEventListener(){},visibilityState:'visible',getElementById(){return null;}},
+      URLSearchParams,location:{search:'?cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'},
+      setInterval(){},setTimeout(){},fetch:async(raw,{headers})=>{
+        const u=new URL(raw,'https://qa.invalid');assert.equal(u.pathname,'/api/tenants/qa-tenant/projects/qa-projection/hr-live');
+        assert.equal(u.searchParams.get('protectedState'),'1');assert.equal(u.searchParams.get('readModel'),'1');
+        assert.equal(u.searchParams.has('fresh'),false);assert.equal(u.searchParams.get('sync'),'due');requests.push(uid);
+        const {current,principal}=await handler({headers},scope,true);assert.equal(principal.uid,uid);
+        return {ok:true,json:async()=>({sourceSafe:true,runtimeRead:true,...current})};
+      }});
+    return win.CX_TYA_CHECK_LIVE_SOURCE;
+  }
+  const one=instance(),two=instance();
+  const result=await Promise.all([session('s1',one)('poll'),session('s2',two)('poll')]);
+  assert.deepEqual(requests.sort(),['s1','s2']);assert.deepEqual(result.map(x=>x.revision),[hash('A'),hash('A')]);
+  // Additional protected JSON/metadata consumers see the same published read.
+  for(const [uid,handler] of [['s1',one],['s2',two],['s1',one]]){
+    const result=await handler({headers:{Authorization:'Bearer '+uid}},scope,false);
+    assert.equal(result.current.revision,hash('A'));assert.equal(result.current.externalReadCurrent,false);
+  }
+  assert.equal(project.calls(),1);assert.equal(actors.length,5);assert.equal(resolutions,5);
+  await assert.rejects(one({headers:{Authorization:'Bearer other'}},scope,true),/AUTH_FAILURE/);
+  assert.equal(project.calls(),1);assert.equal(resolutions,5);
 });

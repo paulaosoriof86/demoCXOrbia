@@ -35,7 +35,8 @@ function checkPointer(p,key){
 function newer(p,observed){
   if(!p)return false;
   if(p.sourceReadStartedAt>observed.sourceReadStartedAt)return true;
-  if(p.sourceReadStartedAt===observed.sourceReadStartedAt&&p.revision!==observed.revision)
+  if(p.sourceReadStartedAt===observed.sourceReadStartedAt&&(p.revision!==observed.revision||
+      (p.sourceBindingFingerprint||p.bindingFingerprint)!==observed.sourceBindingFingerprint))
     fail('CONCURRENT_REVISION');
   return p.sourceReadStartedAt===observed.sourceReadStartedAt&&p.sourceReadAt>observed.sourceReadAt;
 }
@@ -51,13 +52,14 @@ function checkBody(body,key,revision){
       body.snapshot?.sourceSafe!==true||body.snapshot?.imported===true||body.snapshot?.production===true||
       !Array.isArray(body.snapshot?.visits)||
       !Array.isArray(body.snapshot?.periods)||(!body.snapshot.periods.length&&!body.snapshot.readScope?.countryPeriods?.length)||
-      body.bindingProof?.bindingFingerprint!==key.bindingFingerprint)fail('BODY_SCOPE');
+      !HASH.test(body.bindingProof?.bindingFingerprint||'')||
+      (body.bindingProof.localBindingFingerprint||body.bindingProof.bindingFingerprint)!==key.bindingFingerprint)fail('BODY_SCOPE');
   entries(body.identityEntries,'IDENTITY');entries(body.privateReviewEntries,'PRIVATE_REVIEW');
   return body;
 }
 
 export function hrReadModelKey({scope,proof},readerFingerprint){
-  return identity({...scope,bindingFingerprint:proof?.bindingFingerprint,readerFingerprint});
+  return identity({...scope,bindingFingerprint:proof?.localBindingFingerprint||proof?.bindingFingerprint,readerFingerprint});
 }
 
 export function createDurableHrReadModel({db,now=Date.now,maxAgeMs=24*60*60*1000}={}){
@@ -73,23 +75,25 @@ export function createDurableHrReadModel({db,now=Date.now,maxAgeMs=24*60*60*1000
         current?.origin!=='runtime_excel_online_original'||current?.externalReadCurrent===false)
       fail('EXTERNAL_OBSERVATION_REQUIRED');
     const body=checkBody({schemaVersion:HR_READ_MODEL_SCHEMA,...key,revision,
-      snapshot:current.snapshot,bindingProof:current.bindingProof,
+      snapshot:current.snapshot,bindingProof:current.bindingProof,discoveryContexts:current.discoveryContexts||{},
       identityEntries:[...(current.identity||new Map()).entries()],
       privateReviewEntries:[...(current.privateReviewNotes||new Map()).entries()]},key,revision);
-    const observation={revision,sourceReadAt,sourceReadStartedAt};
+    const sourceBindingFingerprint=current.bindingProof.bindingFingerprint;
+    const observation={revision,sourceReadAt,sourceReadStartedAt,sourceBindingFingerprint};
+    const sameContent=p=>p?.revision===revision&&(p.sourceBindingFingerprint||p.bindingFingerprint)===sourceBindingFingerprint;
     const pointerRef=db.doc(pathFor(key));
     const priorSnap=await pointerRef.get(),prior=priorSnap.exists?checkPointer(priorSnap.data(),key):null;
     if(newer(prior,observation))return {published:false,reason:'newer_observation_preserved',revision:prior.revision};
 
     // The stable revision owns immutable content. A new successful read of
     // unchanged content updates only observation metadata, avoiding rewrites.
-    if(prior?.revision===revision){
+    if(sameContent(prior)){
       if(prior.sourceReadStartedAt===sourceReadStartedAt&&prior.sourceReadAt===sourceReadAt)
         return {published:false,reused:true,readModelPresent:true,reason:'already_persisted',revision,generation:prior.generation,sourceReadAt};
       const reused=await db.runTransaction(async tx=>{
         const snap=await tx.get(pointerRef),p=snap.exists?checkPointer(snap.data(),key):null;
         if(newer(p,observation))return {published:false,reason:'newer_observation_preserved',revision:p.revision};
-        if(p?.revision!==revision)return null;
+        if(!sameContent(p))return null;
         tx.update(pointerRef,{sourceReadAt,sourceReadStartedAt,updatedAt:now()});
         return {published:true,reused:true,revision,generation:p.generation,sourceReadAt};
       });
@@ -121,7 +125,7 @@ export function createDurableHrReadModel({db,now=Date.now,maxAgeMs=24*60*60*1000
     return db.runTransaction(async tx=>{
       const snap=await tx.get(pointerRef),p=snap.exists?checkPointer(snap.data(),key):null;
       if(newer(p,observation))return {published:false,reason:'newer_observation_preserved',revision:p.revision};
-      if(p?.revision===revision){
+      if(sameContent(p)){
         tx.update(pointerRef,{sourceReadAt,sourceReadStartedAt,updatedAt:now()});
         return {published:true,reused:true,revision,generation:p.generation,sourceReadAt};
       }
@@ -168,8 +172,9 @@ export function createDurableHrReadModel({db,now=Date.now,maxAgeMs=24*60*60*1000
     catch{fail('DECODE');}
     if(raw.length!==m.rawBytes||sha(raw)!==m.rawSha256)fail('BODY_DIGEST');
     checkBody(body,key,pointer.revision);
+    if(body.bindingProof.bindingFingerprint!==(pointer.sourceBindingFingerprint||pointer.bindingFingerprint))fail('SOURCE_BINDING');
     // Observation time comes from a successful external read, not recovery.
-    return {snapshot:body.snapshot,revision:body.revision,bindingProof:body.bindingProof,
+    return {snapshot:body.snapshot,revision:body.revision,bindingProof:body.bindingProof,discoveryContexts:body.discoveryContexts||{},
       identity:new Map(body.identityEntries),privateReviewNotes:new Map(body.privateReviewEntries),
       loadedAt:pointer.sourceReadAt,sourceReadStartedAt:pointer.sourceReadStartedAt,
       origin:'durable_internal_snapshot',externalReadCurrent:false,
@@ -189,6 +194,113 @@ function historyScope(scope){
 const countryOf=v=>String(v.country||v.countryCode||v.pais||'').toUpperCase();
 const periodOf=v=>String(v.periodId||v.measurementPeriodId||'');
 const visitId=v=>String(v.visitId||v.id||'');
+// This document coordinates the existing Excel synchronizer across Cloud Run
+// instances. It stores timing and ownership only. Snapshot authenticity, exact
+// mapping, age and private projection are checked by the durable reader.
+function syncRef(db,scope){
+  const {tenantId,projectId}=historyScope(scope);
+  return db.doc(`tenants/${tenantId}/projects/${projectId}/hrReadModels/automatic_sync_v1`);
+}
+
+export async function invalidateSharedHrSync(db,scope,now=Date.now){
+  const ref=syncRef(db,scope);
+  await db.runTransaction(async tx=>{
+    const snap=await tx.get(ref),state=snap.exists?snap.data():{};
+    tx.set(ref,{...state,epoch:(state.epoch||0)+1,invalidatedAt:now(),retryAfter:0});
+  });
+}
+
+export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,poll=false,
+  now=Date.now,delay=ms=>new Promise(resolve=>setTimeout(resolve,ms))}){
+  if(!HASH.test(bindingKey||''))fail('SHARED_BINDING');
+  const ref=syncRef(db,scope),owner=crypto.randomUUID(),interval=300000,leaseMs=120000;
+  const deadline=now()+60000;
+  let saved=await read();
+
+  async function admission(){
+    return db.runTransaction(async tx=>{
+      const snap=await tx.get(ref),state=snap.exists?snap.data():{},at=now(),epoch=state.epoch||0;
+      const sameReader=state.bindingKey===bindingKey;
+      // The saved read may precede a different instance's commit. Re-read the
+      // pointer before returning anything that its coordinator already superseded.
+      if(sameReader&&!readAgain&&state.confirmedAt>Number(saved?.loadedAt||0))return 'read_again';
+      const afterWrite=!state.invalidatedAt||
+        (sameReader&&state.confirmedEpoch===epoch&&saved?.revision===state.revision&&saved?.loadedAt===state.confirmedAt);
+      const age=at-Number(saved?.loadedAt);
+      if(sameReader&&saved&&state.confirmedAt>saved.loadedAt)fail('SHARED_POINTER_ROLLBACK');
+      if(saved&&afterWrite&&(!poll||(age>=0&&age<interval)))return 'saved';
+      if(state.owner&&state.leaseUntil>at)return 'wait';
+      if(sameReader&&state.retryAfter>at){
+        if(state.failureClass&&state.failureClass!=='PROVIDER_FAILURE')fail('SHARED_REFRESH_VALIDATION_FAILED');
+        return 'backoff';
+      }
+      tx.set(ref,{...state,owner,bindingKey,epoch,leaseUntil:at+leaseMs,leaseEpoch:epoch,
+        confirmedAt:sameReader?(state.confirmedAt||0):0,confirmedEpoch:sameReader?(state.confirmedEpoch??-1):-1});
+      return 'acquired';
+    });
+  }
+
+  async function finish(current,failureClass=null){
+    return db.runTransaction(async tx=>{
+      const s=await tx.get(ref),state=s.data();
+      if(state?.owner!==owner||state.epoch!==state.leaseEpoch){
+        if(state?.owner===owner)tx.update(ref,{owner:null,leaseUntil:0});
+        return false;
+      }
+      const complete={owner:null,leaseUntil:0,retryAfter:current?0:now()+30000,failureClass};
+      if(current)Object.assign(complete,{revision:current.revision,confirmedAt:current.loadedAt,confirmedEpoch:state.epoch});
+      tx.update(ref,complete);return true;
+    });
+  }
+  let readAgain=false;
+  for(;;){
+    const outcome=await admission();
+    if(outcome==='saved')return saved;
+    if(outcome==='read_again'){
+      saved=await read();readAgain=true;continue;
+    }
+    if(outcome==='backoff'||(outcome==='wait'&&now()>=deadline)){
+      if(saved){
+        const latest=await read();
+        if(latest)return {...latest,externalReadCurrent:false,sharedRefreshFailed:outcome==='backoff',sharedRefreshPending:outcome==='wait'};
+      }
+      fail(outcome==='wait'?'SHARED_REFRESH_PENDING':'SHARED_REFRESH_BACKOFF');
+    }
+    if(outcome==='acquired')break;
+    // Read only the small lease while another process is updating. It will
+    // publish the complete checked projection before releasing its lease.
+    do{
+      await delay(400);
+      const s=await ref.get(),state=s.data();
+      if(!state?.owner||state.leaseUntil<=now()||now()>=deadline)break;
+    }while(true);
+    saved=await read();readAgain=false;
+  }
+  // Provider reads may outlast a single lease. A dead worker eventually loses
+  // it, and its completion can never release the lease of a later worker.
+  const renewal=setInterval(()=>db.runTransaction(async tx=>{
+    const snap=await tx.get(ref),state=snap.data();
+    if(state?.owner===owner)tx.update(ref,{leaseUntil:now()+leaseMs});
+  }).catch(()=>{}),leaseMs/3);
+  renewal.unref?.();
+  try{
+    const current=await refresh();
+    if(!await finish(current))fail('SHARED_INVALIDATED_DURING_REFRESH');
+    return current;
+  }catch(error){
+    const detail=String(error?.message||error);
+    const failureClass=detail.match(/^(AUTH_FAILURE|MAPPING_FAILURE|PERSISTENCE_FAILURE):/)?.[1]||'PROVIDER_FAILURE';
+    const stillOwner=await finish(null,failureClass);
+    // Only a valid previously confirmed view may survive an upstream outage.
+    // Never turn auth/binding/fencing failures into a permitted projection.
+    if(stillOwner&&saved&&failureClass==='PROVIDER_FAILURE'){
+      const latest=await read();
+      if(latest)return {...latest,externalReadCurrent:false,sharedRefreshFailed:true};
+    }
+    throw error;
+  }finally{clearInterval(renewal);}
+}
+
 function bankRoot(db,scope){return db.doc(`tenants/${scope.tenantId}/projects/${scope.projectId}/hrReadModels/confirmed_history_v1`);}
 
 export function createConfirmedHrHistory({db,now=Date.now}={}){

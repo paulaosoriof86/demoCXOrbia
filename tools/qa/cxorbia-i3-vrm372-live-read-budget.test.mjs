@@ -8,7 +8,7 @@ function setup({pollMs,visible=true,externalReadCurrent=false,sourceReadAgeMs=0}
   let now=Date.parse('2026-11-24T15:00:00Z'),revision='rev-a',fail=false,hold=null;
   const requests=[],intervals=[],winEvents=new Map(),docEvents=new Map(),reconciles=[];
   const ctx={authenticated:true,tenantId:'tenant-a',projectIds:['project-a'],role:'admin',authNamespace:'admin'};
-  const user={uid:'admin-a'};
+  const user={uid:'admin-a',getIdToken:async()=>'qa-token'};
   const CX={data:{currentProjectId:'project-a',projects:[{id:'period-a'}],_visitas:[{id:'visit-a'}],sourceMode:'tya_hr_live_all_periods_plus_firestore_exact_overlay_dev',previewMeta:{sourceRevision:'rev-a'},__backendAllProjectRecords:[]},dataSource:{sourceRef:'hr-live-all-periods+firestore-authenticated-exact-overlay',badge:()=>({c:'#070',t:'Lista'})},backendAuth:{context:()=>ctx},bus:{on(){},emit(){}},session:{view:'midia'}};
   const window={CX,CX_TYA_LIVE_POLL_MS:pollMs,firebase:{auth:()=>({currentUser:user})},CX_PROTECTED_AUTH_HR_AUTHORITY:{applied:true,atomicPublication:true,tenantId:'tenant-a',projectId:'project-a',actorUid:'admin-a',role:'admin',authNamespace:'admin',sourceRevision:'rev-a',at:new Date(now).toISOString(),externalReadCurrent,sourceReadAt:new Date(now-sourceReadAgeMs).toISOString()},CX_PROTECTED_AUTH_HR_BOOT_RECONCILE:{ready:true,completed:true,sourceRevision:'rev-a'},addEventListener:(name,fn)=>winEvents.set(name,fn),CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE:(...args)=>reconciles.push(args)};
   const document={visibilityState:visible?'visible':'hidden',body:{},getElementById:()=>null,querySelectorAll:()=>[],querySelector:()=>null,addEventListener:(name,fn)=>docEvents.set(name,fn)};
@@ -30,9 +30,9 @@ test('VRM372 focus, visibility, auth and timer events coalesce within one scoped
   assert.equal(h.requests.length,1);h.advance(299999);assert.equal((await h.check('poll')).skipped,true);
   h.advance(1);await h.check('poll');assert.equal(h.requests.length,2);
 });
-test('VRM372 a newly visible overdue session reads immediately and retains fresh=1',async()=>{
+test('VRM372 a newly visible overdue session asks the authenticated project synchronizer to refresh if due',async()=>{
   const h=setup({visible:false});h.advance(600000);await h.check('poll');h.document.visibilityState='visible';await h.check('visibility_resume');
-  assert.equal(h.requests.length,1);assert.match(h.requests[0],/fresh=1/);
+  assert.equal(h.requests.length,1);const q=new URL(h.requests[0],'https://qa.invalid').searchParams;assert.equal(q.get('sync'),'due');assert.equal(q.get('protectedState'),'1');assert.equal(q.has('fresh'),false);
 });
 test('VRM372 manual refresh bypasses the automatic interval and then suppresses a duplicate automatic read',async()=>{
   const h=setup();await h.check('poll');await h.check('manual_refresh');await h.check('poll');assert.equal(h.requests.length,2);
@@ -56,7 +56,9 @@ test('VRM372 invalid or future freshness timestamps never suppress the initial r
 });
 test('VRM372 closing a deferred editor rereads the latest revision inside the automatic interval',async()=>{
   const h=setup();h.document.activeElement={tagName:'INPUT'};h.setRevision('rev-b');await h.check('poll');h.setRevision('rev-c');h.document.activeElement=h.document.body;
-  const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();assert.equal(result.revision,'rev-c');assert.equal(h.requests.length,2);assert.deepEqual(JSON.parse(JSON.stringify(h.reconciles)),[['live_watcher_revision_change',true,{expectedRevision:'rev-c'}]]);
+  const result=await h.window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER();
+  for(const raw of h.requests){const q=new URL(raw,'https://qa.invalid').searchParams;assert.equal(q.get('sync'),'due');assert.equal(q.has('fresh'),false);}
+  assert.equal(result.revision,'rev-c');assert.equal(h.requests.length,2);assert.deepEqual(JSON.parse(JSON.stringify(h.reconciles)),[['live_watcher_revision_change',true,{expectedRevision:'rev-c'}]]);
 });
 test('VRM372 concurrent triggers share the existing in-flight check',async()=>{
   const h=setup();let release;h.setHold(new Promise(resolve=>{release=resolve;}));const pending=h.check('poll');await h.focus();await h.check('manual_refresh');assert.equal(h.requests.length,1);release();await pending;

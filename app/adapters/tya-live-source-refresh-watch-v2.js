@@ -22,12 +22,12 @@
     const project=records.find(x=>String(x?.id||x?.projectId||'').trim()===projectId)||null;
     return {tenantId,projectId,project};
   }
-  function endpoint(){if(window.CX_TYA_LIVE_SOURCE_URL)return String(window.CX_TYA_LIVE_SOURCE_URL);const scope=runtimeScope();if(!scope.tenantId||!scope.projectId)return '';return '/api/tenants/'+encodeURIComponent(scope.tenantId)+'/projects/'+encodeURIComponent(scope.projectId)+'/hr-live';}
+  function endpoint(){if(!authenticatedHumanRuntime&&window.CX_TYA_LIVE_SOURCE_URL)return String(window.CX_TYA_LIVE_SOURCE_URL);const scope=runtimeScope();if(!scope.tenantId||!scope.projectId)return '';return '/api/tenants/'+encodeURIComponent(scope.tenantId)+'/projects/'+encodeURIComponent(scope.projectId)+'/hr-live';}
   const configuredPollMs=Number(window.CX_TYA_LIVE_POLL_MS);
   const pollMs=Number.isFinite(configuredPollMs)&&configuredPollMs>0?Math.max(15000,configuredPollMs):300000;
-  // A metadata check reads the full external HR, including historical periods.
-  // Bound automatic attempts per authenticated scope; no snapshot or freshness
-  // authority is stored here. Explicit refresh and pending-edit checks stay fresh.
+  // Automatic checks consult the shared project projection. Only its server
+  // synchronizer elects an external reader when due. Explicit refresh and
+  // post-write verification keep their own strict freshness semantics.
   const automaticReasons=new Set(['poll','window_focus','visibility_resume','initial_load','backend_auth_ready','canonical_authority_ready']);
   const lastAutomaticAttempts=new Map();
   function automaticScopeKey(scope){
@@ -70,6 +70,7 @@
       CX.dataSource.updating=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.lastLiveCheckAt=new Date().toISOString();CX.dataSource.pendingLiveRevision=deferred?meta.revision:null;CX.dataSource.warnings=deferred?otherWarnings.concat('Hay cambios en la hoja de ruta. Se aplicarán al cerrar la edición.'):otherWarnings;
     }
     window.CX_TYA_APPLY_HR_FRESHNESS?.(meta);
+    if(meta.sharedRefreshFailed&&CX.dataSource)CX.dataSource.warnings.push('Lectura HR viva no disponible: se conserva la última lectura confirmada.');
     refreshBadge();
   }
   function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length>0&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length>0);}
@@ -95,7 +96,23 @@
     window.CX_TYA_APPLY_HR_FRESHNESS?.({externalReadCurrent:false,sourceReadAt:CX.data?.previewMeta?.sourceReadAt||null});
     refreshBadge();
   }
-  async function getJson(format,extra={}){const source=endpoint();if(!source)throw new Error('PROJECT_SOURCE_REQUIRED');const q=new URLSearchParams({format,...extra,ts:String(Date.now())});const r=await fetch(source+(source.includes('?')?'&':'?')+q,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error('HTTP '+r.status+(j?.message?': '+j.message:''));return j;}
+  async function getJson(format,extra={}){
+    const source=endpoint();
+    if(!source)throw new Error('PROJECT_SOURCE_REQUIRED');
+    const headers={'Cache-Control':'no-cache, no-store','Pragma':'no-cache'};
+    if(authenticatedHumanRuntime){
+      const user=window.firebase?.auth?.().currentUser;
+      if(!user)throw new Error('AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED');
+      const token=await user.getIdToken(false);
+      if(user.uid!==window.firebase?.auth?.().currentUser?.uid)throw new Error('AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_CHANGED');
+      headers.Authorization='Bearer '+token;
+    }
+    const query=new URLSearchParams({format,...extra,ts:String(Date.now())});
+    const response=await fetch(source+(source.includes('?')?'&':'?')+query,{cache:'no-store',headers});
+    const body=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error('HTTP '+response.status+(body?.message?': '+body.message:''));
+    return body;
+  }
   function busy(){try{const modal=[...document.querySelectorAll('dialog[open],[aria-modal="true"],.modal.show,.modal.open,.overlay.open,.drawer.open,.cx-ov')].some(x=>x.getClientRects().length);const a=document.activeElement;return modal||!!(a&&a!==document.body&&(['INPUT','TEXTAREA','SELECT'].includes(a.tagName)||a.isContentEditable));}catch(_){return false;}}
   function capture(){const content=document.querySelector('.content'),rail=document.getElementById('rail');return {periodId:CX.data?.currentPeriodId||null,projectId:CX.data?.currentProjectId||null,view:CX.session?.view||null,contentTop:content?.scrollTop||0,contentLeft:content?.scrollLeft||0,railTop:rail?.scrollTop||0,windowX:window.scrollX||0,windowY:window.scrollY||0};}
   function restoreModel(s){if(!CX.data||!s)return;if(s.periodId&&CX.data.projects?.some(p=>String(p.id)===String(s.periodId)))CX.data.currentPeriodId=s.periodId;if(s.projectId)CX.data.currentProjectId=s.projectId;if(CX.session&&s.view)CX.session.view=s.view;}
@@ -146,7 +163,13 @@
       return {ok:true,skipped:true,reason:'automatic_hr_interval',nextCheckInMs:pollMs-(now-previousAttempt)};
     rememberAutomaticAttempt(scope,now);checking=true;markUpdating();
     try{
-      const meta=await getJson('meta',{fresh:'1',...(!automatic?{inventory:'1'}:{})});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
+      const query=authenticatedHumanRuntime?{protectedState:'1',readModel:'1'}:{};
+      const sharedCheck=automatic||reason==='editor_closed';
+      if(sharedCheck&&authenticatedHumanRuntime)query.sync='due';
+      else Object.assign(query,{fresh:'1',...(!automatic?{inventory:'1'}:{})});
+      const identity=automaticScopeKey(scope);
+      const meta=await getJson('meta',query);
+      if(authenticatedHumanRuntime&&identity!==automaticScopeKey(runtimeScope()))throw new Error('AUTH_FAILURE:PROTECTED_HR_SCOPE_CHANGED');if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
         const protectedRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim();
         if(protectedRevision)currentRevision=protectedRevision;

@@ -20,7 +20,7 @@ import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.
 import { readExcelPeriodThroughMake, readExcelWorksheetInventoryThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
 import {HR_WRITABLE_VISIT_FIELDS} from '../cxorbia-operational-command-provider-v1.mjs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot,authorizedHrReviewObservation} from '../cxorbia-excel-operational-snapshot-v1.mjs';
-import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey} from './hr-read-model.mjs';
+import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey,readSharedHrProjection,invalidateSharedHrSync} from './hr-read-model.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -85,7 +85,7 @@ function durableHrReadContext(binding){
 }
 async function persistHrReadModel(scope,current){
   // Called only after protected authentication and source observation both pass.
-  const binding=await resolveProjectHrReadBinding(scope);
+  const binding=await resolveProjectHrReadBinding(scope,{discoveryContexts:current.discoveryContexts,allowInventory:false});
   if(binding.proof.bindingFingerprint!==current.bindingProof?.bindingFingerprint)
     throw Error('MAPPING_FAILURE:HR_BINDING_CHANGED_BEFORE_READ_MODEL_PUBLISH');
   try{const {store,key}=durableHrReadContext(binding);lastReadModelPersistence={...await store.publish(key,current),bindingFingerprint:binding.proof.bindingFingerprint};
@@ -94,10 +94,11 @@ async function persistHrReadModel(scope,current){
   catch{lastReadModelPersistence={published:false,reason:'read_model_persistence_unavailable',bindingFingerprint:binding.proof.bindingFingerprint};lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_WRITE';}
   return lastReadModelPersistence;
 }
-async function recoverHrReadModel(binding){
+async function recoverHrReadModel(binding,{durableOnly=false}={}){
   let current;
   const age=cache?Date.now()-cache.loadedAt:Infinity;
-  if(cache?.bindingProof?.bindingFingerprint===binding.proof.bindingFingerprint&&
+  const localKey=binding.proof.localBindingFingerprint||binding.proof.bindingFingerprint;
+  if(!durableOnly&&cache?.bindingProof&&(cache.bindingProof.localBindingFingerprint||cache.bindingProof.bindingFingerprint)===localKey&&
       ['runtime_excel_online_original','durable_internal_snapshot'].includes(cache.origin)&&age>=0&&age<=HR_READ_MODEL_MAX_AGE_MS)
     current={...cache,externalReadCurrent:false};
   else{
@@ -108,8 +109,12 @@ async function recoverHrReadModel(binding){
     if(reconstructed.revision!==saved.revision)throw Error('PERSISTENCE_FAILURE:HR_READ_MODEL_REVISION');
     current={...reconstructed,...saved};
   }
-  const after=await resolveProjectHrReadBinding(binding.scope);
-  if(after.proof.bindingFingerprint!==binding.proof.bindingFingerprint)
+  // Strongly rebind the observed worksheets using only their integrity-checked
+  // inventory evidence and today's Firestore configuration. No external lookup.
+  if(binding.scope.hrPeriodId&&!current.bindingProof.readScope?.catalogPeriodIds?.includes(binding.scope.hrPeriodId))return null;
+  const after=await resolveProjectHrReadBinding(binding.scope,{discoveryContexts:current.discoveryContexts,allowInventory:false});
+  if(after.proof.bindingFingerprint!==current.bindingProof.bindingFingerprint||
+     (after.proof.localBindingFingerprint||after.proof.bindingFingerprint)!==localKey)
     throw Error('MAPPING_FAILURE:HR_BINDING_CHANGED_DURING_READ_MODEL_RECOVERY');
   cache=current;
   return current;
@@ -260,7 +265,7 @@ function loadExcelMappingLibrary(mappingRef,root=ROOT){
 // VRM-358: this existing reader is a scoped adapter. Resolve its configured
 // private binding BEFORE reading HR; never borrow a global workbook or another
 // project's cache. Other adapters must supply their own proved mapping.
-async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,root=ROOT,discoveryContexts}={}){
+async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,root=ROOT,discoveryContexts,localOnly=false,allowInventory=true}={}){
   const fail=code=>{throw new Error('MAPPING_FAILURE:HR_BINDING_'+code);};
   const mappingFile=path.join(root,'backend/contracts/tya-hr-column-map-r20-v1.json');
   const mappingBytes=fs.readFileSync(mappingFile),mapping=JSON.parse(mappingBytes);
@@ -277,8 +282,8 @@ async function resolveProjectHrReadBinding(requestedScope,{db=ensureAdmin().db,r
     const refs=[...new Set((source.countryBindings||[]).map(row=>row.mappingRef))];
     if(refs.length!==1)fail('MAPPING_AMBIGUOUS');
     loadExcelMappingLibrary(refs[0],root);
-    const plan=await resolveExcelOriginalProjectPlan({db,scope,discoveryContexts,inventoryCache:hrInventoryCache,
-      readInventory:binding=>withOriginalToolboxReader(runScenario=>readExcelWorksheetInventoryThroughMake({binding,runScenario}))});
+    const plan=await resolveExcelOriginalProjectPlan({db,scope,discoveryContexts,localOnly,inventoryCache:hrInventoryCache,
+      readInventory:allowInventory&&!localOnly ? binding=>withOriginalToolboxReader(runScenario=>readExcelWorksheetInventoryThroughMake({binding,runScenario})) : undefined});
     return {...plan,mappingRef:refs[0]};
   }
   // Legacy Google adapter remains scoped to its own approved library. Excel
@@ -368,6 +373,7 @@ async function writeOriginalHrField(event,options){
   if(result.providerAck===true&&result.readbackVerified===true){
     // Drain an older read before expiring this exact project's cache. A read
     // begun before the write must not become a fresh cache after its ACK.
+    await invalidateSharedHrSync(db,event);
     const pending=inFlight;if(pending)await Promise.allSettled([pending]);
     if(cache?.snapshot?.tenantId===event.tenantId&&cache?.snapshot?.projectId===event.projectId)cache.loadedAt=0;
     for(const current of scopedHrCache.values())if(current.snapshot.tenantId===event.tenantId&&current.snapshot.projectId===event.projectId)current.loadedAt=0;
@@ -639,6 +645,7 @@ async function refreshSnapshot(binding){
       const next=materialize(current,'runtime_excel_online_original',source.identity,source.privateReviewNotes);
       next.bindingProof={...binding.proof,readerCount:source.proof.periodReads,
         runtimeConsumptionVerified:true,sourceRevision:source.proof.sourceRevision,rawRowsExposed:false};
+      next.discoveryContexts=binding.discoveryContexts;
       next.sourceReadStartedAt=started;next.externalReadCurrent=true;
       cache=retainScopedSnapshot(next);
       lastRefreshStagesMs={...stagesMs};
@@ -716,7 +723,19 @@ async function refreshSnapshot(binding){
 }
 
 async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={}){
-  let binding=await resolveProjectHrReadBinding(scope);
+  let binding=await resolveProjectHrReadBinding(scope,{localOnly:allowDurableRead&&!forceFresh});
+  // Only presentation can consult a last-confirmed projection. Strict reads
+  // always resolve and verify the provider plan, including its inventory.
+  if(allowDurableRead&&!forceFresh&&binding.proof.providerType==='excel_online'){
+    try{
+      const recovered=await recoverHrReadModel(binding,{durableOnly:true});
+      if(recovered)return recovered;
+    }catch(error){
+      if(!String(error?.message||'').startsWith('PERSISTENCE_FAILURE:HR_READ_MODEL_'))throw error;
+      lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_RECOVERY';
+    }
+    binding=await resolveProjectHrReadBinding(scope);
+  }
   if(inFlight&&inFlightBinding!==binding.proof.bindingFingerprint){
     // A previous source owner must finish before this request can use the
     // current binding. Its result is not returned as this request's authority.
@@ -729,17 +748,6 @@ async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={})
   const matches=cache?.origin!=='build_bootstrap'&&cache?.bindingProof?.bindingFingerprint===binding.proof.bindingFingerprint;
   const age=matches&&cache.externalReadCurrent!==false?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
-  // Only an explicit presentation request may recover a last-confirmed view.
-  // Commands, certification and ordinary provider probes keep the strict path.
-  if(allowDurableRead&&binding.proof.providerType==='excel_online'){
-    try{
-      const recovered=await recoverHrReadModel(binding);
-      if(recovered)return recovered;
-    }catch(error){
-      if(!String(error?.message||'').startsWith('PERSISTENCE_FAILURE:HR_READ_MODEL_'))throw error;
-      lastReadModelError='PERSISTENCE_FAILURE:HR_READ_MODEL_RECOVERY';
-    }
-  }
   /* Expired data is never served as current: wait for a fresh source-safe read. */
   return refreshSnapshot(binding);
 }
@@ -787,6 +795,7 @@ function runtimeMeta(current){
       externalReadCurrent:current.externalReadCurrent!==false,sourceReadAt:new Date(current.loadedAt).toISOString(),
       readOnly:current.externalReadCurrent===false,requiresFreshExternalForCommands:true},
     durableReadModel:current.durableReadModel||null,
+    sharedRefreshFailed:current.sharedRefreshFailed===true,sharedRefreshPending:current.sharedRefreshPending===true,
     lastReadModelPersistence:lastReadModelPersistence?.bindingFingerprint===current.bindingProof?.bindingFingerprint?lastReadModelPersistence:null,
     readModelWriteAck:current.readModelWriteAck||null,readModelPersistenceError:lastReadModelError,
     runtimeRead:true,
@@ -818,6 +827,38 @@ function runtimeMeta(current){
     imports:false,
     production:false
   };
+}
+
+// Enter the shared scheduler only after validating the request's Firebase
+// principal and the local binding. Explicit reads and strict command
+// verification keep their original external confirmation path.
+async function sharedPresentation(req,scope,poll){
+  const start=Date.now();
+  const principal=await verifiedProtectedPrincipal(req,scope);
+  const principalVerifyMs=Date.now()-start;
+  const local=await resolveProjectHrReadBinding(scope,{localOnly:true});
+  if(local.proof.providerType!=='excel_online'){
+    const current=await buildSnapshot({scope,forceFresh:poll,allowDurableRead:!poll});
+    return {current,principal,timing:{principalVerifyMs,hrWaitMs:Date.now()-start-principalVerifyMs}};
+  }
+  const {key}=durableHrReadContext(local);
+  const bindingKey=crypto.createHash('sha256').update(JSON.stringify([local.proof.localBindingFingerprint,key.readerFingerprint])).digest('hex');
+  const current=await readSharedHrProjection({db:principal.db,scope,bindingKey,poll,
+    read:()=>recoverHrReadModel(local,{durableOnly:true}),
+    refresh:async()=>{
+      const observed=await buildSnapshot({scope,forceFresh:true});
+      if(observed.bindingProof.localBindingFingerprint!==local.proof.localBindingFingerprint)
+        throw Error('MAPPING_FAILURE:HR_SHARED_BINDING_CHANGED');
+      const ack=await persistHrReadModel(scope,observed);
+      if(!ack?.published&&!ack?.readModelPresent&&ack?.reason!=='newer_observation_preserved')
+        throw Error('PERSISTENCE_FAILURE:HR_READ_MODEL_SHARED_PUBLISH');
+      const durable=await recoverHrReadModel(local,{durableOnly:true});
+      if(!durable||durable.sourceReadStartedAt<observed.sourceReadStartedAt)
+        throw Error('PERSISTENCE_FAILURE:HR_READ_MODEL_SHARED_READBACK');
+      if(durable.revision!==observed.revision||durable.loadedAt!==observed.loadedAt)return durable;
+      return {...observed,readModelWriteAck:ack};
+    }});
+  return {current,principal,timing:{principalVerifyMs,hrWaitMs:Date.now()-start-principalVerifyMs}};
 }
 
 function setCommonHeaders(res,origin){
@@ -920,7 +961,10 @@ const server=http.createServer(async(req,res)=>{
     const protectedRequested=url.searchParams.get('protectedState')==='1';
     const requestedPeriodId=url.searchParams.get('hrPeriodId');
     if(requestedPeriodId)requestedScope.hrPeriodId=requestedPeriodId;
-    const {current,principal,timing}=await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);
+    const shared=protectedRequested&&!forceFresh&&!requestedPeriodId&&url.searchParams.get('readModel')==='1';
+    const {current,principal,timing}=shared
+      ? await sharedPresentation(req,requestedScope,format==='meta'&&url.searchParams.get('sync')==='due')
+      : await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);
     const actualScope=snapshotScope(current.snapshot);
     if(actualScope.tenantId!==requestedScope.tenantId||actualScope.projectId!==requestedScope.projectId){
       return sendJson(res,409,{ok:false,error:'hr_scope_mismatch',requested:{tenantId:requestedScope.tenantId,projectId:requestedScope.projectId},source:{tenantId:actualScope.tenantId,projectId:actualScope.projectId},writes:false,hrWrites:false,production:false});

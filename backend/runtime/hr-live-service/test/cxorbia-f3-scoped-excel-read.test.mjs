@@ -92,3 +92,65 @@ test('F3 read range belongs to the private country binding and cannot be overrid
  const p='tenants/tya/integrationSettings/qa-GT';h.docs.set(p,stamp({...h.docs.get(p).data(),readRangeAddress:'A1:ZZ999'},10));
  await assert.rejects(resolveExcelOriginalProjectPlan({db:h.db,scope,now}),/READ_RANGE_INVALID/);assert.equal(h.calls.length,1);
 });
+
+test('cold protected projection revalidates the discovered sheet locally; strict reads still require inventory',async()=>{
+ const h=fixture(),file=fs.readFileSync(path.join(root,'backend/runtime/hr-live-service/server.mjs'),'utf8');
+ const section=(from,to)=>file.slice(file.indexOf(from),file.indexOf(to,file.indexOf(from)));
+ const resolver=section('function loadExcelMappingLibrary(','function canonicalProtectedAuthNamespace(');
+ const selector=section('async function buildSnapshot(','async function resolveHrAndProtectedPrincipal(');
+ const recovery=section('async function recoverHrReadModel(','function parseHrSourceFailure(');
+ const materializer=section('function stableRevisionValue(','function operationalSnapshot(');
+ let stored=null,inventoryAvailable=true,inventoryCalls=0,storeReads=0,externalRowCalls=0;
+ const clock=new Date(now);
+ function processContext(){
+  const context={fs,path,crypto,ROOT:root,ensureAdmin:()=>({db:h.db}),hrInventoryCache:new Map(),
+   resolveExcelOriginalProjectPlan:args=>resolveExcelOriginalProjectPlan({...args,now:clock}),
+   withOriginalToolboxReader:work=>work(()=>{}),
+   readExcelWorksheetInventoryThroughMake:async({binding})=>{
+    inventoryCalls++;if(!inventoryAvailable)throw Error('PROVIDER_FAILURE:INVENTORY_OFFLINE');
+    return {complete:true,worksheets:[{id:'new-'+binding.scope.countryCode,name:'Diciembre 2026',visibility:'Visible'}],inventoryHash:'e'.repeat(64)};
+   },
+   durableHrReadContext:binding=>({key:binding.proof.localBindingFingerprint,store:{read:async key=>{
+    storeReads++;return key===stored?.localKey?structuredClone(stored):null;
+   }}}),refreshSnapshot:()=>{externalRowCalls++;throw Error('PROVIDER_FAILURE:ROWS_OFFLINE');}};
+  vm.createContext(context);
+  vm.runInContext('let cache=null,inFlight=null,inFlightBinding=null,lastReadModelError=null;const scopedHrCache=new Map(),CACHE_MS=5000,HR_READ_MODEL_MAX_AGE_MS=86400000;const VOLATILE_REVISION_KEYS=new Set();'+
+   resolver+materializer+recovery+selector,context);return context;
+ }
+ const writer=processContext(),full=await writer.resolveProjectHrReadBinding(scope);
+ assert.equal(full.readScope.nextPeriodAvailable,true);assert.equal(inventoryCalls,2);
+ const snap={...scope,sourceSafe:true,periods:full.readScope.periodIds.map(id=>({id})),visits:[]};
+ const observed=writer.materialize(snap,'runtime_excel_online_original');
+ stored={...observed,localKey:full.proof.localBindingFingerprint,bindingProof:full.proof,
+  loadedAt:Date.now()-5000,externalReadCurrent:false,origin:'durable_internal_snapshot',discoveryContexts:full.discoveryContexts};
+ inventoryAvailable=false;inventoryCalls=0;
+ const cold=processContext(),got=await cold.buildSnapshot({scope,allowDurableRead:true});
+ assert.equal(got.revision,observed.revision);assert.equal(got.loadedAt,stored.loadedAt);
+ assert.equal(got.externalReadCurrent,false);assert.equal(got.bindingProof.bindingFingerprint,full.proof.bindingFingerprint);
+ assert.equal(got.bindingProof.readScope.nextPeriodAvailable,true);assert.equal(inventoryCalls,0);assert.equal(storeReads,1);assert.equal(externalRowCalls,0);
+ const local=await cold.resolveProjectHrReadBinding(scope,{localOnly:true});
+ // Another instance may have published a newer projection with the same
+ // binding. A warm instance must consult the shared pointer, too.
+ const seen=stored;
+ const next=writer.materialize({...snap,visits:[{id:'qa-new-observation'}]},'runtime_excel_online_original');
+ stored={...stored,snapshot:next.snapshot,revision:next.revision};
+ const newer=await cold.buildSnapshot({scope,allowDurableRead:true});
+ assert.equal(newer.revision,next.revision);assert.notEqual(newer.revision,got.revision);assert.equal(storeReads,2);
+ assert.equal(inventoryCalls,0);stored=seen;
+ await cold.recoverHrReadModel(local,{durableOnly:true});assert.equal(storeReads,3);
+ await assert.rejects(cold.buildSnapshot({scope,allowDurableRead:true,forceFresh:true}),/INVENTORY_OFFLINE/);assert.equal(inventoryCalls,1);
+ await assert.rejects(processContext().buildSnapshot({scope:{...scope,hrPeriodId:projectId+'-2025-06'},allowDurableRead:true}),/INVENTORY_OFFLINE/);
+ await assert.rejects(processContext().buildSnapshot({scope:{...scope,projectId:'another'},allowDurableRead:true}),/PROJECT_MISSING/);
+ const original=stored.discoveryContexts;
+ stored.discoveryContexts={...original,GT:{...original.GT,entries:original.GT.entries.map(entry=>({...entry,worksheetId:'other-sheet'}))}};
+ await assert.rejects(processContext().buildSnapshot({scope,allowDurableRead:true}),/BINDING_CHANGED_DURING_READ_MODEL_RECOVERY/);
+ stored.discoveryContexts=original;
+ const priv='tenants/tya/integrationSettings/qa-GT',row=h.docs.get(priv).data();
+ h.docs.set(priv,stamp({...row,itemId:'new-workbook'},17));
+ await assert.rejects(processContext().buildSnapshot({scope,allowDurableRead:true}),/INVENTORY_OFFLINE/);
+ const changed=await cold.resolveProjectHrReadBinding(scope,{localOnly:true});
+ assert.notEqual(changed.proof.localBindingFingerprint,local.proof.localBindingFingerprint);
+ clock.setUTCMonth(11);
+ assert.notEqual((await cold.resolveProjectHrReadBinding(scope,{localOnly:true})).proof.localBindingFingerprint,changed.proof.localBindingFingerprint);
+ assert.equal(externalRowCalls,0);assert.equal(h.writes(),0);
+});

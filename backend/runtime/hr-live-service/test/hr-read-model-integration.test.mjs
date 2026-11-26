@@ -135,9 +135,10 @@ test('visible global badge identifies last synchronization and does not claim cu
   const got=obj.badge.call({hrFreshness:{externalReadCurrent:false,sourceReadAt:'2026-11-24T08:00:00.000Z'},mode:'connected'});
   assert.equal(got.status,'last_confirmed');assert.match(got.t,/última sincronización/);assert.doesNotMatch(got.t,/Listo|viva/);
 });
-test('existing browser bridge opts into read model, watcher refreshes strictly, and commands do not opt in',()=>{
+test('existing browser bridge opts into read model, watcher requests shared synchronization automatically, and commands do not opt in',()=>{
   assert.match(bridge,/format:'json'.*readModel:'1'/);assert.match(bridge,/format:'meta'.*readModel:'1'/);
-  assert.match(watcher,/getJson\('meta',\{fresh:'1',\.\.\.\(!automatic\?\{inventory:'1'\}:\{\}\)\}\)/);
+  assert.match(watcher,/sharedCheck&&authenticatedHumanRuntime\)query.sync='due'/);
+  assert.match(watcher,/else Object.assign\(query,\{fresh:'1'/);
   const configure=fn(server,'      configure:async command=>{','      hrSnapshotReconcile:async input=>{');
   assert.doesNotMatch(configure,/allowDurableRead/);assert.match(configure,/buildSnapshot\(\{forceFresh:hrCommands.has/);
   assert.match(server,/readSnapshot:scope=>buildSnapshot\(\{forceFresh:true,scope\}\)/);
@@ -221,7 +222,7 @@ function protectedBrowser(){
   const ctx={authenticated:true,role:'admin',authNamespace:'staff',tenantId:binding.scope.tenantId,projectIds:[binding.scope.projectId]};
   b.CX.backendAuth={context:()=>ctx};b.CX.session={role:'admin',view:'dashboard'};b.CX.MODULES={dashboard:{}};
   b.CX.router={mount(){mounts.push('mount');},nav(){}};
-  b.window.firebase={auth:()=>({currentUser:{uid:'verified'}})};
+  b.window.firebase={auth:()=>({currentUser:{uid:'verified',getIdToken:async()=>'qa-token'}})};
   b.window.addEventListener=(name,fn)=>{(listeners[name]||=[]).push(fn);};
   b.window.dispatchEvent=e=>{for(const fn of listeners[e.type]||[])fn(e);};
   b.ctx.document.addEventListener=()=>{};b.ctx.document.querySelectorAll=()=>[];b.ctx.document.body={};
@@ -316,7 +317,8 @@ test('actual watcher preserves stale freshness, confirms same revision and conve
   responses.push(meta(next,'2026-11-24T10:01:00.000Z'));
   assert.equal((await b.window.CX_TYA_CHECK_LIVE_SOURCE('qa_explicit_refresh')).changed,false);assert.equal(schedules.length,1);
   assert.equal(b.CX.data.previewMeta.sourceRevision,next);assert.equal(b.CX.data.previewMeta.sourceReadAt,'2026-11-24T10:01:00.000Z');
-  assert.ok(calls.every(url=>new URL(url,'https://example.invalid').searchParams.get('fresh')==='1'));
+  const requests=calls.map(url=>new URL(url,'https://example.invalid').searchParams);
+  assert.equal(requests[0].get('sync'),'due');assert.ok(requests.slice(1).every(q=>q.get('fresh')==='1'));
 });
 
 test('watcher-triggered bridge refresh discards prior prefetch and requests strict authenticated presentation',async()=>{

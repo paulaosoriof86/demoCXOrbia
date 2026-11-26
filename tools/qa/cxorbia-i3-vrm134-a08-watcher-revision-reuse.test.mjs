@@ -33,7 +33,7 @@ function setup({ revision = 'revision-a', publishedRevision = revision, authorit
   let providerRevision = revision;
   const window = {
     CX,
-    firebase: { auth: () => ({ currentUser: { uid: 'admin-1' } }) },
+    firebase: { auth: () => ({ currentUser: { uid: 'admin-1',getIdToken:async()=>'qa-token' } }) },
     CX_PROTECTED_AUTH_HR_AUTHORITY: {
       applied: true, atomicPublication: true, tenantId: 'tya', projectId: 'cinepolis',
       role:'admin',authNamespace:'',externalReadCurrent:true,sourceReadAt:new Date(clockNow-authorityAgeMs).toISOString(),
