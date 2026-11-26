@@ -58,12 +58,40 @@
     {
       "id": "CX-CHAT-HO-CI-20261126-02",
       "disposition": "aprovechable",
-      "evidence": "Google executor owner changed since proposed blob. Keep native predecessor checks and share the active two probes in the existing seal owner. No product rebuild for QA changes."
+      "evidence": "Google executor owner changed since proposed blob. Keep native predecessor checks and share the active two probes in the existing seal owner. No product rebuild for QA changes.",
+      "integration": {
+        "owners": {
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "50e20592becb2a09177ed0ec60565e38c9889f97",
+          "tools/qa/cxorbia-i3-paired-dev-seal.sh": "e305115abd7c494aa20239ab290caa27289bc8d6",
+          "tools/qa/cxorbia-i3-paired-google.py": "8d20f248275f65f48fcdcc3d831b009f62ecfaab",
+          "tools/qa/cxorbia-i3-paired-strict-hr.test.sh": "db6599cb28a41b3f356bcb3365e241ca419ca7f8"
+        },
+        "newFocusedScenariosPassed": 8,
+        "existingMaterializationTestsPassed": 43,
+        "probeBudget": {
+          "maxRequests": 2,
+          "maxAttemptsPerProbe": 1,
+          "retries": 0,
+          "makeCreditsReserved": false
+        },
+        "failedResult": "Native checkpoint with independent GCS readback before propagating failure. GitHub keeps the existing always-upload artifact. Physical failure publication not exercised.",
+        "rollback": "Revert the QA owner change as a unit without redeploying the runtime."
+      }
     },
     {
       "id": "CX-CHAT-HO-GRAPH-20261126-03",
       "disposition": "DEPENDENCY",
-      "evidence": "Read-only probe logic is reusable. Access to the exact GT item returned 403. Owner, drive type and permissions remain to be established using the authorized identity. Keep shared reader."
+      "evidence": "Read-only probe logic is reusable. Access to the exact GT item returned 403. Owner, drive type and permissions remain to be established using the authorized identity. Keep shared reader.",
+      "delegatedDiscovery": {
+        "profileRead": "success",
+        "driveListRead": "success",
+        "visibleDriveTypes": [
+          "personal"
+        ],
+        "targetDriveTypeVerified": false,
+        "targetOwnershipVerified": false,
+        "broadGrants": 0
+      }
     },
     {
       "id": "CX-CHAT-HO-HR-20261126-04",

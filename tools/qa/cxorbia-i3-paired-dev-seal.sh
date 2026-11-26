@@ -1,6 +1,54 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 case "${1:-}" in
+strict-hr)
+# Both executors use the same two probes. Each admitted probe issues one GET.
+correlation="${CXORBIA_PAIRED_BUILD_ID:-${GITHUB_RUN_ID:?Missing native run identity}}"
+[[ "$correlation" =~ ^[A-Za-z0-9_-]+$ ]]
+probe_dir="$(mktemp -d "$FOCAL_OUT/.hr-probe.XXXXXX")"
+trap 'rm -rf "$probe_dir"' EXIT
+for format in meta json; do
+  case "$format" in
+    meta) file=hr-meta.json ;;
+    json) file=hr-live.json ;;
+  esac
+  response="$probe_dir/$file"
+  rc=0
+  status="$(curl -sS --retry 0 --connect-timeout 10 --max-time 120 \
+    -H 'Cache-Control: no-cache, no-store, max-age=0' -o "$response" -w '%{http_code}' \
+    "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=$format&vrm154156=$correlation")" || rc=$?
+  classification=''
+  transient=false
+  if ((rc != 0)); then
+    classification=PROVIDER_FAILURE
+    case "$rc" in 6|7|18|28|52|55|56) transient=true ;; esac
+  elif [[ "$status" != 200 ]]; then
+    marker="$(jq -r '[.message,.code,.error] | map(select(type=="string")) | map(capture("^(?<kind>MAPPING_FAILURE|AUTH_FAILURE|PERSISTENCE_FAILURE|PROVIDER_FAILURE)(:|$)") | .kind) | first // empty' "$response" 2>/dev/null || true)"
+    case "$status" in
+      401|403) classification=AUTH_FAILURE ;;
+      *) classification="${marker:-PROVIDER_FAILURE}"
+         if [[ "$classification" == PROVIDER_FAILURE && "$status" =~ ^(408|429|5[0-9]{2})$ ]]; then transient=true; fi ;;
+    esac
+  elif [[ ! -s "$response" ]]; then
+    classification=FUNCTIONAL_DEFECT
+  elif [[ "$format" == meta ]]; then
+    if ! jq -se 'length==1 and (.[0]|.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false and (.revision|type=="string" and test("^[a-f0-9]{64}$")))' "$response" >/dev/null 2>&1; then
+      classification=FUNCTIONAL_DEFECT
+    fi
+  elif ! jq -se 'length==1 and (.[0]|.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2 and ([.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length)>0)' "$response" >/dev/null 2>&1; then
+    classification=FUNCTIONAL_DEFECT
+  fi
+  if [[ -n "$classification" ]]; then
+    jq -n --arg run "$correlation" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" \
+      --arg probe "$format" --arg http "$status" --arg classification "$classification" \
+      --argjson curlExit "$rc" --argjson transient "$transient" \
+      '{runId:$run,tenantId:$tenant,projectId:$project,probe:$probe,httpStatus:$http,curlExit:$curlExit,classification:$classification,transient:$transient,automaticRetries:0}' > "$FOCAL_OUT/strict-hr-failure.json"
+    exit 1
+  fi
+  mv "$response" "$FOCAL_OUT/$file"
+done
+echo "HR_REVISION=$(jq -er .revision "$FOCAL_OUT/hr-meta.json")" >> "$GITHUB_ENV"
+;;
 receipt)
 set -Eeuo pipefail
 DECISION="PASS_VRM154_156_EXACT_DEV_MATERIALIZATION"

@@ -604,7 +604,7 @@ jobs:
       echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm143151=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm143151=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
       HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
       [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       test "$HR_REVISION" = "$EXPECTED_HR_REVISION"
@@ -933,7 +933,7 @@ jobs:
       jq -n -S --arg hosting "$HOSTING_VERSION_NAME" '{decision:"PASS_VRM151_HOSTING_REUSED_BYTE_IDENTICAL_APP",hostingVersion:$hosting,hostingDeploys:0,production:false}' > "$VOUT/hosting-reuse.json"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm151mat=$GITHUB_RUN_ID" > "$VOUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm151mat=$GITHUB_RUN_ID" > "$VOUT/hr-meta.json"
       HR_REVISION="$(jq -r '.revision // empty' "$VOUT/hr-meta.json")"
       [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$VOUT/hr-meta.json" >/dev/null
@@ -1858,7 +1858,7 @@ jobs:
       set -Eeuo pipefail
       ok=0
       for i in $(seq 1 12); do
-        curl -fsS --retry 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM083_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&vrm083runtime=$GITHUB_RUN_ID-$i" > "$VRM083_OUT/hr-meta.json" || true
+        curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM083_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&vrm083runtime=$GITHUB_RUN_ID-$i" > "$VRM083_OUT/hr-meta.json" || true
         if jq -e '.ok==true and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false' "$VRM083_OUT/hr-meta.json" >/dev/null 2>&1; then ok=1; break; fi
         sleep 10
       done
@@ -2523,11 +2523,11 @@ jobs:
         '{decision:"PASS_VRM043_EXISTING_DEV_EXACT_CANDIDATE",runtimeRevision:$revision,runtimeDigest:$digest,sourceSha:$source,hostingMismatches:$mismatch,builds:0,deploys:0,production:false}' > "$PROOF_OUT/dev-identity.json"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=json&vrm043proof=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-current.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=json&vrm043proof=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-current.json"
       PINNED_HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$PROOF_OUT/hr-current.json")"
       [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
-      curl -fsS --retry 3 --retry-delay 1 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&vrm043pin=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-meta.json"
+      curl -fsS --retry 0 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&vrm043pin=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-meta.json"
       test "$(jq -r '.revision' "$PROOF_OUT/hr-meta.json")" = "$PINNED_HR_REVISION"
    - run: |
       set -Eeuo pipefail
@@ -2686,7 +2686,7 @@ jobs:
       PREV_REV=""
       STABLE_REV=""
       for attempt in $(seq 1 12); do
-        curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&i3terminal=$GITHUB_RUN_ID&attempt=$attempt" > "$OUT/hr-current-live-meta.json"
+        curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&i3terminal=$GITHUB_RUN_ID&attempt=$attempt" > "$OUT/hr-current-live-meta.json"
         jq -c --argjson attempt "$attempt" '{attempt:$attempt,ok,revision,revisionStable,sourceSafe,refreshError,hrWrites,production,shopperProviderAck:(.shopperReconciliation.providerAck//null),visitProviderAck:(.visitReconciliation.providerAck//null),refreshStartedAt,refreshFinishedAt}' "$OUT/hr-current-live-meta.json" | tee -a "$OUT/hr-meta-attempts.ndjson"
         REV="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
         META_OK=0
@@ -2697,7 +2697,7 @@ jobs:
       done
       test "$HR_META_OK" = "1"
       CURRENT_LIVE_HR_REVISION="$STABLE_REV"
-      curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&i3terminal=$GITHUB_RUN_ID" > "$OUT/hr-current-live.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&i3terminal=$GITHUB_RUN_ID" > "$OUT/hr-current-live.json"
       SNAP_REV="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")"
       test "$SNAP_REV" = "$CURRENT_LIVE_HR_REVISION"
       jq -e '.sourceSafe==true and .production==false and .hrWrites==false' "$OUT/hr-current-live.json" >/dev/null 2>&1 || true
@@ -3240,7 +3240,7 @@ jobs:
       echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm044materialize=$GITHUB_RUN_ID" > "$VRM044_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm044materialize=$GITHUB_RUN_ID" > "$VRM044_OUT/hr-meta.json"
       HR_REVISION="$(jq -r '.revision // empty' "$VRM044_OUT/hr-meta.json")"
       [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$VRM044_OUT/hr-meta.json" >/dev/null
@@ -3968,8 +3968,8 @@ jobs:
       HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$READBACK_OUT/hosting-live-channel.json")"
       HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$READBACK_OUT/hosting-live-channel.json")"
       HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$READBACK_OUT/hosting-live-channel.json")"
-      curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&c3readback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-meta.json"
-      curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&visualreadback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-live.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&c3readback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&visualreadback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-live.json"
       HR_REVISION="$(jq -r '.revision // empty' "$READBACK_OUT/hr-meta.json")"
       LIVE_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$READBACK_OUT/hr-live.json")"
       test "$LIVE_REVISION" = "$HR_REVISION"
@@ -4203,7 +4203,7 @@ jobs:
       set -Eeuo pipefail
       PASS=0
       for i in $(seq 1 36); do
-        curl -fsS --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&certres=$GITHUB_RUN_ID-$i" > "$CERT_RES_MAT_OUT/hr-meta.json"
+        curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&certres=$GITHUB_RUN_ID-$i" > "$CERT_RES_MAT_OUT/hr-meta.json"
         if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$CERT_RES_MAT_OUT/hr-meta.json" >/dev/null; then
           PASS=1
           break
@@ -4578,16 +4578,7 @@ jobs:
       done
       echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
       echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
-   - run: |
-      set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm154156=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
-      HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
-      [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-      jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm154156=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
-      jq -e '.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
-      jq -e '[.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length>0' "$FOCAL_OUT/hr-live.json" >/dev/null
-      echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+   - run: bash tools/qa/cxorbia-i3-paired-dev-seal.sh strict-hr
    - run: bash tools/qa/cxorbia-i3-paired-dev-seal.sh receipt
    - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_GTHN_PENDING_DEV"]'),env.ACTIVE_STATUS)||env.PAIR_ENV_ONLY=='true'||env.ACTIVE_STATUS=='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21'
      run: bash tools/qa/cxorbia-i3-paired-dev-seal.sh verify
@@ -4640,7 +4631,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM185_ADMIN_OUT/hosting-live-channel.json"
       test "$(jq -r '.release.version.name // empty' "$VRM185_ADMIN_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm185preflight=$GITHUB_RUN_ID" > "$VRM185_ADMIN_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm185preflight=$GITHUB_RUN_ID" > "$VRM185_ADMIN_OUT/hr-meta.json"
       test "$(jq -r '.revision // empty' "$VRM185_ADMIN_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
       echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
    - run: |
@@ -4709,7 +4700,7 @@ jobs:
       test "$HOSTING_VERSION" = "$EXPECTED_HOSTING_VERSION"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
       HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
       [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
       jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
@@ -4717,7 +4708,7 @@ jobs:
       echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
    - run: |
       set -Eeuo pipefail
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
       jq -e '.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
       jq -e '[.projectConfig.scenarioDimensions[]|select(.key=="escenario" or .key=="tipoCombo")]|length>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
       jq -e '[.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length>0' "$FOCAL_OUT/hr-live.json" >/dev/null
@@ -4753,7 +4744,7 @@ jobs:
       set -Eeuo pipefail
       SOURCE_DIR="$RUNNER_TEMP/cxorbia-v190-live-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"; git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
       mkdir -p "$FOCAL_OUT/full-human" "$FOCAL_OUT/semantic" "$FOCAL_OUT/cert-res"
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v190live=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v190live=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
       test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$FOCAL_OUT/hr-live.json")" = "$HR_REVISION"
       PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$FOCAL_SOURCE" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$FOCAL_OUT/hr-live.json" CX_I3_PINNED_HR_REVISION="$HR_REVISION" ACCEPTANCE_OUT="$FOCAL_OUT/full-human" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       test "$(jq -r '.decision' "$FOCAL_OUT/full-human/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"; test "$(jq -r '.decision' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"; test "$(jq -r '.probe.reservations.ok' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "true"; test "$(jq '.probe.reservations.qaResidueIds|length' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "0"
@@ -5270,7 +5261,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$JULISSA_WRITE_OUT/hosting.json"
       test "$(jq -r '.release.version.name' "$JULISSA_WRITE_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm214preflight=$GITHUB_RUN_ID" > "$JULISSA_WRITE_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm214preflight=$GITHUB_RUN_ID" > "$JULISSA_WRITE_OUT/hr-meta.json"
       test "$(jq -r '.revision' "$JULISSA_WRITE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
       echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
    - run: |
@@ -5343,7 +5334,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM215_OUT/hosting.json"
       test "$(jq -r '.release.version.name' "$VRM215_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
-      for n in 1 2; do curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID&read=$n" > "$VRM215_OUT/hr-meta-$n.json"; done
+      for n in 1 2; do curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID&read=$n" > "$VRM215_OUT/hr-meta-$n.json"; done
       cp "$VRM215_OUT/hr-meta-1.json" "$VRM215_OUT/hr-meta.json"
       LIVE_HR_REVISION="$(jq -r '.revision' "$VRM215_OUT/hr-meta-1.json")"
       test "$LIVE_HR_REVISION" = "$(jq -r '.revision' "$VRM215_OUT/hr-meta-2.json")"
@@ -5517,7 +5508,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM219_OUT/hosting.json"
       test "$(jq -r '.release.version.name' "$VRM219_OUT/hosting.json")" = "$EXPECTED_HOSTING"
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm219=$GITHUB_RUN_ID" > "$VRM219_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm219=$GITHUB_RUN_ID" > "$VRM219_OUT/hr-meta.json"
       test "$(jq -r '.revision' "$VRM219_OUT/hr-meta.json")" = "$EXPECTED_HR"
       echo "EXPECTED_HR=$EXPECTED_HR" >> "$GITHUB_ENV"
    - run: |
@@ -5633,7 +5624,7 @@ jobs:
       TOKEN="$(gcloud auth print-access-token)"
       curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ADMIN_A_POST_OUT/hosting.json"
       test "$(jq -r '.release.version.name' "$ADMIN_A_POST_OUT/hosting.json")" = "$EXPECTED_HOSTING"
-      curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminapost=$GITHUB_RUN_ID" > "$ADMIN_A_POST_OUT/hr-meta.json"
+      curl -fsS --retry 0 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminapost=$GITHUB_RUN_ID" > "$ADMIN_A_POST_OUT/hr-meta.json"
       test "$(jq -r '.revision' "$ADMIN_A_POST_OUT/hr-meta.json")" = "$EXPECTED_HR"
       echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
    - run: |

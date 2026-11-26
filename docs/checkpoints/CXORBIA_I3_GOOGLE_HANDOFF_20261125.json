@@ -893,7 +893,7 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "e6b6f313f640e1e0f609b11fd48851ff28cb2bb4",
+      "gitBlob": "2ee2a65217956f2a2ebd77793f69b15396103db9",
       "decisionId": "PORT-DEC-040"
     }
   },

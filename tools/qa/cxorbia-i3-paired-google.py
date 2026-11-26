@@ -170,11 +170,8 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     def run_step(index):
         script = steps[index]["run"]
-        if index == 14 and (resume or q.get("physicalPredecessor")):
-            require(script.count("--retry 8") == 2, "SOURCE_FAILURE:READBACK_HTTP_RETRY_OWNER")
-            script = script.replace("--retry 8","--retry 0")
-        if index in (13,14):
-            require(script.count("$GITHUB_RUN_ID") == (1 if index == 13 else 2),"SOURCE_FAILURE:CACHE_BUSTER")
+        if index == 13:
+            require(script.count("$GITHUB_RUN_ID") == 1,"SOURCE_FAILURE:CACHE_BUSTER")
             script = script.replace("$GITHUB_RUN_ID","$CXORBIA_PAIRED_BUILD_ID")
         subprocess.run(["bash","-c",script],check=True)
         for line in env_file.read_text().splitlines():
@@ -264,8 +261,19 @@ def main():
                 "RELEASE_COMPOSITION_FAILURE:RESUME_ASSET_INVENTORY_DRIFT")
     else:
         checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
-    for index in (14,15):
-        run_step(index)
+    try:
+        run_step(14)
+    except subprocess.CalledProcessError:
+        failure = out / "strict-hr-failure.json"
+        if failure.is_file():
+            evidence = read(failure)
+            require(evidence["runId"] == build_id, "SOURCE_FAILURE:STRICT_HR_FAILURE_ID")
+            checkpoint("strict-hr-probe-failure", {"probeEvidence": evidence})
+            uri = "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/" + build_id + "/strict-hr-probe-failure.json"
+            require(json.loads(output("gcloud", "storage", "cat", uri)) == read(out / "strict-hr-probe-failure.json"),
+                    "PERSISTENCE_FAILURE:STRICT_HR_FAILURE_READBACK")
+        raise
+    run_step(15)
     identity={"executionProvider":"GOOGLE_CLOUD_BUILD","runId":build_id,"runAttempt":1}
     result=read(out/"result.json")
     result.update(identity)
