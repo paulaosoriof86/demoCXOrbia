@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-read-module-and-connection-readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "productSourceReviewed": "ca94622046360c0122b79e8c4a27e2d72277277e",
+  "rootPublishedPackage": "af6fc4d4d4adc0acd3fe35f06f070127de59bce9",
+  "servedSourceAtLastReceipt": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "moduleReadReview": {
+    "scope": "STATIC_LOADED_PRODUCT_OWNERS_NOT_21_DOMAIN_LIVE_CERTIFICATION",
+    "commonProjection": {
+      "router": "app/core/router.js",
+      "binding": "fn({data:CX.data, role:CX.session.role, ui:CX.ui})",
+      "modulesObserved": [
+        "dashboard",
+        "visitas",
+        "postulaciones",
+        "shoppers",
+        "misvisitas",
+        "beneficios",
+        "finanzas",
+        "operacion-extra",
+        "reservas",
+        "cliente"
+      ],
+      "canonicalBridge": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "publication": "atomic shared CX.data HR projection",
+      "independentMakeGraphSheetsClientFoundInNormalOperationalModules": false
+    },
+    "domainSpecificData": [
+      "correo uses own mailbox API",
+      "configuracion uses own users API",
+      "legal uses own legal runtime",
+      "certifications use own certification API",
+      "resources use Firestore and Storage"
+    ],
+    "strictReadExceptions": [
+      "Explicit manual refresh and explicit historical-period request",
+      "HR synchronization and write validation/readback",
+      "Certification practice/attempt validateExecutionPeriod may call readCurrentSnapshot/buildSnapshot when period metadata document is unavailable"
+    ],
+    "certificationOwner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "certificationServerBinding": "backend/runtime/hr-live-service/server.mjs",
+    "shopperResourcesRead": "readShopperResourceProjection from Firestore; no validateExecutionPeriod path in the ordinary GET",
+    "unloadedLegacyOwners": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v1.js",
+      "app/adapters/tya-live-source-refresh-watch.js",
+      "app/adapters/tya-dev-full-visual-bridge.js"
+    ],
+    "limits": [
+      "Shared source is approved but not served at last receipt",
+      "Static composition is not proof of every module in an authenticated live session",
+      "Strict verification reads are not eliminated merely because presentation is shared"
+    ]
+  },
+  "connectionReadback": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "requestedBrowser": "Chrome",
+    "selectedBrowserVerified": true,
+    "existingGoogleTabClaim": "Timed out waiting for CDP Emulation.setFocusEmulationEnabled",
+    "freshSameBrowserTab": {
+      "navigationSucceeded": true,
+      "domResponsive": true,
+      "screenshotResponsive": true,
+      "googleBuildDetailsVisible": true,
+      "observedBuildWasHistorical": true,
+      "activateCloudShellDisabled": true
+    },
+    "nativeCommandsExecutedByRoot": 0,
+    "newNativeF3RunsStartedByRoot": 0,
+    "rootNewIamGrants": 0,
+    "priorWork403Reference": "docs/checkpoints/CXORBIA_I3_HR_DELTA_AND_F3_NATIVE_CUT_20261125.json",
+    "rootObserved403": false,
+    "causeOfDisabledControlEstablished": false,
+    "connectionFullyRepaired": false,
+    "cloudTerminalAvailable": false,
+    "lastObservationOnlyMessageTimedOut": true
+  },
+  "preserved": {
+    "pairedDev": "d727/00393-p54/607182bc22875d48",
+    "pendingSharedSource": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "boundedF3Producer": "fb7f80287f81691338fd868fc36881fc84781e0e",
+    "rootManualPatch": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_SCOPE_20261125.json",
+    "acceptedScopedEvidence": true
+  },
+  "nextExactAction": "Restore the existing authorized native Google execution surface; preserve bounded F3 producer fb7f and served pair d727, execute and consume its actual remote result with restoration/cleanup, then use the existing paired lane for the single approved shared-HR successor. Serialize the root manual-refresh patch through the same source admission without changing an in-flight build. Direct Microsoft reading remains a separate bounded access/transport correction, not a reason to rerun accepted gates.",
+  "newDomainMatches": 0,
+  "remoteWriteCertifiedByThisReadback": false,
+  "production": false,
+  "phaseAComplete": false,
+  "newAuthorizationRequiredForThisReview": false,
+  "recordedAt": "2026-11-26T03:11:06Z"
+}

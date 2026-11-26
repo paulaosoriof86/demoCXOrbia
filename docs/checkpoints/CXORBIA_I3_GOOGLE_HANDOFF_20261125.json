@@ -731,7 +731,12 @@
       "existingF3ProducerPreserved": true,
       "providerScenarioRunsByThisReview": 0,
       "newDomainMatches": 0,
-      "phaseAComplete": false
+      "phaseAComplete": false,
+      "moduleAndConnectionReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_READ_MODULE_AND_CONNECTION_READBACK_20261125.json",
+        "gitBlob": "3b6ca7cabadc7bbdbff480a0029597b25571da91",
+        "sha256": "91176c0827663ea66fd761401c95337b854d174a3e09c06839b8f4598c558b5d"
+      }
     }
   },
   "lastChromeConnection": {
