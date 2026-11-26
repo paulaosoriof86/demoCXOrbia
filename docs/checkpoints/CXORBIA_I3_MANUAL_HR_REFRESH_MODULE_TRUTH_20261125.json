@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "cxorbia.i3.manual-hr-refresh.pre-edit-module-truth.v1",
+  "findingId": "HR-MANUAL-FRESHNESS-20261125",
+  "iteration": "I3",
+  "state": "P0_PROVEN_BEFORE_CODE",
+  "classification": "FUNCTIONAL_DEFECT",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "capturedAt": "2026-11-26T02:58:43.891467+00:00",
+  "baseControlHead": "fb7f80287f81691338fd868fc36881fc84781e0e",
+  "baseControlTree": "802151a382f6eda96638f80c6139c45c763cd012",
+  "owner": "app/modules/visitas.js",
+  "domain": "visits-review-postulations-reservations",
+  "allowedProductFiles": [
+    "app/modules/visitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs"
+  ],
+  "allowedFunction": "vRefreshHR click handler",
+  "preEditWorktreeMatchesHead": true,
+  "f9": {
+    "sourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "gitBlob": "d7c65650e4972d438f2641cbcaaff25486fb7f01",
+    "authority": "EXACT_CANONICAL_MODULE_TRUTH_F9_ACCEPTED_LINEAGE",
+    "independentLocalTreeReadback": false,
+    "localTreeNotAvailableInCheckout": true
+  },
+  "lastApproved": {
+    "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+    "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+    "approvalAuthority": "P0_PROVEN_EXACT_OWNER_SOURCE_TESTS",
+    "sourceProof": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_REVIEW_MAIL_FINANCE_PUBLISHED_SOURCE_20261124.json",
+      "gitBlob": "ee4ce95740c9b22b4d5e2a618fc68b356c7ec51d",
+      "sourceSha": "cbe7bb9d79805782d256fa432a406c1843beee85",
+      "sourceTree": "f07d810e2f2787df49f4df3e970a0aa2a5723175",
+      "sourceTestsPass": 360,
+      "sourceTestsFail": 0,
+      "production": false
+    }
+  },
+  "historicalAliasNotCurrentApproval": {
+    "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+    "latestApprovedBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a"
+  },
+  "candidateSource": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446"
+  },
+  "head": {
+    "sha": "fb7f80287f81691338fd868fc36881fc84781e0e",
+    "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+    "sha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f"
+  },
+  "served": {
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+    "receiptGitBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+  },
+  "currentModuleTruthBefore": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+    "gitBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373"
+  },
+  "sourceSuccessor": null,
+  "provenDefect": "The existing vRefreshHR handler does not request forceFresh and reports HR viva actualizada when reconciliation returns ok even when the returned authority is last-confirmed (externalReadCurrent false).",
+  "reproductionBoundary": "Actual handler and bridge query constructor with simulated authority responses; offline evidence, not a live provider outage.",
+  "preEditLocalReproduction": "/workspace/scratch/e5035dbed194/cxorbia/docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+  "reproductionSha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5",
+  "preserved": [
+    "exact d727 paired DEV",
+    "six MATCH domains",
+    "B4/B5/B6/B7",
+    "all accepted scoped receipts",
+    "F3 and other Work owners unchanged"
+  ],
+  "productEditedByCapture": false,
+  "providerWrites": 0,
+  "repositoryWrites": 0,
+  "production": false,
+  "phaseAComplete": false,
+  "findingIdRegistered": false,
+  "sourceAdmission": "PATCH_EVIDENCE_ONLY_NOT_ADMITTED",
+  "vrmNumberReserved": false,
+  "previousCapture": {
+    "head": "221a687e6ddc50922c611518952370a8f6053389",
+    "sha256": "86b65030fcdc92d12fbe67343c9b354e0d5a801dbadbb796ca86eb83f60b202f",
+    "sameProductOwners": true,
+    "sameFourControls": true,
+    "newHeadScope": "QA F3 bounded runner/config/consumer and checkpoints only; no product source or candidate controls."
+  },
+  "reproductionEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+    "gitBlob": "5744b7964af0d0ddfcc5a4e10626596caa1bca6b",
+    "sha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5"
+  },
+  "reproductionGenerator": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.mjs",
+    "gitBlob": "1fc0892da4373a9e2f731794f9793e9899311f6c",
+    "sha256": "163968b4c60634494a6cf6d5bc574efc5c971f2969fe3d6a7e5040afad40cccb"
+  }
+}

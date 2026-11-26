@@ -1,0 +1,241 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-read-economics-review.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "reviewType": "READ_ONLY_EVIDENCE_AND_CONDITIONAL_COST_MODEL",
+  "controlReviewed": "6fe5b16f2f4664d58b396767cca204b5d772ad75",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "legacyObservation": {
+    "provenance": "Root observed actual served inline DOM script in Chrome; no authenticated HR transaction initiated.",
+    "url": "https://tya-plataforma.web.app/",
+    "servedVersion": "v5.86.44",
+    "functions": [
+      "readGoogleSheets",
+      "_hrFetchTabV58627",
+      "_readActiveHRV58627"
+    ],
+    "transport": "Google Sheets values fetch with cache:no-store",
+    "pollVariable": "_HR_ACTIVE_POLL_MS_V58627",
+    "pollMs": 300000,
+    "eventHooks": [
+      "enterApp",
+      "renderVisitas",
+      "pageshow",
+      "online",
+      "visibilitychange"
+    ],
+    "loggedHrFetchObserved": false,
+    "operationalRowsRead": 0,
+    "providerMutations": 0,
+    "credentialValuesRead": 0,
+    "limitation": "Static served-code observation does not establish live HR freshness, write completion, latency, billable usage or migration authority. Legacy remains oracle-only."
+  },
+  "recoveryTransport": {
+    "originalAuthority": "Original Excel per tenant/project/country/period; stale Google mirror is not a fallback",
+    "provider": "Microsoft Graph via existing Make OneDrive delegated connection",
+    "connectionId": 9089470,
+    "readerScenarioId": 10200465,
+    "writerScenarioId": 10199316,
+    "historicalReason": "Reuse of proven available delegated access; no evidence that this was a cost-optimal permanent choice",
+    "directGraphInBackend": "No direct Graph OAuth transport/credential binding found in reviewed runtime/deploy owners; not a full Entra/Secret Manager inventory",
+    "firestore": "Existing internal durable HR read model and command/event journal; local persistence does not substitute for ACK from authoritative external Excel"
+  },
+  "directAccessObservation": {
+    "provenance": "Root single get_drive_item call through existing SharePoint connector; readback accessDenied.",
+    "observedAt": "2026-11-26T02:46:56Z",
+    "target": "Exact configured original GT workbook; private item identifiers omitted",
+    "httpStatus": 403,
+    "code": "accessDenied",
+    "retries": 0,
+    "impersonation": false,
+    "credentialExtraction": false,
+    "interpretation": "This connector identity could not read the targeted item. It does not prove direct Microsoft Graph impossible or identify a specific missing grant."
+  },
+  "readerUnitEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_F3_MAKE_CAPACITY_ESTIMATE_20261125.json",
+    "creditsPerReaderRun": 3,
+    "runs": [
+      {
+        "executionId": "627c075d3fb14881b5f3fcc06314aafb",
+        "startedAt": "2026-11-26T01:12:08.086Z",
+        "credits": 3
+      },
+      {
+        "executionId": "283b1ce28ba7402197f8a31f234438a0",
+        "startedAt": "2026-11-26T01:14:10.707Z",
+        "credits": 3
+      }
+    ],
+    "countedOnce": "The complete scenario execution, including its two Graph GETs, costs the observed 3 credits; do not multiply that unit cost by two."
+  },
+  "periodScope": {
+    "contract": "Previous/current/next calendar month, next only if available; older periods refreshed on explicit demand",
+    "countriesModeled": 2,
+    "worksheetsPerCountryPeriodAssumed": 1,
+    "currentAcceptedAvailablePeriods": 2,
+    "currentAcceptedWindow": "October/November 2026; December absent in accepted observation",
+    "currentBindings": 4,
+    "maximumRoutinePeriods": 3,
+    "maximumRoutineBindings": 6,
+    "historicalConfirmedVisitsPreserved": 836,
+    "historicalConfirmedPeriodsPreserved": 19,
+    "authority": "docs/checkpoints/CXORBIA_I3_VRM375_HR_PERIOD_WINDOW_SCOPE_20261124.json"
+  },
+  "costModel": {
+    "status": "CONDITIONAL_MODEL_NOT_INVOICE_NOT_MEASURED_MONTHLY_USAGE",
+    "currencyConversion": null,
+    "pollMinutes": 5,
+    "activeHoursPerDay": 8,
+    "workingDaysPerMonth": 22,
+    "checksPerDayPerActiveSession": 96,
+    "checksPerMonthPerActiveSession": 2112,
+    "formula": "users * 2112 * countryPeriodBindings * 3 credits",
+    "perRefreshCredits": {
+      "fourBindings": 12,
+      "sixBindings": 18
+    },
+    "scenarios": [
+      {
+        "users": 1,
+        "perSessionFourBindings": 25344,
+        "perSessionSixBindings": 38016,
+        "sharedFourBindings": 25344,
+        "sharedSixBindings": 38016
+      },
+      {
+        "users": 5,
+        "perSessionFourBindings": 126720,
+        "perSessionSixBindings": 190080,
+        "sharedFourBindings": 25344,
+        "sharedSixBindings": 38016
+      },
+      {
+        "users": 10,
+        "perSessionFourBindings": 253440,
+        "perSessionSixBindings": 380160,
+        "sharedFourBindings": 25344,
+        "sharedSixBindings": 38016
+      }
+    ],
+    "metadataAccounting": "A fresh metadata request that refreshes the project is the same counted refresh, not an additional full HR read. Do not add metadata and HR again for one refresh. Independently executed inventory calls are separate only when observed.",
+    "assumptions": "Every modeled poll reaches the external reader, all users remain active for the modeled eight hours, no request coalescing suppresses those reads, one worksheet per binding.",
+    "excludedVariableActivity": [
+      "Initial and event-driven refreshes",
+      "Independent cold metadata-inventory calls",
+      "Strict command and certification reads",
+      "Manual fresh requests",
+      "Retries",
+      "Other organization workloads"
+    ],
+    "variability": "Coalescing/cache can lower realized usage; additional hooks, independent inventory, commands and retries can increase it. No claim that these projected monthly totals occurred."
+  },
+  "target": {
+    "status": "SHARED_REFRESH_SOURCE_PROVEN_PENDING_DEV; DIRECT_GRAPH_TRANSPORT_NOT_IMPLEMENTED",
+    "sharedInternalModel": "One existing protected durable HR projection and shared synchronization owner; modules read the same revision",
+    "scheduledCheckMinutes": 5,
+    "chosenOneHourSlowdown": false,
+    "conditionalDirectGraph": "Only after authorized delegated access is verified, use direct authenticated Graph metadata conditional reads and fetch required bounded ranges when needed; retain fresh command/manual checks.",
+    "conditionalMetadata": "driveItem GET supports If-None-Match and 304; this is not a proven per-cell push or demonstrated worksheet-range conditional response.",
+    "manualFresh": "Explicit authorized manual refresh requests an actual fresh observation; revision/read time and stale state remain visible.",
+    "makeCreditsForIndependentReadTransportIfFullyDirect": 0,
+    "zeroTotalInfrastructureCost": false,
+    "writer": "Retain existing writer ACK/idempotency/conflict/independent-read safeguards; writer inspections and pre-write checks must be accounted separately.",
+    "temporaryPath": "Use the already valid Make access while removing redundant reads; a Graph authentication migration is not a prerequisite for all other closure work.",
+    "sharedSourceReceipt": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+    "sharedReadTestsPass": 280,
+    "sharedReadTestsFail": 0,
+    "activation": "Request-driven while an eligible authenticated session checks. No autonomous background scheduler or measured maximum latency without visible clients."
+  },
+  "currentProgress": {
+    "rootManualRefreshPatch": {
+      "owner": "app/modules/visitas.js",
+      "focusedTestsPass": 14,
+      "focusedTestsFail": 0,
+      "status": "PATCH_READY_NOT_APPLIED_TO_CANDIDATE_NOT_DEPLOYED",
+      "proofPath": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+      "proofSha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5",
+      "proofScope": "Actual handler and URL constructor; simulated authority; offline before/after and 14 regression cases."
+    },
+    "workOwners": "Cold inventory/durable recovery and bounded F3 remain assigned to Work in the existing order",
+    "work221a687e": "Offline Chromium component evidence only; no new authenticated D08/E10 provider clause or product deploy",
+    "providerWindow": {
+      "provenance": "Root readback",
+      "from": "2026-11-26T02:34:00Z",
+      "through": "2026-11-26T02:53:39Z",
+      "scenarios": [
+        10199316,
+        10200465
+      ],
+      "observedScenarioRuns": 0
+    },
+    "b14Closed": false,
+    "phaseAComplete": false,
+    "newGate": false,
+    "newMethod": false,
+    "full1184RouteRequired": false,
+    "purchaseRequiredByThisReview": false,
+    "autoPurchaseChange": false,
+    "workFb7f8028": {
+      "path": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_QA_IMPLEMENTATION_20261125.json",
+      "mode": "BOUNDED_GT_ESCENARIO_L2",
+      "reportedTestsPass": 267,
+      "reportedTestsFail": 0,
+      "nativeExecutionStartedAtReceipt": false,
+      "newRemoteAckObserved": false
+    },
+    "parallelScheduling": {
+      "activeProductUnchangedByRoot": true,
+      "f3PinnedProducer": "fb7f80287f81691338fd868fc36881fc84781e0e",
+      "f3ServedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "pendingSharedSource": "ca94622046360c0122b79e8c4a27e2d72277277e",
+      "manualPatchAdmission": "READY_FOR_EXISTING_SINGLE_SUCCESSOR_ADMISSION_NO_ACTIVE_PIN_CHANGE_BY_THIS_CHECKPOINT",
+      "scopeReceipt": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_SCOPE_20261125.json"
+    },
+    "sharedHrSuccessor": {
+      "source": "ca94622046360c0122b79e8c4a27e2d72277277e",
+      "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+      "testsPass": 280,
+      "testsFail": 0,
+      "served": false,
+      "makeRemovedFromReading": false,
+      "defaultSharedIntervalMs": 300000,
+      "distributedLeaseMs": 120000
+    }
+  },
+  "evidence": [
+    "docs/checkpoints/CXORBIA_I3_F2_ORIGINAL_EXCEL_AUTHORITY_OWNER_DECISION_20261122.json",
+    "docs/checkpoints/CXORBIA_I3_B14_MAKE_ORIGINAL_HR_INVENTORY_RECEIPT_20261119.json",
+    "docs/checkpoints/CXORBIA_I3_B14_MAKE_TOOLBOX_IAM_WORK_EVIDENCE_20261120.json",
+    "docs/checkpoints/CXORBIA_I3_HR_READ_AND_F3_SCOPE_CORRECTION_20261125.json",
+    "docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md",
+    "docs/checkpoints/CXORBIA_I3_D08_E10_COMPONENT_READBACK_20261125.json",
+    "docs/checkpoints/CXORBIA_I3_HR_EXTERNAL_DETECTION_SCOPE_20261125.json",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs"
+  ],
+  "microsoftReferences": [
+    {
+      "url": "https://learn.microsoft.com/en-us/graph/api/driveitem-get?view=graph-rest-1.0",
+      "scope": "Metadata and conditional If-None-Match;304 when tags match"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/graph/api/range-get?view=graph-rest-1.0",
+      "scope": "Excel range GET requires delegated Files.ReadWrite; application permission not supported"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/graph/api/workbook-list-worksheets?view=graph-rest-1.0",
+      "scope": "Workbook worksheets GET requires delegated Files.ReadWrite; application permission not supported"
+    }
+  ],
+  "reviewActions": {
+    "repositoryProductEdits": 0,
+    "externalDataWrites": 0,
+    "scenarioRuns": 0,
+    "credentialValuesRead": 0,
+    "purchases": 0,
+    "newIamGrants": 0,
+    "metadataReadsOnly": true
+  },
+  "candidateSource": "ca94622046360c0122b79e8c4a27e2d72277277e"
+}

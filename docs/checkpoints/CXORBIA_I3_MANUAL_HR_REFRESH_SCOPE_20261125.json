@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-proven-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "findingId": "HR-MANUAL-FRESHNESS-20261125",
+  "findingIdRegistered": false,
+  "vrmNumberReserved": false,
+  "priority": "P0_PROVEN",
+  "classification": "FUNCTIONAL_DEFECT",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "production": false,
+  "baseControlHead": "fb7f80287f81691338fd868fc36881fc84781e0e",
+  "baseControlTree": "802151a382f6eda96638f80c6139c45c763cd012",
+  "sourceAdmission": "PATCH_EVIDENCE_ONLY_NOT_ADMITTED",
+  "sourceSha": null,
+  "sourceTree": null,
+  "allowedProductFiles": [
+    "app/modules/visitas.js"
+  ],
+  "allowedTestFiles": [
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs"
+  ],
+  "allowedFunction": "vRefreshHR click handler",
+  "currentModuleTruthBefore": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+    "gitBlob": "7a06a7418cb24dc7e3ffe54b7e9fde8cf24bb373"
+  },
+  "components": [
+    {
+      "finding": "HR-MANUAL-FRESHNESS-20261125",
+      "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_MODULE_TRUTH_20261125.json",
+      "gitBlob": "50f55049ce2c3a6b9bd02f6d27c4ad15bb512b0f",
+      "sha256": "9bae12200b2822e92f9afaaa8380416c1355e3fb37dd25e8387508387a3fcc62"
+    },
+    {
+      "finding": "HR-MANUAL-FRESHNESS-20261125",
+      "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+      "gitBlob": "5744b7964af0d0ddfcc5a4e10626596caa1bca6b",
+      "sha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5"
+    }
+  ],
+  "beforeOwner": {
+    "gitBlob": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+    "sha256": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f"
+  },
+  "afterOwner": {
+    "gitBlob": "dd77b6fce7ab46d74567faa12553241d1678e6a7",
+    "sha256": "cff8b1a9cca03ccc6c4200c236c5c9caba98260cce1955e79342561b06d550d6"
+  },
+  "afterTest": {
+    "path": "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "gitBlob": "ef90aa5003a0251542c3e3d06e9e27816299cab1",
+    "sha256": "677b9e538524096c44a3c087e627a6dff8496b4766cf3613d7d662ee3bedb775"
+  },
+  "patchEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PATCH_20261125.patch",
+    "gitBlob": "fc22a13bbb4eb6dcccf8e28a41915d631582ff57",
+    "sha256": "46c28e9ac2aa23fa6ef5110b4a310c986a5188730d2c13fcf20c23e2e71b27de"
+  },
+  "sourceTests": {
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "executionRoot": "portable proof materializes pinned git objects and applies the exact patch in an isolated temporary directory; product files in the repository remain unchanged",
+    "result": {
+      "pass": 14,
+      "fail": 0
+    },
+    "transcriptSha256": "d84a8c6db406965caef521b4b8164b132dabdf6c8a2f222b9cb6a43b17a1c3ed",
+    "observedAt": "2026-11-26T02:57:48.454Z",
+    "evidence": {
+      "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+      "gitBlob": "5744b7964af0d0ddfcc5a4e10626596caa1bca6b",
+      "sha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5"
+    },
+    "evidenceField": "regression"
+  },
+  "beforeAfterEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+    "gitBlob": "5744b7964af0d0ddfcc5a4e10626596caa1bca6b",
+    "sha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5"
+  },
+  "actualHandlerAndBridgeQuery": true,
+  "simulatedAuthorityResponses": true,
+  "coordinatedPublication": {
+    "candidateControlsUnchanged": true,
+    "currentCandidateSourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "currentCandidateSourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+    "servedSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "pendingDevSuccessor": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sealMode": "PREDECESSOR_SERVING_PENDING_SOURCE",
+    "reason": "Work has already admitted the shared HR successor ca946220 and explicitly retained detached QA producer fb7f8028 for the served d727 pair. This checkpoint publishes the exact manual-refresh patch and its evidence without changing the active product, controls, transport, or running producer. The owner still matches the patch baseline. Incorporate the patch through the existing controlled source admission when serializing the single successor; preserve any already dispatched native proof/build until its immutable result is consumed. No new workflow, gate, candidate or automatic re-run.",
+    "bindingOwner": "tools/qa/cxorbia-i3-finance-google-transport.sh",
+    "bindingOwnerGitBlob": "8c55b22e63200d8e542ac9df7a1679e05c961dbb",
+    "currentReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+    "currentReceiptGitBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+    "historicalPreflightAt": "fb7f80287f81691338fd868fc36881fc84781e0e",
+    "currentControlReadback": "6fe5b16f2f4664d58b396767cca204b5d772ad75",
+    "productOwnerStillMatchesPatchBaseline": true
+  },
+  "unchangedDependency": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+  "fullB14Pass": false,
+  "functionalDevPass": false,
+  "devPublished": false,
+  "phaseAComplete": false,
+  "realDataImports": 0,
+  "providerWrites": 0,
+  "networkRuns": 0,
+  "productRepositoryWrites": 0,
+  "rulesDeploys": 0,
+  "storageRulesDeploys": 0,
+  "preserved": [
+    "exact d727 paired DEV",
+    "six MATCH domains",
+    "B4/B5/B6/B7",
+    "all accepted scoped receipts",
+    "F3 and other Work owners unchanged"
+  ],
+  "proofGenerator": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.mjs",
+    "gitBlob": "1fc0892da4373a9e2f731794f9793e9899311f6c",
+    "sha256": "163968b4c60634494a6cf6d5bc574efc5c971f2969fe3d6a7e5040afad40cccb"
+  }
+}

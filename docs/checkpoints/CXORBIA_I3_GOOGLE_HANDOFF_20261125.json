@@ -704,7 +704,35 @@
       "newCellMutation": false,
       "priorAttemptCleanup": "1795653493842440 COMPLETE"
     },
-    "hrDeltaAndF3Cut": "docs/checkpoints/CXORBIA_I3_HR_DELTA_AND_F3_NATIVE_CUT_20261125.json"
+    "hrDeltaAndF3Cut": "docs/checkpoints/CXORBIA_I3_HR_DELTA_AND_F3_NATIVE_CUT_20261125.json",
+    "parallelHrReadReview20261125": {
+      "review": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_READ_ECONOMICS_20261125.json",
+        "gitBlob": "741674014bbc7f6c47e8cf2b9867ae009047448f",
+        "sha256": "034818ac72fcfb39533293ecd47aef60a2714d3ac2207640963e1c9453186165"
+      },
+      "manualPatchScope": {
+        "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_SCOPE_20261125.json",
+        "gitBlob": "05869afd108c2c554af3a40ac5fdea8a5c4fcf5a",
+        "sha256": "519742ccabc63ab0c603abddc224cfcbc61b00eadd2568cb0ad2ddd165a107a5"
+      },
+      "manualPatchProof": {
+        "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PROOF_20261125.json",
+        "gitBlob": "5744b7964af0d0ddfcc5a4e10626596caa1bca6b",
+        "sha256": "4cf73d5bd61d349b33d47c4bc322d3a401783dbba92f17694b1511f4dd5243d5"
+      },
+      "manualPatch": {
+        "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_PATCH_20261125.patch",
+        "gitBlob": "fc22a13bbb4eb6dcccf8e28a41915d631582ff57",
+        "sha256": "46c28e9ac2aa23fa6ef5110b4a310c986a5188730d2c13fcf20c23e2e71b27de"
+      },
+      "status": "PATCH_AND_EVIDENCE_READY_NOT_ADMITTED_NOT_DEPLOYED",
+      "activeSourceChangedByThisPackage": false,
+      "existingF3ProducerPreserved": true,
+      "providerScenarioRunsByThisReview": 0,
+      "newDomainMatches": 0,
+      "phaseAComplete": false
+    }
   },
   "lastChromeConnection": {
     "googleConsolesOpened": true,
@@ -739,7 +767,8 @@
       "predecessorOnly": true,
       "pairedReceiptForCurrentDev": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json"
     },
-    "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope."
+    "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope.",
+    "parallelHrManualRefresh": "Read docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_HANDOFF_20261125.md. The exact two-file patch passes 14 offline regressions and still matches the current visitas owner. Coordinate its existing source admission with the already sealed shared successor and preserve any active native F3/build pins; no new transport/candidate and no repetition of accepted proof. The direct-reader access investigation and conditional cost model are evidence, not a completed OAuth migration."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,
