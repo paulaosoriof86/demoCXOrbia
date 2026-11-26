@@ -252,8 +252,9 @@ for(const id of active){
 // The previous complete materialization remains a historical certification anchor.
 let stagePublication=null;
 const stagePlan=d.pendingDevSuccessor;
-if(stagePlan?.publicationReadback){
-  const ref=stagePlan.publicationReadback;
+const priorStages=stagePlan?.physicalPredecessor;
+if(stagePlan?.publicationReadback || priorStages){
+  const ref=priorStages || stagePlan.publicationReadback;
   const requireStage=(ok,key)=>{if(!ok)fail('RELEASE_COMPOSITION_FAILURE:PARTIAL_PAIRED_READBACK',key);};
   const checked=pin=>{
     requireStage(/^docs\/checkpoints\/[A-Z0-9_]+\.json$/.test(pin?.path||'')&&
@@ -261,10 +262,21 @@ if(stagePlan?.publicationReadback){
     return readJson(pin.path);
   };
   const stage=checked(ref.stageReceipt),failure=checked(ref.failureReceipt);
-  requireStage([p,l,mt].every(x=>JSON.stringify(x.pendingDevSuccessor?.publicationReadback)===JSON.stringify(ref)),'controlAliases');
-  const native=stage.native,stages=stage.checkpoints,identity=stage.identity,request=stagePlan.pairedCloudBuild;
+  const field=priorStages?'physicalPredecessor':'publicationReadback';
+  requireStage([p,l,mt].every(x=>JSON.stringify(x.pendingDevSuccessor?.[field])===JSON.stringify(ref)),'controlAliases');
+  const native=stage.native,stages=stage.checkpoints,identity=stage.identity;
+  requireStage(/^[a-f0-9]{40}$/.test(native.controlSha),'controlSha');
+  const original=JSON.parse(execFileSync('git',['show',native.controlSha+':'+DESCRIPTOR],{encoding:'utf8',maxBuffer:16*1024*1024}));
+  const publishedPlan=priorStages?original.pendingDevSuccessor:stagePlan;
+  const request=publishedPlan.pairedCloudBuild;
+  if(priorStages){
+    requireStage(!stagePlan.publicationReadback && ref.failedBuildId===native.id &&
+      publishedPlan.sourceSha===stagePlan.previousApprovedSourceSha && publishedPlan.sourceSha!==stagePlan.sourceSha &&
+      native.predecessorReceiptBlob===stagePlan.servingRuntimeSeal.receiptBlob,'replacementLineage');
+    execFileSync('git',['merge-base','--is-ancestor',publishedPlan.sourceSha,stagePlan.sourceSha]);
+  }
   requireStage(stage.schemaVersion==='cxorbia.i3.partial-paired-dev-stages.v1'&&stage.decision==='OBSERVED_RUNTIME_AND_HOSTING'&&
-    stage.production===false&&stage.sealed===false&&identity.sourceSha===stagePlan.sourceSha&&identity.sourceTree===stagePlan.sourceTree&&
+    stage.production===false&&stage.sealed===false&&identity.sourceSha===publishedPlan.sourceSha&&identity.sourceTree===publishedPlan.sourceTree&&
     identity.runtimeDigest===request.imageBuild.digest&&native.project==='cxorbia-backend-dev'&&native.status==='FAILURE'&&
     native.stepId==='vrm154-156-dev-materialization'&&native.stepStatus==='FAILURE'&&native.id===identity.runId&&
     /^[a-f0-9]{40}$/.test(native.controlSha)&&git('rev-parse',native.controlSha+':'+DESCRIPTOR)===native.requestBlob&&
@@ -274,7 +286,6 @@ if(stagePlan?.publicationReadback){
   const live=stage.independentReadback;
   requireStage(live?.trafficPercent===100&&live.servingSource===identity.sourceSha&&
     ['runtimeDigest','hostingVersion','hostingRelease'].every(k=>live[k]===identity[k])&&Date.parse(live.at)>=Date.parse(native.finishedAt),'terminalProviderReadback');
-  const original=JSON.parse(execFileSync('git',['show',native.controlSha+':'+DESCRIPTOR],{encoding:'utf8',maxBuffer:16*1024*1024}));
   requireStage(JSON.stringify(original.pendingDevSuccessor.pairedCloudBuild)===JSON.stringify(request)&&
     original.postDeployRunSeal.receiptBlob===native.predecessorReceiptBlob,'originalRequest');
   for(const name of ['start','runtime','hosting']){
@@ -420,7 +431,7 @@ if(process.argv.includes('--current')){
     ...(stagePublication?{lastCompletePairedSeal:{...pick(d.currentMaterialization,[...identityKeys,'runId','hrRevision']),...pick(d.postDeployRunSeal,['receiptPath','receiptBlob']),role:'HISTORICAL_LAST_COMPLETE'}}:{}),
     pendingDevSuccessor:pending?{
       ...pick(pending,['state','scope','sourceSha','sourceTree','predecessorProductSourceSha','proofReceiptPath','proofReceiptBlob','devPublished']),
-      ...(stagePublication?{state:'PUBLISHED_PENDING_STRICT_HR_SEAL',devPublished:true,requiresRedeploy:false}:{}),
+      ...(stagePublication&&!priorStages?{state:'PUBLISHED_PENDING_STRICT_HR_SEAL',devPublished:true,requiresRedeploy:false}:{}),
       imageBuild:pick(pending.pairedCloudBuild?.imageBuild,['id','tag','digest']),
       launchTag:pending.pairedCloudBuild?.launchTag||null
     }:null,

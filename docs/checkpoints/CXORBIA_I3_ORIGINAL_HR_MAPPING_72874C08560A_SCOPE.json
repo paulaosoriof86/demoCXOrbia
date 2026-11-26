@@ -1,0 +1,58 @@
+{
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/modules/visitas.js",
+    "backend/contracts/tya-hr-column-map-r20-v1.json",
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs",
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-read-header-aliases.test.mjs"
+  ],
+  "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+  "moduleTruthBeforePatch": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V431.json",
+    "gitBlob": "0cd0aa87d59fe5cf57c8c74757297979d680252a"
+  },
+  "cause": {
+    "path": "docs/checkpoints/CXORBIA_I3_GT_NOV_HEADER_DRIFT_20261126.json",
+    "gitBlob": "0b59f0da060b55caa3cbfb9f1c49b0c5a64eeca8"
+  },
+  "physicalPredecessor": {
+    "failedBuildId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+    "stageReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_PUBLISHED_STAGES_20261126.json",
+      "gitBlob": "da2f9609f623064f5113da63207ad0bbaee12705"
+    },
+    "failureReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_STRICT_HR_FAILURE_20261126.json",
+      "gitBlob": "50fc15f201d0148c934821833ae007e1a3b1b9a1"
+    }
+  },
+  "exactBeforeAfterBlobs": {
+    "backend/contracts/tya-hr-column-map-r20-v1.json": {
+      "before": "5aa5382054a7d125ccd060914619e3920dd56bcd",
+      "after": "ea8ca682d802c1901c24851115bb0de1d1be409c"
+    },
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": {
+      "before": "7f638cc27347fdea658446ab88fc45c2a764372f",
+      "after": "33c5614140040c6b4a9f7e5f1546ba4e101e94c7"
+    },
+    "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs": {
+      "before": "57c1ff6ecf368e2415693c31d825953738c26839",
+      "after": "80b20c768b7826fc95889a3a20ad911dfeca7235"
+    }
+  },
+  "direction": "Original roadmaps are authoritative across projects. Map verified source labels internally using the project contract. Never rename workbook headers to satisfy CXOrbia. Ambiguous labels hold the affected read. Reader mappings do not authorize writer targets.",
+  "production": false
+}

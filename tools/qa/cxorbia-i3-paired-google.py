@@ -170,7 +170,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     def run_step(index):
         script = steps[index]["run"]
-        if index == 14 and resume:
+        if index == 14 and (resume or q.get("physicalPredecessor")):
             require(script.count("--retry 8") == 2, "SOURCE_FAILURE:READBACK_HTTP_RETRY_OWNER")
             script = script.replace("--retry 8","--retry 0")
         if index in (13,14):

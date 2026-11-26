@@ -2,9 +2,9 @@
   "schemaVersion": "cxorbia.i3.google-work-handoff.v1",
   "iteration": "I3",
   "state": "HOLD",
-  "source": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
-  "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
-  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+  "servedSource": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
     "ownerPaths": 111,
@@ -352,7 +352,7 @@
       "storageObjectCreateAtProject": false,
       "bucketAccess": "must be checked on the actual bucket"
     },
-    "currentProductImage": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D980C8F4_20261126.json",
+    "currentProductImage": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D1BAE768_20261126.json",
     "firstNativePairedAttempt": {
       "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_PAIRED_0AEE0765_20261125.json",
       "sha256": "8dc298ea083a5b09ed29579854f635fe4127b4250c7263a9c4aa916e807c8155",
@@ -741,25 +741,11 @@
       "devPublished": false
     },
     "currentPendingPairedDev": {
-      "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
-      "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
-      "runtimeRevision": "cxorbia-live-hr-dev-00394-hdd",
-      "runtimeDigest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/c8326f6325145f69",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795705334899000",
-      "runId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
-      "failedBuildId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
-      "stageReceipt": {
-        "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_PUBLISHED_STAGES_20261126.json",
-        "gitBlob": "da2f9609f623064f5113da63207ad0bbaee12705"
-      },
-      "failureReceipt": {
-        "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_STRICT_HR_FAILURE_20261126.json",
-        "gitBlob": "50fc15f201d0148c934821833ae007e1a3b1b9a1"
-      },
-      "state": "RUNTIME_AND_HOSTING_OBSERVED_HR_SEAL_PENDING",
-      "nativeStatus": "FAILURE",
-      "hrRevision": null,
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "state": "SOURCE_IMAGE_VERIFIED_PAIRED_DEV_PENDING",
+      "launchTag": "cxorbia-hr-pair-72874c08560a-5da1a3e6-a1",
+      "devPublished": false,
       "production": false
     },
     "f3BoundedMakeWindow": {
@@ -845,6 +831,34 @@
       "readerCreditsObservedInWindow": 222,
       "writerExecutionsInWindow": 0,
       "f3SeparateCredits": 206
+    },
+    "originalHrMapping": {
+      "path": "docs/checkpoints/CXORBIA_I3_ORIGINAL_HR_MAPPING_72874C08560A_SOURCE.json",
+      "gitBlob": "2d2709064d86856b63df5247a912a1c4018272d6",
+      "sha256": "8995053f09f5dc35a698e2b9a2d45f27629d082267e444f50c255af6f7bd938f",
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_ORIGINAL_HR_MAPPING_72874C08560A_SCOPE.json",
+      "sourceTestsPass": 107,
+      "sourceTestsFail": 0,
+      "production": false,
+      "scope": {
+        "path": "docs/checkpoints/CXORBIA_I3_ORIGINAL_HR_MAPPING_72874C08560A_SCOPE.json",
+        "gitBlob": "f48bd1baad3cfd9fd7ce80b78519611a15403a2c",
+        "sha256": "24051c2a8a269141622011ff1b98ce2ab0c654cdb02e948f401f1923b01bbe73"
+      },
+      "physicalPredecessor": {
+        "failedBuildId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+        "stageReceipt": {
+          "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_PUBLISHED_STAGES_20261126.json",
+          "gitBlob": "da2f9609f623064f5113da63207ad0bbaee12705"
+        },
+        "failureReceipt": {
+          "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_STRICT_HR_FAILURE_20261126.json",
+          "gitBlob": "50fc15f201d0148c934821833ae007e1a3b1b9a1"
+        }
+      },
+      "originalWorkbookWrites": 0
     }
   },
   "lastChromeConnection": {
@@ -857,7 +871,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "Preserve the current D08 source-bound request and credited Admin actions. After the materialization and receipt are verified, bind the next Shopper/Client observation to the eligible pair through the existing authenticated runner. The preparation has no native launch or new role proof.",
-    "deployment": "I3 HOLD. DEV runtime and Hosting serve 9117f6ebeb165093805d1c2b69c54e534e317cf4 under Google execution 1e05b095-fb3a-4998-9a31-479cb2471eb4. Strict HR read returned HTTP 503 (MAPPING_FAILURE). Await the exact authorization to restore GT November L4 (Columna1 to Shopper Asignado) and an authorized Microsoft workbook session: get_drive_item returned 403 accessDenied and the original workbook opens at sign-in. Confirm the registered cell and read it back independently. Then verify the served immutable pair, resume its strict readbacks in the existing paired job without rebuilding or republishing the same artifact, and incorporate the separate verification receipt. Retain F3, Finance, Academia Admin, B4/B5/B6/B7 and six MATCH. I4 and production remain locked.",
+    "deployment": "I3 HOLD. Publish project-configured internal HR reader 72874c08560addf5d0bc4a23573d65ce86481c95 over observed DEV 9117f6ebeb165093805d1c2b69c54e534e317cf4 using the bound native paired job. Preserve original workbook headers, all prior evidence and exact source identity. Consume the resulting native receipt, then observe cold start, durable recovery, two sessions and manual refresh on the selected period. Continue outstanding process clauses and Gate20/Gate21. Production requires I3 GO and I4 approval.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -889,7 +903,7 @@
       }
     },
     "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope.",
-    "parallelHrManualRefresh": "On paired DEV verify the manual HR refresh obtains a current external read, the exact applied revision and the selected period. Keep a confirmed durable copy labeled as such.",
+    "parallelHrManualRefresh": "Verify manual fresh read, selected period and two-session reuse on DEV.",
     "e10": "Resolve the authorized durable import owner or adjudicate the missing implementation under the original E10 contract. The existing inventory covers six providers and 56 commands. Retain the mapping and preview as scoped evidence."
   },
   "newDevDeploys": 2,
@@ -905,7 +919,7 @@
     "matrixVersion": "V406",
     "ledgerVersion": "V733"
   },
-  "servedTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "servedTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
   "currentControlReadbackCommand": "node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current",
   "continuityForensics": {
     "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_ROOT_CAUSE_20261125.md",

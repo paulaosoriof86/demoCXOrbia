@@ -31,6 +31,12 @@ const cli=(args,input)=>spawnSync('gcloud',[...args,'--project='+project,'--quie
   input,encoding:'utf8',timeout:45000,maxBuffer:4*1024*1024,
   env:{...process.env,CLOUDSDK_CORE_LOG_HTTP:'false',CLOUDSDK_CORE_VERBOSITY:'error'},stdio:['pipe','pipe','pipe']});
 const json=(result,code)=>{if(result.status!==0)fail(code);try{return JSON.parse(result.stdout);}catch{fail(code+'_METADATA_INVALID');}};
+function cliGitStage(pin){
+  ensure(/^docs\/checkpoints\/[A-Z0-9_]+\.json$/.test(pin.path)&&/^[0-9a-f]{40}$/.test(pin.gitBlob),'HOLD_STAGE_PIN_INVALID');
+  const body=fs.readFileSync(pin.path);
+  ensure(crypto.createHash('sha1').update('blob '+body.length+'\0').update(body).digest('hex')===pin.gitBlob,'HOLD_STAGE_BLOB_DRIFT');
+  return JSON.parse(body);
+}
 const codeIs=(result,command,code)=>new RegExp('^ERROR: \\(gcloud\\.'+command.replaceAll('.','\\.')+'\\) '+code+'(?:[ :]|$)','m').test(String(result.stderr||''));
 try{
   ensure(project==='cxorbia-backend-dev'&&service==='cxorbia-live-hr-dev'&&region==='us-central1','DEV_SCOPE_REQUIRED');
@@ -55,7 +61,16 @@ try{
     ensure(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV'&&(resume?.state==='RESUME_EXACT_SUCCESSFUL_BUILD'||newBuild),'HOLD_EXECUTION_MODE_INVALID');
     ensure(hold.classification==='ENVIRONMENT_FAILURE'&&hold.production===false&&descriptor.i4Authorized!==true,'HOLD_SCOPE_INVALID');
     ensure(hold.sourceSha===process.env.FOCAL_SOURCE&&hold.sourceSha===descriptor.productSourceSha&&hold.sourceTree===descriptor.productTreeAuthority,'HOLD_SOURCE_DRIFT');
-    ensure(hold.runtimeRevision===current.status?.latestReadyRevisionName,'HOLD_PREDECESSOR_DRIFT');
+    const stagePin=pending?.physicalPredecessor?.stageReceipt;
+    let physicalRevision=hold.runtimeRevision;
+    if(stagePin){
+      const stage=cliGitStage(stagePin);
+      ensure(stage.native.id===pending.physicalPredecessor.failedBuildId&&stage.native.status==='FAILURE'&&
+        stage.production===false&&stage.identity.sourceSha===pending.previousApprovedSourceSha&&
+        stage.native.predecessorReceiptBlob===descriptor.postDeployRunSeal.receiptBlob,'HOLD_PARTIAL_PREDECESSOR_DRIFT');
+      physicalRevision=stage.identity.runtimeRevision;
+    }
+    ensure(physicalRevision===current.status?.latestReadyRevisionName,'HOLD_PREDECESSOR_DRIFT');
     if(newBuild){
       ensure(pending.sourceSha===hold.sourceSha&&pending.sourceTree===hold.sourceTree&&pending.sourceTree===process.env.FOCAL_TREE,'HOLD_PENDING_SOURCE_DRIFT');
       const served=descriptor.currentMaterialization,seal=descriptor.postDeployRunSeal;
@@ -69,7 +84,7 @@ try{
     ensure(!found.length&&['CXORBIA_USER_MAILBOX_ENABLED','CXORBIA_USER_MAILBOX_SEND_ENABLED'].every(name=>entries.filter(e=>e.name===name).every(e=>e.value==='false')),'HOLD_REQUIRES_UNCONFIGURED_RUNTIME');
     const lookup=cli(['secrets','describe','cxorbia-dev-user-mailbox-credential-key']);
     const recognized=String(lookup.stderr||'').match(/^ERROR: \(gcloud\.secrets\.describe\) (NOT_FOUND|PERMISSION_DENIED|UNAVAILABLE|FAILED_PRECONDITION|UNAUTHENTICATED|RESOURCE_EXHAUSTED)(?:[ :]|$)/m)?.[1];
-    const proof={decision:'HOLD_E08_MAILBOX_UNCONFIGURED',sourceSha:hold.sourceSha,sourceTree:hold.sourceTree,predecessorRuntime:hold.runtimeRevision,failedRunId:hold.failedRunId,secretMetadataOutcome:lookup.status===0?'METADATA_ACCESSIBLE':recognized||'UNCLASSIFIED_PROVIDER_ERROR',keyMounted:false,mailboxEnabled:false,sendEnabled:false,secretWrites:0,iamWrites:0,credentialReads:0,smtpSends:0,production:false};
+    const proof={decision:'HOLD_E08_MAILBOX_UNCONFIGURED',sourceSha:hold.sourceSha,sourceTree:hold.sourceTree,predecessorRuntime:physicalRevision,failedRunId:hold.failedRunId,secretMetadataOutcome:lookup.status===0?'METADATA_ACCESSIBLE':recognized||'UNCLASSIFIED_PROVIDER_ERROR',keyMounted:false,mailboxEnabled:false,sendEnabled:false,secretWrites:0,iamWrites:0,credentialReads:0,smtpSends:0,production:false};
     if(process.env.FOCAL_OUT)fs.writeFileSync(process.env.FOCAL_OUT+'/mailbox-environment-readback.json',JSON.stringify(proof,null,2)+'\n');
     console.error('CXORBIA_MAILBOX_ENVIRONMENT_HOLD='+JSON.stringify(proof));
     console.log('HOLD_MAIL_UNCONFIGURED');process.exit(0);

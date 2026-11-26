@@ -84,7 +84,7 @@ export function validateF3EnvironmentReadback(descriptor,revision){
   return {decision:'PASS_F3_SAME_ARTIFACT_ENV_READBACK',runtimeRevision:revision.metadata.name,runtimeDigest:m.runtimeDigest,originalBuildRunId:m.runId,sourceSha:m.sourceSha,sourceTree:m.sourceTree,builds:0,hostingDeploys:0,operationalHrWrites:0,production:false,secretValuesRead:false};
 }
 
-export function validatePredeployPredecessor({runtime,hosting,descriptor,status,source,tree,pendingDev,receipt,receiptBlob,prior,revision}){
+export function validatePredeployPredecessor({runtime,hosting,descriptor,status,source,tree,pendingDev,receipt,receiptBlob,prior,revision,physicalStage}){
   if(descriptor.status==='HOLD_I3_GTHN_PENDING_DEV')assert.equal(status,descriptor.status,'pending status drift');
   assert.equal(descriptor.productSourceSha,source,'candidate source drift');
   assert.equal(descriptor.productTreeAuthority,tree,'candidate tree drift');
@@ -123,12 +123,23 @@ export function validatePredeployPredecessor({runtime,hosting,descriptor,status,
     assert.equal(receipt?.source?.tree,paired.sourceTree,'receipt predecessor tree drift');
     assert.deepEqual(receipt.materialization,paired,'committed predecessor materialization drift');
     for(const key of ['sourceSha','sourceTree','runId','runtimeRevision','runtimeDigest','hostingVersion'])assert.equal(seal[key],paired[key],'predecessor seal '+key+' drift');
-    assert.equal(app?.env?.find(e=>e.name==='CXORBIA_RECOVERY_SOURCE_SHA')?.value,paired.sourceSha,'prior runtime source mismatch');
+    let physical=paired;
+    if(pending.physicalPredecessor){
+      assert.equal(physicalStage?.native?.id,pending.physicalPredecessor.failedBuildId);
+      assert.equal(physicalStage.native.status,'FAILURE');
+      assert.equal(physicalStage.production,false);
+      assert.equal(physicalStage.sealed,false);
+      assert.equal(physicalStage.identity.sourceSha,pending.previousApprovedSourceSha);
+      assert.equal(physicalStage.native.predecessorReceiptBlob,seal.receiptBlob);
+      assert.equal(physicalStage.identity.hostingRelease,hosting.release?.name);
+      physical=physicalStage.identity;
+    }
+    assert.equal(app?.env?.find(e=>e.name==='CXORBIA_RECOVERY_SOURCE_SHA')?.value,physical.sourceSha,'prior runtime source mismatch');
     assert.ok(revision,'predecessor revision readback missing');
-    assert.equal(revision.metadata?.name,paired.runtimeRevision,'prior revision name mismatch');
+    assert.equal(revision.metadata?.name,physical.runtimeRevision,'prior revision name mismatch');
     const raw=String(revision.status?.imageDigest||''),digest=raw.includes('@')?raw.split('@').at(-1):raw;
-    assert.equal(digest,paired.runtimeDigest,'prior runtime digest mismatch');
-    expectedRuntime=paired.runtimeRevision;expectedHosting=paired.hostingVersion;priorProofRun=paired.runId;
+    assert.equal(digest,physical.runtimeDigest,'prior runtime digest mismatch');
+    expectedRuntime=physical.runtimeRevision;expectedHosting=physical.hostingVersion;priorProofRun=physical.runId;
   }
   assert.ok(expectedRuntime&&expectedHosting,'proven predecessor identity missing');
   assert.equal(runtime.status?.latestReadyRevisionName,expectedRuntime,'last proven runtime revision mismatch');
@@ -187,6 +198,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     args.receiptBlob=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
     assert.equal(args.receiptBlob,gitBlob(descriptor.postDeployRunSeal.receiptPath),'working predecessor receipt differs from committed blob');
     args.receipt=JSON.parse(bytes);args.revision=read(revisionPath);
+    const pin=descriptor.pendingDevSuccessor?.physicalPredecessor?.stageReceipt;
+    if(pin){
+      assert.equal(gitBlob(pin.path),pin.gitBlob);
+      args.physicalStage=JSON.parse(execFileSync('git',['show','HEAD:'+pin.path],{encoding:'utf8'}));
+    }
   }
   console.log('CXORBIA_I3_EXACT_DEV_PREDEPLOY_READBACK='+JSON.stringify(validatePredeployPredecessor(args)));
 }
