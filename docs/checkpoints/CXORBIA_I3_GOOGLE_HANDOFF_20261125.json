@@ -352,23 +352,7 @@
       "storageObjectCreateAtProject": false,
       "bucketAccess": "must be checked on the actual bucket"
     },
-    "currentProductImage": {
-      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_748EBF68_20261125.json",
-      "gitBlob": "2e0ab022b70d363d4433d1936a000ad31c5af629",
-      "sha256": "045230aea2e20ee94fb8653a944a547fb15715d2d8b5588eb9c1be08abd7f6f3",
-      "imageBuildId": "748ebf68-744a-43b5-9c08-f6251e363059",
-      "imageDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
-      "nextAction": "Reuse the published digest for current DEV proofs.",
-      "sourceObject": {
-        "bucket": "cxorbia-backend-dev_cloudbuild",
-        "name": "source/1795638786.356458-a13cda9f45fa42e1a82e609d45aff683.tgz",
-        "generation": "1795638786579207",
-        "size": 5960554,
-        "sha256": "6dd50b296a5d5685a13c42733a9da488c2ec4f6324f955bf46c88456e868cf39"
-      },
-      "registryVerified": true,
-      "served": true
-    },
+    "currentProductImage": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D980C8F4_20261126.json",
     "firstNativePairedAttempt": {
       "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_PAIRED_0AEE0765_20261125.json",
       "sha256": "8dc298ea083a5b09ed29579854f635fe4127b4250c7263a9c4aa916e807c8155",
@@ -754,6 +738,25 @@
       },
       "served": "d727f3be67a4430f08216dbb37cccba790f934f5",
       "devPublished": false
+    },
+    "currentPendingPairedDev": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D980C8F4_20261126.json",
+      "gitBlob": "1c96f40ef34e6298afa2cdc6453b488003df5072",
+      "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+      "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+      "imageBuildId": "d980c8f4-c1ea-460b-8e27-0aacdf087e37",
+      "digest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+      "servingPredecessor": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceObject": {
+        "bucket": "cxorbia-backend-dev_cloudbuild",
+        "name": "cxorbia-i3-paired-dev/sources/9117f6ebeb165093805d1c2b69c54e534e317cf4/16408c54eba5b5fdfaedf85feeade1775c89f1c7a5c8c254921ecfa4516ca5c8.tgz",
+        "generation": "1795704244295134",
+        "size": 5967181,
+        "sha256": "16408c54eba5b5fdfaedf85feeade1775c89f1c7a5c8c254921ecfa4516ca5c8"
+      },
+      "launchTag": "cxorbia-hr-pair-9117f6ebeb16-243c7e80-a1",
+      "state": "SOURCE_IMAGE_VERIFIED_PAIRED_DEV_PENDING",
+      "production": false
     }
   },
   "lastChromeConnection": {
@@ -766,7 +769,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
-    "deployment": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source 9117f6ebeb165093805d1c2b69c54e534e317cf4 after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, manual fresh read and period, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
+    "deployment": "Use the bound native paired DEV job at the latest HEAD after the current native F3 result is sealed and its recovery is complete.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Use detached QA producer fb7f80287f81691338fd868fc36881fc84781e0e against the currently served d727f3be pair. Refresh balance and verify exclusive writer, full Make window and sentinel before dispatch. Reserve 100 of 350 credits for recovery. Seal and verify the two physical PATCH results, independent GETs and full restoration before exact-key cleanup. Recheck source and receipt before any retry.",
     "googleExecution": {
