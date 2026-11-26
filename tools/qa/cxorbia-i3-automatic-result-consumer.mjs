@@ -146,7 +146,9 @@ export async function retireSatisfiedD08Request({result,entry,producer,controls,
  const current=active.pointer.currentD08UiQaRequest;
  must(JSON.stringify(current||null)===JSON.stringify(active.descriptor.currentD08UiQaRequest||null),'MAPPING_FAILURE:D08_ACTIVE_REQUEST_DESYNC');
  if(!current||current.path!==request.path||current.gitBlob!==request.gitBlob){entry.requestBinding=binding;return bindingChanged;}
- const archivePath=`docs/checkpoints/CXORBIA_I3_RUN${entry.runId}_ATTEMPT${entry.runAttempt}_JOB${entry.jobId}_SATISFIED_D08_REQUEST.json`;
+ const archivePath=entry.provider==='GOOGLE_CLOUD_SHELL'
+  ? `docs/checkpoints/CXORBIA_I3_GOOGLE_D08_${result.evidence.startGeneration}_SATISFIED_D08_REQUEST.json`
+  : `docs/checkpoints/CXORBIA_I3_RUN${entry.runId}_ATTEMPT${entry.runAttempt}_JOB${entry.jobId}_SATISFIED_D08_REQUEST.json`;
  const archive={schemaVersion:'cxorbia.i3.satisfied-d08-request.v1',requestBinding:binding,typedReceipt:{path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256},controls:{},production:false,newDomainMatches:0,fullDomain:false};
  const provedResiduals=new Set(['Current Admin, Shopper and Cliente independent UI/session acceptance','Authorized content edit/provider ACK for content, distinct from historical learner progress','Current command integration proof for owners changed since the historical provider run']);
  const updates=new Map();

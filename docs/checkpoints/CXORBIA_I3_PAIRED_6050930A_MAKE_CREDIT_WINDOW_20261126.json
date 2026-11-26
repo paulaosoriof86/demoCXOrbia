@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-dev-make-window.v1",
+  "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+  "from": "2026-11-26T15:58:13.739465078Z",
+  "to": "2026-11-26T16:02:35.523066Z",
+  "teamScenariosChecked": 33,
+  "allScenarioWindowsExhausted": true,
+  "totalCredits": 22,
+  "readerCredits": 18,
+  "attribution": "Full team window includes unrelated scheduled executions. Strict paired HR reader is 10200465.",
+  "scenarios": [
+    {
+      "scenarioId": 5510559,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 5828312,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 5830276,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 5834176,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 5837393,
+      "hasMore": false,
+      "runs": [
+        {
+          "id": "2fd002d0634b42bb890f0f5ba1aea795",
+          "credits": 2,
+          "operations": 2,
+          "status": "success",
+          "startedAt": "2026-11-26T16:00:09.195Z"
+        }
+      ]
+    },
+    {
+      "scenarioId": 5843689,
+      "hasMore": false,
+      "runs": [
+        {
+          "id": "16ea578e93734d4780a7ef3354b2284b",
+          "credits": 2,
+          "operations": 2,
+          "status": "success",
+          "startedAt": "2026-11-26T16:00:17.433Z"
+        }
+      ]
+    },
+    {
+      "scenarioId": 5844641,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 7213974,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8029478,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8052232,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8062238,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8073619,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8146654,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8301039,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8767963,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 8769925,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 9281674,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 9283887,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 9377547,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10195631,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10195759,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10195867,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10196061,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10196136,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10196338,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10198707,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10198752,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10199316,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10199340,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10200465,
+      "hasMore": false,
+      "runs": [
+        {
+          "id": "46e0a9153f3b4ad4b3774d77acbf7f6e",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:22.341Z"
+        },
+        {
+          "id": "01fc726175c14bafa489fb1556cfc990",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:22.334Z"
+        },
+        {
+          "id": "dd366414a9524ee9b0269eefa941f551",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:22.332Z"
+        },
+        {
+          "id": "583d574fd2914d36b7ba9825e0deb430",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:22.332Z"
+        },
+        {
+          "id": "ef6d23772f7a46149a5227bb279fd4b7",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:13.266Z"
+        },
+        {
+          "id": "4a6a3d7f55f74fd3a0c292f5c398a446",
+          "credits": 3,
+          "operations": 3,
+          "status": "success",
+          "startedAt": "2026-11-26T16:02:04.151Z"
+        }
+      ]
+    },
+    {
+      "scenarioId": 10221181,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10221359,
+      "hasMore": false,
+      "runs": []
+    },
+    {
+      "scenarioId": 10228826,
+      "hasMore": false,
+      "runs": []
+    }
+  ]
+}

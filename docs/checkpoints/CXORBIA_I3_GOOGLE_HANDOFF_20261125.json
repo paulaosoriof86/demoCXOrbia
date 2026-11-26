@@ -4,7 +4,7 @@
   "state": "HOLD",
   "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
-  "servedSource": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "servedSource": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
     "ownerPaths": 111,
@@ -256,23 +256,29 @@
       "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795639660815985_TYPED_RESULT.json"
     ],
     "currentAcademy": {
-      "source": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-      "decision": "RECORDED_D08_INCOMPLETE",
-      "result": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795639660815985_TYPED_RESULT.json",
-      "sha256": "f1c8860770abdc1611aa3890448cfd105f8206f1e15ecbdaf0a18d55cc53d508",
-      "archiveSha256": "162722cf3169b1416152c88ecc5e8f2bda57c5bc018c2ba80d8b8b7970463e9a",
-      "rolesObserved": [
-        "admin"
-      ],
-      "commandsObserved": 6,
-      "deletedDocuments": 25,
-      "deletedAuth": 4,
-      "remainingOwnedDocuments": 0,
-      "remainingOwnedAuth": 0,
-      "exactKnownPathsOnly": true,
-      "ownershipTransaction": true,
-      "observedError": "page.waitForFunction: Timeout 75000ms exceeded.",
-      "newDomainMatches": 0
+      "key": "GOOGLE_CLOUD_SHELL/1795709264626667",
+      "kind": "D08_ACADEMY_SCOPED",
+      "provider": "GOOGLE_CLOUD_SHELL",
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795709264626667_TYPED_RESULT.json",
+      "gitBlob": "b267c75e1189fe2cfe9dac2e9190080a283ee439",
+      "sha256": "cd96766ef853bff1ced3c0869f4aeee7a2a37c95d345aead55d24f67132d8bae",
+      "controlHead": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+      "transportSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+      "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/start.json#1795709264626667",
+      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/result.json#1795709882683841",
+      "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+      "archiveSha256": "6794b2b7157977e81af2825d02eca6cebf7e5f85d7020f8ffd7ed236a3d760b2",
+      "archiveVerified": true,
+      "bundleSha256": "b7094334e89d8eb29c8fa37002864d65c22cec5dbe56cef6e0657723a1ca0c7c",
+      "observedAt": "2026-11-26T16:18:02.683Z",
+      "decision": "PASS_D08_TYPED_PARTIAL_INCORPORATION",
+      "ownerReceiptCount": 3,
+      "requestBinding": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+        "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+        "canonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489"
+      },
+      "focalObligationCount": 25
     },
     "currentAcademyRetry": {
       "decision": "HOLD",
@@ -795,11 +801,11 @@
       "newFunctionalClauses": 0
     },
     "lastCompletePairedSeal": {
-      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
-      "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
-      "receiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
-      "receiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
-      "scope": "HISTORICAL_COMPLETE_CERTIFICATION"
+      "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "tree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+      "gitBlob": "3bfc3b6e27260877609751c9e59f8c98343e9525"
     },
     "currentDevPhysicalPublication": {
       "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
@@ -872,6 +878,10 @@
       },
       "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
       "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099"
+    },
+    "portTech72874c08": {
+      "path": "docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json",
+      "gitBlob": "412449639d738ccf4436c0e9574b4d0cea4462cc"
     }
   },
   "lastChromeConnection": {
@@ -883,8 +893,8 @@
   },
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
-    "academy": "Use this newly bound request on its paired source, verify the native current signer-independent QA transport and its clean browser and Firebase prerequisites, preserve the F3 restore allocation and serialize functional work. Record native results with the same consumer and exact cleanup.",
-    "deployment": "I3 HOLD. Publish project-configured internal HR reader 72874c08560addf5d0bc4a23573d65ce86481c95 over observed DEV 9117f6ebeb165093805d1c2b69c54e534e317cf4 using the bound native paired job. Preserve original workbook headers, all prior evidence and exact source identity. Consume the resulting native receipt, then observe cold start, durable recovery, two sessions and manual refresh on the selected period. Continue outstanding process clauses and Gate20/Gate21. Production requires I3 GO and I4 approval.",
+    "academy": "25 scoped obligations consumed; retire this native request. Honor remaining original process clauses.",
+    "deployment": "Already served and sealed by 6050930a. Read the current guard before taking further action.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -915,8 +925,8 @@
         "gitBlob": "50fc15f201d0148c934821833ae007e1a3b1b9a1"
       }
     },
-    "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope.",
-    "parallelHrManualRefresh": "Verify manual fresh read, selected period and two-session reuse on DEV.",
+    "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
+    "parallelHrManualRefresh": "I3 HOLD. The current DEV pair 6050930a and D08 run 1795709264626667 are incorporated. Preserve F3 bounded GT L2 and D08's 25 scoped obligations. Complete only targeted shared HR manual/durable/cold evidence, remaining Finance, E10 authorized import owner and open original process clauses. Gate20/Gate21 and I4 remain open.",
     "e10": "Resolve the authorized durable import owner or adjudicate the missing implementation under the original E10 contract. The existing inventory covers six providers and 56 commands. Retain the mapping and preview as scoped evidence."
   },
   "newDevDeploys": 2,
@@ -932,7 +942,7 @@
     "matrixVersion": "V406",
     "ledgerVersion": "V733"
   },
-  "servedTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+  "servedTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
   "currentControlReadbackCommand": "node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current",
   "continuityForensics": {
     "path": "docs/checkpoints/CXORBIA_I3_CONTINUITY_ROOT_CAUSE_20261125.md",

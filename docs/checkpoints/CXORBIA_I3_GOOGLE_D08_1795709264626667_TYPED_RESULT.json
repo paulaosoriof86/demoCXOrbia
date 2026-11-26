@@ -1,0 +1,812 @@
+{
+  "schemaVersion": "cxorbia.i3.d08-typed-incorporation.v1",
+  "decision": "PASS_D08_TYPED_PARTIAL_INCORPORATION",
+  "ownerSpecificReceipts": [
+    {
+      "schemaVersion": "cxorbia.i3.d08-academy-owner-obligations.v1",
+      "moduleDomain": "certifications",
+      "findingIds": [],
+      "decision": "PASS_D08_SCOPED_OWNER_OBLIGATIONS",
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+      "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+      "hrIndependent": true,
+      "production": false,
+      "fullDomain": false,
+      "operationKind": "PROVIDER_WRITE",
+      "ownerPaths": [
+        "app/modules/academia.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/academia.js",
+          "gitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+          "sourceSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "servedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "byteParity": true
+        }
+      ],
+      "dependencyEvidence": [
+        {
+          "path": "app/core/manuales-data.js",
+          "gitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+          "sourceSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "servedSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "sourceSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "servedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/cxorbia-command-adapter-v1.js",
+          "gitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+          "sourceSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "servedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "gitBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+          "sourceSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "servedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "byteParity": true
+        }
+      ],
+      "contractAuthority": {
+        "contractSha256": "a1d326eea343e9d64158133ce29e48d7a8a7af760581c0137eec1f3119a15ce4",
+        "taskId": "D08",
+        "scopeContractSha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "contractCoverage": {
+        "fullDomain": false,
+        "completeDomainInventory": false,
+        "taskIds": [
+          "D08"
+        ],
+        "obligations": [
+          {
+            "id": "D08.admin.course",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.lesson",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.evaluation",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.resource",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.progress",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.new_session_replay",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.admin.edit",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.stale_version_denied",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cleanup",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          }
+        ]
+      },
+      "scope": {
+        "kind": "D08_ACADEMY_TENANT_COURSE",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": null,
+        "role": "admin"
+      },
+      "auth": {
+        "authenticated": true,
+        "tenantExact": true,
+        "projectAuthorized": true,
+        "role": "admin",
+        "method": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+        "actorUids": [
+          "qa_d08_1795709264626667_1_admin"
+        ]
+      },
+      "actionReal": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "reloadProof": true,
+      "noDuplicateRegression": true,
+      "providerWriteProof": {
+        "remoteReceiptId": "tenants/tya/commandReceipts/academy-progress-5a6f3c06f2c5170568b29fbbe623f3d428073f61",
+        "idempotencyKey": "academy.progress.lesson.complete:d4cpzf",
+        "replayNoDuplicate": true,
+        "receipts": [
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-802ff01525c5b81f63743bdd4e75114f5286f707",
+            "idempotencyKey": "academy.progress.lesson.complete:1q11ax2",
+            "commandDigest": "19706868db5fa116946cf583817ef6630ba578ecf2e97892baa4875735069013",
+            "bundleSha256": "f58e039fa10e1a123f69140ef96b42f1847a11c486f0dddcba35cbfc7e9b9598"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-1a316b268eb6b651f3bfe69baf542c92c2f081b1",
+            "idempotencyKey": "academy.progress.lesson.complete:1ylbge4",
+            "commandDigest": "2f6396d643f400f77e69695bfffbd93ec53b7a49b4e5005ce33a540f313e71fd",
+            "bundleSha256": "215c09adc45f9ce7fbd2a179c0ec47b19a0aeb2b6fb927c3cafbfd0293c993ef"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-e5e52154fd0f0bf09364d2e92731d49241c80733",
+            "idempotencyKey": "academy.progress.lesson.complete:1jhwwja",
+            "commandDigest": "6c4b7d15eb9abc77a90c09fb8a8ba0daccfa95dbbe842f40075ba3ad3bfccdea",
+            "bundleSha256": "f7fc743bf6f4134c3fc06525274298f9b16989e34ed83377055c2071e485c7f5"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-5a6f3c06f2c5170568b29fbbe623f3d428073f61",
+            "idempotencyKey": "academy.progress.lesson.complete:d4cpzf",
+            "commandDigest": "4428ea865e429adb2e4557bda4c49fb374d1d30608ca57d72be43b820c53941b",
+            "bundleSha256": "b74fea89aeb025146f758d0ced0e757e407507db807cea3259cb31d05b90e66a"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.course.create",
+            "commandPeriodId": "cinepolis-2026-11",
+            "receiptPath": "tenants/tya/commandReceipts/834701c3c77ecb5fd4b01e86985e7b6cc61eb384",
+            "idempotencyKey": "academy.course.create:10680zr",
+            "commandDigest": "facec5257574b4f143d02fdd470e65e917dc2c4876663257a178b123a00c751f",
+            "bundleSha256": "898d2fdaebaade3d2d0c78e2ef51602aaeb7117b93a06a82bfb53e82b059f6ac"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_admin",
+            "commandType": "academy.course.update",
+            "commandPeriodId": "cinepolis-2026-11",
+            "receiptPath": "tenants/tya/commandReceipts/73a7684b6289b62ef60909488744cfef2056f72c",
+            "idempotencyKey": "academy.course.update:x6wco7",
+            "commandDigest": "c3f1b3e54365231fd997d9a0ffff9a16995e688ebb76831471c5cf280a92f06f",
+            "bundleSha256": "6eb1c4e1ce9cb905d646dfd503a4e579e9a34a97276208d0a4a600ce786b5a2c"
+          }
+        ],
+        "replayRequests": [
+          {
+            "sequence": 5,
+            "session": "admin-new-session",
+            "commandType": "academy.progress.lesson.complete",
+            "mode": "replay",
+            "dispatched": true,
+            "responseParsed": true,
+            "startedAt": "2026-11-26T16:12:24.715Z",
+            "recordPath": "tenants/tya/commandReceipts/academy-progress-5a6f3c06f2c5170568b29fbbe623f3d428073f61",
+            "dispatchedAt": "2026-11-26T16:12:24.808Z",
+            "httpStatus": 200,
+            "headersReceivedAt": "2026-11-26T16:12:35.904Z",
+            "finishedAt": "2026-11-26T16:12:35.916Z",
+            "closed": true
+          },
+          {
+            "sequence": 9,
+            "session": "admin-edit-new-session",
+            "commandType": "academy.course.update",
+            "mode": "replay",
+            "dispatched": true,
+            "responseParsed": true,
+            "startedAt": "2026-11-26T16:13:39.929Z",
+            "recordPath": "tenants/tya/commandReceipts/73a7684b6289b62ef60909488744cfef2056f72c",
+            "dispatchedAt": "2026-11-26T16:13:40.056Z",
+            "httpStatus": 200,
+            "headersReceivedAt": "2026-11-26T16:13:40.370Z",
+            "finishedAt": "2026-11-26T16:13:40.389Z",
+            "closed": true
+          }
+        ]
+      },
+      "normalizationEvidence": {
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/start.json#1795709264626667",
+        "startGeneration": "1795709264626667",
+        "startSha256": "49aae6cef2b41f805b86d4d19340c420d2d142967c7a31b054fe7a99080c40f8",
+        "job": "i3-run2382-academy-b7-isolated-dev-qa",
+        "controlSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "transportSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "branch": "recovery/cxorbia-phase-a-20260831",
+        "repository": "paulaosoriof86/demoCXOrbia",
+        "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+        "passwordConfigSha256": "20c174ff00812a4fddc2e2bca4ee8afb83771adcef0f75460f9b7046afb4ba83",
+        "runId": "1795709264626667",
+        "runAttempt": "1",
+        "resultRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/result.json#1795709882683841",
+        "resultGeneration": "1795709882683841",
+        "bundleSha256": "b7094334e89d8eb29c8fa37002864d65c22cec5dbe56cef6e0657723a1ca0c7c",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "archiveSha256": "6794b2b7157977e81af2825d02eca6cebf7e5f85d7020f8ffd7ed236a3d760b2",
+        "archiveVerified": true,
+        "entry": "result.json",
+        "resultSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+        "jobName": "i3-run2382-academy-b7-isolated-dev-qa",
+        "jobConclusion": "success",
+        "controlHead": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "requestCanonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "cleanup": {
+        "ok": true,
+        "exactKnownPathsOnly": true,
+        "deletedDocuments": 52,
+        "deletedAuth": 4,
+        "remainingOwnedDocuments": 0,
+        "remainingOwnedAuth": 0,
+        "ownershipTransaction": true
+      }
+    },
+    {
+      "schemaVersion": "cxorbia.i3.d08-academy-owner-obligations.v1",
+      "moduleDomain": "certifications",
+      "findingIds": [],
+      "decision": "PASS_D08_SCOPED_OWNER_OBLIGATIONS",
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+      "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+      "hrIndependent": true,
+      "production": false,
+      "fullDomain": false,
+      "operationKind": "PROVIDER_WRITE",
+      "ownerPaths": [
+        "app/modules/academia.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/academia.js",
+          "gitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+          "sourceSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "servedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "byteParity": true
+        }
+      ],
+      "dependencyEvidence": [
+        {
+          "path": "app/core/manuales-data.js",
+          "gitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+          "sourceSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "servedSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "sourceSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "servedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/cxorbia-command-adapter-v1.js",
+          "gitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+          "sourceSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "servedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "gitBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+          "sourceSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "servedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "byteParity": true
+        }
+      ],
+      "contractAuthority": {
+        "contractSha256": "a1d326eea343e9d64158133ce29e48d7a8a7af760581c0137eec1f3119a15ce4",
+        "taskId": "D08",
+        "scopeContractSha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "contractCoverage": {
+        "fullDomain": false,
+        "completeDomainInventory": false,
+        "taskIds": [
+          "D08"
+        ],
+        "obligations": [
+          {
+            "id": "D08.shopper.course",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.lesson",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.evaluation",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.resource",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.progress",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.new_session_replay",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.shopper.edit_denied",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.other_learner_isolated",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+            "actorUid": "qa_d08_1795709264626667_1_other",
+            "targetUid": "qa_d08_1795709264626667_1_shopper"
+          },
+          {
+            "id": "D08.wrong_audience_denied",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+            "actorUid": "qa_d08_1795709264626667_1_other",
+            "targetUid": "qa_d08_1795709264626667_1_shopper"
+          }
+        ]
+      },
+      "scope": {
+        "kind": "D08_ACADEMY_TENANT_COURSE",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": null,
+        "role": "shopper"
+      },
+      "auth": {
+        "authenticated": true,
+        "tenantExact": true,
+        "projectAuthorized": true,
+        "role": "shopper",
+        "method": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+        "actorUids": [
+          "qa_d08_1795709264626667_1_shopper",
+          "qa_d08_1795709264626667_1_other"
+        ]
+      },
+      "actionReal": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "reloadProof": true,
+      "noDuplicateRegression": true,
+      "providerWriteProof": {
+        "remoteReceiptId": "tenants/tya/commandReceipts/academy-progress-2dd004d0981d08fc38f5267b44204af59fd6dbdd",
+        "idempotencyKey": "academy.progress.lesson.complete:ndrhf3",
+        "replayNoDuplicate": true,
+        "receipts": [
+          {
+            "actorUid": "qa_d08_1795709264626667_1_shopper",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-df33745b7aba2d6c3fbf4b0f14b62c1f5e87829c",
+            "idempotencyKey": "academy.progress.lesson.complete:zr3jes",
+            "commandDigest": "48ec80ff1a979ecb35944540c911fd9acf4096693f1d6de52beabad20bce0c9d",
+            "bundleSha256": "669ad9d70201e716bf4f8a154d99e140b34d9f647d3d102e7518055af48ac897"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_shopper",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-b9eea42df1241047746fb3b1a9c944350942685a",
+            "idempotencyKey": "academy.progress.lesson.complete:1q17afy",
+            "commandDigest": "c5ba643406f2a1e6552f70afe034acf00928e1b4770dd68e68d362948f9e7108",
+            "bundleSha256": "2fc8eda1192e0aa1d7bc036e843bfeea278b7bfc0421d06f33583b03cf239df8"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_shopper",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-0ab733c7d182633aa6d043c208278f959f08a7ab",
+            "idempotencyKey": "academy.progress.lesson.complete:2aw5k8",
+            "commandDigest": "5d5835ed923414ffbb7fd39b900b939e0aa1e25065f127c8965d1720785163b8",
+            "bundleSha256": "899382e7a4227bd4cdd4d27aec4a4e4e96f49993a0842d43b241f05e6830eadf"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_shopper",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-16b971c73d5cf63dc99816367909047b715aa44c",
+            "idempotencyKey": "academy.progress.lesson.complete:13i1rja",
+            "commandDigest": "f83cc1d0d9b864014edebf4c1ff9e041bd0e82e866b528f416361c4df32ae486",
+            "bundleSha256": "ccce6dda5448281164619378f59becc16a278de8a6231cf9b487c946cdd8cceb"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_shopper",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-2dd004d0981d08fc38f5267b44204af59fd6dbdd",
+            "idempotencyKey": "academy.progress.lesson.complete:ndrhf3",
+            "commandDigest": "f8b9e5c56a67c16a10d9c92e2957561bd120d314ac6e95a5cfe30d3545e320af",
+            "bundleSha256": "818fbb4664f12161bfaf90113cf5bb926ed6132bb74e407c41f17a4ef1392053"
+          }
+        ],
+        "replayRequests": [
+          {
+            "sequence": 15,
+            "session": "shopper-new-session",
+            "commandType": "academy.progress.lesson.complete",
+            "mode": "replay",
+            "dispatched": true,
+            "responseParsed": true,
+            "startedAt": "2026-11-26T16:14:38.113Z",
+            "recordPath": "tenants/tya/commandReceipts/academy-progress-2dd004d0981d08fc38f5267b44204af59fd6dbdd",
+            "dispatchedAt": "2026-11-26T16:14:38.218Z",
+            "httpStatus": 200,
+            "headersReceivedAt": "2026-11-26T16:14:47.164Z",
+            "finishedAt": "2026-11-26T16:14:47.189Z",
+            "closed": true
+          }
+        ]
+      },
+      "normalizationEvidence": {
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/start.json#1795709264626667",
+        "startGeneration": "1795709264626667",
+        "startSha256": "49aae6cef2b41f805b86d4d19340c420d2d142967c7a31b054fe7a99080c40f8",
+        "job": "i3-run2382-academy-b7-isolated-dev-qa",
+        "controlSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "transportSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "branch": "recovery/cxorbia-phase-a-20260831",
+        "repository": "paulaosoriof86/demoCXOrbia",
+        "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+        "passwordConfigSha256": "20c174ff00812a4fddc2e2bca4ee8afb83771adcef0f75460f9b7046afb4ba83",
+        "runId": "1795709264626667",
+        "runAttempt": "1",
+        "resultRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/result.json#1795709882683841",
+        "resultGeneration": "1795709882683841",
+        "bundleSha256": "b7094334e89d8eb29c8fa37002864d65c22cec5dbe56cef6e0657723a1ca0c7c",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "archiveSha256": "6794b2b7157977e81af2825d02eca6cebf7e5f85d7020f8ffd7ed236a3d760b2",
+        "archiveVerified": true,
+        "entry": "result.json",
+        "resultSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+        "jobName": "i3-run2382-academy-b7-isolated-dev-qa",
+        "jobConclusion": "success",
+        "controlHead": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "requestCanonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "cleanup": {
+        "ok": true,
+        "exactKnownPathsOnly": true,
+        "deletedDocuments": 52,
+        "deletedAuth": 4,
+        "remainingOwnedDocuments": 0,
+        "remainingOwnedAuth": 0,
+        "ownershipTransaction": true
+      }
+    },
+    {
+      "schemaVersion": "cxorbia.i3.d08-academy-owner-obligations.v1",
+      "moduleDomain": "certifications",
+      "findingIds": [],
+      "decision": "PASS_D08_SCOPED_OWNER_OBLIGATIONS",
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+      "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+      "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+      "hrIndependent": true,
+      "production": false,
+      "fullDomain": false,
+      "operationKind": "PROVIDER_WRITE",
+      "ownerPaths": [
+        "app/modules/academia.js"
+      ],
+      "ownerEvidence": [
+        {
+          "path": "app/modules/academia.js",
+          "gitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+          "sourceSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "servedSha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+          "byteParity": true
+        }
+      ],
+      "dependencyEvidence": [
+        {
+          "path": "app/core/manuales-data.js",
+          "gitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+          "sourceSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "servedSha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+          "byteParity": true
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "gitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+          "sourceSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "servedSha256": "caa74dad682936e3cd5f40bb91bb7104d27eda9aa18fde40f5c1aac9444a38c8",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/cxorbia-command-adapter-v1.js",
+          "gitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+          "sourceSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "servedSha256": "da3f4a03f4dd9eadbcdb6d3d36622805631bf2e297bea95fc0776d5b128765b0",
+          "byteParity": true
+        },
+        {
+          "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "gitBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+          "sourceSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "servedSha256": "0b7c7a48cad0ccb64ad02e0fec656e840b2ceab895415343dddeec86100f66c3",
+          "byteParity": true
+        }
+      ],
+      "contractAuthority": {
+        "contractSha256": "a1d326eea343e9d64158133ce29e48d7a8a7af760581c0137eec1f3119a15ce4",
+        "taskId": "D08",
+        "scopeContractSha256": "9a72185b3eb06fe61cb1b41ec442d70d6dd8198e54cfbff276b1bf6c0d96aac0",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "contractCoverage": {
+        "fullDomain": false,
+        "completeDomainInventory": false,
+        "taskIds": [
+          "D08"
+        ],
+        "obligations": [
+          {
+            "id": "D08.cliente.course",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.lesson",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.evaluation",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.resource",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.progress",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.new_session_replay",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          },
+          {
+            "id": "D08.cliente.edit_denied",
+            "observed": true,
+            "evidenceRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+            "evidenceSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11"
+          }
+        ]
+      },
+      "scope": {
+        "kind": "D08_ACADEMY_TENANT_COURSE",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "periodId": null,
+        "role": "cliente"
+      },
+      "auth": {
+        "authenticated": true,
+        "tenantExact": true,
+        "projectAuthorized": true,
+        "role": "cliente",
+        "method": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+        "actorUids": [
+          "qa_d08_1795709264626667_1_cliente"
+        ]
+      },
+      "actionReal": true,
+      "providerAck": true,
+      "durableReadback": true,
+      "reloadProof": true,
+      "noDuplicateRegression": true,
+      "providerWriteProof": {
+        "remoteReceiptId": "tenants/tya/commandReceipts/academy-progress-62a8a1b75149fb4f04eeb3b52f309c51440e9a3b",
+        "idempotencyKey": "academy.progress.lesson.complete:4utbob",
+        "replayNoDuplicate": true,
+        "receipts": [
+          {
+            "actorUid": "qa_d08_1795709264626667_1_cliente",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-8e6cd3bd64d7c7d6224892c35b8ea4d57439eaa3",
+            "idempotencyKey": "academy.progress.lesson.complete:qppdpx",
+            "commandDigest": "4202db675540d0700e5cd469784856c60fcf72c4fb792e639463464454a78b67",
+            "bundleSha256": "ae412f129490efe4698a132042a981c017771811ae5a4fdd73619469e089bfc1"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_cliente",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-ab19324041527578e6b853c94489dc0516addb9a",
+            "idempotencyKey": "academy.progress.lesson.complete:9eot4r",
+            "commandDigest": "76af3a27a84b5198a5965e1a95d0f61642c971289b60c2e96b8fa5aeb7e05e3f",
+            "bundleSha256": "581e822940b4579451a1df4098743671b485461f03a57a915a5c0fff4cf43a22"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_cliente",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-6406369b99f96c73008b7ee9f8f3526d69632bb5",
+            "idempotencyKey": "academy.progress.lesson.complete:12cqwp",
+            "commandDigest": "f9b4e9ce9fa1b321eef82b3de174f225ad9049fc5aa668cc656ade1e632b817b",
+            "bundleSha256": "36790b6d448547a9d3188801d9c95325240d4c61d9f976ba6a129964f3540a32"
+          },
+          {
+            "actorUid": "qa_d08_1795709264626667_1_cliente",
+            "commandType": "academy.progress.lesson.complete",
+            "commandPeriodId": null,
+            "receiptPath": "tenants/tya/commandReceipts/academy-progress-62a8a1b75149fb4f04eeb3b52f309c51440e9a3b",
+            "idempotencyKey": "academy.progress.lesson.complete:4utbob",
+            "commandDigest": "ed60d3acd9fdf9d0746c717f0488f30fe0a55425f444782c489baf09817bd325",
+            "bundleSha256": "12edd6d37e76373200966e47b657ed8c7b832016fea31cfbad3c9bfddabf3700"
+          }
+        ],
+        "replayRequests": [
+          {
+            "sequence": 21,
+            "session": "cliente-new-session",
+            "commandType": "academy.progress.lesson.complete",
+            "mode": "replay",
+            "dispatched": true,
+            "responseParsed": true,
+            "startedAt": "2026-11-26T16:17:01.141Z",
+            "recordPath": "tenants/tya/commandReceipts/academy-progress-62a8a1b75149fb4f04eeb3b52f309c51440e9a3b",
+            "dispatchedAt": "2026-11-26T16:17:01.266Z",
+            "httpStatus": 200,
+            "headersReceivedAt": "2026-11-26T16:17:13.495Z",
+            "finishedAt": "2026-11-26T16:17:13.525Z",
+            "closed": true
+          }
+        ]
+      },
+      "normalizationEvidence": {
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/start.json#1795709264626667",
+        "startGeneration": "1795709264626667",
+        "startSha256": "49aae6cef2b41f805b86d4d19340c420d2d142967c7a31b054fe7a99080c40f8",
+        "job": "i3-run2382-academy-b7-isolated-dev-qa",
+        "controlSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "transportSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "branch": "recovery/cxorbia-phase-a-20260831",
+        "repository": "paulaosoriof86/demoCXOrbia",
+        "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+        "passwordConfigSha256": "20c174ff00812a4fddc2e2bca4ee8afb83771adcef0f75460f9b7046afb4ba83",
+        "runId": "1795709264626667",
+        "runAttempt": "1",
+        "resultRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/result.json#1795709882683841",
+        "resultGeneration": "1795709882683841",
+        "bundleSha256": "b7094334e89d8eb29c8fa37002864d65c22cec5dbe56cef6e0657723a1ca0c7c",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+        "archiveSha256": "6794b2b7157977e81af2825d02eca6cebf7e5f85d7020f8ffd7ed236a3d760b2",
+        "archiveVerified": true,
+        "entry": "result.json",
+        "resultSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+        "jobName": "i3-run2382-academy-b7-isolated-dev-qa",
+        "jobConclusion": "success",
+        "controlHead": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+        "requestCanonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489",
+        "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+      },
+      "cleanup": {
+        "ok": true,
+        "exactKnownPathsOnly": true,
+        "deletedDocuments": 52,
+        "deletedAuth": 4,
+        "remainingOwnedDocuments": 0,
+        "remainingOwnedAuth": 0,
+        "ownershipTransaction": true
+      }
+    }
+  ],
+  "evidence": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/start.json#1795709264626667",
+    "startGeneration": "1795709264626667",
+    "startSha256": "49aae6cef2b41f805b86d4d19340c420d2d142967c7a31b054fe7a99080c40f8",
+    "job": "i3-run2382-academy-b7-isolated-dev-qa",
+    "controlSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+    "transportSha": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "signer": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "passwordConfigSha256": "20c174ff00812a4fddc2e2bca4ee8afb83771adcef0f75460f9b7046afb4ba83",
+    "runId": "1795709264626667",
+    "runAttempt": "1",
+    "resultRef": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/result.json#1795709882683841",
+    "resultGeneration": "1795709882683841",
+    "bundleSha256": "b7094334e89d8eb29c8fa37002864d65c22cec5dbe56cef6e0657723a1ca0c7c",
+    "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/84df196a-e97d-4509-af56-8f54065fc1cc/evidence.zip#1795709876260286",
+    "archiveSha256": "6794b2b7157977e81af2825d02eca6cebf7e5f85d7020f8ffd7ed236a3d760b2",
+    "archiveVerified": true,
+    "entry": "result.json",
+    "resultSha256": "470f39807c17ccaf9da506278939cbf8753f9226288882858ac5c07551910c11",
+    "jobName": "i3-run2382-academy-b7-isolated-dev-qa",
+    "jobConclusion": "success",
+    "controlHead": "65245daf3cf0e1ed88ab44193bab64357bd706e9",
+    "requestCanonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489",
+    "baseContractSha256": "6959cdd3b30d28f831118fa7287fe1cc68acc4a8907d13dc57c298e2d2891558"
+  },
+  "focalObligationCount": 25,
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "production": false
+}

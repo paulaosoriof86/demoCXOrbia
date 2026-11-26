@@ -221,7 +221,7 @@ export function normalizeD08Result({ resultText, transport, request, baseContrac
       contractAuthority:{contractSha256:hash(moduleContract), taskId:'D08', scopeContractSha256:scopeAuthority.sha256, baseContractSha256:baseHash},
       contractCoverage:{fullDomain:false, completeDomainInventory:false, taskIds:['D08'], obligations},
       scope:{kind:'D08_ACADEMY_TENANT_COURSE', tenantId:raw.tenantId, projectId:raw.projectId, periodId:null, role},
-      auth:{authenticated:true, tenantExact:true, projectAuthorized:true, role, method:'FIREBASE_CUSTOM_TOKEN_QA', actorUids:role === 'shopper' ? [byRole.shopper.uid, observer.uid] : [byRole[role].uid]},
+      auth:{authenticated:true, tenantExact:true, projectAuthorized:true, role, method:password ? 'FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY' : 'FIREBASE_CUSTOM_TOKEN_QA', actorUids:role === 'shopper' ? [byRole.shopper.uid, observer.uid] : [byRole[role].uid]},
       actionReal:true, providerAck:true, durableReadback:true, reloadProof:true, noDuplicateRegression:true,
       providerWriteProof:{remoteReceiptId:original.receiptPath, idempotencyKey:original.command.idempotencyKey, replayNoDuplicate:true,
         receipts:positive.map(r => ({actorUid:r.uid, commandType:r.command.commandType, commandPeriodId:r.command.periodId, receiptPath:r.receiptPath, idempotencyKey:r.command.idempotencyKey, commandDigest:r.commandDigest, bundleSha256:r.bundleSha256})),

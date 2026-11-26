@@ -122,7 +122,9 @@ test('native password proof binds each of eight clean independent browser sessio
     s.passwordProof={uid:actor.uid,signInProvider:'password',claimsSha256:h(actor.expectedClaims)};
   }
   const run=r=>{const resultText=JSON.stringify(r);return normalizeD08Result({...inputs,resultText,transport:{...base,provider:'GOOGLE_CLOUD_SHELL',startGeneration:r.runId,startUri,resultGeneration:'1795624414514002',resultUri:prefix+'/result.json#1795624414514002',archiveUri,resultRef:archiveUri,archiveVerified:true,archiveSha256:'2'.repeat(64),bundleSha256:'3'.repeat(64),startSha256:'4'.repeat(64),transportSha:'a'.repeat(40),resultSha256:h(resultText),passwordConfigSha256}});};
-  assert.equal(run(raw).focalObligationCount,25);
+  const result=run(raw);
+  assert.equal(result.focalObligationCount,25);
+  assert.ok(result.ownerSpecificReceipts.every(receipt=>receipt.auth.method==='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY'));
   for(const mutant of [r=>delete r.sessionDiagnostics[0].passwordProof,r=>r.sessionDiagnostics[1].passwordProof.uid='foreign',r=>r.sessionDiagnostics.at(-1).passwordProof.signInProvider='custom',r=>r.sessionDiagnostics[1].passwordProof.claimsSha256='3'.repeat(64),r=>r.identities[0].authIdentity.email='foreign@example.com',r=>delete r.externalExecution.passwordConfigSha256,r=>r.ordinaryPasswordAuthenticationProven=true]){
     const other=structuredClone(raw);mutant(other);assert.throws(()=>run(other),/PASSWORD/);
   }

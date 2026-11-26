@@ -1,0 +1,594 @@
+{
+  "schemaVersion": "cxorbia.i3.satisfied-d08-request.v1",
+  "requestBinding": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+    "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+    "canonicalSha256": "e6541f80a24de7e83d9c2368f78db1754971213571e5e4860322cf0de2f2a489"
+  },
+  "typedReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795709264626667_TYPED_RESULT.json",
+    "gitBlob": "b267c75e1189fe2cfe9dac2e9190080a283ee439",
+    "sha256": "cd96766ef853bff1ced3c0869f4aeee7a2a37c95d345aead55d24f67132d8bae"
+  },
+  "controls": {
+    "descriptor": {
+      "currentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+        "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+        "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+        "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+        "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+        "production": false
+      },
+      "d08AcademyProgressResidual": {
+        "status": "HISTORICAL_PROVIDER_PASS_PRESERVED_CURRENT_UI_ROLE_RESIDUAL",
+        "state": "HOLD",
+        "sourceDefectStatus": "PREVIOUSLY_REPAIRED_AND_PRESERVED",
+        "sourceProof": {
+          "path": "docs/checkpoints/CXORBIA_I3_D08_COMBINED_SOURCE_CI_RUN2262_20261107.json",
+          "gitBlob": "54470e486b70570fce4d547f37ffbd5ad7102b8d",
+          "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+          "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+          "runId": 42420173152,
+          "runNumber": 2262,
+          "sourceTestsPass": 27,
+          "sourceTestsFail": 0,
+          "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
+          "production": false
+        },
+        "historicalMaterialization": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
+          "gitBlob": "6bc9b0448194576e8c7ee19a1d23c1fcda8d603c",
+          "runId": 42420769697,
+          "runNumber": 2263,
+          "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+          "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+          "decision": "PASS_RUN2263_EXACT_DEV_AND_READ_ONLY_CHROME_D08_HOLD_INTEGRAL_PHASE_A",
+          "artifactId": 13593895967,
+          "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+          "production": false
+        },
+        "currentMaterialization": {
+          "builds": 1,
+          "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+          "hostingDeploys": 1,
+          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795708904199000",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+          "hrRevision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+          "production": false,
+          "runtimeDeploys": 1,
+          "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+          "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+          "scenarioDimensionsProven": true,
+          "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+          "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+          "storageRulesDeploys": 0,
+          "buildProvenance": {
+            "id": "d1bae768-ee79-4ece-acc4-6350771b26b0",
+            "status": "SUCCESS",
+            "project": "cxorbia-backend-dev",
+            "location": "global",
+            "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+            "sourceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz",
+              "generation": "1795708118146116",
+              "size": 5969099,
+              "sha256": "b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e"
+            },
+            "productSource": "72874c08560addf5d0bc4a23573d65ce86481c95",
+            "productTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+            "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-72874c08560a-google-1795708118146116",
+            "digest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+            "startedAt": "2026-11-26T15:48:46.128736951Z",
+            "completedAt": "2026-11-26T15:49:49.138835Z"
+          },
+          "executionProvider": "GOOGLE_CLOUD_BUILD",
+          "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+          "runAttempt": 1,
+          "verifiedServedAssetCount": 50,
+          "sourceHostedExact": true,
+          "runtimeTrafficExact": true,
+          "productionUnchanged": true,
+          "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+          "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+          "firestoreRulesDeploys": 0,
+          "hrWrites": 0,
+          "runNumber": null,
+          "jobConclusion": "success",
+          "executionBinding": {
+            "executionProvider": "GOOGLE_CLOUD_BUILD",
+            "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+            "runAttempt": 1,
+            "runNumber": null,
+            "project": "cxorbia-backend-dev",
+            "projectNumber": "87461567267",
+            "projectMetadataSha256": "ab08f4058a7f2bc002603cfd6230adce716650b6a59f58d3968af6e2e9a7b661",
+            "location": "global",
+            "resourceName": "projects/87461567267/locations/global/builds/6050930a-71a6-46c2-b2bc-9cce75d46099",
+            "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+            "stepId": "vrm154-156-dev-materialization",
+            "jobConclusion": "success",
+            "workflow": {
+              "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+              "job": "vrm154-156-dev-materialization",
+              "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+              "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+            },
+            "nativeStepSha256": "e3c009da7853c402e8c3567f3cc0873e4388ddaab9ebb5e7061a85f128852421",
+            "producerControlHead": "46e40c7ec316b21f91a0e7eecd25e9f79e54098d",
+            "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+            "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+            "request": {
+              "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+              "field": "pendingDevSuccessor",
+              "gitBlob": "92657ad7c8e86b8964b582e9242fdc589385f43f",
+              "sha256": "acf049a557d6fa9385032e356e550000c3b2286a13ee65ffa8c92903359efc6a"
+            },
+            "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+            "predecessorReceiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+            "predecessorExecution": {
+              "provider": "GOOGLE_CLOUD_BUILD",
+              "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+              "runAttempt": 1
+            },
+            "startedAt": "2026-11-26T15:58:13.739465078Z",
+            "completedAt": "2026-11-26T16:02:35.523066Z",
+            "buildMetadataSha256": "1caa74d39fce9d1b114c33589d0b9e04a29beede418ee362d7489126f80db6b6",
+            "nativeLogsSha256": "2ae9403cb2dbf317feeb73c81f45694438b850b9fcb98f13903b322c393ae8a8",
+            "sourceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz",
+              "generation": "1795708118146116",
+              "size": 5969099,
+              "sha256": "b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e",
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz#1795708118146116"
+            },
+            "evidenceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/paired-evidence.zip",
+              "generation": "1795708954959561",
+              "size": 5558,
+              "sha256": "16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/paired-evidence.zip#1795708954959561"
+            },
+            "artifactManifest": {
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/artifacts-6050930a-71a6-46c2-b2bc-9cce75d46099.json#1795708955119373",
+              "sha256": "dcc2e632a369ebc3613e9aad6f9ba9e897b05d9ca66f6dc0efc259a310ed2256"
+            },
+            "artifactDigest": "sha256:16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+            "nativeBuildVerified": true,
+            "scope": "I3_PAIRED_DEV",
+            "production": false
+          },
+          "controlHeadAtDeploy": "46e40c7ec316b21f91a0e7eecd25e9f79e54098d",
+          "artifactDigest": "sha256:16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+          "artifactDigestType": "GOOGLE_CLOUD_BUILD_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+          "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+          "hrLiveVerified": true,
+          "state": "PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING",
+          "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+          "fullTaskClosed": false
+        },
+        "providerEvidence": {
+          "decision": "PASS",
+          "runId": 42927850644,
+          "runNumber": 2391,
+          "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+          "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+          "receiptGitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+          "historicalProviderOnly": true,
+          "scope": "SYNTHETIC_PROGRESS_ACK_DURABLE_READ_NEW_SESSION_REPLAY_ISOLATION_NEGATIVE_AND_CLEANUP",
+          "currentUiCertified": false
+        },
+        "currentReadOnlyUiObservation": {
+          "environment": "DEV",
+          "role": "Shopper",
+          "existingSession": true,
+          "catalogCourses": 7,
+          "catalogLessons": 27,
+          "courseOpened": true,
+          "lessonBodyVisible": true,
+          "evaluationQuestionsVisible": 3,
+          "saveOrCompleteClicked": false,
+          "reloadOrNewSessionVerified": false,
+          "progressWriteCommandsObserved": 0,
+          "perBrowserByteParityCertified": false,
+          "dateLocal": "2026-11-17",
+          "evidencePath": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "evidenceGitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b"
+        },
+        "currentUiCertified": false,
+        "wholeD08HumanAcceptance": "PENDING",
+        "noRealLearnerCompletionCommands": true,
+        "roleSessionsPending": [
+          "Shopper",
+          "Cliente"
+        ],
+        "remaining": [
+          "Shopper and Cliente independent UI/course/lesson/evaluation/resource/progress/new-session/replay within the original D08 request remain uncovered by the new Google Admin observations.",
+          "Preserve the accepted tagged Admin draft edit and Admin progress/ACK/new-session/replay; only original uncovered edit-role and stale-version denials remain. Empty project scope of that draft does not grant project-scoped editing credit or create a new test requirement.",
+          "Preserve RUN2391 provider-only progress/replay/isolation/wrong-audience/cleanup and prior RUN2783 Admin resource observation at their original scopes. Latest Google Admin summary grants no resource or learner-role credit.",
+          "Use only actual serving/receipt identity for a future authorized residual execution. Completed cleanup of all three held Google attempts remains evidence; a newly created fixture retains its own ownership/cleanup obligation. No repeated bank operations or real learner/course writes."
+        ],
+        "production": false,
+        "cumulativeAdminUiEvidence": {
+          "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
+          "gitBlob": "ddacab0c6b92a510949119e5353f0cf9f7266aaf",
+          "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+          "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
+          "scope": "Verified isolated Admin UI course/lesson/evaluation/progress, ACK, durable new-session read/replay, authorized tagged Admin draft edit and exact cleanup at source1691. Preserved observations; no global PASS, learner-role/resource credit or new materialization.",
+          "observedIdentity": {
+            "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+            "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+            "controlSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+            "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+            "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+            "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+          },
+          "observationBindings": [
+            {
+              "obligationId": "D08.admin.course",
+              "jsonPointers": [
+                "/observations/admin/uiCourse"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.lesson",
+              "jsonPointers": [
+                "/observations/admin/uiContent"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.evaluation",
+              "jsonPointers": [
+                "/observations/admin/uiEvaluation"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.progress",
+              "jsonPointers": [
+                "/observations/admin/uiProgress",
+                "/observations/admin/providerAck",
+                "/observations/admin/durableReadback"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.new_session_replay",
+              "jsonPointers": [
+                "/observations/admin/independentNewSession",
+                "/observations/admin/replayNoDuplicate"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.edit",
+              "jsonPointers": [
+                "/observations/authorizedAdminEdit/providerAck",
+                "/observations/authorizedAdminEdit/durableReadback",
+                "/observations/authorizedAdminEdit/independentNewSession",
+                "/observations/authorizedAdminEdit/replayNoDuplicate"
+              ]
+            },
+            {
+              "obligationId": "D08.cleanup",
+              "jsonPointers": [
+                "/observations/cleanup/ok",
+                "/observations/cleanup/exactKnownPathsOnly",
+                "/observations/cleanup/remainingOwnedDocuments",
+                "/observations/cleanup/remainingOwnedAuth",
+                "/observations/postflightExact"
+              ]
+            }
+          ],
+          "receiptState": "HOLD",
+          "fullDomain": false,
+          "newFunctionalPasses": 0,
+          "production": false,
+          "sourceContext": "HISTORICAL_OBSERVATION_AT_1691_RETAINED_AFTER_NEW_PAIR",
+          "coveredScopedObservationIds": [
+            "D08.admin.course",
+            "D08.admin.lesson",
+            "D08.admin.evaluation",
+            "D08.admin.progress",
+            "D08.admin.new_session_replay",
+            "D08.admin.edit",
+            "D08.cleanup"
+          ],
+          "wholeTaskClosed": false,
+          "newMaterializationClaimed": false
+        }
+      }
+    },
+    "pointer": {
+      "currentD08UiQaRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+        "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+        "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+        "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+        "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+        "production": false
+      },
+      "d08AcademyProgressResidual": {
+        "status": "HISTORICAL_PROVIDER_PASS_PRESERVED_CURRENT_UI_ROLE_RESIDUAL",
+        "state": "HOLD",
+        "sourceDefectStatus": "PREVIOUSLY_REPAIRED_AND_PRESERVED",
+        "sourceProof": {
+          "path": "docs/checkpoints/CXORBIA_I3_D08_COMBINED_SOURCE_CI_RUN2262_20261107.json",
+          "gitBlob": "54470e486b70570fce4d547f37ffbd5ad7102b8d",
+          "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+          "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+          "runId": 42420173152,
+          "runNumber": 2262,
+          "sourceTestsPass": 27,
+          "sourceTestsFail": 0,
+          "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
+          "production": false
+        },
+        "historicalMaterialization": {
+          "path": "docs/checkpoints/CXORBIA_I3_RUN2263_EXACT_DEV_D08_CONTINUITY_20261107.json",
+          "gitBlob": "6bc9b0448194576e8c7ee19a1d23c1fcda8d603c",
+          "runId": 42420769697,
+          "runNumber": 2263,
+          "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
+          "sourceTree": "1f350fab2ea41504434a1c4712282b2bbbb05ae9",
+          "decision": "PASS_RUN2263_EXACT_DEV_AND_READ_ONLY_CHROME_D08_HOLD_INTEGRAL_PHASE_A",
+          "artifactId": 13593895967,
+          "artifactDigest": "sha256:d5dc0a33053e9061cf8dd9fd8bcc21b5a5b8b1e5e055d85caa455538565a952a",
+          "production": false
+        },
+        "currentMaterialization": {
+          "builds": 1,
+          "decision": "PASS_I3_GTHN_EXACT_DEV_MATERIALIZATION",
+          "hostingDeploys": 1,
+          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795708904199000",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+          "hrRevision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+          "production": false,
+          "runtimeDeploys": 1,
+          "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+          "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+          "scenarioDimensionsProven": true,
+          "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+          "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+          "storageRulesDeploys": 0,
+          "buildProvenance": {
+            "id": "d1bae768-ee79-4ece-acc4-6350771b26b0",
+            "status": "SUCCESS",
+            "project": "cxorbia-backend-dev",
+            "location": "global",
+            "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+            "sourceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz",
+              "generation": "1795708118146116",
+              "size": 5969099,
+              "sha256": "b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e"
+            },
+            "productSource": "72874c08560addf5d0bc4a23573d65ce86481c95",
+            "productTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+            "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-72874c08560a-google-1795708118146116",
+            "digest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+            "startedAt": "2026-11-26T15:48:46.128736951Z",
+            "completedAt": "2026-11-26T15:49:49.138835Z"
+          },
+          "executionProvider": "GOOGLE_CLOUD_BUILD",
+          "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+          "runAttempt": 1,
+          "verifiedServedAssetCount": 50,
+          "sourceHostedExact": true,
+          "runtimeTrafficExact": true,
+          "productionUnchanged": true,
+          "productionIndexSha256": "3b0ba999cd5a1738566f7e195ded2b03995ee369b59be8e594f54ad31e70ac7e",
+          "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057",
+          "firestoreRulesDeploys": 0,
+          "hrWrites": 0,
+          "runNumber": null,
+          "jobConclusion": "success",
+          "executionBinding": {
+            "executionProvider": "GOOGLE_CLOUD_BUILD",
+            "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+            "runAttempt": 1,
+            "runNumber": null,
+            "project": "cxorbia-backend-dev",
+            "projectNumber": "87461567267",
+            "projectMetadataSha256": "ab08f4058a7f2bc002603cfd6230adce716650b6a59f58d3968af6e2e9a7b661",
+            "location": "global",
+            "resourceName": "projects/87461567267/locations/global/builds/6050930a-71a6-46c2-b2bc-9cce75d46099",
+            "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+            "stepId": "vrm154-156-dev-materialization",
+            "jobConclusion": "success",
+            "workflow": {
+              "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+              "job": "vrm154-156-dev-materialization",
+              "gitBlob": "6b52d9200f53e84ab4bff58799cd39d78f1b62e2",
+              "sha256": "9b9eb8eadcce8f64611d2d840a332e55f914e194a3eb14474e047c4d3d82d953"
+            },
+            "nativeStepSha256": "e3c009da7853c402e8c3567f3cc0873e4388ddaab9ebb5e7061a85f128852421",
+            "producerControlHead": "46e40c7ec316b21f91a0e7eecd25e9f79e54098d",
+            "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+            "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+            "request": {
+              "path": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+              "field": "pendingDevSuccessor",
+              "gitBlob": "92657ad7c8e86b8964b582e9242fdc589385f43f",
+              "sha256": "acf049a557d6fa9385032e356e550000c3b2286a13ee65ffa8c92903359efc6a"
+            },
+            "predecessorReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+            "predecessorReceiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+            "predecessorExecution": {
+              "provider": "GOOGLE_CLOUD_BUILD",
+              "runId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+              "runAttempt": 1
+            },
+            "startedAt": "2026-11-26T15:58:13.739465078Z",
+            "completedAt": "2026-11-26T16:02:35.523066Z",
+            "buildMetadataSha256": "1caa74d39fce9d1b114c33589d0b9e04a29beede418ee362d7489126f80db6b6",
+            "nativeLogsSha256": "2ae9403cb2dbf317feeb73c81f45694438b850b9fcb98f13903b322c393ae8a8",
+            "sourceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz",
+              "generation": "1795708118146116",
+              "size": 5969099,
+              "sha256": "b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e",
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/sources/72874c08560addf5d0bc4a23573d65ce86481c95/b7953b01b1569cfb7449ed4cbd4facd286cdf9f4fc9a4f9833d04082cfe4962e.tgz#1795708118146116"
+            },
+            "evidenceObject": {
+              "bucket": "cxorbia-backend-dev_cloudbuild",
+              "name": "cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/paired-evidence.zip",
+              "generation": "1795708954959561",
+              "size": 5558,
+              "sha256": "16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/paired-evidence.zip#1795708954959561"
+            },
+            "artifactManifest": {
+              "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/6050930a-71a6-46c2-b2bc-9cce75d46099/artifacts-6050930a-71a6-46c2-b2bc-9cce75d46099.json#1795708955119373",
+              "sha256": "dcc2e632a369ebc3613e9aad6f9ba9e897b05d9ca66f6dc0efc259a310ed2256"
+            },
+            "artifactDigest": "sha256:16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+            "nativeBuildVerified": true,
+            "scope": "I3_PAIRED_DEV",
+            "production": false
+          },
+          "controlHeadAtDeploy": "46e40c7ec316b21f91a0e7eecd25e9f79e54098d",
+          "artifactDigest": "sha256:16985af5e5b87714ed628143fd7e7ecee1a55164723f098c79c19800dff71d19",
+          "artifactDigestType": "GOOGLE_CLOUD_BUILD_DEV_EVIDENCE_ZIP_SHA256_NOT_I4_CERTIFIED_TAR",
+          "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+          "hrLiveVerified": true,
+          "state": "PASS_DEV_EXACT_FUNCTIONAL_AND_CURRENT_C3_PENDING",
+          "humanAcceptance": "B4_B5_B6_B7_PASS_PRESERVED_NO_NEW_APPROVAL",
+          "fullTaskClosed": false
+        },
+        "providerEvidence": {
+          "decision": "PASS",
+          "runId": 42927850644,
+          "runNumber": 2391,
+          "sourceSha": "4784f220912ccb1f4be19254ee6b9695dcd0a6eb",
+          "receiptPath": "docs/checkpoints/CXORBIA_I3_RUN2391_B7_DECISION_AND_ACADEMY_REPEAT_DEV_QA_20261110.json",
+          "receiptGitBlob": "0d609a7c59bfa5e563cdd45a0f954342f5f62930",
+          "historicalProviderOnly": true,
+          "scope": "SYNTHETIC_PROGRESS_ACK_DURABLE_READ_NEW_SESSION_REPLAY_ISOLATION_NEGATIVE_AND_CLEANUP",
+          "currentUiCertified": false
+        },
+        "currentReadOnlyUiObservation": {
+          "environment": "DEV",
+          "role": "Shopper",
+          "existingSession": true,
+          "catalogCourses": 7,
+          "catalogLessons": 27,
+          "courseOpened": true,
+          "lessonBodyVisible": true,
+          "evaluationQuestionsVisible": 3,
+          "saveOrCompleteClicked": false,
+          "reloadOrNewSessionVerified": false,
+          "progressWriteCommandsObserved": 0,
+          "perBrowserByteParityCertified": false,
+          "dateLocal": "2026-11-17",
+          "evidencePath": "docs/checkpoints/CXORBIA_I3_RUN2595_FINANCE_AND_D08_CONTINUITY_20261117.json",
+          "evidenceGitBlob": "6fd90e4ef551530632d7a11d65fa4ead8747bf2b"
+        },
+        "currentUiCertified": false,
+        "wholeD08HumanAcceptance": "PENDING",
+        "noRealLearnerCompletionCommands": true,
+        "roleSessionsPending": [
+          "Shopper",
+          "Cliente"
+        ],
+        "remaining": [
+          "Shopper and Cliente independent UI/course/lesson/evaluation/resource/progress/new-session/replay within the original D08 request remain uncovered by the new Google Admin observations.",
+          "Preserve the accepted tagged Admin draft edit and Admin progress/ACK/new-session/replay; only original uncovered edit-role and stale-version denials remain. Empty project scope of that draft does not grant project-scoped editing credit or create a new test requirement.",
+          "Preserve RUN2391 provider-only progress/replay/isolation/wrong-audience/cleanup and prior RUN2783 Admin resource observation at their original scopes. Latest Google Admin summary grants no resource or learner-role credit.",
+          "Use only actual serving/receipt identity for a future authorized residual execution. Completed cleanup of all three held Google attempts remains evidence; a newly created fixture retains its own ownership/cleanup obligation. No repeated bank operations or real learner/course writes."
+        ],
+        "production": false,
+        "cumulativeAdminUiEvidence": {
+          "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795625702166502_VERIFIED_ARCHIVE.json",
+          "gitBlob": "ddacab0c6b92a510949119e5353f0cf9f7266aaf",
+          "sha256": "b0d9f000cd47411683c733bfe46265ceebf5ec4d3987aa7bf83237d8d26593f7",
+          "gitReadAt": "0d4577882ce86d16ca2711007598fa4c17e49802",
+          "scope": "Verified isolated Admin UI course/lesson/evaluation/progress, ACK, durable new-session read/replay, authorized tagged Admin draft edit and exact cleanup at source1691. Preserved observations; no global PASS, learner-role/resource credit or new materialization.",
+          "observedIdentity": {
+            "sourceSha": "1691a76a7bc095ad4bf444aa0db76df2f359a5f0",
+            "sourceTree": "3725071a72014d6b891648ab5d2eeef9638276ac",
+            "controlSha": "12f9ea2058e34085a4c668a1bfd3147fcdf266a4",
+            "runtimeRevision": "cxorbia-live-hr-dev-00391-8mg",
+            "runtimeDigest": "sha256:2d70255dc8d50ba4e9b4f6ed7729b14f296911cfd2a62042b42da36b3b59fa27",
+            "hostingVersion": "sites/cxorbia-backend-dev/versions/511061474d07baca"
+          },
+          "observationBindings": [
+            {
+              "obligationId": "D08.admin.course",
+              "jsonPointers": [
+                "/observations/admin/uiCourse"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.lesson",
+              "jsonPointers": [
+                "/observations/admin/uiContent"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.evaluation",
+              "jsonPointers": [
+                "/observations/admin/uiEvaluation"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.progress",
+              "jsonPointers": [
+                "/observations/admin/uiProgress",
+                "/observations/admin/providerAck",
+                "/observations/admin/durableReadback"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.new_session_replay",
+              "jsonPointers": [
+                "/observations/admin/independentNewSession",
+                "/observations/admin/replayNoDuplicate"
+              ]
+            },
+            {
+              "obligationId": "D08.admin.edit",
+              "jsonPointers": [
+                "/observations/authorizedAdminEdit/providerAck",
+                "/observations/authorizedAdminEdit/durableReadback",
+                "/observations/authorizedAdminEdit/independentNewSession",
+                "/observations/authorizedAdminEdit/replayNoDuplicate"
+              ]
+            },
+            {
+              "obligationId": "D08.cleanup",
+              "jsonPointers": [
+                "/observations/cleanup/ok",
+                "/observations/cleanup/exactKnownPathsOnly",
+                "/observations/cleanup/remainingOwnedDocuments",
+                "/observations/cleanup/remainingOwnedAuth",
+                "/observations/postflightExact"
+              ]
+            }
+          ],
+          "receiptState": "HOLD",
+          "fullDomain": false,
+          "newFunctionalPasses": 0,
+          "production": false,
+          "sourceContext": "HISTORICAL_OBSERVATION_AT_1691_RETAINED_AFTER_NEW_PAIR",
+          "coveredScopedObservationIds": [
+            "D08.admin.course",
+            "D08.admin.lesson",
+            "D08.admin.evaluation",
+            "D08.admin.progress",
+            "D08.admin.new_session_replay",
+            "D08.admin.edit",
+            "D08.cleanup"
+          ],
+          "wholeTaskClosed": false,
+          "newMaterializationClaimed": false
+        }
+      }
+    }
+  },
+  "production": false,
+  "newDomainMatches": 0,
+  "fullDomain": false
+}

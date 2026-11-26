@@ -1,0 +1,314 @@
+{
+  "schemaVersion": "cxorbia.i3.port-tech.process-return.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "product": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "tree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+  "pairedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+  "pairedRun": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+  "runtime": "cxorbia-live-hr-dev-00395-lnc",
+  "digest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+  "hosting": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+  "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795708904199000",
+  "verifiedAssets": 50,
+  "imageBuild": "d1bae768-ee79-4ece-acc4-6350771b26b0",
+  "canonicalRead": {
+    "schemaVersion": "cxorbia.i3.excel-canonical-readonly.v1",
+    "decision": "PASS_EXCEL_CANONICAL_ID_READONLY",
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+    "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "executionProvider": "GOOGLE_CLOUD_BUILD",
+    "runAttempt": 1,
+    "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+    "production": false,
+    "fullDomain": false,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "commandPosts": 0,
+    "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+    "visits": 88,
+    "uniqueCanonicalIds": 88,
+    "byCountry": {
+      "GT": 68,
+      "HN": 20
+    },
+    "byPeriod": {
+      "cinepolis-2026-10": 44,
+      "cinepolis-2026-11": 44
+    },
+    "sharedCountryCoordinates": 20,
+    "sourceSafe": true,
+    "revisionStableAcrossReadbacks": true,
+    "durationMs": 1206
+  },
+  "cost": "docs/checkpoints/CXORBIA_I3_PAIRED_6050930A_MAKE_CREDIT_WINDOW_20261126.json",
+  "originalWorkbook": {
+    "policy": "The original workbook is authoritative. Adapt reading through project configuration. Assigned shopper maps to shopper.",
+    "headerOverwrites": 0,
+    "sourceScope": "Cinepolis Guatemala Columna1 between declared Quincena and Telefono. Unique project match required."
+  },
+  "f3": "docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_MAKE_WINDOW_AND_CLEANUP_20261126.json",
+  "academy": {
+    "runId": "1795709264626667",
+    "typedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_D08_1795709264626667_TYPED_RESULT.json",
+    "roles": [
+      {
+        "role": "admin",
+        "obligations": [
+          "D08.admin.course",
+          "D08.admin.lesson",
+          "D08.admin.evaluation",
+          "D08.admin.resource",
+          "D08.admin.progress",
+          "D08.admin.new_session_replay",
+          "D08.admin.edit",
+          "D08.stale_version_denied",
+          "D08.cleanup"
+        ],
+        "ack": true,
+        "readback": true,
+        "replay": true
+      },
+      {
+        "role": "shopper",
+        "obligations": [
+          "D08.shopper.course",
+          "D08.shopper.lesson",
+          "D08.shopper.evaluation",
+          "D08.shopper.resource",
+          "D08.shopper.progress",
+          "D08.shopper.new_session_replay",
+          "D08.shopper.edit_denied",
+          "D08.other_learner_isolated",
+          "D08.wrong_audience_denied"
+        ],
+        "ack": true,
+        "readback": true,
+        "replay": true
+      },
+      {
+        "role": "cliente",
+        "obligations": [
+          "D08.cliente.course",
+          "D08.cliente.lesson",
+          "D08.cliente.evaluation",
+          "D08.cliente.resource",
+          "D08.cliente.progress",
+          "D08.cliente.new_session_replay",
+          "D08.cliente.edit_denied"
+        ],
+        "ack": true,
+        "readback": true,
+        "replay": true
+      }
+    ],
+    "resources": 3,
+    "cleanup": {
+      "ok": true,
+      "exactKnownPathsOnly": true,
+      "deletedDocuments": 52,
+      "deletedAuth": 4,
+      "remainingOwnedDocuments": 0,
+      "remainingOwnedAuth": 0,
+      "ownershipTransaction": true
+    },
+    "fullDomain": false
+  },
+  "hrBrowser": {
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "nativeRun": "1795709264626667",
+    "before": [
+      {
+        "sameActor": true,
+        "role": "admin",
+        "authenticated": true,
+        "tenant": "tya",
+        "project": "cinepolis",
+        "authorizedProject": true,
+        "bound": true,
+        "applied": true,
+        "atomic": true,
+        "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+        "authorityRevision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+        "scopeMode": "rolling_window",
+        "selectedPeriod": "cinepolis-2026-11",
+        "requestedPeriod": null,
+        "freshness": "last_confirmed",
+        "sourceReadAt": "2026-11-26T16:08:27.246Z",
+        "sourceMarker": "hr-last-confirmed",
+        "sourceBadge": "HR · última sincronización 26/11/2026, 4:08:27 p. m.",
+        "visibleCanonicalBadge": false,
+        "uidSha256": "30bbc0637815d168f4e47d7da53d9d840f86555d85410b4cf61374a74c8a84f3"
+      },
+      {
+        "sameActor": true,
+        "role": "admin",
+        "authenticated": true,
+        "tenant": "tya",
+        "project": "cinepolis",
+        "authorizedProject": true,
+        "bound": true,
+        "applied": true,
+        "atomic": true,
+        "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+        "authorityRevision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+        "scopeMode": "rolling_window",
+        "selectedPeriod": "cinepolis-2026-11",
+        "requestedPeriod": null,
+        "freshness": "last_confirmed",
+        "sourceReadAt": "2026-11-26T16:08:27.246Z",
+        "sourceMarker": "hr-last-confirmed",
+        "sourceBadge": "HR · última sincronización 26/11/2026, 4:08:27 p. m.",
+        "visibleCanonicalBadge": false,
+        "uidSha256": "30bbc0637815d168f4e47d7da53d9d840f86555d85410b4cf61374a74c8a84f3"
+      }
+    ],
+    "manualWindowStart": "2026-11-26T16:12:36.945Z",
+    "manualWindowEnd": "2026-11-26T16:12:53.327Z",
+    "cloudRunRequests": [
+      {
+        "timestamp": "2026-11-26T16:12:37.454695Z",
+        "insertId": "6b085a7f000e372a2201556d",
+        "revisionName": "cxorbia-live-hr-dev-00395-lnc",
+        "status": 200,
+        "format": "json",
+        "fresh": true,
+        "readModel": "1",
+        "protectedState": "1",
+        "ts": "1795709557355"
+      },
+      {
+        "timestamp": "2026-11-26T16:12:52.400304Z",
+        "insertId": "6b085a84000adf6ca48d3365",
+        "revisionName": "cxorbia-live-hr-dev-00395-lnc",
+        "status": 200,
+        "format": "meta",
+        "fresh": false,
+        "readModel": "1",
+        "protectedState": "1",
+        "ts": "1795709572348"
+      }
+    ],
+    "observedToast": "HR viva actualizada",
+    "application": {
+      "status": "HOLD",
+      "cause": "PROVIDER_FAILURE:HR_MANUAL_READ_COUNT"
+    },
+    "requests": {
+      "manualFresh": 0,
+      "sharedDue": 0,
+      "blockedOutOfScope": 0,
+      "operationalPostAttempts": 0
+    },
+    "chromiumWorkerFixture": [
+      {
+        "mode": "allow",
+        "cache": "no-store",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 0,
+        "events": [
+          {
+            "routed": false,
+            "sw": true
+          }
+        ]
+      },
+      {
+        "mode": "allow",
+        "cache": "default",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 0,
+        "events": [
+          {
+            "routed": false,
+            "sw": true
+          }
+        ]
+      },
+      {
+        "mode": "block",
+        "cache": "no-store",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 1,
+        "events": [
+          {
+            "routed": true,
+            "sw": false
+          }
+        ]
+      },
+      {
+        "mode": "block",
+        "cache": "default",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 1,
+        "events": [
+          {
+            "routed": true,
+            "sw": false
+          }
+        ]
+      }
+    ],
+    "cold": {
+      "iteration": "I3",
+      "state": "HOLD",
+      "revision": "cxorbia-live-hr-dev-00395-lnc",
+      "externalReadsInitiatedByProbe": 0,
+      "production": false,
+      "decision": "HOLD_COLD_INSTANCE_NOT_PROVEN",
+      "observations": [],
+      "reason": "No attributable durable response in supplied witness"
+    },
+    "classification": "ENVIRONMENT_FAILURE",
+    "interpretation": "Two independently authenticated contexts shared revision and selected period before the click. The fresh request returned HTTP 200. The service worker made the page routing observer miss it. Durable generation after the click and first read on a cold instance require independent proof."
+  },
+  "e10": "docs/checkpoints/CXORBIA_I3_E10_DURABLE_ROUTE_READBACK_20261126.json",
+  "finance": {
+    "typedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795638868819016_TYPED_RESULT.json",
+    "priorSource": "235d6c28e72226f792514656fd5c47c8ba65cbee",
+    "productOwnerParity": [
+      {
+        "path": "app/modules/finanzas.js",
+        "priorBlob": "9bd11970cf0acb4e0c19df331bf9eade76e2ba90",
+        "currentBlob": "9bd11970cf0acb4e0c19df331bf9eade76e2ba90"
+      },
+      {
+        "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "priorBlob": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+        "currentBlob": "961fe3d605a37c69c9d949bb2520f8669a81a305"
+      },
+      {
+        "path": "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs",
+        "priorBlob": "30c6d69acc05fd7fc478db1cf0389870588d4335",
+        "currentBlob": "30c6d69acc05fd7fc478db1cf0389870588d4335"
+      }
+    ],
+    "newFinanceWrites": 0
+  },
+  "sixMatchesPreserved": true,
+  "newDomainMatches": 0,
+  "retainedOriginalTasks": [
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+  ],
+  "gate20": "HOLD",
+  "gate21": "HOLD",
+  "authorizationI4": false,
+  "production": false,
+  "next": "I3 HOLD. The current DEV pair 6050930a and D08 run 1795709264626667 are incorporated. Preserve F3 bounded GT L2 and D08's 25 scoped obligations. Complete only targeted shared HR manual/durable/cold evidence, remaining Finance, E10 authorized import owner and open original process clauses. Gate20/Gate21 and I4 remain open."
+}
