@@ -919,6 +919,10 @@
     "e10Feea0c34AndE08Finance": {
       "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_AND_E08_SEPTEMBER_20261126.json",
       "gitBlob": "e0ecb4bb83a53921cc64ad8f4355bfbad16e8819"
+    },
+    "d07PdfLifecycleAndScopedShopperReads": {
+      "path": "docs/checkpoints/CXORBIA_I3_D07_PDF_LIFECYCLE_AND_SCOPED_SHOPPER_READS_20261126.json",
+      "gitBlob": "e6dddb1399d526321eb1e89dc1b26c020cfbb048"
     }
   },
   "lastChromeConnection": {

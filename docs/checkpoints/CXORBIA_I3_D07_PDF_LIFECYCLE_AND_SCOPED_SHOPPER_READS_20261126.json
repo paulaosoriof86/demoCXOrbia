@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "cxorbia.i3.d07.native-pdf-lifecycle-and-scoped-reads.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlBefore": "462b7e6a5d848277f75ffdb53f2c01d4bf8dc627",
+  "domain": "documents-resources",
+  "serving": {
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+    "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099"
+  },
+  "nativePdfLifecycle": {
+    "runId": "1795720347332485",
+    "decision": "PASS_FOCAL_PDF_LIFECYCLE",
+    "scope": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-11",
+      "role": "admin",
+      "syntheticOnly": true
+    },
+    "startedAt": "2026-11-26T19:12:30.468Z",
+    "finishedAt": "2026-11-26T19:12:52.066Z",
+    "entry": "Authenticated DEV frontend, Documents navigation and served CX.backendResources operations. Synthetic ordinary password user.",
+    "owners": [
+      "app/modules/documentos.js",
+      "app/core/backend-resources.js"
+    ],
+    "result": {
+      "authenticatedAdminAndProjectSettled": true,
+      "storageUploadAck": true,
+      "exactObjectPath": true,
+      "pdfSha256": "ce6b16d4694e662cdbbdc5bd505b15fb1c39e266710a9c91232da5d14eb7c25c",
+      "independentObjectByteReadbackMatched": true,
+      "authenticatedPdfByteReadbackMatched": true,
+      "metadataCreatedVersion": 1,
+      "metadataUpdatedVersion": 2,
+      "serverReadbackBothVersions": true,
+      "sameKeyReplayVersion": 2,
+      "replayPreservedFirestoreUpdateTime": true,
+      "retiredMetadataVersion": 3,
+      "independentRetiredStatus": "deleted",
+      "binaryAbsentAfterRetirement": true,
+      "binaryMetadataMembershipAuthAbsentAfterCleanup": true,
+      "twoSharedProtectedReadbacks": {
+        "status": [
+          200,
+          200
+        ],
+        "formats": [
+          "json",
+          "meta"
+        ],
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c"
+      }
+    },
+    "receipt": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d07-settled/d07.json",
+      "generation": "1795720442664741",
+      "sha256": "d9fbd9cc39607776a4e437ba12e6dc2e367da2909f1604fac0761ba4b219bb91",
+      "byteReadbackVerified": true
+    },
+    "reproducibleRunner": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d07-settled/owner.cjs",
+      "generation": "1795720445038454",
+      "sha256": "27685adb1c524c24337bb69027fbd43330042852c5aba3c69b7325e8351704bc",
+      "byteReadbackVerified": true
+    }
+  },
+  "earlierAdmissions": [
+    {
+      "runId": "1795719936740804",
+      "decision": "HOLD",
+      "classification": "ENVIRONMENT_FAILURE",
+      "cause": "QA setup timed out before verified application context. One protected HTTP 200; no resource operations.",
+      "cleanupVerified": true,
+      "receipt": {
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d07-1905/d07.json",
+        "generation": "1795720029684776",
+        "sha256": "f702f2d494f1b31071198a6e3e3286db973a9184c55fb8278085c2f0a595f1ff",
+        "byteReadbackVerified": true
+      }
+    },
+    {
+      "runId": "1795720102205672",
+      "decision": "HOLD",
+      "classification": "ENVIRONMENT_FAILURE",
+      "cause": "Observer sampled shell default project before authenticated projection had applied. No PDF written. The final attempt used the existing authenticated readiness predicate before checking scope.",
+      "cleanupVerified": true,
+      "receipt": {
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d07-followup/d07.json",
+        "generation": "1795720200525134",
+        "sha256": "9902b623ca906342c973d7fdeedce36072a1b9e4930ad09b52f1640c8ef64c2e",
+        "byteReadbackVerified": true
+      }
+    }
+  ],
+  "access": {
+    "runId": "1795720617290882",
+    "decision": "PASS_SCOPED_RESOURCE_STORAGE_GETS",
+    "scope": "One isolated synthetic PDF. Same tenant shopper with or without membership in the document project, and anonymous. Actual Firebase password sessions and authenticated Storage media transport.",
+    "assignedShopper": {
+      "http": 200,
+      "exactPdf": true
+    },
+    "shopperOutsideProject": {
+      "http": 403,
+      "pdfBytesDelivered": false
+    },
+    "anonymous": {
+      "http": 403,
+      "pdfBytesDelivered": false
+    },
+    "cleanup": {
+      "binaryAbsent": true,
+      "bothQaMembershipsAndAuthUidsAbsent": true
+    },
+    "makeCalls": 0,
+    "receipt": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d07-scoped/result.json",
+      "generation": "1795720634233686",
+      "sha256": "0ccd4d0a3632f35e9143d3355b8a9ffff6f287ddcdb8f9829be8e9d7f3309937",
+      "byteReadbackVerified": true
+    }
+  },
+  "make": {
+    "scenarioIdsCheckedInEachBrowserWindow": [
+      5510559,
+      5828312,
+      5830276,
+      5834176,
+      5837393,
+      5843689,
+      5844641,
+      7213974,
+      8029478,
+      8052232,
+      8062238,
+      8073619,
+      8146654,
+      8301039,
+      8767963,
+      8769925,
+      9281674,
+      9283887,
+      9377547,
+      10195631,
+      10195759,
+      10195867,
+      10196061,
+      10196136,
+      10196338,
+      10198707,
+      10198752,
+      10199316,
+      10199340,
+      10200465,
+      10221181,
+      10221359,
+      10228826
+    ],
+    "windows": [
+      {
+        "from": "2026-11-26T19:05:39.000Z",
+        "to": "2026-11-26T19:06:53.000Z",
+        "scenariosInspected": 33,
+        "matchedExecutions": 0,
+        "credits": 0
+      },
+      {
+        "from": "2026-11-26T19:08:25.000Z",
+        "to": "2026-11-26T19:08:33.000Z",
+        "scenariosInspected": 33,
+        "matchedExecutions": 0,
+        "credits": 0
+      },
+      {
+        "from": "2026-11-26T19:12:30.000Z",
+        "to": "2026-11-26T19:12:53.000Z",
+        "scenariosInspected": 33,
+        "matchedExecutions": 0,
+        "credits": 0
+      }
+    ],
+    "credits": 0,
+    "balanceObserved": 345,
+    "automaticPurchase": false,
+    "restorationReserve": 100
+  },
+  "hrColdStart": {
+    "status": "HOLD",
+    "trace": "cf9d4e3f8a33c9a8905f041e455bc746",
+    "observedAt": "2026-11-26T19:05:46.842813Z",
+    "sameInstancePriorProtectedRequest": "2026-11-26T16:08:14.449700Z",
+    "classification": "ENVIRONMENT_FAILURE",
+    "reason": "This instance served earlier protected traffic; excludes this observation from the cold-start clause."
+  },
+  "remaining": [
+    "Durable shopper acknowledgment tied to an exact visit and the published document revision.",
+    "Additional original D07/UI and operation-by-role clauses retain their existing authority. This cross-project negative does not cover all within-project visit permissions."
+  ],
+  "newDomainMatches": 0,
+  "deployments": 0,
+  "production": false
+}
