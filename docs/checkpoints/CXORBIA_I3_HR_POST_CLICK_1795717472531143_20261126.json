@@ -1,0 +1,341 @@
+{
+  "schemaVersion": "cxorbia.i3.native-post-click-response-and-application.v1",
+  "native": {
+    "runId": "1795717472531143",
+    "startedAt": "2026-11-26T18:24:35.552Z",
+    "finishedAt": "2026-11-26T18:25:29.370Z",
+    "cleanupVerified": true,
+    "admission": {
+      "available": 360,
+      "autoPurchasing": false,
+      "observedAt": "2026-11-26T18:24:01.130Z",
+      "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+      "creditsForAttempt": 60,
+      "totalHrRequestCap": 16
+    },
+    "totalReadRequests": 8,
+    "rejectedCacheCap": null,
+    "operationalCommands": 0,
+    "academyCommands": 0
+  },
+  "observation": {
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "proof": {
+      "snapshotRevision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+      "sourceReadAt": "2026-11-26T18:25:20.769Z",
+      "manualExternalResponseCount": 1,
+      "sharedDurableResponseCount": 2,
+      "genuineExternalReadsReportedBySharedResponses": 0,
+      "appliedSessionRevisions": [
+        {
+          "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+          "period": "cinepolis-2026-11"
+        },
+        {
+          "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+          "period": "cinepolis-2026-11"
+        }
+      ]
+    },
+    "application": {
+      "status": "HOLD",
+      "cause": "VISUAL_DEFECT:HR_LAST_CONFIRMED_BADGE"
+    },
+    "manualWindowStart": "2026-11-26T18:25:07.081Z",
+    "sharedWindowStart": "2026-11-26T18:25:27.725Z",
+    "requests": {
+      "manualFresh": 1,
+      "sharedDue": 2,
+      "blockedOutOfScope": 0,
+      "operationalPostAttempts": 0
+    },
+    "watcherResults": [
+      {
+        "ok": true,
+        "skipped": false,
+        "changed": false,
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "delegated": false,
+        "deferred": false,
+        "timedOut": false
+      },
+      {
+        "ok": true,
+        "skipped": false,
+        "changed": false,
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "delegated": false,
+        "deferred": false,
+        "timedOut": false
+      }
+    ],
+    "after": [
+      {
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "authorityRevision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "selectedPeriod": "cinepolis-2026-11",
+        "sourceReadAt": "2026-11-26T18:25:20.769Z",
+        "visibleCanonicalBadge": false,
+        "sourceMarker": "hr-last-confirmed",
+        "freshness": "last_confirmed"
+      },
+      {
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "authorityRevision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "selectedPeriod": "cinepolis-2026-11",
+        "sourceReadAt": "2026-11-26T18:25:20.769Z",
+        "visibleCanonicalBadge": false,
+        "sourceMarker": "hr-last-confirmed",
+        "freshness": "last_confirmed"
+      }
+    ],
+    "due": [
+      {
+        "label": "visitas",
+        "start": 1795717527731,
+        "received": 1795717528267,
+        "trace": "bb29bc47ce4b8a2fb691ecc9b9102633",
+        "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "current": false,
+        "bodySha256": "65c37082b3506287c3aed862022299602b32f105dda30a23f4f744e117b8a5ab",
+        "origin": "durable_internal_snapshot",
+        "makeRunsOverlapping": 0
+      },
+      {
+        "label": "segunda-sesion",
+        "start": 1795717527737,
+        "received": 1795717528585,
+        "trace": "4105a07cc1835e006ec6dd8193355a93",
+        "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "current": false,
+        "bodySha256": "f2c8632474ca54d8859c2842ff030df70f0f3ddc42becf353aed73ce8c735ddc",
+        "origin": "durable_internal_snapshot",
+        "makeRunsOverlapping": 0
+      }
+    ],
+    "manual": [
+      {
+        "start": 1795717507594,
+        "received": 1795717527049,
+        "sourceReadAt": "2026-11-26T18:25:20.769Z",
+        "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+        "generation": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd"
+      }
+    ]
+  },
+  "make": {
+    "from": "2026-11-26T18:24:35.552Z",
+    "to": "2026-11-26T18:25:29.370Z",
+    "scenarios": [
+      {
+        "scenarioId": 8062238,
+        "runs": []
+      },
+      {
+        "scenarioId": 10228826,
+        "runs": []
+      },
+      {
+        "scenarioId": 5837393,
+        "runs": []
+      },
+      {
+        "scenarioId": 5843689,
+        "runs": []
+      },
+      {
+        "scenarioId": 5844641,
+        "runs": []
+      },
+      {
+        "scenarioId": 8301039,
+        "runs": []
+      },
+      {
+        "scenarioId": 10199316,
+        "runs": []
+      },
+      {
+        "scenarioId": 10199340,
+        "runs": []
+      },
+      {
+        "scenarioId": 10200465,
+        "runs": [
+          {
+            "id": "31b410404bc2489ca4c43ebd44432b23",
+            "status": "success",
+            "startedAt": "2026-11-26T18:25:11.706Z",
+            "credits": 3,
+            "operations": 3,
+            "duration": 7544
+          },
+          {
+            "id": "628897306d7f4a84b49c19877b0e9daf",
+            "status": "success",
+            "startedAt": "2026-11-26T18:25:11.458Z",
+            "credits": 3,
+            "operations": 3,
+            "duration": 8203
+          },
+          {
+            "id": "2743e422a6aa4dd09ac5b22127400189",
+            "status": "success",
+            "startedAt": "2026-11-26T18:25:11.457Z",
+            "credits": 3,
+            "operations": 3,
+            "duration": 3603
+          },
+          {
+            "id": "cec48b03a5664973bc434b92eb268e29",
+            "status": "success",
+            "startedAt": "2026-11-26T18:25:11.444Z",
+            "credits": 3,
+            "operations": 3,
+            "duration": 8352
+          }
+        ]
+      },
+      {
+        "scenarioId": 10195631,
+        "runs": []
+      },
+      {
+        "scenarioId": 10195759,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196061,
+        "runs": []
+      },
+      {
+        "scenarioId": 10198707,
+        "runs": []
+      },
+      {
+        "scenarioId": 10198752,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196338,
+        "runs": []
+      },
+      {
+        "scenarioId": 8146654,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196136,
+        "runs": []
+      },
+      {
+        "scenarioId": 10221359,
+        "runs": []
+      },
+      {
+        "scenarioId": 10221181,
+        "runs": []
+      },
+      {
+        "scenarioId": 10195867,
+        "runs": []
+      },
+      {
+        "scenarioId": 8052232,
+        "runs": []
+      },
+      {
+        "scenarioId": 8767963,
+        "runs": []
+      },
+      {
+        "scenarioId": 8769925,
+        "runs": []
+      },
+      {
+        "scenarioId": 5510559,
+        "runs": []
+      },
+      {
+        "scenarioId": 5828312,
+        "runs": []
+      },
+      {
+        "scenarioId": 9283887,
+        "runs": []
+      },
+      {
+        "scenarioId": 9281674,
+        "runs": []
+      },
+      {
+        "scenarioId": 9377547,
+        "runs": []
+      },
+      {
+        "scenarioId": 8029478,
+        "runs": []
+      },
+      {
+        "scenarioId": 8073619,
+        "runs": []
+      },
+      {
+        "scenarioId": 5834176,
+        "runs": []
+      },
+      {
+        "scenarioId": 7213974,
+        "runs": []
+      },
+      {
+        "scenarioId": 5830276,
+        "runs": []
+      }
+    ],
+    "scenariosInspected": 33,
+    "totalCredits": 12,
+    "balanceAfter": 348,
+    "autoPurchasing": false
+  },
+  "sealedObjects": [
+    {
+      "file": "hr-observation.json",
+      "generation": "1795717620925016",
+      "sha256": "4060c3d200b62e10112c35e1cbfbde452bccaca68056fcf3f8fc2e3c8f7399b8"
+    },
+    {
+      "file": "visitas-due.body",
+      "generation": "1795717625877143",
+      "sha256": "65c37082b3506287c3aed862022299602b32f105dda30a23f4f744e117b8a5ab"
+    },
+    {
+      "file": "segunda-sesion-due.body",
+      "generation": "1795717630722614",
+      "sha256": "f2c8632474ca54d8859c2842ff030df70f0f3ddc42becf353aed73ce8c735ddc"
+    },
+    {
+      "file": "hr-native.json",
+      "generation": "1795717616108100",
+      "sha256": "bfdb46cf911142b4d1791122095cffba631a93e61b322663868a3b274a3eb9be"
+    }
+  ],
+  "gcsPrefix": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/hr-ui-convergence-26/",
+  "technicalTests": 18,
+  "independentCloudObjectByteReadback": true,
+  "technicalDecision": "PASS_TWO_POST_CLICK_DURABLE_BODIES_SAME_APPLIED_REVISION_AND_PERIOD_ZERO_INDEPENDENT_MAKE_RUNS",
+  "limits": {
+    "unchangedWorkbookRevisionBetweenAttempts": true,
+    "changedRevisionConvergenceInSecondSession": "Not witnessed to completion during first attempt. The second attempt had changed=false in both sessions.",
+    "fullVisualAcceptance": "VISUAL_DEFECT:HR_LAST_CONFIRMED_BADGE",
+    "technicalBadgeOwner": "app/core/router.js hides tbDataBadge unless session.hasTechAccess(); app/core/store.js returns false on this commercial build. Prior visual clause retained.",
+    "cold": "HOLD_COLD_INSTANCE_NOT_PROVEN; native trace/startup correlation did not establish the first protected request on a new instance."
+  },
+  "next": "Observe first protected recovery on next genuine successor. Preserve existing data source labels and render the required business-facing confirmation time without exposing technical controls.",
+  "newDomainMatches": 0,
+  "production": false
+}

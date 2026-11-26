@@ -213,7 +213,8 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
           new Promise(resolve => { timer = setTimeout(() => resolve({ ok: false, reason: 'timed_out' }), 60000); })
         ]);
         return { ok: result?.ok, skipped: result?.skipped === true, changed: result?.changed === true,
-          revision: result?.revision || null, timedOut: result?.reason === 'timed_out' };
+          revision: result?.revision || null, delegated: result?.delegated === true, deferred: result?.deferred === true,
+          timedOut: result?.reason === 'timed_out' };
       } finally { clearTimeout(timer); }
     })));
     check(sharedResults.every(x => x.status === 'fulfilled'), 'ENVIRONMENT_FAILURE:HR_WATCHER_OBSERVATION');
@@ -221,14 +222,32 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
     await Promise.all(watches.map(w => w.settle()));
     check(watches.every(w => !w.errors.length) && !limits.blocked && !limits.operationalPostAttempts,
       'PROVIDER_FAILURE:HR_UNEXPECTED_REQUEST');
+    report.proof = compareShared(manual, watches.map(w => w.events.filter(x => x.sync === 'due')), report.watcherResults);
+    // A delegated watcher returns before the protected bridge publishes its JSON and meta readback.
+    // Observe completion in the page without issuing another sync or external read.
+    await Promise.all(report.watcherResults.map(async (watcher, i) => {
+      if (!watcher.delegated) return;
+      try {
+        await pages[i].waitForFunction(expected => {
+          const authority = window.CX_PROTECTED_AUTH_HR_AUTHORITY;
+          return authority?.applied && authority.atomicPublication && authority.sourceRevision === expected &&
+            window.CX?.data?.previewMeta?.sourceRevision === expected;
+        }, manual.revision, { timeout: 30000 });
+      } catch (error) {
+        if (error?.name !== 'TimeoutError') throw error;
+      }
+    }));
+    await Promise.all(watches.map(w => w.settle()));
+    check(watches.every(w => !w.errors.length) && !limits.blocked && !limits.operationalPostAttempts,
+      'PROVIDER_FAILURE:HR_UNEXPECTED_REQUEST');
     const auxiliary = watches.flatMap(w => w.events).filter(r => !r.fresh && r.sync !== 'due');
     check(auxiliary.every(r => r.current === false && r.origin === 'durable_internal_snapshot' && !r.published),
       'PROVIDER_FAILURE:HR_AUXILIARY_EXTERNAL_READ');
     report.auxiliaryDurableResponses = auxiliary.length;
-    report.proof = compareShared(manual, watches.map(w => w.events.filter(x => x.sync === 'due')), report.watcherResults);
     report.after = await Promise.all(pages.map(page => sessionInfo(page, tenantId, projectId, runId, hrOnly)));
     check(report.after.every((s, i) => s.revision === manual.revision && s.uidSha256 === report.before[i].uidSha256 &&
       s.selectedPeriod === report.before[i].selectedPeriod), 'PERSISTENCE_FAILURE:HR_APPLIED_SESSION_REVISION');
+    report.proof.appliedSessionRevisions = report.after.map(s => ({ revision: s.revision, period: s.selectedPeriod }));
     check(report.after.every(s => s.freshness === 'last_confirmed' && s.sourceReadAt === manual.sourceReadAt &&
       s.sourceMarker === 'hr-last-confirmed' && s.visibleCanonicalBadge &&
       s.sourceBadge?.includes('última sincronización') && !s.sourceBadge.includes('sin fecha confirmada')),

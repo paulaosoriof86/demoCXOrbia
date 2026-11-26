@@ -893,7 +893,7 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "9724f549a89318ec7e366d5952563f16e9815d5a",
+      "gitBlob": "2762f80a2df32bb7276737c40a9b4466f8e90014",
       "decisionId": "PORT-DEC-040"
     },
     "pendingE10NativeSource": {
@@ -911,6 +911,10 @@
     "e10RulesAndFinanceReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_E10_RULES_AND_FINANCE_20261126.json",
       "gitBlob": "b3f3f4ec29f1fa62645dfbec9e2dec34e2918a81"
+    },
+    "hrPostClickAppliedAndMake": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_POST_CLICK_1795717472531143_20261126.json",
+      "gitBlob": "74923e5fc4f6b17b9ae6470864b8f0e7df2a764d"
     }
   },
   "lastChromeConnection": {
@@ -955,7 +959,7 @@
       }
     },
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
-    "parallelHrManualRefresh": "Two post-click HTTP bodies and Make-window readback are retained in confirmed.hrOnlyPostClick. Isolate the remaining second-presentation reconciliation observation and instrument the first protected cold-native request at the next genuine successor.",
+    "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Native authenticated dispatcher source proof is preserved in confirmed.pendingE10NativeSource. Resolve and test scoped release composition with visit read/query isolation before publishing and exercising the served frontend."
   },
   "newDevDeploys": 2,

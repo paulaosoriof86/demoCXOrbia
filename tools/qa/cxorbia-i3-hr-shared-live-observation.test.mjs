@@ -24,11 +24,15 @@ test('egress from one tab twice cannot be credited as two sessions', () => {
   assert.throws(() => compareShared(single, [[shared],[shared]], [ok[0],{ok:true,skipped:true}]));
 });
 
-function fixture({ secondMode = 'rolling_window', extraFresh = false, hideBadge = false, auxiliaryExternal = false } = {}) {
+function fixture({ secondMode = 'rolling_window', extraFresh = false, hideBadge = false, auxiliaryExternal = false, delegated = false } = {}) {
   const projectId='cinepolis', tenantId='tya', runId='123456789', period=projectId+'-2026-11';
   const browser={}, wire={ readAt:0, responses:0, blocked:0, clicks:0 }, snapshots=[];
   function pageFor(session, mode) {
     const page=new EventEmitter(), context={ browser:()=>browser };
+    let waitingForPublication = false;
+    page.waitForFunction=async (_predicate, expected) => {
+      assert.equal(expected,revision); assert.ok(waitingForPublication); waitingForPublication=false;
+    };
     page.context=()=>context;
     page.url=()=>origin+'/index-backend-dev.html';
     page.route=async (matcher, handler)=>{ page.handler=handler; };
@@ -52,9 +56,9 @@ function fixture({ secondMode = 'rolling_window', extraFresh = false, hideBadge 
     }
     page.__d08NativeEvaluate=async callback=>{
       const source=String(callback);
-      if(source.includes('app = window.CX'))return { uid:'qa_d08_'+runId+'_1_admin', sameActor:true,role:'admin',authenticated:true,tenant:tenantId,project:projectId,authorizedProject:true,bound:true,applied:true,atomic:true,revision,authorityRevision:revision,scopeMode:mode,selectedPeriod:period,requestedPeriod:null, freshness:'last_confirmed', sourceReadAt:new Date(wire.readAt).toISOString(), sourceMarker:'hr-last-confirmed', visibleCanonicalBadge:!hideBadge, sourceBadge:'HR · última sincronización 26/11/2026 15:00:00' };
+      if(source.includes('app = window.CX'))return { uid:'qa_d08_'+runId+'_1_admin', sameActor:true,role:'admin',authenticated:true,tenant:tenantId,project:projectId,authorizedProject:true,bound:true,applied:true,atomic:true,revision:waitingForPublication?generation:revision,authorityRevision:waitingForPublication?generation:revision,scopeMode:mode,selectedPeriod:period,requestedPeriod:null, freshness:'last_confirmed', sourceReadAt:new Date(wire.readAt).toISOString(), sourceMarker:'hr-last-confirmed', visibleCanonicalBadge:!hideBadge, sourceBadge:'HR · última sincronización 26/11/2026 15:00:00' };
       if(source.includes('router.nav')){ assert.equal(session,0); return; }
-      if(source.includes('CX_TYA_CHECK_LIVE_SOURCE')) { await fetchScoped('meta','&sync=due',false);return { ok:true,revision }; }
+      if(source.includes('CX_TYA_CHECK_LIVE_SOURCE')) { await fetchScoped('meta','&sync=due',false);waitingForPublication=delegated&&session===1;return { ok:true,revision,delegated:waitingForPublication }; }
       throw Error('unexpected evaluation');
     };
     page.locator=id=>{
@@ -97,4 +101,11 @@ test('the UI must visibly date its last confirmation in both sessions',async()=>
 test('a separate strict proof is not credited when an extra external read was observed',async()=>{
   const f=fixture({auxiliaryExternal:true}), r=await runSharedHrAcceptance(f.options);
   assert.equal(r.application.cause,'PROVIDER_FAILURE:HR_AUXILIARY_EXTERNAL_READ');
+});
+
+test('the observer waits for delegated publication before checking the second session',async()=>{
+  const f=fixture({delegated:true}), r=await runSharedHrAcceptance(f.options);
+  assert.equal(r.application.status,'PASS_MANUAL_AND_TWO_SHARED_DURABLE_PRESENTATIONS');
+  assert.equal(r.proof.appliedSessionRevisions.length,2);
+  assert.equal(f.wire.clicks,1);assert.equal(r.requests.sharedDue,2);
 });
