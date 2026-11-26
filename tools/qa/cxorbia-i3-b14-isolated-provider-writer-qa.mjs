@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {request as httpsRequest} from 'node:https';
 import {isMakeGraphWriterHintCompatible} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
+import {readGoogleQaExecution,isVerifiedGoogleQaExecution,f3Job} from './cxorbia-i3-google-qa-execution.mjs';
 
 // P0 B14 provider precondition only. NEVER a project HR binding, a deployment,
 // a production write, a canonical module PASS, or a substitute for application ACK.
@@ -144,10 +145,16 @@ const f3Same=(a,b)=>f3Digest(a??null)===f3Digest(b??null);
 const f3Need=(ok,code)=>{if(!ok)throw Error(code);};
 const f3Code=e=>String(e?.message||'UNKNOWN').replace(/[^A-Za-z0-9_:-]/g,'').slice(0,180);
 const f3Owner=(run,attempt)=>'f3-qa-'+run+'-'+attempt;
-export function assertF3EndpointScope(env,manifest){
+export function assertF3EndpointScope(env,manifest,google=null){
   f3Need(env.CXORBIA_F3_QA_ENDPOINT_GATE==='PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124','AUTH_FAILURE:F3_QA_GATE');
-  f3Need(env.GITHUB_REF===QA_BRANCH&&env.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia','ENVIRONMENT_FAILURE:F3_QA_REPO_BRANCH');
-  f3Need(/^\d{8,}$/.test(String(env.GITHUB_RUN_ID||''))&&/^\d+$/.test(String(env.GITHUB_RUN_ATTEMPT||'1')),'ENVIRONMENT_FAILURE:F3_QA_RUN');
+  if(google){
+    f3Need(isVerifiedGoogleQaExecution(google)&&google.job===f3Job&&google.branch===QA_BRANCH.slice('refs/heads/'.length)&&
+      google.repository==='paulaosoriof86/demoCXOrbia'&&!env.GITHUB_RUN_ID&&!env.GITHUB_ACTIONS,'ENVIRONMENT_FAILURE:F3_QA_GOOGLE_IDENTITY');
+  }else{
+    f3Need(!env.CXORBIA_GOOGLE_QA_START,'ENVIRONMENT_FAILURE:F3_QA_UNVERIFIED_GOOGLE_IDENTITY');
+    f3Need(env.GITHUB_REF===QA_BRANCH&&env.GITHUB_REPOSITORY==='paulaosoriof86/demoCXOrbia','ENVIRONMENT_FAILURE:F3_QA_REPO_BRANCH');
+    f3Need(/^\d{8,}$/.test(String(env.GITHUB_RUN_ID||''))&&/^\d+$/.test(String(env.GITHUB_RUN_ATTEMPT||'1')),'ENVIRONMENT_FAILURE:F3_QA_RUN');
+  }
   f3Need(env.CXORBIA_F3_QA_BASE_URL===F3_QA.baseUrl&&env.GOOGLE_CLOUD_PROJECT===F3_QA.firebaseProject,'ENVIRONMENT_FAILURE:F3_QA_ENDPOINT');
   f3Need(manifest?.schemaVersion==='cxorbia.f3.remote-fixture.v1'&&manifest.tenantId===F3_QA.tenantId&&manifest.projectId===F3_QA.projectId&&manifest.periodId===F3_QA.periodId,'MAPPING_FAILURE:F3_QA_MANIFEST_SCOPE');
   f3Need(/^[a-f0-9]{40}$/.test(env.CXORBIA_F3_QA_SOURCE_SHA||'')&&/^[a-f0-9]{40}$/.test(env.CXORBIA_F3_QA_SOURCE_TREE||''),'SOURCE_FAILURE:F3_QA_SOURCE_PIN');
@@ -169,7 +176,8 @@ export function assertF3EndpointScope(env,manifest){
     f3Need(Array.isArray(row.headerValues)&&row.headerValues.length===26&&f3Same(row.headerValues.slice(0,4),['fixtureId','fieldValue','eventId','eventDigest'])&&exactIdentity,'MAPPING_FAILURE:F3_QA_HEADER_IDENTITY');
     f3Need(row.headerValues[10]==='Tipo de Combo'&&row.headerValues[11]==='Tipo de Compra'&&row.headerValues[14]==='Shopper Asignado'&&row.headerValues[18]==='Fecha programada','MAPPING_FAILURE:F3_QA_FIELD_COLUMNS');
   }
-  return {runId:String(env.GITHUB_RUN_ID),runAttempt:String(env.GITHUB_RUN_ATTEMPT||'1'),owner:f3Owner(env.GITHUB_RUN_ID,env.GITHUB_RUN_ATTEMPT||'1')};
+  const runId=String(google?.runId||env.GITHUB_RUN_ID),runAttempt=String(google?.runAttempt||env.GITHUB_RUN_ATTEMPT||'1');
+  return {runId,runAttempt,owner:f3Owner(runId,runAttempt)};
 }
 export function f3FixtureDocuments(manifest,owner){
   const scope={tenantId:F3_QA.tenantId,projectId:F3_QA.projectId},countryBindings=F3_QA.countries.map(countryCode=>({countryCode,providerBindingId:owner+'-'+countryCode,mappingRef:F3_QA.mappingRef}));
@@ -355,9 +363,11 @@ export function f3AssertLostResponseReplay({command,owner,transport,before,after
 
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
-  const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
+  const google=readGoogleQaExecution(env,f3Job,env.CXORBIA_F3_QA_SOURCE_SHA,env.CXORBIA_F3_QA_SOURCE_TREE);
+  const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest,google),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
   fs.mkdirSync(path.dirname(outPath),{recursive:true});
   const receipt={schemaVersion:'cxorbia.i3.f3.qa-endpoint.v1',state:'HOLD',decision:'PENDING',runId,runAttempt,qaOwner:owner,
+    ...(google?{controlSha:google.controlSha,externalExecution:google}:{}),startedAt:new Date().toISOString(),
     sourceSha:env.CXORBIA_F3_QA_SOURCE_SHA,sourceTree:env.CXORBIA_F3_QA_SOURCE_TREE,sourceProof:'EXACT_PARENT_CERTIFIED_RUNTIME_PINS_REQUIRED',
     runtimeRevision:env.CXORBIA_F3_QA_RUNTIME_REVISION,runtimeDigest:env.CXORBIA_F3_QA_RUNTIME_DIGEST,hostingVersion:env.CXORBIA_F3_QA_HOSTING_VERSION,
     tenantId:'tya',projectId:F3_QA.projectId,periodId:F3_QA.periodId,baseUrl:F3_QA.baseUrl,remoteFixtureDigest:f3Digest(manifest),
@@ -366,12 +376,21 @@ async function runF3EndpointProbe(){
     guarantees:{atomicHumanExcelCas:false,observedBaseGuard:true,remoteReceiptAndIndependentRead:true,uncertainWriteRetry:false},
     unproven:['application_client_response_loss_live_fault_injection','application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture']};
   const save=()=>fs.writeFileSync(outPath,JSON.stringify(receipt,null,2)+'\n');save();
+  try{
   const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
   const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
   const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']});
   const cloudClient=await cloud.getClient(),principal=String(typeof cloudClient.getServiceAccountEmail==='function'?await cloudClient.getServiceAccountEmail():cloudClient.email||'');
-  f3Need(principal===QA_PRINCIPAL,'AUTH_FAILURE:F3_QA_SERVICE_ACCOUNT');
-  const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject},owner),auth=getAuth(app),db=getFirestore(app);
+  f3Need(google?google.signer===QA_PRINCIPAL:principal===QA_PRINCIPAL,'AUTH_FAILURE:F3_QA_SERVICE_ACCOUNT');
+  if(google){
+    let permissions;
+    try{permissions=(await cloudClient.request({method:'POST',url:'https://iam.googleapis.com/v1/projects/-/serviceAccounts/'+encodeURIComponent(google.signer)+':testIamPermissions',
+      data:{permissions:['iam.serviceAccounts.signBlob']},timeout:30000,retry:false})).data;}
+    catch(error){receipt.signerPreflight={signer:google.signer,signBlobPermitted:false,httpStatus:Number(error.response?.status||error.status)||null,readAt:new Date().toISOString()};save();throw Error('AUTH_FAILURE:F3_QA_SIGN_BLOB_PREFLIGHT');}
+    f3Need(permissions.permissions?.includes('iam.serviceAccounts.signBlob'),'AUTH_FAILURE:F3_QA_SIGN_BLOB_PERMISSION');
+    receipt.signerPreflight={signer:google.signer,signBlobPermitted:true,readAt:new Date().toISOString()};save();
+  }
+  const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject,...(google?{serviceAccountId:google.signer}:{})},owner),auth=getAuth(app),db=getFirestore(app);
   const adminUid=owner+'-admin',claims={tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:[F3_QA.projectId],qaOwner:owner};
   let token='',authCreated=false,baselineReady=false,baselineLock=null,lockPath='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
   const written=new Map(),commands=[],reconcilePaths=new Set(),projectPath='tenants/tya/projects/'+F3_QA.projectId;
@@ -609,8 +628,13 @@ async function runF3EndpointProbe(){
     if(cleanupErrors.length){receipt.cleanupErrors=cleanupErrors;receipt.decision='HOLD_F3_QA_CLEANUP_UNVERIFIED';process.exitCode=1;}
     receipt.recoveryRequired=(receipt.remoteCommandAttempts||[]).length>0&&receipt.remoteValuesRestored!==true;
     if(receipt.recoveryRequired)receipt.recoveryScope={qaOwner:owner,adminUid,projectPath,lockPath,commandAttempts:receipt.remoteCommandAttempts.length,rule:'PRESERVE_FIRESTORE_AUTH_MAKE_AND_QA_WORKSHEETS_UNTIL_EXACT_OWNED_RECOVERY_AND_FRESH_BASELINE_READBACK'};
-    token='';receipt.state='HOLD';save();await appSdk.deleteApp(app);
+    token='';receipt.state='HOLD';receipt.finishedAt=new Date().toISOString();save();await appSdk.deleteApp(app);
     console.log('CXORBIA_F3_QA_ENDPOINT_RECEIPT='+JSON.stringify({decision:receipt.decision,applicationAckProven:receipt.applicationAckProven,cases:receipt.cases.length,events:receipt.events.length,cleanup:receipt.cleanup,productionWrites:0,operationalHrWrites:0,b14Closed:false}));
+  }
+  }catch(error){
+    receipt.failure??=f3Code(error);
+    if(receipt.decision==='PENDING')receipt.decision='HOLD_F3_ISOLATED_ENDPOINT';
+    receipt.finishedAt=new Date().toISOString();save();throw error;
   }
 }
 

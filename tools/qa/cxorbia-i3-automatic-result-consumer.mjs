@@ -6,9 +6,9 @@ import {fileURLToPath} from 'node:url';
 import {DESCRIPTOR,POINTER,jsonBytes,gitBlob,sha256,makeMaterializationReceipt,projectMaterialization,bindControlPaths,assertPreserved,projectCurrentResidualNextAction,executionProviderOf,actionsCursorOf} from './cxorbia-i3-current-control-projection.mjs';
 import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {normalizeD08Result,D08_ASSET_PATHS} from './cxorbia-i3-d08-result-normalizer.mjs';
-import {summarizeTypedResult,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
+import {summarizeTypedResult,summarizeGoogleF3Result,safeTypedFailureCode} from './cxorbia-i3-typed-result-summary.mjs';
 import {FINANCE_METADATA_SCOPE_PATH,canonicalSha256,verifiedTypedReceipt,projectCurrentScopedClauses,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
-import {readGooglePairedArchive,readGoogleAcademyResult} from './cxorbia-i3-google-qa-execution.mjs';
+import {readGooglePairedArchive,readGoogleAcademyResult,f3ConfigPath,f3FixturePath} from './cxorbia-i3-google-qa-execution.mjs';
 
 const REPO='paulaosoriof86/demoCXOrbia',BRANCH='recovery/cxorbia-phase-a-20260831';
 const WORKFLOW='cxorbia-recovery-i3-dev-certification.yml';
@@ -395,7 +395,7 @@ export async function readScopedIndexResults({api,token,index,controls,files,dow
   const savedBytes=await read(entry.path);
   must(gitBlob(savedBytes)===entry.gitBlob&&sha256(savedBytes)===entry.sha256,'MAPPING_FAILURE:INDEX_RECEIPT_HASH');
   const kind=JSON.parse(savedBytes)?.kind;
-  if(!['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY'].includes(kind))continue;
+  if(!['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY','F3_ENDPOINT'].includes(kind))continue;
   let item=verifiedTypedReceipt(entry,savedBytes,{gitBlob,sha256});
   if(item.result.kind==='A08_RESIDUAL'&&!Object.hasOwn(item.result.observations||{},'acceptedClauseRefs')){
    must(executionProviderOf(entry)==='GITHUB_ACTIONS','SOURCE_FAILURE:A08_EXTERNAL_NORMALIZATION_UNSUPPORTED');
@@ -510,7 +510,7 @@ export async function assertFinalControlPackage({controls,files,api,producerLoad
  for(const entry of after){
   const raw=await read(entry.path);must(gitBlob(raw)===entry.gitBlob&&sha256(raw)===entry.sha256,'MAPPING_FAILURE:INDEX_RECEIPT_HASH');
   const kind=JSON.parse(raw).kind;
-  if(['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY'].includes(kind))verified.push(verifiedTypedReceipt(entry,raw,{gitBlob,sha256}));
+  if(['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY','F3_ENDPOINT'].includes(kind))verified.push(verifiedTypedReceipt(entry,raw,{gitBlob,sha256}));
  }
  const mapRef=descriptor.currentCumulativeTaskEvidenceMap;
  const cumulativeMap=mapRef?JSON.parse(await read(mapRef.path)):undefined;
@@ -569,6 +569,56 @@ async function loadControls(api,head){
  must(JSON.stringify(descriptor.currentFunctionalEvidenceIndex||null)===JSON.stringify(pointer.currentFunctionalEvidenceIndex||null),'MAPPING_FAILURE:TYPED_INDEX_CONTROL_DESYNC');
  const [ledger,matrix]=await Promise.all([load(descriptor.findingsLedgerPath),load(descriptor.moduleTruthPath)]);
  return {head,descriptor,pointer,ledger,matrix,blobs,readFile:load,readBytes:bytes};
+}
+
+// Native QA consumption is independent of the paired deployment journal. A
+// scoped ACK result may be incorporated without changing any release seal.
+export async function consumeGoogleF3Result({api,uri,expected,readNative,readArchive,dryRun=false,producerLoader=loadControls}){
+ const root=`/repos/${REPO}`;
+ must(expected&&/^[a-f0-9]{40}$/.test(expected.controlSha||'')&&expected.transportSha===expected.controlSha,'SOURCE_FAILURE:GOOGLE_F3_PRODUCER');
+ const [ref,producer]=await Promise.all([api(`${root}/git/ref/heads/${BRANCH}`),producerLoader(api,expected.controlSha)]);
+ must(producer.head===expected.controlSha,'SOURCE_FAILURE:GOOGLE_F3_PRODUCER_HEAD');
+ const head=ref.object.sha,controls=await producerLoader(api,head),configBytes=await producer.readBytes(f3ConfigPath),config=JSON.parse(configBytes);
+ must(gitBlob(configBytes)===producer.blobs.get(f3ConfigPath)&&config.schemaVersion==='cxorbia.f3.endpoint-qa-config.v1'&&
+  config.production===false&&config.scope==='ISOLATED_QA_TABS_IN_ORIGINAL_BOOKS_NO_OPERATIONAL_ROWS'&&config.remoteManifestPath===f3FixturePath,'SOURCE_FAILURE:GOOGLE_F3_CONFIG');
+ const fixtureBytes=await producer.readBytes(f3FixturePath),receiptBytes=await producer.readBytes(config.canonicalMaterializationReceiptPath),receipt=JSON.parse(receiptBytes),d=producer.descriptor;
+ must(gitBlob(fixtureBytes)===producer.blobs.get(f3FixturePath)&&sha256(fixtureBytes)===config.remoteManifestSha256&&
+  sha256(receiptBytes)===config.canonicalMaterializationReceiptSha256&&gitBlob(receiptBytes)===d.postDeployRunSeal?.receiptBlob&&
+  config.canonicalMaterializationReceiptPath===d.postDeployRunSeal?.receiptPath&&d.postDeployRunSeal.mode==='CURRENT_SOURCE_SERVING'&&
+  config.canonicalMaterializationReceiptPath===d.currentMaterialization?.materializationReceiptPath&&
+  receipt.executionProvider==='GOOGLE_CLOUD_BUILD'&&receipt.executionBinding?.nativeBuildVerified===true&&receipt.sourceHostedExact===true&&receipt.production===false,
+  'SOURCE_FAILURE:GOOGLE_F3_CURRENT_RECEIPT');
+ const pins=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'];
+ must(pins.every(k=>config[k]===d.currentMaterialization[k]&&config[k]===receipt.materialization?.[k])&&
+  config.sourceSha===d.productSourceSha&&config.sourceTree===d.productTreeAuthority,'SOURCE_FAILURE:GOOGLE_F3_CURRENT_PINS');
+ const lineage=await api(`${root}/compare/${expected.controlSha}...${head}`);
+ must(['ahead','identical'].includes(lineage.status)&&lineage.merge_base_commit?.sha===expected.controlSha,'SOURCE_FAILURE:GOOGLE_F3_PRODUCER_LINEAGE');
+ const expectedIdentity={...Object.fromEntries(pins.map(k=>[k,config[k]])),controlSha:expected.controlSha,transportSha:expected.transportSha,remoteFixtureDigest:canonicalSha256(JSON.parse(fixtureBytes))};
+ const result=summarizeGoogleF3Result({uri,expectedIdentity},readNative,readArchive),proof=result.provenance;
+ const key=typedResultKey(proof),receiptPath=`docs/checkpoints/CXORBIA_I3_GOOGLE_F3_${proof.resultGeneration}_TYPED_RESULT.json`,bytes=jsonBytes(result);
+ const entry={key,path:receiptPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes),provider:'GOOGLE_CLOUD_SHELL',kind:'F3_ENDPOINT',
+  ...Object.fromEntries(['controlHead','transportSha','startUri','resultUri','bundleSha256','archiveUri','archiveSha256','archiveVerified'].map(k=>[k,proof[k]])),
+  decision:result.decision,producerDecision:result.producer.decision,ownerReceiptCount:0,observedAt:new Date(Math.floor(Number(proof.resultGeneration)/1000)).toISOString()};
+ verifiedTypedReceipt(entry,bytes,{gitBlob,sha256});
+ const index=structuredClone(controls.descriptor.currentFunctionalEvidenceIndex||{schemaVersion:'cxorbia.i3.typed-result-index.v1',results:[],production:false});
+ const existing=index.results.find(x=>x.key===key);
+ if(existing){
+  must(canonicalSha256(existing)===canonicalSha256(entry)&&(await controls.readBytes(existing.path))===bytes,'SOURCE_FAILURE:GOOGLE_F3_REPLAY_CHANGED');
+  return {decision:'NOOP_ALREADY_CONSUMED',executionProvider:'GOOGLE_CLOUD_SHELL',head,key,receiptPath,productActions:0};
+ }
+ must(!controls.blobs.has(receiptPath),'SOURCE_FAILURE:GOOGLE_F3_UNINDEXED_RECEIPT');
+ index.results.push(entry);
+ const descriptor=structuredClone(controls.descriptor),pointer=structuredClone(controls.pointer);
+ for(const control of [descriptor,pointer]){
+  control.currentFunctionalEvidenceIndex=structuredClone(index);
+  control.currentResultIncorporationQueue=(control.currentResultIncorporationQueue||[]).filter(x=>typedResultKey(x)!==key);
+  control.lastTypedResultIncorporation={observedAt:entry.observedAt,executionProvider:'GOOGLE_CLOUD_SHELL',key,receipts:[receiptPath],production:false,newDomainMatches:0};
+ }
+ const files=new Map([[receiptPath,bytes],[DESCRIPTOR,jsonBytes(descriptor)],[POINTER,jsonBytes(pointer)]]);
+ await assertFinalControlPackage({controls,files,api,producerLoader});
+ if(dryRun)return {decision:'DRY_RUN_GOOGLE_F3_VALIDATED',head,key,receiptPath,files,productActions:0};
+ const committed=await commitFiles(api,{expectedHead:head,files,controls,message:`I3 record native F3 ${proof.startGeneration} scoped result [i3-auto-receipt] [skip ci]`});
+ return {decision:'CONSUMED_GOOGLE_F3_SCOPED_RESULT',...committed,key,receiptPath,productActions:0};
 }
 
 const pairedExecutionIdentity=value=>({provider:executionProviderOf(value),runId:String(value.runId),runAttempt:Number(value.runAttempt||1)});

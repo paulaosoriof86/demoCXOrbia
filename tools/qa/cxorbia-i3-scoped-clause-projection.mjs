@@ -82,9 +82,8 @@ export function verifiedTypedReceipt(entry,bytes,{gitBlob,sha256}){
  if(provider==='GITHUB_ACTIONS'){
   must(['runId','runAttempt','jobId','artifactId'].every(k=>String(proof[k])===String(entry[k]))&&proof.controlHead===entry.controlHead&&proof.artifactDigest===entry.artifactDigest,'INDEX_RECEIPT_IDENTITY');
  }else{
-  // This is the already supported native Google Finance transport. It does
-  // not borrow numeric Actions artifact/job fields or certify scoped owners.
-  must(provider==='GOOGLE_CLOUD_SHELL'&&result.kind==='FINANCE_UI_READONLY','EXTERNAL_TYPED_SCOPE_UNSUPPORTED');
+  // Native Finance and isolated F3 QA never borrow Actions identities.
+  must(provider==='GOOGLE_CLOUD_SHELL'&&['FINANCE_UI_READONLY','F3_ENDPOINT'].includes(result.kind),'EXTERNAL_TYPED_SCOPE_UNSUPPORTED');
   const object=/^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9-]{36})\/(start|result)\.json#([1-9]\d{7,19})$/;
   const start=object.exec(proof.startUri||''),end=object.exec(proof.resultUri||'');
   must(/^[1-9]\d{7,19}$/.test(String(proof.startGeneration||''))&&entry.key===provider+'/'+proof.startGeneration&&
@@ -92,6 +91,14 @@ export function verifiedTypedReceipt(entry,bytes,{gitBlob,sha256}){
    start&&end&&start[1]===end[1]&&start[2]==='start'&&end[2]==='result'&&start[3]===proof.startGeneration&&end[3]===proof.resultGeneration&&
    /^[a-f0-9]{64}$/.test(proof.bundleSha256)&&/^[a-f0-9]{40}$/.test(proof.controlHead)&&/^[a-f0-9]{40}$/.test(proof.transportSha),'INDEX_EXTERNAL_RECEIPT_IDENTITY');
   must(['runId','runAttempt','jobId','artifactId','artifactDigest'].every(k=>!Object.hasOwn(entry,k)),'INDEX_EXTERNAL_ACTIONS_IDENTITY');
+  if(result.kind==='F3_ENDPOINT'){
+   const archivePrefix='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/'+start[1]+'/evidence.zip#';
+   must(result.state==='HOLD'&&result.fullDomain===false&&result.newDomainMatches===0&&result.phaseAComplete===false&&
+    result.ownerSpecificReceipts?.length===0&&entry.ownerReceiptCount===0&&proof.entry==='receipt.json'&&
+    result.producer?.jobName==='i3-b14-qa-provider-proof'&&['archiveUri','archiveSha256','archiveVerified'].every(k=>entry[k]===proof[k])&&
+    typeof proof.archiveUri==='string'&&proof.archiveUri.startsWith(archivePrefix)&&/^[1-9]\d{7,19}$/.test(proof.archiveUri.slice(archivePrefix.length))&&
+    /^[a-f0-9]{64}$/.test(proof.archiveSha256)&&proof.archiveVerified===true,'INDEX_EXTERNAL_F3_SCOPE');
+  }
  }
  must(result.production===false&&Array.isArray(result.ownerSpecificReceipts)&&result.ownerSpecificReceipts.length===entry.ownerReceiptCount,'INDEX_RECEIPT_SCOPE');
  return {entry,result};

@@ -19,6 +19,74 @@ if [[ "${CXORBIA_GOOGLE_QA_JOB:-i3-finance-focal-reproof}" == i3-run2382-academy
   source tools/qa/cxorbia-i3-d08-google-transport.sh
   exit
 fi
+if [[ "${CXORBIA_GOOGLE_QA_JOB:-}" == i3-b14-qa-provider-proof ]]; then
+  export GOOGLE_CLOUD_PROJECT=cxorbia-backend-dev GCLOUD_PROJECT=cxorbia-backend-dev GOOGLE_CLOUD_QUOTA_PROJECT=cxorbia-backend-dev
+  export CXORBIA_F3_QA_CONFIG=docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json
+  export CXORBIA_F3_QA_BASE_URL=https://cxorbia-backend-dev.web.app
+  [[ "${CXORBIA_F3_QA_ENDPOINT_GATE:-}" == PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124 ]]
+  [[ -z "${GITHUB_ACTIONS:-}${GITHUB_RUN_ID:-}${GITHUB_REF:-}${GITHUB_REPOSITORY:-}" ]]
+  producer=$(git rev-parse HEAD)
+  [[ "$producer" == "$CXORBIA_TRANSPORT_SHA" && "$(gcloud config get-value project)" == cxorbia-backend-dev ]]
+  [[ "$(node -p 'process.versions.node.split(".")[0]')" == 24 ]]
+  git diff --quiet HEAD --
+  for file in tools/qa/cxorbia-i3-{b14-isolated-provider-writer-qa.mjs,f3-shopper-role-qa.mjs,google-qa-execution.mjs,finance-google-transport.sh} "$CXORBIA_F3_QA_CONFIG" docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json; do
+    [[ "$(git hash-object "$file")" == "$(git rev-parse "$CXORBIA_TRANSPORT_SHA:$file")" ]]
+  done
+  # Preserve the actual invocation and receipt through a Cloud Shell reconnect.
+  mkdir -p "$HOME/.cxorbia-i3-qa"
+  f3_dir=$(mktemp -d "$HOME/.cxorbia-i3-qa/f3.XXXXXXXX")
+  export CXORBIA_B14_QA_RECEIPT="$f3_dir/evidence/receipt.json"
+  mkdir -p "$f3_dir/evidence"
+  node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs --current > "$f3_dir/authority.json"
+  node --input-type=module <<'F3PREFLIGHT'
+import fs from 'node:fs';import {execFileSync} from 'node:child_process';import {createHash} from 'node:crypto';
+const read=p=>JSON.parse(fs.readFileSync(p)),config=read(process.env.CXORBIA_F3_QA_CONFIG),descriptor=read('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json');
+const need=(ok,code)=>{if(!ok)throw Error('SOURCE_FAILURE:F3_GOOGLE_'+code);};
+const pins=['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'];
+need(config.schemaVersion==='cxorbia.f3.endpoint-qa-config.v1'&&config.production===false&&config.scope==='ISOLATED_QA_TABS_IN_ORIGINAL_BOOKS_NO_OPERATIONAL_ROWS','CONFIG_SCOPE');
+const seal=descriptor.postDeployRunSeal,materialization=descriptor.currentMaterialization,receiptPath=config.canonicalMaterializationReceiptPath;
+need(seal.mode==='CURRENT_SOURCE_SERVING'&&receiptPath===seal.receiptPath&&receiptPath===materialization.materializationReceiptPath&&config.canonicalMaterializationProvider==='GOOGLE_CLOUD_BUILD','CURRENT_RECEIPT');
+const receiptBytes=fs.readFileSync(receiptPath),receipt=JSON.parse(receiptBytes);
+need(createHash('sha256').update(receiptBytes).digest('hex')===config.canonicalMaterializationReceiptSha256&&execFileSync('git',['hash-object',receiptPath],{encoding:'utf8'}).trim()===seal.receiptBlob,'RECEIPT_HASH');
+need(receipt.executionProvider==='GOOGLE_CLOUD_BUILD'&&receipt.executionBinding.nativeBuildVerified===true&&receipt.sourceHostedExact===true&&receipt.production===false,'NATIVE_RECEIPT');
+need(pins.every(k=>config[k]===materialization[k]&&config[k]===receipt.materialization[k])&&descriptor.productSourceSha===config.sourceSha&&descriptor.productTreeAuthority===config.sourceTree,'MATERIALIZATION_PINS');
+need(execFileSync('git',['rev-parse',config.sourceSha+'^{tree}'],{encoding:'utf8'}).trim()===config.sourceTree,'SOURCE_TREE');
+need(config.remoteManifestPath==='docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json'&&createHash('sha256').update(fs.readFileSync(config.remoteManifestPath)).digest('hex')===config.remoteManifestSha256,'FIXTURE_HASH');
+for(const [p,v] of [['firebase-admin','13.4.0'],['@modelcontextprotocol/sdk','1.26.0'],['playwright','1.56.1']])need(read('node_modules/'+p+'/package.json').version===v,'DEPENDENCY_VERSION');
+const{chromium}=await import('playwright');const browser=await chromium.launch({headless:true});await browser.close();
+F3PREFLIGHT
+  export CXORBIA_F3_QA_SOURCE_SHA CXORBIA_F3_QA_SOURCE_TREE CXORBIA_F3_QA_RUNTIME_REVISION CXORBIA_F3_QA_RUNTIME_DIGEST CXORBIA_F3_QA_HOSTING_VERSION CXORBIA_F3_QA_REMOTE_MANIFEST
+  read -r CXORBIA_F3_QA_SOURCE_SHA CXORBIA_F3_QA_SOURCE_TREE CXORBIA_F3_QA_RUNTIME_REVISION CXORBIA_F3_QA_RUNTIME_DIGEST CXORBIA_F3_QA_HOSTING_VERSION CXORBIA_F3_QA_REMOTE_MANIFEST < <(jq -er '[.sourceSha,.sourceTree,.runtimeRevision,.runtimeDigest,.hostingVersion,.remoteManifestPath]|@tsv' "$CXORBIA_F3_QA_CONFIG")
+  uuid=$(python3 -c 'import uuid;print(uuid.uuid4())')
+  prefix="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/$uuid"
+  jq -n --arg source "$CXORBIA_F3_QA_SOURCE_SHA" --arg tree "$CXORBIA_F3_QA_SOURCE_TREE" --arg control "$producer" --arg transport "$CXORBIA_TRANSPORT_SHA" --arg job "$CXORBIA_GOOGLE_QA_JOB" \
+    '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:"recovery/cxorbia-phase-a-20260831",job:$job,attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport}' > "$f3_dir/start.json"
+  export CXORBIA_GOOGLE_QA_START
+  CXORBIA_GOOGLE_QA_START=$(put "$f3_dir/start.json" "$prefix/start.json")
+  printf 'START %s\nCHECKPOINT %s\n' "$CXORBIA_GOOGLE_QA_START" "$f3_dir"
+  f3_status="0"
+  node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-endpoint > "$f3_dir/job.log" 2>&1 || f3_status=$?
+  printf '%s\n' "$f3_status" > "$f3_dir/worker-exit-code"
+  if [[ "$f3_status" == 0 ]]; then
+    jq -e '.decision=="PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING" and .applicationAckProven==true and .remoteValuesRestored==true and .cleanup.firestore==true and .cleanup.auth==true and .productionWrites==0 and .operationalHrWrites==0 and .b14Closed==false and .shopperRoleProof.decision=="PASS_F3_QA_SHOPPER_ROLE_SCOPED" and .shopperRoleProof.cleanup.complete==true' "$CXORBIA_B14_QA_RECEIPT" > /dev/null || f3_status=$?
+  fi
+  test -s "$CXORBIA_B14_QA_RECEIPT"
+  python3 - "$f3_dir/evidence" "$f3_dir/evidence.zip" <<'F3ARCHIVE'
+import pathlib,sys,zipfile,re
+root=pathlib.Path(sys.argv[1]);files=[root/'receipt.json',*sorted(root.glob('*.png'))]
+assert len(files)<=5 and all(f.name=='receipt.json' or re.fullmatch(r'f3-role-(before|assigned)-(GT|HN)\.png',f.name) for f in files)
+with zipfile.ZipFile(sys.argv[2],'w',zipfile.ZIP_DEFLATED) as z:
+    for f in files:z.write(f,f.name)
+F3ARCHIVE
+  f3_archive=$(put "$f3_dir/evidence.zip" "$prefix/evidence.zip")
+  f3_archive_hash=$(sha256sum "$f3_dir/evidence.zip"); f3_result_hash=$(sha256sum "$CXORBIA_B14_QA_RECEIPT")
+  jq -n --arg start "$CXORBIA_GOOGLE_QA_START" --arg archive "$f3_archive" --arg ah "${f3_archive_hash%% *}" --arg rh "${f3_result_hash%% *}" --argjson code "$f3_status" \
+    '{schemaVersion:"cxorbia.i3.google-f3-result.v1",startUri:$start,archiveUri:$archive,archiveSha256:$ah,resultSha256:$rh,exitCode:$code}' > "$f3_dir/result.json"
+  f3_result=$(put "$f3_dir/result.json" "$prefix/result.json")
+  printf 'RESULT %s\n' "$f3_result"
+  jq '{decision,failure,applicationAckProven,remoteValuesRestored,cases:(.cases|length),events:(.events|length),cleanup,productionWrites,operationalHrWrites}' "$CXORBIA_B14_QA_RECEIPT"
+  exit "$f3_status"
+fi
 
 export PROJECT=cxorbia-backend-dev SERVICE=cxorbia-live-hr-dev REGION=us-central1
 export GCLOUD_PROJECT="$PROJECT" GOOGLE_CLOUD_QUOTA_PROJECT="$PROJECT"

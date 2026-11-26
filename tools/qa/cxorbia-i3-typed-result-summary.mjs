@@ -1,7 +1,7 @@
 // Pure summaries of exact producer results; no provider calls or domain promotion.
 // Consumer verifies the archive, exact producer attempt/job/window, and pins first.
 import crypto from 'node:crypto';
-import {readGoogleFinanceResult} from './cxorbia-i3-google-qa-execution.mjs';
+import {readGoogleFinanceResult,readGoogleF3Result} from './cxorbia-i3-google-qa-execution.mjs';
 import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS,A08_GT_CURRENT_PROVIDER_MODE,validA08GtPasswordScope,publicA08GtPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 import {publicA08ClauseRefs} from './cxorbia-i3-scoped-clause-projection.mjs';
 
@@ -207,6 +207,11 @@ export function summarizeGoogleFinanceResult({uri,expectedIdentity},read){
   const bundle=readGoogleFinanceResult(uri,expectedIdentity,read);
   return summarizeVerifiedResult({...bundle,expectedIdentity},true);
 }
+export function summarizeGoogleF3Result({uri,expectedIdentity},read,readArchive){
+  for(const key of ['runtimeRevision','runtimeDigest','hostingVersion'])need(typeof expectedIdentity?.[key]==='string'&&expectedIdentity[key].length>0,'GOOGLE_LIVE_PIN_'+key);
+  const bundle=readGoogleF3Result(uri,expectedIdentity,read,readArchive);
+  return summarizeVerifiedResult({...bundle,expectedIdentity},true);
+}
 export function summarizeTypedResult(input){
   return summarizeVerifiedResult(input,false);
 }
@@ -375,7 +380,8 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
     producer:{schemaVersion:raw.schemaVersion,decision:raw.decision,jobName:spec.job,jobConclusion:t.jobConclusion},
     provenance:google?{provider:t.provider,startUri:t.startUri,startGeneration:t.startGeneration,startSha256:t.startSha256,
       resultUri:t.resultUri,resultGeneration:t.resultGeneration,bundleSha256:t.bundleSha256,resultSha256:rawHash,
-      entry:spec.entry,controlHead:t.controlHead,transportSha:t.transportSha,encryptedPdfEvidence:t.encryptedPdfEvidence}: {runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
+      entry:spec.entry,controlHead:t.controlHead,transportSha:t.transportSha,encryptedPdfEvidence:t.encryptedPdfEvidence,
+      ...(spec.kind==='F3_ENDPOINT'?{archiveUri:t.archiveUri,archiveSha256:t.archiveSha256,archiveVerified:t.archiveVerified,evidenceEntries:t.evidenceEntries}:{})}: {runId:String(t.runId),runAttempt:String(t.runAttempt),jobId:String(t.jobId),controlHead:t.controlHead,
       artifactId:String(t.artifactId),artifactDigest:t.artifactDigest,entry:spec.entry,resultSha256:rawHash},
     identity,classification,failureCodes,unclassifiedFailureCount,observations,
     ownerSpecificReceipts:[],fullDomain:false,newDomainMatches:0,phaseAComplete:false,

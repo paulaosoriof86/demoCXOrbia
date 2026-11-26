@@ -1,0 +1,1324 @@
+TAP version 13
+# Subtest: F3 exact QA scope yields deterministic run ownership without initializing any provider
+ok 1 - F3 exact QA scope yields deterministic run ownership without initializing any provider
+  ---
+  duration_ms: 5.365958
+  type: 'test'
+  ...
+# Subtest: F3 accepts Graph numeric cinema IDs in both countries without changing raw evidence
+ok 2 - F3 accepts Graph numeric cinema IDs in both countries without changing raw evidence
+  ---
+  duration_ms: 0.790522
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity 2022003
+ok 3 - F3 rejects foreign or nonscalar cinema identity 2022003
+  ---
+  duration_ms: 0.76842
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity ["2022002"]
+ok 4 - F3 rejects foreign or nonscalar cinema identity ["2022002"]
+  ---
+  duration_ms: 0.424283
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity {}
+ok 5 - F3 rejects foreign or nonscalar cinema identity {}
+  ---
+  duration_ms: 2.489359
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity null
+ok 6 - F3 rejects foreign or nonscalar cinema identity null
+  ---
+  duration_ms: 0.207385
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity true
+ok 7 - F3 rejects foreign or nonscalar cinema identity true
+  ---
+  duration_ms: 0.256457
+  type: 'test'
+  ...
+# Subtest: F3 rejects foreign or nonscalar cinema identity 2022002.5
+ok 8 - F3 rejects foreign or nonscalar cinema identity 2022002.5
+  ---
+  duration_ms: 0.190531
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned CXORBIA_F3_QA_ENDPOINT_GATE
+ok 9 - F3 rejects unauthorized or unpinned CXORBIA_F3_QA_ENDPOINT_GATE
+  ---
+  duration_ms: 0.265751
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned GITHUB_REF
+ok 10 - F3 rejects unauthorized or unpinned GITHUB_REF
+  ---
+  duration_ms: 0.449951
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned GITHUB_REPOSITORY
+ok 11 - F3 rejects unauthorized or unpinned GITHUB_REPOSITORY
+  ---
+  duration_ms: 0.245351
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned CXORBIA_F3_QA_BASE_URL
+ok 12 - F3 rejects unauthorized or unpinned CXORBIA_F3_QA_BASE_URL
+  ---
+  duration_ms: 0.114578
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned GOOGLE_CLOUD_PROJECT
+ok 13 - F3 rejects unauthorized or unpinned GOOGLE_CLOUD_PROJECT
+  ---
+  duration_ms: 0.083333
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned CXORBIA_F3_QA_RUNTIME_DIGEST
+ok 14 - F3 rejects unauthorized or unpinned CXORBIA_F3_QA_RUNTIME_DIGEST
+  ---
+  duration_ms: 0.089742
+  type: 'test'
+  ...
+# Subtest: F3 rejects unauthorized or unpinned CXORBIA_F3_QA_SOURCE_SHA
+ok 15 - F3 rejects unauthorized or unpinned CXORBIA_F3_QA_SOURCE_SHA
+  ---
+  duration_ms: 0.111964
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 16 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.207535
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 17 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.151072
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 18 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.171733
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 19 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.182458
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 20 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.176519
+  type: 'test'
+  ...
+# Subtest: F3 remote manifest drift stops all setup writes
+ok 21 - F3 remote manifest drift stops all setup writes
+  ---
+  duration_ms: 0.259171
+  type: 'test'
+  ...
+# Subtest: F3 generated private bindings satisfy real project contract and exact 26-column range
+ok 22 - F3 generated private bindings satisfy real project contract and exact 26-column range
+  ---
+  duration_ms: 1.945489
+  type: 'test'
+  ...
+# Subtest: F3 command freezes exact raw null and source revision for that visit
+ok 23 - F3 command freezes exact raw null and source revision for that visit
+  ---
+  duration_ms: 0.348572
+  type: 'test'
+  ...
+# Subtest: F3 endpoint cannot claim success from Firestore-only ACK or pending provider
+ok 24 - F3 endpoint cannot claim success from Firestore-only ACK or pending provider
+  ---
+  duration_ms: 0.545431
+  type: 'test'
+  ...
+# Subtest: F3 cleanup only owns isolated paths and command IDs explicitly journaled in the run
+ok 25 - F3 cleanup only owns isolated paths and command IDs explicitly journaled in the run
+  ---
+  duration_ms: 0.298789
+  type: 'test'
+  ...
+# Subtest: F3 live branch uses real authenticated endpoint, bounded replay and readback without logging credentials
+ok 26 - F3 live branch uses real authenticated endpoint, bounded replay and readback without logging credentials
+  ---
+  duration_ms: 1.155738
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight omitted preserves presence/type and stops incompatible fixture setup
+ok 27 - F3 endpoint metadata preflight omitted preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.990516
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight explicit undefined preserves presence/type and stops incompatible fixture setup
+ok 28 - F3 endpoint metadata preflight explicit undefined preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.263167
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight false preserves presence/type and stops incompatible fixture setup
+ok 29 - F3 endpoint metadata preflight false preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.21784
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight null preserves presence/type and stops incompatible fixture setup
+ok 30 - F3 endpoint metadata preflight null preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.239522
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight true preserves presence/type and stops incompatible fixture setup
+ok 31 - F3 endpoint metadata preflight true preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.293452
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight string preserves presence/type and stops incompatible fixture setup
+ok 32 - F3 endpoint metadata preflight string preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.206023
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight number preserves presence/type and stops incompatible fixture setup
+ok 33 - F3 endpoint metadata preflight number preserves presence/type and stops incompatible fixture setup
+  ---
+  duration_ms: 0.173726
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight fail-closed cursor
+ok 34 - F3 endpoint metadata preflight fail-closed cursor
+  ---
+  duration_ms: 0.423613
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight fail-closed no tools
+ok 35 - F3 endpoint metadata preflight fail-closed no tools
+  ---
+  duration_ms: 0.250288
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight fail-closed missing property
+ok 36 - F3 endpoint metadata preflight fail-closed missing property
+  ---
+  duration_ms: 0.665308
+  type: 'test'
+  ...
+# Subtest: F3 endpoint metadata preflight fail-closed transport failure
+ok 37 - F3 endpoint metadata preflight fail-closed transport failure
+  ---
+  duration_ms: 0.294854
+  type: 'test'
+  ...
+# Subtest: F3 endpoint calls metadata preflight before any fixture creation, independently from the historical cleanup wrapper
+ok 38 - F3 endpoint calls metadata preflight before any fixture creation, independently from the historical cleanup wrapper
+  ---
+  duration_ms: 0.405035
+  type: 'test'
+  ...
+# Subtest: real helper closes response before consuming body; headers/status are not semantic ACK
+ok 39 - real helper closes response before consuming body; headers/status are not semantic ACK
+  ---
+  duration_ms: 2.682824
+  type: 'test'
+  ...
+# Subtest: fault injector rejects real project before opening a connection
+ok 40 - fault injector rejects real project before opening a connection
+  ---
+  duration_ms: 0.529138
+  type: 'test'
+  ...
+# Subtest: fault injector rejects other key before opening a connection
+ok 41 - fault injector rejects other key before opening a connection
+  ---
+  duration_ms: 0.339189
+  type: 'test'
+  ...
+# Subtest: fault injector rejects HN before opening a connection
+ok 42 - fault injector rejects HN before opening a connection
+  ---
+  duration_ms: 0.308854
+  type: 'test'
+  ...
+# Subtest: fault injector rejects second field before opening a connection
+ok 43 - fault injector rejects second field before opening a connection
+  ---
+  duration_ms: 0.361812
+  type: 'test'
+  ...
+# Subtest: fault injector rejects foreign base before opening a connection
+ok 44 - fault injector rejects foreign base before opening a connection
+  ---
+  duration_ms: 0.311378
+  type: 'test'
+  ...
+# Subtest: transport failure before headers is not counted as lost committed ACK and leaks no private error
+ok 45 - transport failure before headers is not counted as lost committed ACK and leaks no private error
+  ---
+  duration_ms: 0.932241
+  type: 'test'
+  ...
+# Subtest: response without finished request and response503 cannot satisfy the ACK-loss proof
+ok 46 - response without finished request and response503 cannot satisfy the ACK-loss proof
+  ---
+  duration_ms: 0.786817
+  type: 'test'
+  ...
+# Subtest: independent exact journal establishes original commit; same-event replay leaves remote write count unknown
+ok 47 - independent exact journal establishes original commit; same-event replay leaves remote write count unknown
+  ---
+  duration_ms: 1.980882
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects consumed body
+ok 48 - independent commit proof rejects consumed body
+  ---
+  duration_ms: 0.546984
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects observed ACK
+ok 49 - independent commit proof rejects observed ACK
+  ---
+  duration_ms: 0.235987
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects foreign command digest
+ok 50 - independent commit proof rejects foreign command digest
+  ---
+  duration_ms: 0.660351
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects foreign actor
+ok 51 - independent commit proof rejects foreign actor
+  ---
+  duration_ms: 0.53058
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects unrelated event
+ok 52 - independent commit proof rejects unrelated event
+  ---
+  duration_ms: 0.66644
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects tampered journal
+ok 53 - independent commit proof rejects tampered journal
+  ---
+  duration_ms: 2.030906
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects unknown remote count
+ok 54 - independent commit proof rejects unknown remote count
+  ---
+  duration_ms: 0.770773
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects zero declared original writes
+ok 55 - independent commit proof rejects zero declared original writes
+  ---
+  duration_ms: 1.026228
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects missing effect
+ok 56 - independent commit proof rejects missing effect
+  ---
+  duration_ms: 0.68018
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects extra delivery attempt
+ok 57 - independent commit proof rejects extra delivery attempt
+  ---
+  duration_ms: 0.822039
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects live lease
+ok 58 - independent commit proof rejects live lease
+  ---
+  duration_ms: 0.878572
+  type: 'test'
+  ...
+# Subtest: independent commit proof rejects not settled
+ok 59 - independent commit proof rejects not settled
+  ---
+  duration_ms: 1.474217
+  type: 'test'
+  ...
+# Subtest: replay proof rejects changed timestamp only
+ok 60 - replay proof rejects changed timestamp only
+  ---
+  duration_ms: 2.467688
+  type: 'test'
+  ...
+# Subtest: replay proof rejects changed journal
+ok 61 - replay proof rejects changed journal
+  ---
+  duration_ms: 3.416743
+  type: 'test'
+  ...
+# Subtest: replay proof rejects new replay key
+ok 62 - replay proof rejects new replay key
+  ---
+  duration_ms: 1.493205
+  type: 'test'
+  ...
+# Subtest: replay proof rejects unknown local write count
+ok 63 - replay proof rejects unknown local write count
+  ---
+  duration_ms: 3.719137
+  type: 'test'
+  ...
+# Subtest: replay proof rejects nonzero local write count
+ok 64 - replay proof rejects nonzero local write count
+  ---
+  duration_ms: 0.410293
+  type: 'test'
+  ...
+# Subtest: replay proof rejects not idempotent
+ok 65 - replay proof rejects not idempotent
+  ---
+  duration_ms: 0.490631
+  type: 'test'
+  ...
+# Subtest: lost response is a remote attempt that preserves fixture until exact restoration
+ok 66 - lost response is a remote attempt that preserves fixture until exact restoration
+  ---
+  duration_ms: 0.133036
+  type: 'test'
+  ...
+# Subtest: runner uses same existing first command, independent reads before a single replay, and preserves Make-side limitation
+ok 67 - runner uses same existing first command, independent reads before a single replay, and preserves Make-side limitation
+  ---
+  duration_ms: 0.409312
+  type: 'test'
+  ...
+# Subtest: loopback only: client loses first real HTTP body, independent committed state precedes exact replay
+ok 68 - loopback only: client loses first real HTTP body, independent committed state precedes exact replay
+  ---
+  duration_ms: 67.067145
+  type: 'test'
+  ...
+# Subtest: the same F3 fixture has exactly two country-scoped temporary Shopper principals
+ok 69 - the same F3 fixture has exactly two country-scoped temporary Shopper principals
+  ---
+  duration_ms: 3.555857
+  type: 'test'
+  ...
+# Subtest: independent HR drives available-before and own-after country keysets
+ok 70 - independent HR drives available-before and own-after country keysets
+  ---
+  duration_ms: 1.508508
+  type: 'test'
+  ...
+# Subtest: an expired or blocked baseline stays empty and is never invented as a positive transition
+ok 71 - an expired or blocked baseline stays empty and is never invented as a positive transition
+  ---
+  duration_ms: 0.532422
+  type: 'test'
+  ...
+# Subtest: invalid independent HR fails closed x=>x.rows[0].projectId='cinepolis'
+ok 72 - invalid independent HR fails closed x=>x.rows[0].projectId='cinepolis'
+  ---
+  duration_ms: 0.39466
+  type: 'test'
+  ...
+# Subtest: invalid independent HR fails closed x=>x.rows[1].id=x.rows[0].id
+ok 73 - invalid independent HR fails closed x=>x.rows[1].id=x.rows[0].id
+  ---
+  duration_ms: 0.335473
+  type: 'test'
+  ...
+# Subtest: invalid independent HR fails closed x=>delete x.rows[0].canonicalFacets
+ok 74 - invalid independent HR fails closed x=>delete x.rows[0].canonicalFacets
+  ---
+  duration_ms: 0.40172
+  type: 'test'
+  ...
+# Subtest: invalid independent HR fails closed x=>x.revision='stale'
+ok 75 - invalid independent HR fails closed x=>x.revision='stale'
+  ---
+  duration_ms: 0.229538
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.uidMatches=false
+ok 76 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.uidMatches=false
+  ---
+  duration_ms: 0.325919
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.role='admin'
+ok 77 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.role='admin'
+  ---
+  duration_ms: 0.401871
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.projectIds=['cinepolis']
+ok 78 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.projectIds=['cinepolis']
+  ---
+  duration_ms: 0.5712
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sessionShopperId=actors[1].shopperId
+ok 79 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sessionShopperId=actors[1].shopperId
+  ---
+  duration_ms: 0.301543
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sourceRevision='b'.repeat(64)
+ok 80 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sourceRevision='b'.repeat(64)
+  ---
+  duration_ms: 0.308023
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.foreignVisitCount=1
+ok 81 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.foreignVisitCount=1
+  ---
+  duration_ms: 7.679655
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.duplicateVisitCount=1
+ok 82 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.duplicateVisitCount=1
+  ---
+  duration_ms: 0.490251
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.availableIds=['wrong']
+ok 83 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.availableIds=['wrong']
+  ---
+  duration_ms: 0.205932
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.GT,qa.visits.GT]
+ok 84 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.GT,qa.visits.GT]
+  ---
+  duration_ms: 0.128238
+  type: 'test'
+  ...
+# Subtest: wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.HN]
+ok 85 - wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.HN]
+  ---
+  duration_ms: 0.10903
+  type: 'test'
+  ...
+# Subtest: browser blocks command, Firestore write, Auth mutation and Storage mutation but allows login and reads
+ok 86 - browser blocks command, Firestore write, Auth mutation and Storage mutation but allows login and reads
+  ---
+  duration_ms: 0.709683
+  type: 'test'
+  ...
+# Subtest: only owned QA membership and Auth accounts are created, then absence is read back
+ok 87 - only owned QA membership and Auth accounts are created, then absence is read back
+  ---
+  duration_ms: 2.315514
+  type: 'test'
+  ...
+# Subtest: foreign account collision prevents all setup writes
+ok 88 - foreign account collision prevents all setup writes
+  ---
+  duration_ms: 0.579752
+  type: 'test'
+  ...
+# Subtest: unverified Firestore cleanup preserves both QA accounts
+ok 89 - unverified Firestore cleanup preserves both QA accounts
+  ---
+  duration_ms: 0.752677
+  type: 'test'
+  ...
+# Subtest: member or Auth ownership drift blocks deletion
+ok 90 - member or Auth ownership drift blocks deletion
+  ---
+  duration_ms: 0.876559
+  type: 'test'
+  ...
+# Subtest: only an exact newly created empty-claims account can recover a failed claims setup
+ok 91 - only an exact newly created empty-claims account can recover a failed claims setup
+  ---
+  duration_ms: 0.181668
+  type: 'test'
+  ...
+# Subtest: F3 accepts a verified Google identity without fabricating Actions and rejects a copied identity
+ok 92 - F3 accepts a verified Google identity without fabricating Actions and rejects a copied identity
+  ---
+  duration_ms: 32.807288
+  type: 'test'
+  ...
+# Subtest: F3 Google HOLD is durably recordable with archive proof and no owner/domain promotion
+ok 93 - F3 Google HOLD is durably recordable with archive proof and no owner/domain promotion
+  ---
+  duration_ms: 2.262195
+  type: 'test'
+  ...
+# Subtest: native F3 rejects raw bytes
+ok 94 - native F3 rejects raw bytes
+  ---
+  duration_ms: 0.442651
+  type: 'test'
+  ...
+# Subtest: native F3 rejects wrong fixture
+ok 95 - native F3 rejects wrong fixture
+  ---
+  duration_ms: 2.755871
+  type: 'test'
+  ...
+# Subtest: native F3 rejects wrong live pin
+ok 96 - native F3 rejects wrong live pin
+  ---
+  duration_ms: 0.576057
+  type: 'test'
+  ...
+# Subtest: native F3 rejects different producer
+ok 97 - native F3 rejects different producer
+  ---
+  duration_ms: 0.350956
+  type: 'test'
+  ...
+# Subtest: native F3 rejects different archive UUID
+ok 98 - native F3 rejects different archive UUID
+  ---
+  duration_ms: 0.325158
+  type: 'test'
+  ...
+# Subtest: native F3 rejects invented ACK without live readback
+ok 99 - native F3 rejects invented ACK without live readback
+  ---
+  duration_ms: 0.521367
+  type: 'test'
+  ...
+# Subtest: native F3 rejects role PASS without captures
+ok 100 - native F3 rejects role PASS without captures
+  ---
+  duration_ms: 1.464573
+  type: 'test'
+  ...
+# Subtest: F3 dry run validates a complete control package with zero Git mutations
+ok 101 - F3 dry run validates a complete control package with zero Git mutations
+  ---
+  duration_ms: 1128.626076
+  type: 'test'
+  ...
+# Subtest: F3 native receipt publishes with CAS/readback and an exact replay makes no write
+ok 102 - F3 native receipt publishes with CAS/readback and an exact replay makes no write
+  ---
+  duration_ms: 750.429375
+  type: 'test'
+  ...
+# Subtest: F3 changed replay and interleaved writer cannot advance the ref
+ok 103 - F3 changed replay and interleaved writer cannot advance the ref
+  ---
+  duration_ms: 1230.905249
+  type: 'test'
+  ...
+# Subtest: uses immutable marker generation and preserves actual bytes and producer identity
+ok 104 - uses immutable marker generation and preserves actual bytes and producer identity
+  ---
+  duration_ms: 2.569257
+  type: 'test'
+  ...
+# Subtest: regular workflow uses its existing transport
+ok 105 - regular workflow uses its existing transport
+  ---
+  duration_ms: 0.203249
+  type: 'test'
+  ...
+# Subtest: rejects different project
+ok 106 - rejects different project
+  ---
+  duration_ms: 0.521507
+  type: 'test'
+  ...
+# Subtest: rejects different branch
+ok 107 - rejects different branch
+  ---
+  duration_ms: 0.218331
+  type: 'test'
+  ...
+# Subtest: rejects different production
+ok 108 - rejects different production
+  ---
+  duration_ms: 0.172654
+  type: 'test'
+  ...
+# Subtest: rejects different attempt
+ok 109 - rejects different attempt
+  ---
+  duration_ms: 0.205813
+  type: 'test'
+  ...
+# Subtest: rejects different sourceSha
+ok 110 - rejects different sourceSha
+  ---
+  duration_ms: 0.14991
+  type: 'test'
+  ...
+# Subtest: rejects different sourceTree
+ok 111 - rejects different sourceTree
+  ---
+  duration_ms: 0.126506
+  type: 'test'
+  ...
+# Subtest: rejects different controlSha
+ok 112 - rejects different controlSha
+  ---
+  duration_ms: 0.297047
+  type: 'test'
+  ...
+# Subtest: rejects different job
+ok 113 - rejects different job
+  ---
+  duration_ms: 0.424413
+  type: 'test'
+  ...
+# Subtest: rejects another object generation and mixed provenance
+ok 114 - rejects another object generation and mixed provenance
+  ---
+  duration_ms: 0.269457
+  type: 'test'
+  ...
+# Subtest: imports a Google HOLD with independent object reads and no invented Actions IDs
+ok 115 - imports a Google HOLD with independent object reads and no invented Actions IDs
+  ---
+  duration_ms: 3.037775
+  type: 'test'
+  ...
+# Subtest: rejects unbound transport revision
+ok 116 - rejects unbound transport revision
+  ---
+  duration_ms: 0.408661
+  type: 'test'
+  ...
+# Subtest: rejects altered receipt bytes
+ok 117 - rejects altered receipt bytes
+  ---
+  duration_ms: 0.366579
+  type: 'test'
+  ...
+# Subtest: rejects altered sibling seal
+ok 118 - rejects altered sibling seal
+  ---
+  duration_ms: 0.958499
+  type: 'test'
+  ...
+# Subtest: rejects mismatched start
+ok 119 - rejects mismatched start
+  ---
+  duration_ms: 0.302816
+  type: 'test'
+  ...
+# Subtest: rejects overstated UI evidence
+ok 120 - rejects overstated UI evidence
+  ---
+  duration_ms: 1.939812
+  type: 'test'
+  ...
+# Subtest: HR diagnostic retains only an owner-defined code and strips all dynamic detail
+ok 121 - HR diagnostic retains only an owner-defined code and strips all dynamic detail
+  ---
+  duration_ms: 0.398315
+  type: 'test'
+  ...
+# Subtest: failed identity readback cannot discard an existing PDF failure or replace its original exit code
+ok 122 - failed identity readback cannot discard an existing PDF failure or replace its original exit code
+  ---
+  duration_ms: 121.420675
+  type: 'test'
+  ...
+# Subtest: Google PDF diagnostic retains verified immutable ciphertext locator, separate seal failure and original error
+ok 123 - Google PDF diagnostic retains verified immutable ciphertext locator, separate seal failure and original error
+  ---
+  duration_ms: 2.048791
+  type: 'test'
+  ...
+# Subtest: Google ciphertext changed ciphertext bytes stays unverified without discarding the public diagnosis
+ok 124 - Google ciphertext changed ciphertext bytes stays unverified without discarding the public diagnosis
+  ---
+  duration_ms: 0.628854
+  type: 'test'
+  ...
+# Subtest: Google ciphertext different generation stays unverified without discarding the public diagnosis
+ok 125 - Google ciphertext different generation stays unverified without discarding the public diagnosis
+  ---
+  duration_ms: 0.429461
+  type: 'test'
+  ...
+# Subtest: Google ciphertext different UUID stays unverified without discarding the public diagnosis
+ok 126 - Google ciphertext different UUID stays unverified without discarding the public diagnosis
+  ---
+  duration_ms: 0.487166
+  type: 'test'
+  ...
+# Subtest: Google ciphertext different declared hash stays unverified without discarding the public diagnosis
+ok 127 - Google ciphertext different declared hash stays unverified without discarding the public diagnosis
+  ---
+  duration_ms: 0.315594
+  type: 'test'
+  ...
+# Subtest: legacy Google PDF locator is marked unbound and is not invented from an Actions artifact
+ok 128 - legacy Google PDF locator is marked unbound and is not invented from an Actions artifact
+  ---
+  duration_ms: 0.290838
+  type: 'test'
+  ...
+# Subtest: Academy requires its own marker, exact ZIP generation and current served tuple
+ok 129 - Academy requires its own marker, exact ZIP generation and current served tuple
+  ---
+  duration_ms: 0.705978
+  type: 'test'
+  ...
+# Subtest: held A08 job preserves exactly HN and four historical API cells
+ok 130 - held A08 job preserves exactly HN and four historical API cells
+  ---
+  duration_ms: 8.98975
+  type: 'test'
+  ...
+# Subtest: wrong HN leaf or artifact cannot acquire historical credit
+ok 131 - wrong HN leaf or artifact cannot acquire historical credit
+  ---
+  duration_ms: 0.320591
+  type: 'test'
+  ...
+# Subtest: provenance-only carries existing evidence without crediting either diagnosed password
+ok 132 - provenance-only carries existing evidence without crediting either diagnosed password
+  ---
+  duration_ms: 0.412256
+  type: 'test'
+  ...
+# Subtest: diagnostic completion alone supplies no accepted clauses
+ok 133 - diagnostic completion alone supplies no accepted clauses
+  ---
+  duration_ms: 0.174687
+  type: 'test'
+  ...
+# Subtest: API preservation with wrong digest does not credit any API denial
+ok 134 - API preservation with wrong digest does not credit any API denial
+  ---
+  duration_ms: 0.235516
+  type: 'test'
+  ...
+# Subtest: receipt identity and hash are both verified before projection
+ok 135 - receipt identity and hash are both verified before projection
+  ---
+  duration_ms: 5.119276
+  type: 'test'
+  ...
+# Subtest: subtracts only HN and metadata; GT, SHP, Storage and financial UI remain
+ok 136 - subtracts only HN and metadata; GT, SHP, Storage and financial UI remain
+  ---
+  duration_ms: 3.073368
+  type: 'test'
+  ...
+# Subtest: API-only credit leaves all three password exceptions pending
+ok 137 - API-only credit leaves all three password exceptions pending
+  ---
+  duration_ms: 0.856609
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with wrong scope
+ok 138 - metadata does not clear obligation with wrong scope
+  ---
+  duration_ms: 0.577419
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with failed job
+ok 139 - metadata does not clear obligation with failed job
+  ---
+  duration_ms: 0.71425
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with no exact readback
+ok 140 - metadata does not clear obligation with no exact readback
+  ---
+  duration_ms: 0.477562
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with financial write
+ok 141 - metadata does not clear obligation with financial write
+  ---
+  duration_ms: 0.905321
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with domain promotion claim
+ok 142 - metadata does not clear obligation with domain promotion claim
+  ---
+  duration_ms: 0.461859
+  type: 'test'
+  ...
+# Subtest: metadata does not clear obligation with not replay safe
+ok 143 - metadata does not clear obligation with not replay safe
+  ---
+  duration_ms: 0.46976
+  type: 'test'
+  ...
+# Subtest: idempotent metadata noop settles the same metadata obligation only
+ok 144 - idempotent metadata noop settles the same metadata obligation only
+  ---
+  duration_ms: 0.477922
+  type: 'test'
+  ...
+# Subtest: replay and duplicate receipts do not increase credit or create another residual version
+ok 145 - replay and duplicate receipts do not increase credit or create another residual version
+  ---
+  duration_ms: 1.398126
+  type: 'test'
+  ...
+# Subtest: unknown or tampered A08 reference is rejected
+ok 146 - unknown or tampered A08 reference is rejected
+  ---
+  duration_ms: 0.554865
+  type: 'test'
+  ...
+# Subtest: predecessor serving and pending candidate are not rewritten by scoped credit
+ok 147 - predecessor serving and pending candidate are not rewritten by scoped credit
+  ---
+  duration_ms: 0.464483
+  type: 'test'
+  ...
+# Subtest: MATCH modules and their human acceptance remain byte-identical
+ok 148 - MATCH modules and their human acceptance remain byte-identical
+  ---
+  duration_ms: 0.411855
+  type: 'test'
+  ...
+# Subtest: cleanup-only evidence does not settle D08 functional requirements
+ok 149 - cleanup-only evidence does not settle D08 functional requirements
+  ---
+  duration_ms: 0.173475
+  type: 'test'
+  ...
+# Subtest: old A08 index upgrades from exact artifact without changing old receipt or key
+ok 150 - old A08 index upgrades from exact artifact without changing old receipt or key
+  ---
+  duration_ms: 2.140046
+  type: 'test'
+  ...
+# Subtest: normalization rejects changed artifact without writing anything
+ok 151 - normalization rejects changed artifact without writing anything
+  ---
+  duration_ms: 0.764954
+  type: 'test'
+  ...
+# Subtest: normalization rejects changed raw result and retains historical receipt
+ok 152 - normalization rejects changed raw result and retains historical receipt
+  ---
+  duration_ms: 0.657226
+  type: 'test'
+  ...
+# Subtest: existing control binder can bind residual-only successor without fabricated execution receipt
+ok 153 - existing control binder can bind residual-only successor without fabricated execution receipt
+  ---
+  duration_ms: 518.78243
+  type: 'test'
+  ...
+# Subtest: consumer projects already indexed metadata with no provider or artifact download
+ok 154 - consumer projects already indexed metadata with no provider or artifact download
+  ---
+  duration_ms: 825.871819
+  type: 'test'
+  ...
+# Subtest: projection failure cannot leak a staged normalization receipt or mutate caller files
+ok 155 - projection failure cannot leak a staged normalization receipt or mutate caller files
+  ---
+  duration_ms: 1.571229
+  type: 'test'
+  ...
+# Subtest: C3 still ignores scoped summaries with no owner receipts
+ok 156 - C3 still ignores scoped summaries with no owner receipts
+  ---
+  duration_ms: 4.297027
+  type: 'test'
+  ...
+# Subtest: exact recovery/probe remove only their existing execution IDs, leaving the F3 contract open
+ok 157 - exact recovery/probe remove only their existing execution IDs, leaving the F3 contract open
+  ---
+  duration_ms: 0.21755
+  type: 'test'
+  ...
+# Subtest: residual next action synchronizes four controls and handoffs without repeating completed metadata or cleanup
+ok 158 - residual next action synchronizes four controls and handoffs without repeating completed metadata or cleanup
+  ---
+  duration_ms: 73.787997
+  type: 'test'
+  ...
+# Subtest: pending approved source produces a publication step before new candidate functional proof
+ok 159 - pending approved source produces a publication step before new candidate functional proof
+  ---
+  duration_ms: 40.101589
+  type: 'test'
+  ...
+# Subtest: an Actions account lock preserves the Google DEV path, producer order and business obligations
+ok 160 - an Actions account lock preserves the Google DEV path, producer order and business obligations
+  ---
+  duration_ms: 55.8713
+  type: 'test'
+  ...
+# Subtest: consumer repairs only stale next action via existing binder even without new clause credit or provider call
+ok 161 - consumer repairs only stale next action via existing binder even without new clause credit or provider call
+  ---
+  duration_ms: 297.754058
+  type: 'test'
+  ...
+# Subtest: GT typed proof projects its own exact clause and clears only the verified password obligation
+ok 162 - GT typed proof projects its own exact clause and clears only the verified password obligation
+  ---
+  duration_ms: 3.731866
+  type: 'test'
+  ...
+# Subtest: GT alone preserves an unproved HN exception and later HN credit is order independent
+ok 163 - GT alone preserves an unproved HN exception and later HN credit is order independent
+  ---
+  duration_ms: 1.316425
+  type: 'test'
+  ...
+# Subtest: GT retirement is idempotent when HN was already projected and Legacy stays open
+ok 164 - GT retirement is idempotent when HN was already projected and Legacy stays open
+  ---
+  duration_ms: 2.303667
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing final artifact seal
+ok 165 - GT clause is absent for missing final artifact seal
+  ---
+  duration_ms: 0.390194
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing HR proof
+ok 166 - GT clause is absent for missing HR proof
+  ---
+  duration_ms: 0.44904
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for missing restore
+ok 167 - GT clause is absent for missing restore
+  ---
+  duration_ms: 0.49671
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for legacy attempt
+ok 168 - GT clause is absent for legacy attempt
+  ---
+  duration_ms: 0.333811
+  type: 'test'
+  ...
+# Subtest: GT clause is absent for diagnostic substituted
+ok 169 - GT clause is absent for diagnostic substituted
+  ---
+  duration_ms: 0.275805
+  type: 'test'
+  ...
+# Subtest: GT failed producer cannot get credit even if its raw scoped decision claimed PASS
+ok 170 - GT failed producer cannot get credit even if its raw scoped decision claimed PASS
+  ---
+  duration_ms: 0.996875
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered archive
+ok 171 - GT projection rejects tampered archive
+  ---
+  duration_ms: 0.875967
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered identity
+ok 172 - GT projection rejects tampered identity
+  ---
+  duration_ms: 0.680811
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered index job
+ok 173 - GT projection rejects tampered index job
+  ---
+  duration_ms: 0.602375
+  type: 'test'
+  ...
+# Subtest: GT projection rejects tampered same artifact
+ok 174 - GT projection rejects tampered same artifact
+  ---
+  duration_ms: 0.563949
+  type: 'test'
+  ...
+# Subtest: GT public reference excludes raw identities, credentials, private paths and unsupported Google provenance
+ok 175 - GT public reference excludes raw identities, credentials, private paths and unsupported Google provenance
+  ---
+  duration_ms: 0.505343
+  type: 'test'
+  ...
+# Subtest: GT scoped receipt updates every existing nextAction without adding a new progress projection
+ok 176 - GT scoped receipt updates every existing nextAction without adding a new progress projection
+  ---
+  duration_ms: 89.952358
+  type: 'test'
+  ...
+# Subtest: consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once
+ok 177 - consumer reconciles an already indexed GT PASS after interruption without provider calls and replays once
+  ---
+  duration_ms: 411.361246
+  type: 'test'
+  ...
+# Subtest: verified Finance sessions project the old C09/C10 map once without changing task acceptance or promoting domains
+ok 178 - verified Finance sessions project the old C09/C10 map once without changing task acceptance or promoting domains
+  ---
+  duration_ms: 48.242115
+  type: 'test'
+  ...
+# Subtest: Finance does not clear residuals with PDF failure
+ok 179 - Finance does not clear residuals with PDF failure
+  ---
+  duration_ms: 36.16399
+  type: 'test'
+  ...
+# Subtest: Finance does not clear residuals with missing independent session
+ok 180 - Finance does not clear residuals with missing independent session
+  ---
+  duration_ms: 39.569186
+  type: 'test'
+  ...
+# Subtest: Finance does not clear residuals with financial mutation
+ok 181 - Finance does not clear residuals with financial mutation
+  ---
+  duration_ms: 50.371241
+  type: 'test'
+  ...
+# Subtest: Finance does not clear residuals with unverified served identity
+ok 182 - Finance does not clear residuals with unverified served identity
+  ---
+  duration_ms: 50.865742
+  type: 'test'
+  ...
+# Subtest: equal stale map references in four controls are rejected against the accepted Finance index
+ok 183 - equal stale map references in four controls are rejected against the accepted Finance index
+  ---
+  duration_ms: 57.534154
+  type: 'test'
+  ...
+# Subtest: consumer selects and verifies the existing native Google Finance receipt without provider calls
+ok 184 - consumer selects and verifies the existing native Google Finance receipt without provider calls
+  ---
+  duration_ms: 44.519363
+  type: 'test'
+  ...
+# Subtest: final package rejects unprojected accepted evidence before any Git mutation or queue retirement
+ok 185 - final package rejects unprojected accepted evidence before any Git mutation or queue retirement
+  ---
+  duration_ms: 298.183282
+  type: 'test'
+  ...
+# Subtest: fully projected published package passes final validation and keeps every accepted index key
+ok 186 - fully projected published package passes final validation and keeps every accepted index key
+  ---
+  duration_ms: 242.854791
+  type: 'test'
+  ...
+# Subtest: changing a receipt kind cannot bypass indexed hash verification
+ok 187 - changing a receipt kind cannot bypass indexed hash verification
+  ---
+  duration_ms: 93.254432
+  type: 'test'
+  ...
+# Subtest: replacing an accepted entry under the same key is rejected even with matching replacement hashes
+ok 188 - replacing an accepted entry under the same key is rejected even with matching replacement hashes
+  ---
+  duration_ms: 116.545188
+  type: 'test'
+  ...
+# Subtest: final transaction preserves prior evidence: remove map
+ok 189 - final transaction preserves prior evidence: remove map
+  ---
+  duration_ms: 243.01365
+  type: 'test'
+  ...
+# Subtest: final transaction preserves prior evidence: remove C04 accepted scope
+ok 190 - final transaction preserves prior evidence: remove C04 accepted scope
+  ---
+  duration_ms: 231.447561
+  type: 'test'
+  ...
+# Subtest: an added D08 binding is admitted only after its existing owner verifies the original request
+ok 191 - an added D08 binding is admitted only after its existing owner verifies the original request
+  ---
+  duration_ms: 356.856139
+  type: 'test'
+  ...
+# Subtest: F3_ENDPOINT is durably recordable without any domain promotion or private fields
+ok 192 - F3_ENDPOINT is durably recordable without any domain promotion or private fields
+  ---
+  duration_ms: 8.683044
+  type: 'test'
+  ...
+# Subtest: A08_RESIDUAL is durably recordable without any domain promotion or private fields
+ok 193 - A08_RESIDUAL is durably recordable without any domain promotion or private fields
+  ---
+  duration_ms: 1.943136
+  type: 'test'
+  ...
+# Subtest: FINANCE_METADATA is durably recordable without any domain promotion or private fields
+ok 194 - FINANCE_METADATA is durably recordable without any domain promotion or private fields
+  ---
+  duration_ms: 0.649324
+  type: 'test'
+  ...
+# Subtest: FINANCE_READONLY is durably recordable without any domain promotion or private fields
+ok 195 - FINANCE_READONLY is durably recordable without any domain promotion or private fields
+  ---
+  duration_ms: 0.500195
+  type: 'test'
+  ...
+# Subtest: F3 failure retains exact classification, cleanup and recovery requirement
+ok 196 - F3 failure retains exact classification, cleanup and recovery requirement
+  ---
+  duration_ms: 0.627052
+  type: 'test'
+  ...
+# Subtest: F3 partial PASS still retains HOLD and does not close B14 or Make cleanup
+ok 197 - F3 partial PASS still retains HOLD and does not close B14 or Make cleanup
+  ---
+  duration_ms: 0.391776
+  type: 'test'
+  ...
+# Subtest: A08 three password passes are preserved while storage remains unproved
+ok 198 - A08 three password passes are preserved while storage remains unproved
+  ---
+  duration_ms: 0.970026
+  type: 'test'
+  ...
+# Subtest: finance failure before dispatch remains no command dispatched
+ok 199 - finance failure before dispatch remains no command dispatched
+  ---
+  duration_ms: 1.098825
+  type: 'test'
+  ...
+# Subtest: finance already-applied/noop is not mislabeled as replay or new write
+ok 200 - finance already-applied/noop is not mislabeled as replay or new write
+  ---
+  duration_ms: 0.72131
+  type: 'test'
+  ...
+# Subtest: absent fields remain unknown, not false proof
+ok 201 - absent fields remain unknown, not false proof
+  ---
+  duration_ms: 0.7007
+  type: 'test'
+  ...
+# Subtest: unclassified free-form error is counted without persisting its contents
+ok 202 - unclassified free-form error is counted without persisting its contents
+  ---
+  duration_ms: 0.52415
+  type: 'test'
+  ...
+# Subtest: rejects wrong run
+ok 203 - rejects wrong run
+  ---
+  duration_ms: 2.173886
+  type: 'test'
+  ...
+# Subtest: rejects wrong attempt
+ok 204 - rejects wrong attempt
+  ---
+  duration_ms: 0.343024
+  type: 'test'
+  ...
+# Subtest: rejects wrong producer job
+ok 205 - rejects wrong producer job
+  ---
+  duration_ms: 1.141098
+  type: 'test'
+  ...
+# Subtest: rejects wrong artifact digest
+ok 206 - rejects wrong artifact digest
+  ---
+  duration_ms: 1.164302
+  type: 'test'
+  ...
+# Subtest: rejects wrong entry
+ok 207 - rejects wrong entry
+  ---
+  duration_ms: 0.300602
+  type: 'test'
+  ...
+# Subtest: rejects wrong source pin
+ok 208 - rejects wrong source pin
+  ---
+  duration_ms: 0.420458
+  type: 'test'
+  ...
+# Subtest: rejects unknown schema
+ok 209 - rejects unknown schema
+  ---
+  duration_ms: 0.282075
+  type: 'test'
+  ...
+# Subtest: rejects unknown producer decision
+ok 210 - rejects unknown producer decision
+  ---
+  duration_ms: 0.244028
+  type: 'test'
+  ...
+# Subtest: rejects unsupported domain credit
+ok 211 - rejects unsupported domain credit
+  ---
+  duration_ms: 0.399417
+  type: 'test'
+  ...
+# Subtest: rejects production scope
+ok 212 - rejects production scope
+  ---
+  duration_ms: 0.348101
+  type: 'test'
+  ...
+# Subtest: machine failure codes do not preserve arbitrary suffixes or free text
+ok 213 - machine failure codes do not preserve arbitrary suffixes or free text
+  ---
+  duration_ms: 0.194496
+  type: 'test'
+  ...
+# Subtest: exact F3 recovery records cleanup and connection diagnosis without promoting endpoint proof
+ok 214 - exact F3 recovery records cleanup and connection diagnosis without promoting endpoint proof
+  ---
+  duration_ms: 0.633732
+  type: 'test'
+  ...
+# Subtest: held F3 recovery retains unknown cleanup without claiming absence
+ok 215 - held F3 recovery retains unknown cleanup without claiming absence
+  ---
+  duration_ms: 0.336395
+  type: 'test'
+  ...
+# Subtest: F3 recovery rejects wrong recovered run
+ok 216 - F3 recovery rejects wrong recovered run
+  ---
+  duration_ms: 0.282365
+  type: 'test'
+  ...
+# Subtest: F3 recovery rejects unproved cleanup PASS
+ok 217 - F3 recovery rejects unproved cleanup PASS
+  ---
+  duration_ms: 4.193805
+  type: 'test'
+  ...
+# Subtest: F3 recovery rejects endpoint credit
+ok 218 - F3 recovery rejects endpoint credit
+  ---
+  duration_ms: 0.222527
+  type: 'test'
+  ...
+# Subtest: F3 recovery rejects remote write
+ok 219 - F3 recovery rejects remote write
+  ---
+  duration_ms: 0.13638
+  type: 'test'
+  ...
+1..219
+# tests 219
+# suites 0
+# pass 219
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4484.032367

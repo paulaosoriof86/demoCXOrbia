@@ -14,10 +14,16 @@ const objectUri = /^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0
 const runnerFiles = ['tools/qa/cxorbia-i3-finance-ui-readonly.mjs','tools/qa/cxorbia-i3-google-qa-execution.mjs','tools/qa/cxorbia-i3-finance-ui-readonly-contract.mjs'];
 export const academyJob='i3-run2382-academy-b7-isolated-dev-qa';
 export const academyAbsenceScope='docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json';
+export const f3Job='i3-b14-qa-provider-proof';
+export const f3ConfigPath='docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json';
+export const f3FixturePath='docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json';
+const f3RunnerFiles=['tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs','tools/qa/cxorbia-i3-f3-shopper-role-qa.mjs',runnerFiles[1],'tools/qa/cxorbia-i3-finance-google-transport.sh',f3ConfigPath,f3FixturePath];
 const readCommand = (cmd,args) => execFileSync(cmd,args,{encoding:'utf8',timeout:45000,maxBuffer:3*1024*1024});
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const verifiedPairedExecutions=new WeakSet();
 export const isVerifiedGooglePairedExecution=value=>verifiedPairedExecutions.has(value);
+const verifiedQaExecutions=new WeakSet();
+export const isVerifiedGoogleQaExecution=value=>verifiedQaExecutions.has(value);
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 const deepFreeze=value=>{if(value&&typeof value==='object'){for(const child of Object.values(value))deepFreeze(child);Object.freeze(value);}return value;};
 function nativeMd5(row){
@@ -152,12 +158,13 @@ export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readComm
   need(!env.GITHUB_RUN_ID&&!env.GITHUB_ACTIONS,'AMBIGUOUS_GOOGLE_QA_EXECUTION');
   const control=read('git',['rev-parse','HEAD']).trim();
   const start=verifyStart(env.CXORBIA_GOOGLE_QA_START,job,sourceSha,sourceTree,control,read);
-  const files=job===academyJob?['tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs',runnerFiles[0],runnerFiles[1],academyAbsenceScope]:runnerFiles;
-  need(job===academyJob||job==='i3-finance-focal-reproof','GOOGLE_QA_UNREGISTERED_JOB');
+  const files=job===f3Job?f3RunnerFiles:job===academyJob?['tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs',runnerFiles[0],runnerFiles[1],academyAbsenceScope]:runnerFiles;
+  need(job===f3Job||job===academyJob||job==='i3-finance-focal-reproof','GOOGLE_QA_UNREGISTERED_JOB');
   for(const file of files){
     need(read('git',['hash-object',file]).trim()===read('git',['rev-parse',start.transportSha+':'+file]).trim(),'GOOGLE_QA_TRANSPORT_BLOB');
   }
-  return start;
+  verifiedQaExecutions.add(start);
+  return deepFreeze(start);
 }
 
 function readEncryptedPdfEvidence(bundle,raw,id,read){
@@ -212,6 +219,51 @@ export function readGoogleFinanceResult(uri,expected,read=readCommand){
     controlHead:start.controlSha,entry:'finance-ui-readonly.json',resultUri:uri,resultGeneration:result.generation,
      bundleSha256:result.sha256,resultSha256:bundle.resultSha256,encryptedPdfEvidence:readEncryptedPdfEvidence(bundle,raw,result.id,read)};
   return {resultText,identityReadback:{entry:'identity-live-readback.json',resultUri:uri,bundleSha256:result.sha256,text:sealText},transport};
+}
+
+function readF3Archive(uri,digest){
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-f3-readback-'));
+  try{
+    const zip=path.join(dir,'evidence.zip');
+    execFileSync('gcloud',['storage','cp',uri,zip],{stdio:'pipe',timeout:45000});
+    need(fs.statSync(zip).size<=32*1024*1024&&hash(fs.readFileSync(zip))===digest,'GOOGLE_F3_ARCHIVE_HASH');
+    const names=execFileSync('unzip',['-Z1',zip],{encoding:'utf8',maxBuffer:65536}).trim().split('\n');
+    need(names.filter(n=>n==='receipt.json').length===1&&new Set(names).size===names.length&&names.length<=5&&
+      names.every(n=>n==='receipt.json'||/^f3-role-(before|assigned)-(GT|HN)\.png$/.test(n)),'GOOGLE_F3_ARCHIVE_ENTRIES');
+    const text=execFileSync('unzip',['-p',zip,'receipt.json'],{encoding:'utf8',maxBuffer:2*1024*1024});
+    return {text,names};
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+}
+
+// The endpoint runner remains a scoped synthetic QA result. Native Google
+// provenance is read independently; it is never converted into Actions IDs.
+export function readGoogleF3Result(uri,expected,read=readCommand,readArchive=readF3Archive){
+  const result=readObject(uri,'result',read),bundle=result.contents;
+  need(bundle.schemaVersion==='cxorbia.i3.google-f3-result.v1'&&Number.isInteger(bundle.exitCode)&&bundle.exitCode>=0&&bundle.exitCode<=255,'GOOGLE_F3_RESULT_SCHEMA');
+  const start=verifyStart(bundle.startUri,f3Job,expected.sourceSha,expected.sourceTree,expected.controlSha,read);
+  need(objectUri.exec(start.startUri)[1]===result.id&&expected.transportSha===start.transportSha,'GOOGLE_F3_RESULT_PRODUCER');
+  const prefix='gs://'+bucket+'/cxorbia-i3-qa/'+result.id+'/evidence.zip#';
+  need(typeof bundle.archiveUri==='string'&&bundle.archiveUri.startsWith(prefix)&&/^[1-9]\d{7,19}$/.test(bundle.archiveUri.slice(prefix.length))&&
+    /^[a-f0-9]{64}$/.test(bundle.archiveSha256),'GOOGLE_F3_ARCHIVE_BINDING');
+  const archive=readArchive(bundle.archiveUri,bundle.archiveSha256),resultText=archive.text;
+  need(typeof resultText==='string'&&Buffer.byteLength(resultText)<=2*1024*1024&&hash(resultText)===bundle.resultSha256,'GOOGLE_F3_RESULT_HASH');
+  const raw=JSON.parse(resultText);
+  need(raw.schemaVersion==='cxorbia.i3.f3.qa-endpoint.v1'&&raw.syntheticOnly===true&&raw.productionWrites===0&&raw.operationalHrWrites===0&&
+    /^[a-f0-9]{64}$/.test(expected.remoteFixtureDigest||'')&&raw.remoteFixtureDigest===expected.remoteFixtureDigest&&
+    raw.runId===start.runId&&String(raw.runAttempt)===start.runAttempt&&raw.controlSha===start.controlSha&&
+    Object.entries(start).every(([k,v])=>raw.externalExecution?.[k]===v)&&
+    ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>raw[k]===expected[k]),'GOOGLE_F3_RESULT_IDENTITY');
+  if(raw.applicationAckProven===true){
+    need(['runtimeBefore','runtimeAfter'].every(k=>raw[k]?.revision===expected.runtimeRevision&&raw[k].digest===expected.runtimeDigest&&
+      raw[k].hostingVersion===expected.hostingVersion&&Number.isFinite(Date.parse(raw[k].readAt))),'GOOGLE_F3_LIVE_IDENTITY');
+  }
+  if(raw.shopperRoleProof?.decision==='PASS_F3_QA_SHOPPER_ROLE_SCOPED'){
+    need(['before','assigned'].every(p=>['GT','HN'].every(c=>archive.names.includes('f3-role-'+p+'-'+c+'.png'))),'GOOGLE_F3_ROLE_CAPTURE_MISSING');
+  }
+  const transport={...start,jobName:f3Job,jobConclusion:bundle.exitCode===0?'success':'failure',controlHead:start.controlSha,
+    entry:'receipt.json',resultUri:uri,resultGeneration:result.generation,bundleSha256:result.sha256,resultSha256:bundle.resultSha256,
+    archiveUri:bundle.archiveUri,archiveSha256:bundle.archiveSha256,archiveVerified:true,evidenceEntries:archive.names};
+  return {resultText,transport};
 }
 
 
