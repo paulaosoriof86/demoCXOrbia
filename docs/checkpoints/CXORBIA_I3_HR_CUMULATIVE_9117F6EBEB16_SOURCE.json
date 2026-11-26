@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-cumulative-source.v1",
+  "state": "SOURCE_PROVEN_PENDING_PAIRED_DEV",
+  "iteration": "I3",
+  "observedAt": "2026-11-26T14:39:11.363Z",
+  "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+  "expectedParentSha": "ad41f22624f88321f6d636925796e347998cb77c",
+  "predecessorProductSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "previousApprovedSource": {
+    "sourceSha": "ca94622046360c0122b79e8c4a27e2d72277277e",
+    "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+    "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+    "gitBlob": "9398129399234196bb9697ea45e80768000f8ade",
+    "sourceTestsPass": 280
+  },
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_SCOPE.json",
+  "scopeReceiptBlob": "57c96d212ec83fd115fbce057625aef4604508ab",
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/modules/visitas.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs",
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs"
+  ],
+  "approvedProductFiles": [
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/modules/visitas.js"
+  ],
+  "approvedSourceBlobs": {
+    "app/adapters/tya-live-source-refresh-watch-v2.js": "cb59e11cfeaea9b46e397cde71e649cade5aa897",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs": "32a97b47e68190f6d9fe58141ddb698ef0f8eb0d",
+    "backend/runtime/hr-live-service/hr-read-model.mjs": "815dbed89ad56b1e2c3ee09bd81074dac1971b51",
+    "backend/runtime/hr-live-service/server.mjs": "cdf2729ceb4314b6d91182dba9e56d70143a0691",
+    "app/modules/visitas.js": "dd77b6fce7ab46d74567faa12553241d1678e6a7"
+  },
+  "sourceTestsPass": 14,
+  "sourceTestsFail": 0,
+  "sourceTests": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_TESTS.tap",
+    "gitBlob": "4c8af8a210be5cda440f76ec14305a83dfdfffc4",
+    "sha256": "8305751741e51e6f92bd4e22218d6534aea2162c020b3e51bc635bbc6093e302"
+  },
+  "portableProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_PORTABLE.json",
+    "gitBlob": "3cfda2cc589749748e6e032ebd9ec3cd186058bc",
+    "sha256": "836ca78b2c0d1be1458af835ed372bb1cc5768260f70c8a0b65f00f2ebab5787"
+  },
+  "moduleTruthBeforePatch": [
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_DURABLE_TRUTH.json",
+      "gitBlob": "30edfc60581e804bf0c687b991129bdd28bfad13",
+      "sha256": "06bd153595dc81e692b5dd5ac597579db2d5c2ec540630d560209db787111afe"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_WATCHER_TRUTH.json",
+      "gitBlob": "a223c777196c74c48fc23984f24c1a0a3ee3f0e2",
+      "sha256": "2a0535dc118a2b71a82fa1b3f772f2287433801c25763254468c33513a36f4ff"
+    },
+    {
+      "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_MODULE_TRUTH_20261125.json",
+      "gitBlob": "50f55049ce2c3a6b9bd02f6d27c4ad15bb512b0f"
+    }
+  ],
+  "newDeltaProductFiles": [
+    "app/modules/visitas.js"
+  ],
+  "newDeltaTestFiles": [
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs"
+  ],
+  "findings": [
+    {
+      "id": "VRM-371",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": "Cold presentation with unavailable external inventory"
+    },
+    {
+      "id": "VRM-372",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": "One presentation refresh per session forces repeated external reads"
+    },
+    {
+      "id": "HR-MANUAL-FRESHNESS-20261125",
+      "priority": "P0_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": "Manual refresh falsely reports live freshness without verified current authority on the selected period"
+    }
+  ],
+  "servingReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
+    "gitBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+  },
+  "deployed": false,
+  "newDomainMatches": 0,
+  "creditForF3Cell": false,
+  "phaseAComplete": false,
+  "production": false
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-proven-scope.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+  "allowedProductFiles": [
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/server.mjs",
+    "app/modules/visitas.js"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-vrm134-a08-watcher-revision-reuse.test.mjs",
+    "tools/qa/cxorbia-i3-vrm372-live-read-budget.test.mjs",
+    "tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs"
+  ],
+  "previousSourceProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+    "gitBlob": "9398129399234196bb9697ea45e80768000f8ade"
+  },
+  "previousScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SCOPE.json",
+    "gitBlob": "c3df44f6c3af02d698230717e3487c5cba646a7a"
+  },
+  "manualScope": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_SCOPE_20261125.json",
+    "gitBlob": "05869afd108c2c554af3a40ac5fdea8a5c4fcf5a"
+  },
+  "moduleTruthBeforePatch": {
+    "path": "docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_MODULE_TRUTH_20261125.json",
+    "gitBlob": "50f55049ce2c3a6b9bd02f6d27c4ad15bb512b0f"
+  },
+  "exactBeforeAfterBlobs": {
+    "app/adapters/tya-live-source-refresh-watch-v2.js": {
+      "before": "3486338fd37b1dae487fc26d6639597ae907e7a9",
+      "after": "cb59e11cfeaea9b46e397cde71e649cade5aa897"
+    },
+    "backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs": {
+      "before": "d997b9338c584299b21e0f4b62e74d607cca7184",
+      "after": "32a97b47e68190f6d9fe58141ddb698ef0f8eb0d"
+    },
+    "backend/runtime/hr-live-service/hr-read-model.mjs": {
+      "before": "cdaa278f139d1c0d121c1651fdc6d7cb84d4fa26",
+      "after": "815dbed89ad56b1e2c3ee09bd81074dac1971b51"
+    },
+    "backend/runtime/hr-live-service/server.mjs": {
+      "before": "28fd70391211019d3d12364d803c9db813ad5122",
+      "after": "cdf2729ceb4314b6d91182dba9e56d70143a0691"
+    },
+    "app/modules/visitas.js": {
+      "before": "269ed1cfe8eb7c5f1f740f38af4d46217468e446",
+      "after": "dd77b6fce7ab46d74567faa12553241d1678e6a7"
+    }
+  },
+  "tests": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_TESTS.tap",
+    "gitBlob": "4c8af8a210be5cda440f76ec14305a83dfdfffc4",
+    "sha256": "8305751741e51e6f92bd4e22218d6534aea2162c020b3e51bc635bbc6093e302"
+  },
+  "portableProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_PORTABLE.json",
+    "gitBlob": "3cfda2cc589749748e6e032ebd9ec3cd186058bc",
+    "sha256": "836ca78b2c0d1be1458af835ed372bb1cc5768260f70c8a0b65f00f2ebab5787"
+  },
+  "production": false
+}

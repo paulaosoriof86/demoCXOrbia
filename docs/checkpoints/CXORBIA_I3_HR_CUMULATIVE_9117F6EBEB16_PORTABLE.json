@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "cxorbia.manual-hr-refresh.before-after.v1",
+  "observedAt": "2026-11-26T14:36:16.681Z",
+  "decision": "PROVEN_FALSE_FRESH_SUCCESS_FIXED_OFFLINE_ONLY",
+  "baseControlHead": "fb7f80287f81691338fd868fc36881fc84781e0e",
+  "regression": {
+    "pass": 14,
+    "fail": 0,
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-work-uat-a09b11-hr-admin-reconcile.test.mjs",
+    "transcriptSha256": "9c45389438cea2f1f2921f85a1151b69a9ec1eddefc0aeb98ce027ddaab0345f"
+  },
+  "patchSha256": "46c28e9ac2aa23fa6ef5110b4a310c986a5188730d2c13fcf20c23e2e71b27de",
+  "actualHandlerAndBridgeQuery": true,
+  "sourceSha256": {
+    "before": "a0d6eae6707e74478e9da886824f47fd9dffd42bcd7bca9d35ce9481c381d05f",
+    "after": "cff8b1a9cca03ccc6c4200c236c5c9caba98260cce1955e79342561b06d550d6"
+  },
+  "before": {
+    "variant": "before",
+    "requests": [
+      {
+        "reason": "admin_visits_manual_hr_refresh",
+        "options": {},
+        "url": "/api/tenants/tya/projects/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&readModel=1&ts=1795703776675"
+      }
+    ],
+    "toasts": [
+      {
+        "message": "HR viva actualizada",
+        "kind": "ok"
+      }
+    ],
+    "returnedExternalReadCurrent": false,
+    "navigation": [
+      "visitas"
+    ],
+    "commandWrites": 0,
+    "buttonReenabled": true
+  },
+  "afterDurable": {
+    "variant": "after",
+    "requests": [
+      {
+        "reason": "admin_visits_manual_hr_refresh",
+        "options": {
+          "forceFresh": true
+        },
+        "url": "/api/tenants/tya/projects/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&readModel=1&fresh=1&ts=1795703776678"
+      }
+    ],
+    "toasts": [
+      {
+        "message": "No se pudo actualizar HR · Lectura HR fresca no confirmada",
+        "kind": "err"
+      }
+    ],
+    "returnedExternalReadCurrent": false,
+    "navigation": [],
+    "commandWrites": 0,
+    "buttonReenabled": true
+  },
+  "afterFreshSameRevision": {
+    "variant": "after",
+    "requests": [
+      {
+        "reason": "admin_visits_manual_hr_refresh",
+        "options": {
+          "forceFresh": true
+        },
+        "url": "/api/tenants/tya/projects/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&readModel=1&fresh=1&ts=1795703776679"
+      }
+    ],
+    "toasts": [
+      {
+        "message": "HR viva actualizada",
+        "kind": "ok"
+      }
+    ],
+    "returnedExternalReadCurrent": true,
+    "navigation": [
+      "visitas"
+    ],
+    "commandWrites": 0,
+    "buttonReenabled": true
+  },
+  "afterHistorical": {
+    "variant": "after",
+    "requests": [
+      {
+        "reason": "admin_visits_manual_hr_refresh",
+        "options": {
+          "forceFresh": true,
+          "periodId": "cinepolis-2026-05"
+        },
+        "url": "/api/tenants/tya/projects/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&readModel=1&fresh=1&hrPeriodId=cinepolis-2026-05&ts=1795703776681"
+      }
+    ],
+    "toasts": [
+      {
+        "message": "HR viva actualizada",
+        "kind": "ok"
+      }
+    ],
+    "returnedExternalReadCurrent": true,
+    "navigation": [
+      "visitas"
+    ],
+    "commandWrites": 0,
+    "buttonReenabled": true
+  },
+  "afterInternal": {
+    "variant": "after",
+    "requests": [
+      {
+        "reason": "admin_visits_manual_hr_refresh",
+        "options": {
+          "forceFresh": true
+        },
+        "url": "/api/tenants/tya/projects/cinepolis/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&readModel=1&fresh=1&ts=1795703776681"
+      }
+    ],
+    "toasts": [
+      {
+        "message": "Vista interna actualizada",
+        "kind": "ok"
+      }
+    ],
+    "returnedExternalReadCurrent": false,
+    "navigation": [
+      "visitas"
+    ],
+    "commandWrites": 0,
+    "buttonReenabled": true
+  },
+  "networkAttempts": 0,
+  "providerWrites": 0,
+  "repositoryWrites": 0,
+  "scope": "No new authorization, no command changes, no provider scenarios; actual handler + actual query constructor with simulated authority responses."
+}

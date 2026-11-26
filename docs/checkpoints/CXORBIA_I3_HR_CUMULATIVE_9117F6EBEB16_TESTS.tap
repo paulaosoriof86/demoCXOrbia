@@ -1,0 +1,22 @@
+✔ A09/B11 protected admin command stays hidden outside exact DEV/admin project scope (6.117429ms)
+✔ VRM283 an admin can discover the action, but stale or unauthorized staff sessions cannot execute it (2.303508ms)
+✔ VRM283 protects live Cinépolis HR when period metadata lacks external source mode (0.781296ms)
+✔ VRM284 modal survives the observed late HR rerender beyond the obsolete 350ms delay (3011.339582ms)
+✔ A09/B11 human confirmation + command uses exact scoped revision with provider readback (1809.73054ms)
+✔ A09/B11 a separate human-confirmed attempt has a different receipt key for the same actor, scope and HR revision (3611.084029ms)
+✔ A09/B11 no confirmation or partial ACK never reports success, never auto-retries (1803.887976ms)
+✔ A09/B11 revision drift between preflight and confirmation fails closed (1806.897986ms)
+✔ manual HR refresh sends fresh=1 through the real protected bridge query and accepts an unchanged verified revision (2.196437ms)
+✔ manual HR refresh rejects a durable last-confirmed result despite ok=true (0.957151ms)
+✔ manual HR refresh requires applied authority and its exact published revision (2.302847ms)
+✔ manual HR refresh preserves an explicitly selected historical period and verifies its response scope (1.362911ms)
+✔ manual refresh preserves internal-project authority without claiming an external HR read (0.660705ms)
+✔ manual HR refresh failure keeps the button usable and never reports success (0.679352ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12146.95537

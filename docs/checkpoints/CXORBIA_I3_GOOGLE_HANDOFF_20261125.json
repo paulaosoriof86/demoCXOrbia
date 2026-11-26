@@ -2,8 +2,8 @@
   "schemaVersion": "cxorbia.i3.google-work-handoff.v1",
   "iteration": "I3",
   "state": "HOLD",
-  "source": "ca94622046360c0122b79e8c4a27e2d72277277e",
-  "sourceTree": "94f000488c34cdbc507ecc2e54a5d07f26539a56",
+  "source": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
   "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
   "integrity": {
     "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
@@ -737,6 +737,23 @@
         "gitBlob": "3b6ca7cabadc7bbdbff480a0029597b25571da91",
         "sha256": "91176c0827663ea66fd761401c95337b854d174a3e09c06839b8f4598c558b5d"
       }
+    },
+    "cumulativeHrManualRefresh": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_SOURCE.json",
+      "gitBlob": "795666daa0259d68df7d91654346dff680966926",
+      "sha256": "f144f3b3522064fb20dd1e6c9e2968695bbdc9f817eae4fac3dd1705a71575aa",
+      "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+      "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+      "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_CUMULATIVE_9117F6EBEB16_SCOPE.json",
+      "sourceTestsPass": 14,
+      "sourceTestsFail": 0,
+      "production": false,
+      "sharedBase": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_SHARED_CA9462204636_SOURCE.json",
+        "gitBlob": "9398129399234196bb9697ea45e80768000f8ade"
+      },
+      "served": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "devPublished": false
     }
   },
   "lastChromeConnection": {
@@ -749,7 +766,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
-    "deployment": "After sealing any active native test on the served predecessor, stage the approved HR successor pinned in confirmed.sharedHrSource and deploy only via the existing paired DEV lane. Record serving runtime, digest, Hosting version, and the paired receipt before DEV acceptance of the new readers.",
+    "deployment": "I3: Verify and seal any active scoped QA on served d727f3be67a4430f08216dbb37cccba790f934f5 before changing its runtime or Hosting. Use the single existing Google paired DEV path for the HR source 9117f6ebeb165093805d1c2b69c54e534e317cf4 after the source-bound build and registry evidence. Independently verify cold protected recovery, two-session shared external revision, manual fresh read and period, and exact source/runtime/Hosting; retain original F3 budget, GT escenario L2 and the completed recovery. Preserve Finance, Academia Admin, six MATCH and B4/B5/B6/B7. Continue residual role and durable E10 evidence and C3/Gate20/Gate21 on the bound artifact. I4 requires exact-artifact authorization. Production DO_NOT_TOUCH.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Use detached QA producer fb7f80287f81691338fd868fc36881fc84781e0e against the currently served d727f3be pair. Refresh balance and verify exclusive writer, full Make window and sentinel before dispatch. Reserve 100 of 350 credits for recovery. Seal and verify the two physical PATCH results, independent GETs and full restoration before exact-key cleanup. Recheck source and receipt before any retry.",
     "googleExecution": {
@@ -773,7 +790,7 @@
       "pairedReceiptForCurrentDev": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json"
     },
     "recoveryOnReconnect": "Read current guard and docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. The former credit-purchase/full-run instruction is superseded. Preserve complete cleanup of1795653493842440 and all accepted scope.",
-    "parallelHrManualRefresh": "Read docs/checkpoints/CXORBIA_I3_MANUAL_HR_REFRESH_HANDOFF_20261125.md. The exact two-file patch passes 14 offline regressions and still matches the current visitas owner. Coordinate its existing source admission with the already sealed shared successor and preserve any active native F3/build pins; no new transport/candidate and no repetition of accepted proof. The direct-reader access investigation and conditional cost model are evidence, not a completed OAuth migration."
+    "parallelHrManualRefresh": "On paired DEV verify the manual HR refresh obtains a current external read, the exact applied revision and the selected period. Keep a confirmed durable copy labeled as such."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,
