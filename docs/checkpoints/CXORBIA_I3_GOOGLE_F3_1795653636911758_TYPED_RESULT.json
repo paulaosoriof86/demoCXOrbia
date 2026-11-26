@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "F3_ENDPOINT",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.f3.qa-endpoint.v1",
+    "decision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+    "jobName": "i3-b14-qa-provider-proof",
+    "jobConclusion": "failure"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/start.json#1795653493842440",
+    "startGeneration": "1795653493842440",
+    "startSha256": "4e840036acfba2d029b7cfca87d624e7c4f93781af3cddd36d32f2b8c35d5500",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/result.json#1795653636911758",
+    "resultGeneration": "1795653636911758",
+    "bundleSha256": "4a5ff57092960336f744defb239d9d4354876cc597a75b04355a4872813d092d",
+    "resultSha256": "ae94d16bcd94e438a6e672e4e4d0afc1ddef2dc63845e5a385ba8cb1012ce5eb",
+    "entry": "receipt.json",
+    "controlHead": "a6f126005ef86d8effe903f73774669edb1c6441",
+    "transportSha": "a6f126005ef86d8effe903f73774669edb1c6441",
+    "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/evidence.zip#1795653630712949",
+    "archiveSha256": "f6c9f3319389c6fd95440e252aaa5d5edc53bc63ad77ac58b70cd46eb977466a",
+    "archiveVerified": true,
+    "evidenceEntries": [
+      "receipt.json"
+    ]
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48"
+    },
+    "complete": true
+  },
+  "classification": "PERSISTENCE_FAILURE",
+  "failureCodes": [
+    "PERSISTENCE_FAILURE:F3_LOST_RESPONSE_NOT_INJECTED",
+    "PERSISTENCE_FAILURE:F3_QA_REMOTE_RESTORE_REQUIRED"
+  ],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "authentication": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+    "applicationAckProven": false,
+    "remoteValuesRestored": false,
+    "recoveryRequired": true,
+    "notesPrivacyProven": false,
+    "ordinaryPasswordAuthenticationProven": false,
+    "caseCount": 1,
+    "eventCount": 1,
+    "remoteCommandAttemptCount": 1,
+    "cleanup": {
+      "firestore": false,
+      "auth": false,
+      "remoteMake": false,
+      "authPreservedForRecovery": true,
+      "errorCount": 1
+    },
+    "safety": {
+      "productionWrites": 0,
+      "operationalHrWrites": 0
+    },
+    "guarantees": {
+      "atomicHumanExcelCas": false,
+      "observedBaseGuard": true,
+      "remoteReceiptAndIndependentRead": true,
+      "uncertainWriteRetry": false
+    },
+    "remoteCleanupRequired": true,
+    "clientResponseLoss": null,
+    "shopperRoleProof": {
+      "decision": "HOLD_F3_QA_SHOPPER_ROLE",
+      "authentication": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+      "sameFixture": true,
+      "prepared": true,
+      "automaticUpsertProven": false,
+      "ordinaryPasswordProven": false,
+      "availabilityRemovalProven": null,
+      "actorCount": 2,
+      "blockedOperationalRequests": 0,
+      "failureCount": 2,
+      "failureCodes": [
+        "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+      ],
+      "phases": [
+        {
+          "phase": "before",
+          "sourceRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+          "countries": [
+            {
+              "country": "GT",
+              "sourceRevision": null,
+              "available": null,
+              "own": null,
+              "foreignVisitCount": null,
+              "duplicateVisitCount": null,
+              "exactAvailableKeyset": null,
+              "exactOwnKeyset": null,
+              "passed": false,
+              "reloadVerified": null,
+              "failureCode": "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+            },
+            {
+              "country": "HN",
+              "sourceRevision": null,
+              "available": null,
+              "own": null,
+              "foreignVisitCount": null,
+              "duplicateVisitCount": null,
+              "exactAvailableKeyset": null,
+              "exactOwnKeyset": null,
+              "passed": false,
+              "reloadVerified": null,
+              "failureCode": "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+            }
+          ]
+        }
+      ],
+      "positiveAvailabilityTransitions": [],
+      "limitations": [],
+      "cleanup": {
+        "complete": false,
+        "preservedForRecovery": true,
+        "authDeletedCount": 0,
+        "authAbsentCount": 0
+      }
+    },
+    "unproven": [
+      "application_client_response_loss_live_fault_injection",
+      "application_client_response_loss_remote_write_count",
+      "provider_response_loss_live_fault_injection",
+      "external_human_concurrent_edit_atomicity",
+      "historical_period_live_fixture",
+      "T&A_private_notes_live_fixture"
+    ]
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

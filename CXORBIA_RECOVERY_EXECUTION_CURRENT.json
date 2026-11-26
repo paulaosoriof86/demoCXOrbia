@@ -28734,6 +28734,26 @@
         "decision": "RECORDED_D08_INCOMPLETE",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-25T20:47:40.815Z"
+      },
+      {
+        "key": "GOOGLE_CLOUD_SHELL/1795653493842440",
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795653636911758_TYPED_RESULT.json",
+        "gitBlob": "f13313c1f79de7a397821b236ac9f6011b57561c",
+        "sha256": "2484123de8ae6cbfbfec351874145d73c3519289fce098a5ccfdd52d0e66a113",
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "kind": "F3_ENDPOINT",
+        "controlHead": "a6f126005ef86d8effe903f73774669edb1c6441",
+        "transportSha": "a6f126005ef86d8effe903f73774669edb1c6441",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/start.json#1795653493842440",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/result.json#1795653636911758",
+        "bundleSha256": "4a5ff57092960336f744defb239d9d4354876cc597a75b04355a4872813d092d",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/evidence.zip#1795653630712949",
+        "archiveSha256": "f6c9f3319389c6fd95440e252aaa5d5edc53bc63ad77ac58b70cd46eb977466a",
+        "archiveVerified": true,
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
+        "producerDecision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-26T00:40:36.911Z"
       }
     ],
     "production": false,
@@ -28741,40 +28761,11 @@
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
-    "observedAt": "2026-11-25T01:02:53.809Z",
-    "runId": 45522159779,
-    "runAttempt": 1,
+    "observedAt": "2026-11-26T00:40:36.911Z",
+    "executionProvider": "GOOGLE_CLOUD_SHELL",
+    "key": "GOOGLE_CLOUD_SHELL/1795653493842440",
     "receipts": [
-      {
-        "key": "45522159779/1/138896921773",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896921773_TYPED_RESULT.json",
-        "gitBlob": "78bb8c07e7c37fffa06f9a07c445436977a3bb55",
-        "sha256": "0e6079e1c06c7b7ff844bf8e245e810255546c83f35b87c39d1e6b4f9dc27cb3",
-        "runId": 45522159779,
-        "runAttempt": 1,
-        "jobId": 138896921773,
-        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
-        "artifactId": 14981330624,
-        "artifactDigest": "sha256:c1b83e1aa72aeb3a9041291fa69938498e119c530a42b8c13d3da1e0c840011a",
-        "decision": "RECORDED_TYPED_RESULT_HOLD",
-        "ownerReceiptCount": 0,
-        "observedAt": "2026-11-25T01:02:53.809Z"
-      },
-      {
-        "key": "45522159779/1/138896924837",
-        "path": "docs/checkpoints/CXORBIA_I3_RUN45522159779_ATTEMPT1_JOB138896924837_TYPED_RESULT.json",
-        "gitBlob": "e359ae0506680ab3d339c77e3b4a416c8315792b",
-        "sha256": "eb1f1415a1875b1c2f710d350082a75e68863aa5c8f4ed1c52486a4b7a7f1eba",
-        "runId": 45522159779,
-        "runAttempt": 1,
-        "jobId": 138896924837,
-        "controlHead": "9269808989ccd5a98f1a2c80bb83d280d35fdef3",
-        "artifactId": 14979869919,
-        "artifactDigest": "sha256:265d895196b74b68bc043ff2f865eafe53f73c1ef2cee35682542d92742ffdff",
-        "decision": "RECORDED_D08_INCOMPLETE",
-        "ownerReceiptCount": 0,
-        "observedAt": "2026-11-25T01:02:53.809Z"
-      }
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795653636911758_TYPED_RESULT.json"
     ],
     "production": false,
     "newDomainMatches": 0
