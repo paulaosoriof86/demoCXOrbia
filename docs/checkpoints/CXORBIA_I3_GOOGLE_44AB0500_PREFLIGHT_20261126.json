@@ -1,0 +1,33 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "scope": "Result incorporation before deployment",
+  "nativeId": "44ab0500-a670-4852-b306-338d8293bf32",
+  "status": "FAILURE",
+  "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "startedAt": "2026-11-26T15:53:32.496206824Z",
+  "finishedAt": "2026-11-26T15:54:38.677233Z",
+  "control": "995391d0836e3fef486dafb28fbc34aaee28a60b",
+  "reason": "Native preflight detected completed Actions runs without journals. No native start, runtime or Hosting stage was emitted.",
+  "recorded": [
+    {
+      "runId": 45847706975,
+      "runAttempt": 1,
+      "control": "119076bf4ba32be46d363fc28d4c1babf7a0fa5c",
+      "executedSteps": 0,
+      "artifacts": 0,
+      "journal": "docs/checkpoints/CXORBIA_I3_RUN45847706975_ATTEMPT1_EXECUTION_JOURNAL.json"
+    },
+    {
+      "runId": 45849063966,
+      "runAttempt": 1,
+      "control": "4edbe233e7aa9730f504221ca15ecf9b0b0431c3",
+      "executedSteps": 0,
+      "artifacts": 0,
+      "journal": "docs/checkpoints/CXORBIA_I3_RUN45849063966_ATTEMPT1_EXECUTION_JOURNAL.json"
+    }
+  ],
+  "queueAfter": [],
+  "production": false
+}
