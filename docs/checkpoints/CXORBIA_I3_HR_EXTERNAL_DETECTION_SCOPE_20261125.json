@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "cxorbia.i3.hr.external-detection-readback.v1",
+  "observedAt": "2026-11-26T02:47:20.674Z",
+  "control": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "state": "HOLD",
+  "observation": "MAKE_CONNECTOR_READ_ONLY",
+  "scenarios": [
+    {
+      "id": 10199316,
+      "status": "active",
+      "lastEdit": "2026-11-26T01:03:46.482Z",
+      "trigger": "on-demand",
+      "schedule": "on-demand",
+      "firstModule": "scenario-service:StartSubscenario"
+    },
+    {
+      "id": 10200465,
+      "status": "active",
+      "lastEdit": "2026-11-24T21:31:30.662Z",
+      "trigger": "on-demand",
+      "schedule": "on-demand",
+      "firstModule": "scenario-service:StartSubscenario"
+    }
+  ],
+  "activeTeamInventory": {
+    "teamId": 1975919,
+    "activeCount": 9,
+    "complete": true,
+    "excelCellPushToRecoveryObserved": false
+  },
+  "watcher": {
+    "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "defaultVisiblePollMs": 300000,
+    "source": "SERVED_BEFORE_OWNER_FIX"
+  },
+  "detection": "The registered Make reader and writer execute on demand. In the served product the browser watcher requests fresh metadata. A direct edit in Excel becomes observable on the next successful external read. Scheduler cadence, inactivity, provider time and retries affect detection. No per-cell notification or guaranteed end-to-end latency was observed.",
+  "measuredEditToUiLatencyMs": null,
+  "operationalRealDataChanges": 0,
+  "makeScenarioRunsByAudit": 0,
+  "liveF3ProbeStartedByAudit": false
+}

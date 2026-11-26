@@ -1,0 +1,242 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "control": "d8c64eab7ae07997f29e9005290748380ea967a2",
+  "observedAt": "2026-11-26T02:45:59.343Z",
+  "node": "v24.22.3",
+  "playwright": "1.56.1",
+  "scriptSha256": "db017a8983e0e665d74d522548a38bcc35b068e801787f9e51b6d9c08524d819",
+  "scope": "OFFLINE_CHROMIUM_SYNTHETIC_ROLE_CONTEXTS_NO_FIREBASE_AUTH_OR_REMOTE_PROVIDER",
+  "chromium": "141.0.7390.37",
+  "assets": {
+    "core/config.js": {
+      "sha256": "32a1aa5bb671c27c5af8112cd03700b57b81d308b73cd9ef4936e49fe228acb9",
+      "servedReadbackMatched": true
+    },
+    "core/store.js": {
+      "sha256": "91f44c09bf1ed56d1e5e848a92444fed62be5d24769dabe7875c069f005be0e6",
+      "servedReadbackMatched": false
+    },
+    "core/ui.js": {
+      "sha256": "862c178d9fc311c92e6a49c5cac0441b2fb7a55ec4a0e52fa55128fda4c05afb",
+      "servedReadbackMatched": true
+    },
+    "core/permissions.js": {
+      "sha256": "66cc1de70c37950143b2b0972e0862e7f2cbb7250b97b0a7e59a3bdc5e4986bc",
+      "servedReadbackMatched": false
+    },
+    "core/router.js": {
+      "sha256": "c531b0f968204a863df7f732755fec8a9825730a2eacde8dc5e8b0f72286cd9a",
+      "servedReadbackMatched": true
+    },
+    "core/dedupe.js": {
+      "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+      "servedReadbackMatched": true
+    },
+    "core/importador.js": {
+      "sha256": "42c259fc8b4bde376a6099148933b7b20157f43379ae5a92b4d5218204050c77",
+      "servedReadbackMatched": true
+    },
+    "modules/importador.js": {
+      "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+      "servedReadbackMatched": true
+    },
+    "core/manuales-data.js": {
+      "sha256": "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+      "servedReadbackMatched": false
+    },
+    "modules/academia.js": {
+      "sha256": "438eade6566bd3b2b9fca24f029334b471779e3d62bdc2fb05d3b8c0d1b5a99b",
+      "servedReadbackMatched": true
+    }
+  },
+  "d08": [
+    {
+      "role": "shopper",
+      "courseId": "s_ruta",
+      "visibleCourses": [
+        "s_ruta",
+        "s_ind",
+        "s_cuest",
+        "s_cert",
+        "s_soporte",
+        "s_prof",
+        "s_modguide"
+      ],
+      "manual": "m_shopper",
+      "offeredManuals": [
+        "m_shopper"
+      ],
+      "manualSections": [
+        "8dcd2e3f0e2631b908a54719220f3fee87c215860a5659870907ead76f607ce6",
+        "ececaa97b090394360caaa9b44479a60bb6909468f95174ff879ee9d6a71cab5"
+      ],
+      "lessonData": [
+        {
+          "id": "sr1",
+          "textSha256": "f2ac771ccba1fcd0466d9b4b2b0a2af41605d99d4e8a347aabf637ca0eb53b25",
+          "characters": 1503
+        },
+        {
+          "id": "sr2",
+          "textSha256": "a594e089a23c56357ab1350ab9c66638b9bf53712daaf0111e461dad6be1c424",
+          "characters": 1205
+        },
+        {
+          "id": "sr3",
+          "textSha256": "ed1e74db969538b4049f1e3d6fcde151965c9203e203c10278a763848be31c2a",
+          "characters": 1416
+        },
+        {
+          "id": "sr4",
+          "textSha256": "b4be01ecc2322baa9736f865f873e431a9349579927e8713c15de23005a1fe2c",
+          "characters": 1059
+        },
+        {
+          "id": "sr5",
+          "questions": 3,
+          "incompleteBlocked": true,
+          "allReviewedEnabled": true
+        }
+      ],
+      "importerRouteDeniedInUi": true,
+      "courseManagementControlsAbsent": true,
+      "commandAdapterCalls": 0
+    },
+    {
+      "role": "cliente",
+      "courseId": "cl_ruta",
+      "visibleCourses": [
+        "cl_ruta",
+        "cl_por",
+        "cl_hall",
+        "cl_soporte",
+        "cl_roi"
+      ],
+      "manual": "m_cliente",
+      "offeredManuals": [
+        "m_cliente"
+      ],
+      "manualSections": [
+        "1d53b08cd73753984185163d1e4409be6448cb62e6bdf236a1611bc63e29cf3a",
+        "1b6da89c16e88aca1dd32757a250a9e57d8d48998e156ae1a75505bb6a54bb00"
+      ],
+      "lessonData": [
+        {
+          "id": "clr1",
+          "textSha256": "85b9d79aa8ed815b846b755671cac1450c0516162c0af2926f0812c113d5b7e3",
+          "characters": 1013
+        },
+        {
+          "id": "clr2",
+          "textSha256": "4d9029a907cb28388dd9da1408aa4eeddbabfa26afa89cd22f7562910631afed",
+          "characters": 1397
+        },
+        {
+          "id": "clr3",
+          "textSha256": "4476f33f5bb688bdcea3b19f0f69fdf82e3a8624ecc7fbfc5a33d7ae78d545cb",
+          "characters": 1172
+        },
+        {
+          "id": "clr4",
+          "questions": 2,
+          "incompleteBlocked": true,
+          "allReviewedEnabled": true
+        }
+      ],
+      "importerRouteDeniedInUi": true,
+      "courseManagementControlsAbsent": true,
+      "commandAdapterCalls": 0
+    }
+  ],
+  "e10": {
+    "originalFixtureSource": "tools/qa/cxorbia-i3-e10-importer-mapping-proof.mjs",
+    "route": "importador",
+    "button": "hrCommit",
+    "first": [
+      {
+        "ref": "QA-E10-N1",
+        "status": "Nuevo"
+      },
+      {
+        "ref": "QA-E10-C1",
+        "status": "Conflicto"
+      },
+      {
+        "ref": "QA-E10-D1",
+        "status": "Dup"
+      },
+      {
+        "ref": "QA-E10-X1",
+        "status": "Descartado"
+      }
+    ],
+    "replay": [
+      {
+        "ref": "QA-E10-C1",
+        "status": "Conflicto"
+      },
+      {
+        "ref": "QA-E10-N1",
+        "status": "Dup"
+      },
+      {
+        "ref": "QA-E10-D1",
+        "status": "Dup"
+      },
+      {
+        "ref": "QA-E10-X1",
+        "status": "Descartado"
+      }
+    ],
+    "freshRows": [
+      {
+        "ref": "QA-E10-N1",
+        "status": "Nuevo"
+      },
+      {
+        "ref": "QA-E10-C1",
+        "status": "Conflicto"
+      },
+      {
+        "ref": "QA-E10-D1",
+        "status": "Dup"
+      },
+      {
+        "ref": "QA-E10-X1",
+        "status": "Descartado"
+      }
+    ],
+    "beforeRows": 3,
+    "afterLocalRows": 4,
+    "freshLocalRows": 3,
+    "toasts": "1 visita(s) preparadas (preview) · import real pendiente de backend",
+    "commandAdapterCalls": 0,
+    "providerAckObserved": false,
+    "confirmedRemoteImports": 0,
+    "actualRemoteAuthenticatedAttempt": false,
+    "historicalAlternative": {
+      "contract": "backend/contracts/hr-import-control-phase-a-v1.json",
+      "contractSha256": "cabfd6aca0fab74a9e3a76cb2acaa3c04ae5035a3e30f6f11a94c77b8fcfb27c",
+      "contractStatus": "draft_safe_not_connected",
+      "connectedToFrontend": false,
+      "adapter": "backend/adapters/hr-import-control-adapter.preview.mjs",
+      "adapterSha256": "7f29c3a1dd02e53656d0510a03d3d57a745acddea9d5b92bc2c2cbcfe1e836f5",
+      "defaultGate": "HR_IMPORT_WRITE_GATE_BLOCKED",
+      "disposableProbeWithFakeStore": "pendingImplementation",
+      "storeCalls": 0,
+      "approvedDurableBindingLocatedInClassicRoute": false
+    }
+  },
+  "networkRequests": [],
+  "pageErrors": [],
+  "d08LiveAuthority": {
+    "request": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json",
+    "requestBlob": "1250fc8b1997f83eb71a0afda10bb8e826434368",
+    "scope": "Actual signed Firebase sessions, protected context, provider ACK, independent reads, replay, denials and exact cleanup remain part of the existing live request."
+  },
+  "next": "Retain the authenticated Academia run bound to the actual served DEV pair. Confirm the previously approved E10 durable import owner and action semantics before connecting any new writer. Repeat the synthetic import through an authenticated operational route only when its scoped remote command is available.",
+  "newLiveClauses": 0,
+  "production": false
+}

@@ -662,6 +662,14 @@
       "coldRecoveryP0Fixed": false,
       "fullB14Closed": false,
       "phaseAComplete": false
+    },
+    "boundedOrderIndependentReadback": {
+      "control": "d8c64eab7ae07997f29e9005290748380ea967a2",
+      "roleComponentReceipt": "docs/checkpoints/CXORBIA_I3_D08_E10_COMPONENT_READBACK_20261125.json",
+      "externalDetection": "docs/checkpoints/CXORBIA_I3_HR_EXTERNAL_DETECTION_SCOPE_20261125.json",
+      "scope": "Offline Chromium with simulated roles. No new authenticated Academia or E10 provider receipt. On-demand Excel provider and served watcher inspected read-only. Preserve Admin and Finance evidence.",
+      "newDomainMatches": 0,
+      "state": "HOLD"
     }
   },
   "lastChromeConnection": {
