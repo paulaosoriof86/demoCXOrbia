@@ -8,6 +8,34 @@ Base inspeccionada: `5446e5bace129b63d361de9e238342426a3715c0`. En ese corte, DE
 
 Resolver nuevamente HEAD y ejecutar el guard con `--current` al retomar. Estas identidades son evidencia del corte, no punteros permanentes.
 
+## Actualización acumulativa — 25/11, 17:59 Guatemala
+
+Base de esta corrección: `6e09467827ab4b39782ea22b32759340acaa62c9`. El corte inicial anterior permanece histórico. La publicación pendiente ya terminó: Cloud Build `5670f782-19af-47aa-bdda-47cf94c689f2`, source `d727f3be67a4430f08216dbb37cccba790f934f5`, runtime `cxorbia-live-hr-dev-00393-p54`, digest `sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8` y Hosting `607182bc22875d48`. El recibo `CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json` quedó incorporado en `3937d974`; 50 assets coinciden, HR conserva 88 visitas e IDs únicos y el importador servido supera 17 casos sintéticos. La previsualización CSV/TSV distingue Nuevo, Conflicto, Dup y Descartado. El recibo E10 limita expresamente su alcance: no certifica importación autenticada ni replay durable y registra cero importaciones reales.
+
+### Prevención automática, además de corregir el texto
+
+Se reprodujo en memoria un fallo adicional del mismo owner de continuidad: cuatro referencias iguales al mapa C/D histórico pasaban el guard aunque el índice contuviera el Finance PASS posterior. También se identificó que `consumeRun` podía capturar un fallo de proyección y continuar al commit después de retirar una entrada de la cola. Clasificación: **MAPPING_FAILURE**; no es prueba de una regresión del producto.
+
+La corrección permanece en el consumidor, proyector y guard existentes:
+
+- El lector de alcances incluye `FINANCE_UI_READONLY` y verifica hashes de todos los recibos antes de discriminar su tipo.
+- El proyector aplica los alcances exactos de dos sesiones y exportaciones al mapa existente, conserva el resto de las aceptaciones y es idempotente. No promueve C09/C10 completos ni dominios.
+- El guard comprueba que el mapa corresponda a los recibos aceptados; cuatro referencias igualmente viejas ya no satisfacen la comprobación.
+- El consumidor propaga un fallo de proyección antes de publicar. La validación final comprueba recibos, mapa, inventario original, evidencia preservada, seis MATCH, B4/B5/B6/B7 y aliases antes de cualquier escritura Git.
+- Las entradas incorporadas no pueden desaparecer ni cambiar bajo la misma clave. Se mantienen únicamente las transformaciones ya autorizadas de normalización A08 y adición D08 de un binding verificado por su owner; no se permite cambiar un binding existente.
+
+Validación focal: **414 pruebas, 414 PASS, 0 FAIL**, incluyendo mapa antiguo con hashes válidos, recibo cambiado a otro tipo, reemplazo bajo la misma clave, eliminación del mapa, pérdida del alcance C04, PDF fallido, segunda sesión ausente, mutación financiera, rechazo antes del CAS, replay sin cambios y consumo nativo Google. Resultado completo: `CXORBIA_I3_CONTINUITY_ATOMICITY_20261125.tap`. La candidata de producto y la identidad servida permanecen intactas.
+
+### Escritura F3: siguiente trabajo operativo obligatorio
+
+La corrección del adaptador Make (VRM-376) está servida. El config F3 ya está vinculado a la pareja `5670f782`. El impedimento de ejecución pendiente es exacto: el runner F3 todavía exige identidad Actions, mientras el helper/transporte Google existentes solo admiten Finance y Academia. Completar ese soporte dentro de los owners existentes y preparar la incorporación del resultado antes de lanzar. No crear otro workflow, runner independiente ni candidata; no convertir una generación Google en un ID de Actions.
+
+Ejecutar el fixture aislado autorizado y acreditar comando de aplicación, ACK remoto, lectura independiente, journal, pérdida real de respuesta al cliente, replay, base obsoleta, ausencia de rollback, restauración y limpieza. La pérdida de respuesta al cliente sí está implementada; falta su prueba ejecutada y la cuenta física de escrituras en Make. El mapa B anterior no debe usarse para afirmar que ese caso no existe en el runner. La lectura durable debe probarse expresamente; `fresh=1` por sí solo no solicita `readModel=1`.
+
+La consulta de Make de este corte observó el lector `10200465` activo y sus ejecuciones recientes correctas; el escritor QA `10199316` activo no tiene todavía una nueva escritura de aplicación acreditada. Los escenarios legacy y sus colas no certifican F3. Los datos operativos conservan `external_read_only` / `hrWritesEnabled:false` hasta completar los contratos aplicables. La actualización externa servida es periódica de cinco minutos con pestaña visible y refresco explícito; no se presenta como push instantáneo.
+
+Estado: **I3 / HOLD**. La autorización I3 permanece vigente. Producción y certificación terminal no se deducen de esta publicación DEV ni de las pruebas del método. La solicitud urgente de Paula de publicar en producción se conserva como intención; el objeto exacto de I4 todavía debe existir y cumplir los contratos P0 antes de reemplazar el sitio productivo.
+
 ## Hechos recuperados y preservados
 
 | Hecho | Evidencia existente | Alcance y límite |

@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {incorporateTypedResults,consumeRun,selectTypedArtifact,pendingTypedRuns,pendingSatisfiedRequestRuns,retireSatisfiedD08Request,runJournal,typedResultKey} from './cxorbia-i3-automatic-result-consumer.mjs';
-import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
+import {DESCRIPTOR,POINTER,gitBlob,sha256,jsonBytes,projectCurrentResidualNextAction,bindControlPaths} from './cxorbia-i3-current-control-projection.mjs';
 import {TYPED_SUMMARY_SCHEMAS,summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
 
 // Small synthetic producer-shaped results. No test imports, providers or secrets.
@@ -62,8 +62,24 @@ function installOld(f,index=0){
 function mockedGitApi({initialFiles,run,jobs,artifacts}){
   // Queue/receipt tests start from a current action; complete successor-schema
   // and stale-action repair are exercised in scoped-clause-projection tests.
-  const descriptor=JSON.parse(initialFiles.get(DESCRIPTOR)),pointer=JSON.parse(initialFiles.get(POINTER));
-  const matrix=JSON.parse(initialFiles.get(descriptor.moduleTruthPath)),ledger=JSON.parse(initialFiles.get(descriptor.findingsLedgerPath));
+  let descriptor=JSON.parse(initialFiles.get(DESCRIPTOR)),pointer=JSON.parse(initialFiles.get(POINTER));
+  let matrix=JSON.parse(initialFiles.get(descriptor.moduleTruthPath)),ledger=JSON.parse(initialFiles.get(descriptor.findingsLedgerPath));
+  // These queue tests now pass through the real final-package invariant.
+  // Supply actual control structure instead of previously accepted empty maps.
+  if(!matrix.modules){
+    const repoRoot=path.resolve(import.meta.dirname,'../..'),bytes=file=>fs.readFileSync(path.join(repoRoot,file),'utf8');
+    const live=JSON.parse(bytes(DESCRIPTOR)),matrixPath=descriptor.moduleTruthPath,ledgerPath=descriptor.findingsLedgerPath;
+    const automation=descriptor.currentAutomationReceipt;
+    descriptor={...live,...descriptor};pointer={...JSON.parse(bytes(POINTER)),...pointer};
+    for(const c of [descriptor,pointer]){
+      delete c.currentFinanceGoogleFollowup;delete c.currentD08GoogleFollowup;
+      if(automation)c.currentAutomationReceipt=structuredClone(automation);else delete c.currentAutomationReceipt;
+    }
+    matrix=JSON.parse(bytes(live.moduleTruthPath));ledger=JSON.parse(bytes(live.findingsLedgerPath));
+    initialFiles.set(live.currentCumulativeTaskEvidenceMap.path,bytes(live.currentCumulativeTaskEvidenceMap.path));
+    projectCurrentResidualNextAction({descriptor,pointer,matrix,ledger});
+    for(const [file,text]of bindControlPaths({descriptor,pointer,matrix,ledger},{matrixPath,ledgerPath}))initialFiles.set(file,text);
+  }
   projectCurrentResidualNextAction({descriptor,pointer,matrix,ledger});
   for(const [file,value]of [[DESCRIPTOR,descriptor],[POINTER,pointer],[descriptor.moduleTruthPath,matrix],[descriptor.findingsLedgerPath,ledger]])initialFiles.set(file,jsonBytes(value));
   let head='1'.repeat(40),next=2;const blobs=new Map(),trees=new Map(),commits=new Map(),mutatedPaths=[];

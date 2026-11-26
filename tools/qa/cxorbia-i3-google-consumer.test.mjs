@@ -33,6 +33,11 @@ function fixture({configured=true,wrongWorkflowPin=false}={}){
  const contents=new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)],[workflowPath,workflowBytes],
   [d.currentAutomationReceipt.path,fs.readFileSync(path.join(root,d.currentAutomationReceipt.path),'utf8')],
   [d.moduleTruthPath,jsonBytes(read(d.moduleTruthPath))],[d.findingsLedgerPath,jsonBytes(read(d.findingsLedgerPath))]]);
+ // The final transaction now verifies the map and indexed scoped receipts from
+ // this producer's Git bytes, never from the test runner's later checkout.
+ for(const file of [d.currentCumulativeTaskEvidenceMap?.path,'docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json',...(d.currentFunctionalEvidenceIndex?.results||[]).map(x=>x.path)].filter(Boolean)){
+  read(file);contents.set(file,fixtureBytes.get(file));
+ }
  const blobs=new Map(),tree=new Map();for(const [file,bytes]of contents){const id=gitBlob(bytes);blobs.set(id,bytes);tree.set(file,id);}
  const firstTree=digest(JSON.stringify([...tree])),trees=new Map([[firstTree,tree]]),commits=new Map([[originalHead,{sha:originalHead,tree:{sha:firstTree},parents:[]}]]);
  const f={head:originalHead,originalHead,descriptor:d,contents,blobs,trees,commits,mutations:[],patches:0,race:false};

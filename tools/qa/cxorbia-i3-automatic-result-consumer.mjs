@@ -385,15 +385,17 @@ export async function incorporateTypedResults({api,token,run,jobs,artifacts,cont
  return {queue,incorporated,failures,requestsReconciled,index:{...index,results:[...entries.values()],updatedAt:now}};
 }
 
-// Reconcile only already indexed A08/metadata evidence. Older lossy A08
+// Reconcile only already indexed scoped evidence. Older lossy A08
 // summaries are normalized from the exact existing artifact, never re-executed.
 // The original typed receipt remains immutable and the index keeps one key.
 export async function readScopedIndexResults({api,token,index,controls,files,download=downloadArtifact}){
  const next=structuredClone(index),verified=[];let upgraded=0;
  for(const entry of next.results){
   const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
-  const savedBytes=await read(entry.path),kind=JSON.parse(savedBytes)?.kind;
-  if(!['A08_RESIDUAL','FINANCE_METADATA','F3_RUN2782_RECOVERY'].includes(kind))continue;
+  const savedBytes=await read(entry.path);
+  must(gitBlob(savedBytes)===entry.gitBlob&&sha256(savedBytes)===entry.sha256,'MAPPING_FAILURE:INDEX_RECEIPT_HASH');
+  const kind=JSON.parse(savedBytes)?.kind;
+  if(!['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY'].includes(kind))continue;
   let item=verifiedTypedReceipt(entry,savedBytes,{gitBlob,sha256});
   if(item.result.kind==='A08_RESIDUAL'&&!Object.hasOwn(item.result.observations||{},'acceptedClauseRefs')){
    must(executionProviderOf(entry)==='GITHUB_ACTIONS','SOURCE_FAILURE:A08_EXTERNAL_NORMALIZATION_UNSUPPORTED');
@@ -425,14 +427,18 @@ export async function readScopedIndexResults({api,token,index,controls,files,dow
 // its existing strict owner/contract gates, and all classifications stay fixed.
 export async function reconcileCurrentScopedClauses({api,token,controls,files:destination,index,now,download=downloadArtifact,producerLoader=loadControls}){
  const files=new Map(destination);
- const read=file=>files.has(file)?Promise.resolve(files.get(file)):controls.readBytes(file);
+ const cache=new Map();
+ const read=async file=>{const raw=files.has(file)?files.get(file):await controls.readBytes(file);cache.set(file,raw);return raw;};
  const scoped=await readScopedIndexResults({api,token,index,controls,files,download});
  const active={...controls,descriptor:files.has(DESCRIPTOR)?JSON.parse(files.get(DESCRIPTOR)):structuredClone(controls.descriptor),pointer:files.has(POINTER)?JSON.parse(files.get(POINTER)):structuredClone(controls.pointer)};
  active.matrix=files.has(active.descriptor.moduleTruthPath)?JSON.parse(files.get(active.descriptor.moduleTruthPath)):controls.matrix;
  active.ledger=files.has(active.descriptor.findingsLedgerPath)?JSON.parse(files.get(active.descriptor.findingsLedgerPath)):controls.ledger;
  let financeScopeSha256=null;
  if(scoped.verified.some(x=>x.result.kind==='FINANCE_METADATA'))financeScopeSha256=canonicalSha256(JSON.parse(await read(FINANCE_METADATA_SCOPE_PATH)));
- const projection=projectCurrentScopedClauses({matrix:active.matrix,verified:scoped.verified,financeScopeSha256});
+ const mapRef=active.descriptor.currentCumulativeTaskEvidenceMap;
+ const mapBytes=mapRef?await read(mapRef.path):null;
+ if(mapRef)must(gitBlob(mapBytes)===mapRef.gitBlob&&sha256(mapBytes)===mapRef.sha256,'MAPPING_FAILURE:CURRENT_MAP_HASH');
+ const projection=projectCurrentScopedClauses({matrix:active.matrix,cumulativeMap:mapBytes?JSON.parse(mapBytes):undefined,verified:scoped.verified,financeScopeSha256});
  const out={descriptor:structuredClone(active.descriptor),pointer:structuredClone(active.pointer),ledger:structuredClone(active.ledger),matrix:projection.matrix};
  let d08Evidence;
  const d08=out.descriptor.currentFunctionalEvidenceIndex?.results?.filter(x=>x.provider==='GOOGLE_CLOUD_SHELL'&&x.path?.includes('_GOOGLE_D08_')).at(-1);
@@ -445,6 +451,10 @@ export async function reconcileCurrentScopedClauses({api,token,controls,files:de
  const next=projectCurrentResidualNextAction(out,{completedTaskIds:completedExecutionTaskIds(scoped.verified),d08Evidence});
  if(projection.changed||next.changed){
   for(const control of [out.descriptor,out.pointer])control.currentFunctionalEvidenceIndex=structuredClone(scoped.index);
+  if(projection.mapChanged){
+   const bytes=jsonBytes(projection.cumulativeMap);files.set(mapRef.path,bytes);
+   out.descriptor.currentCumulativeTaskEvidenceMap={...mapRef,gitBlob:gitBlob(bytes),sha256:sha256(bytes)};
+  }
   for(const control of [out.descriptor,out.pointer,out.ledger,out.matrix]){control.updatedAt=now;if(Object.hasOwn(control,'asOf'))control.asOf=now;}
   const date=now.slice(0,10),compact=date.replaceAll('-','');
   const matrixPath=files.has(active.descriptor.moduleTruthPath)?active.descriptor.moduleTruthPath:`RECOVERY-I3-MODULE-TRUTH-MATRIX-${compact}-V${Number(active.matrix.version.slice(1))+1}.json`;
@@ -452,7 +462,8 @@ export async function reconcileCurrentScopedClauses({api,token,controls,files:de
   out.ledger.schemaVersion=`cxorbia.i3.canonical-cumulative-findings-ledger.full.v${Number(ledgerPath.match(/FULL_V(\d+)_/)[1])}`;
   assertPreserved(active,out);
   const bound=bindControlPaths(out,{matrixPath,ledgerPath});
-  const check=validateCurrentAuthorityAliases(out);must(check.pass,'MAPPING_FAILURE:SCOPED_PROJECTED_CONTROLS:'+check.failures.join(','));
+  for(const entry of scoped.index.results)await read(entry.path);
+  const check=validateCurrentAuthorityAliases({...out,readBytes:file=>files.has(file)?files.get(file):cache.get(file)});must(check.pass,'MAPPING_FAILURE:SCOPED_PROJECTED_CONTROLS:'+check.failures.join(','));
   for(const [file,text]of bound)files.set(file,text);
  }
  for(const [file,text]of files)destination.set(file,text);
@@ -464,9 +475,72 @@ export function runJournal({run,jobs,artifacts,needs,now}){
  return {schemaVersion:'cxorbia.i3.automatic-execution-journal.v1',repository:REPO,iteration:'I3',state:'HOLD',runId:run.id,runNumber:run.run_number,runAttempt:run.run_attempt,controlHead:run.head_sha,observedAt:now,workflowStatus:run.status,workflowConclusion:run.conclusion||'FINALIZER_IN_PROGRESS',needs:needs||null,jobs:jobs.filter(j=>j.name!==SELF).map(j=>({id:j.id,name:j.name,status:j.status,conclusion:j.conclusion,runAttempt:j.run_attempt,startedAt:j.started_at,completedAt:j.completed_at})),artifacts:artifacts.map(a=>({id:a.id,name:a.name,digest:a.digest,createdAt:a.created_at,expired:a.expired})),newDomainMatches:0,production:false,productActionsPerformedByConsumer:0};
 }
 
-export async function commitFiles(api,{expectedHead,files,message}){
+// Validate the final staged package, after receipt projection and queue updates.
+// Failure stops before any Git object/ref write; an incomplete projection cannot
+// be published as a consumed result with an empty queue.
+export async function assertFinalControlPackage({controls,files,api,producerLoader=loadControls}){
+ const cache=new Map(files),read=async file=>{if(!cache.has(file))cache.set(file,await controls.readBytes(file));return cache.get(file);};
+ const descriptor=JSON.parse(await read(DESCRIPTOR)),pointer=JSON.parse(await read(POINTER));
+ const out={descriptor,pointer,matrix:JSON.parse(await read(descriptor.moduleTruthPath)),ledger:JSON.parse(await read(descriptor.findingsLedgerPath))};
+ assertPreserved(controls,out);
+ const before=controls.descriptor.currentFunctionalEvidenceIndex?.results||[],after=descriptor.currentFunctionalEvidenceIndex?.results||[];
+ for(const entry of before){
+  const next=after.find(x=>x.key===entry.key);must(next,'MAPPING_FAILURE:ACCEPTED_EVIDENCE_KEY_DROPPED');
+  if(canonicalSha256(entry)!==canonicalSha256(next)){
+   const normalized=JSON.parse(await read(next.path)),rest=x=>Object.fromEntries(Object.entries(x).filter(([k])=>!['path','gitBlob','sha256'].includes(k)));
+   const origin={path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256};
+   const a08=normalized.kind==='A08_RESIDUAL'&&next.path===entry.path.replace('_TYPED_RESULT.json','_TYPED_RESULT_SCOPED_V1.json')&&next.path!==entry.path&&
+    canonicalSha256(normalized.normalizationOrigin)===canonicalSha256(origin)&&canonicalSha256(rest(entry))===canonicalSha256(rest(next));
+   const withoutBinding=x=>Object.fromEntries(Object.entries(x).filter(([k])=>k!=='requestBinding'));
+   const binding=next.requestBinding,d08=!entry.requestBinding&&binding&&
+    (normalized.decision==='PASS_D08_TYPED_PARTIAL_INCORPORATION'||normalized.kind==='D08_RECOVERY'&&normalized.producer?.decision==='PASS_I3_D08_RUN2783_EXACT_RECOVERY_CLEANUP')&&
+    /^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(binding.path||'')&&/^[a-f0-9]{40}$/.test(binding.gitBlob||'')&&/^[a-f0-9]{64}$/.test(binding.canonicalSha256||'')&&
+    canonicalSha256(withoutBinding(entry))===canonicalSha256(withoutBinding(next));
+   if(d08){
+    const producer=await producerLoader(api,entry.controlHead),verifiedEntry=structuredClone(entry),args={result:normalized,entry:verifiedEntry,producer,controls,files:new Map()};
+    if(normalized.kind==='D08_RECOVERY')await retireSatisfiedD08RecoveryRequest(args);else await retireSatisfiedD08Request(args);
+    must(canonicalSha256(verifiedEntry.requestBinding)===canonicalSha256(binding),'MAPPING_FAILURE:D08_REQUEST_BINDING_NOT_VERIFIED');
+   }
+   must(a08||d08,
+    'MAPPING_FAILURE:ACCEPTED_EVIDENCE_ENTRY_CHANGED');
+  }
+ }
+ must(JSON.stringify(descriptor.currentFunctionalEvidenceIndex)===JSON.stringify(pointer.currentFunctionalEvidenceIndex),'MAPPING_FAILURE:CURRENT_EVIDENCE_INDEX_DESYNC');
+ const verified=[];
+ for(const entry of after){
+  const raw=await read(entry.path);must(gitBlob(raw)===entry.gitBlob&&sha256(raw)===entry.sha256,'MAPPING_FAILURE:INDEX_RECEIPT_HASH');
+  const kind=JSON.parse(raw).kind;
+  if(['A08_RESIDUAL','FINANCE_METADATA','FINANCE_UI_READONLY','F3_RUN2782_RECOVERY'].includes(kind))verified.push(verifiedTypedReceipt(entry,raw,{gitBlob,sha256}));
+ }
+ const mapRef=descriptor.currentCumulativeTaskEvidenceMap;
+ const cumulativeMap=mapRef?JSON.parse(await read(mapRef.path)):undefined;
+ const priorRef=controls.descriptor.currentCumulativeTaskEvidenceMap;
+ if(priorRef){
+  must(mapRef?.path===priorRef.path,'MAPPING_FAILURE:ACCEPTED_EVIDENCE_MAP_DROPPED');
+  const priorBytes=await controls.readBytes(priorRef.path);
+  must(gitBlob(priorBytes)===priorRef.gitBlob&&sha256(priorBytes)===priorRef.sha256,'MAPPING_FAILURE:PRIOR_EVIDENCE_MAP_HASH');
+  const priorMap=JSON.parse(priorBytes),ids=x=>x.tasks.map(t=>t.taskId).sort();
+  must(canonicalSha256(ids(priorMap))===canonicalSha256(ids(cumulativeMap))&&priorMap.originalFrozenPlanSha256===cumulativeMap.originalFrozenPlanSha256,'MAPPING_FAILURE:ORIGINAL_TASK_INVENTORY_CHANGED');
+  for(const prior of priorMap.tasks){
+   const task=cumulativeMap.tasks.find(x=>x.taskId===prior.taskId);
+   for(const key of ['originalModule','originalAcceptance','originalOwnerFiles','originalDepends'])must(prior[key]===task[key],'MAPPING_FAILURE:ORIGINAL_TASK_CONTRACT_CHANGED');
+   for(const key of ['evidenceRefs','preservedEvidenceScope'])must((prior[key]||[]).every(x=>(task[key]||[]).includes(x)),'MAPPING_FAILURE:ACCEPTED_TASK_EVIDENCE_DROPPED');
+   for(const key of prior.evidenceRefs||[])for(const field of ['path','gitBlob','sha256'])
+    must(priorMap.evidence[key]?.[field]===cumulativeMap.evidence[key]?.[field],'MAPPING_FAILURE:ACCEPTED_MAP_RECEIPT_CHANGED');
+  }
+ }
+ const financeScopeSha256=verified.some(x=>x.result.kind==='FINANCE_METADATA')?canonicalSha256(JSON.parse(await read(FINANCE_METADATA_SCOPE_PATH))):null;
+ const projection=projectCurrentScopedClauses({matrix:out.matrix,cumulativeMap,verified,financeScopeSha256});
+ must(!projection.changed,'MAPPING_FAILURE:CURRENT_SCOPED_EVIDENCE_NOT_PROJECTED');
+ const check=validateCurrentAuthorityAliases({...out,readBytes:file=>cache.get(file)});
+ must(check.pass,'MAPPING_FAILURE:FINAL_CONTROL_PACKAGE:'+check.failures.join(','));
+ return {pass:true};
+}
+
+export async function commitFiles(api,{expectedHead,files,message,controls}){
  const root=`/repos/${REPO}`;
  const current=await api(`${root}/git/ref/heads/${BRANCH}`);must(current.object.sha===expectedHead,'SOURCE_FAILURE:CAS_HEAD_CHANGED');
+ if(files.has(DESCRIPTOR)||files.has(POINTER))await assertFinalControlPackage({controls:controls||await loadControls(api,expectedHead),files,api});
  const parent=await api(`${root}/git/commits/${expectedHead}`);
  const entries=[];
  for(const [file,content]of files){
@@ -596,9 +670,11 @@ export async function consumeGoogleMaterialization({api,buildId,location,expecte
   must(automation.changed,'SOURCE_FAILURE:GOOGLE_AUTOMATION_TRANSITION_NOT_INCORPORATED');
   for(const key of ['descriptor','pointer'])projected[key].currentAutomationReceipt=structuredClone(automation.receipt);
   const files=bindControlPaths(projected,{matrixPath,ledgerPath});files.set(journalPath,journalBytes);
-  const check=validateCurrentAuthorityAliases(projected);must(check.pass,'MAPPING_FAILURE:GOOGLE_PROJECTED_CONTROLS:'+check.failures.join(','));
-  if(dryRun)return {decision:'DRY_RUN_GOOGLE_RECEIPT_VALIDATED',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,head,receiptPath:bundle.receiptPath,files,productActions:0};
-  const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist Google Cloud Build ${buildId} exact DEV receipt [i3-auto-receipt]`});
+  if(dryRun){
+   await assertFinalControlPackage({controls,files,api});
+   return {decision:'DRY_RUN_GOOGLE_RECEIPT_VALIDATED',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,head,receiptPath:bundle.receiptPath,files,productActions:0};
+  }
+  const saved=await commitFiles(api,{expectedHead:head,files,controls,message:`I3 persist Google Cloud Build ${buildId} exact DEV receipt [i3-auto-receipt]`});
   return {decision:'CONSUMED_EXACT_DEV_MATERIALIZATION',executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,receiptPath:bundle.receiptPath,...saved,productActions:0};
  }finally{archive?.cleanup();}
 }
@@ -658,9 +734,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
  const typedControls={...controls,pointer:{...controls.pointer,currentResultIncorporationQueue:[...controlQueue.queue.values()]}};
  const typed=await incorporateTypedResults({api,token,run,jobs,artifacts,controls:typedControls,journal,files,now});
  typed.failures.push(...controlQueue.failures);
- let scoped={index:typed.index,upgraded:0,changedDomains:[],changed:false};
- try{scoped=await reconcileCurrentScopedClauses({api,token,controls,files,index:typed.index,now});}
- catch(error){typed.failures.push({key:`${run.id}/${run.run_attempt}/scoped-clauses`,runId:run.id,runAttempt:run.run_attempt,code:safeTypedFailureCode(error.message)||'MAPPING_FAILURE:SCOPED_CLAUSE_PROJECTION_UNCONFIRMED',observedAt:now});}
+ const scoped=await reconcileCurrentScopedClauses({api,token,controls,files,index:typed.index,now});
  typed.index=scoped.index;
  const event={schemaVersion:journal.schemaVersion,path:journalPath,gitBlob:gitBlob(jsonBytes(journal)),runId:run.id,runAttempt:run.run_attempt,outcome,pendingTypedResults:journal.pendingTypedResults,materializationReceiptPath:materialization,production:false};
  if(!journalExists&&controls.descriptor.currentAutomationReceipt&&executionProviderOf(controls.descriptor.currentAutomationReceipt)!=='GITHUB_ACTIONS'){
@@ -683,7 +757,7 @@ export async function consumeRun({api,token,runId,runAttempt=null,needs=null,now
   files.set(file,jsonBytes(value));
  }
  if(!journalExists)files.set(journalPath,jsonBytes(journal));
- const saved=await commitFiles(api,{expectedHead:head,files,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
+ const saved=await commitFiles(api,{expectedHead:head,files,controls,message:`I3 persist run ${run.id} attempt ${run.run_attempt} exact outcomes [i3-auto-receipt]`});
  return {decision:journalExists?'CONSUMED_EXISTING_JOURNAL_TYPED_RESULTS':outcome,runId,...saved,pendingTypedResults:typed.queue.size,typedResultsIncorporated:typed.incorporated.length,requestsReconciled:typed.requestsReconciled,recordedControlQueueRetired:controlQueue.retired,scopedReceiptsNormalized:scoped.upgraded,scopedResidualDomainsUpdated:scoped.changedDomains,typedFailures:typed.failures,productActions:0};
 }
 

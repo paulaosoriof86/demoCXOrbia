@@ -4,10 +4,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {publicA08ClauseRefs,projectCurrentScopedClauses,verifiedTypedReceipt,canonicalSha256,FINANCE_METADATA_SCOPE_PATH,completedExecutionTaskIds} from './cxorbia-i3-scoped-clause-projection.mjs';
+import {execFileSync} from 'node:child_process';
+import {publicA08ClauseRefs,projectCurrentScopedClauses,verifiedTypedReceipt,canonicalSha256,FINANCE_METADATA_SCOPE_PATH,completedExecutionTaskIds,projectFinanceUiMap,financeUiAccepted} from './cxorbia-i3-scoped-clause-projection.mjs';
 import {summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
 import {A08_GT_CURRENT_PROVIDER_MODE,diagnoseCurrentProviderPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
-import {readScopedIndexResults,reconcileCurrentScopedClauses} from './cxorbia-i3-automatic-result-consumer.mjs';
+import {readScopedIndexResults,reconcileCurrentScopedClauses,commitFiles,assertFinalControlPackage} from './cxorbia-i3-automatic-result-consumer.mjs';
+import {validateCurrentAuthorityAliases} from './cxorbia-i3-current-authority-alias-guard.mjs';
 import {jsonBytes,gitBlob,sha256,DESCRIPTOR,POINTER,bindControlPaths,assertPreserved,projectCurrentResidualNextAction} from './cxorbia-i3-current-control-projection.mjs';
 const HN='shopper_hn_3b3c2f5cc1',GT='shopper_gt_a092a0647f',SHP='shp-3669abbb015a';
 const artifactDigest='sha256:3531e310a17d435f6b4b5eebcd3c55b245939c4fdbdf96ab02d5c894b3ed3dbb';
@@ -240,7 +242,7 @@ test('consumer reconciles an already indexed GT PASS after interruption without 
  const controls=controlsFixture(),item=gtVerified(),bytes=jsonBytes(item.result),files=new Map(),index={schemaVersion:'cxorbia.i3.typed-result-index.v1',production:false,results:[item.entry]};
  // D08 producer admission has its own tests; this index contains only GT proof.
  for(const c of [controls.descriptor,controls.pointer])delete c.currentD08GoogleFollowup;
- controls.readBytes=async p=>{assert.equal(p,item.entry.path);return bytes;};controls.blobs=new Map([[item.entry.path,item.entry.gitBlob]]);
+ controls.readBytes=async p=>{if(p===controls.descriptor.currentCumulativeTaskEvidenceMap.path)return readFile(p);assert.equal(p,item.entry.path);return bytes;};controls.blobs=new Map([[item.entry.path,item.entry.gitBlob]]);
  const noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
  const first=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T10:00:00Z'});
  assert.equal(first.changed,true);assert.equal(first.upgraded,0);
@@ -250,4 +252,114 @@ test('consumer reconciles an already indexed GT PASS after interruption without 
  for(const c of [descriptor,pointer,m,ledger]){assert.ok(!c.nextExactAction.includes(GT));assert.ok(c.nextExactAction.includes(SHP));}
  const replay=await reconcileCurrentScopedClauses({api:noProvider,download:noProvider,controls,files,index,now:'2026-11-25T10:00:00Z'});
  assert.equal(replay.changed,false);assert.equal(replay.upgraded,0);
+});
+
+function financeUiFixture(){
+ const controls=controlsFixture(),receipt='docs/checkpoints/CXORBIA_I3_GOOGLE_FINANCE_1795638868819016_TYPED_RESULT.json';
+ const entry=controls.descriptor.currentFunctionalEvidenceIndex.results.find(x=>x.path===receipt);
+ assert.ok(entry,'published scoped Finance receipt remains indexed');
+ const item=verifiedTypedReceipt(entry,readFile(receipt),{gitBlob,sha256});
+ const map=JSON.parse(readFile(controls.descriptor.currentCumulativeTaskEvidenceMap.path));
+ return {controls,item,map};
+}
+function staleFinanceMap(map){
+ const out=structuredClone(map),keys=Object.keys(out.evidence).filter(k=>out.evidence[k].path?.includes('GOOGLE_FINANCE_1795638868819016'));
+ for(const key of keys)delete out.evidence[key];
+ for(const task of out.tasks.filter(x=>['C09','C10'].includes(x.taskId))){
+  task.evidenceRefs=task.evidenceRefs.filter(k=>!keys.includes(k));
+  task.preservedEvidenceScope=task.preservedEvidenceScope.filter(x=>!x.startsWith('Two independent Admin sessions on sealed'));
+  task.remainingOrMappingBoundary=[task.taskId==='C09'?
+   'Actual PDF content/extraction failure remains unresolved; current same-cut/currency/export and finance-only cross-role residuals remain. Do not reopen accepted B5/B6 merely because B8 settlement is open.':
+   'Current two-session finance/exactadvance/export verification not passed; RUN2787 did not start. Full terminal account/movement/liquidation/batch/support flow still requires uncovered evidence.'];
+ }
+ return out;
+}
+test('verified Finance sessions project the old C09/C10 map once without changing task acceptance or promoting domains',()=>{
+ const {item,map}=financeUiFixture(),old=staleFinanceMap(map),before=structuredClone(old);
+ const p=projectFinanceUiMap({cumulativeMap:old,verified:[item]});assert.equal(p.mapChanged,true);assert.deepEqual(old,before);
+ for(const task of p.cumulativeMap.tasks){
+  const prior=old.tasks.find(x=>x.taskId===task.taskId);
+  assert.equal(task.originalAcceptance,prior.originalAcceptance);assert.equal(task.evidenceState,prior.evidenceState);assert.equal(task.newPassGranted,prior.newPassGranted);
+  if(!['C09','C10'].includes(task.taskId))assert.deepEqual(task,prior);
+  else{assert.ok(task.preservedEvidenceScope.some(x=>x.includes('Two independent Admin sessions')));assert.ok(task.remainingOrMappingBoundary.every(x=>!x.includes('remains unresolved')&&!x.includes('verification not passed')));}
+ }
+ assert.equal(p.cumulativeMap.phaseAComplete,false);assert.equal(p.cumulativeMap.i4Authorized,false);
+ assert.equal(projectFinanceUiMap({cumulativeMap:p.cumulativeMap,verified:[item,item]}).mapChanged,false);
+ assert.equal(projectFinanceUiMap({cumulativeMap:map,verified:[item]}).mapChanged,false);
+});
+for(const [name,edit]of [
+ ['PDF failure',r=>{r.observations.sessions[1].movementExport.pdf.contentMatches=false;}],
+ ['missing independent session',r=>{r.observations.sessions.pop();}],
+ ['financial mutation',r=>{r.observations.safety.financialMutationRequestsDispatched=1;}],
+ ['unverified served identity',r=>{r.observations.sameArtifactReadback.verified=false;}]
+])test('Finance does not clear residuals with '+name,()=>{
+ const {item,map}=financeUiFixture(),bad=structuredClone(item);edit(bad.result);
+ assert.equal(financeUiAccepted(bad.result),false);
+ assert.equal(projectFinanceUiMap({cumulativeMap:staleFinanceMap(map),verified:[bad]}).mapChanged,false);
+ assert.deepEqual(projectFinanceUiMap({cumulativeMap:map,verified:[item,bad]}).cumulativeMap,map);
+});
+test('equal stale map references in four controls are rejected against the accepted Finance index',()=>{
+ const {controls,map}=financeUiFixture(),raw=jsonBytes(staleFinanceMap(map)),ref=controls.descriptor.currentCumulativeTaskEvidenceMap;
+ for(const key of ['descriptor','pointer','matrix','ledger'])controls[key].currentCumulativeTaskEvidenceMap={...ref,gitBlob:gitBlob(raw),sha256:sha256(raw)};
+ const check=validateCurrentAuthorityAliases({...controls,readBytes:p=>p===ref.path?raw:readFile(p)});
+ assert.equal(check.pass,false);assert.ok(check.failures.includes('CURRENT_SCOPED_EVIDENCE_NOT_PROJECTED'));
+});
+test('consumer selects and verifies the existing native Google Finance receipt without provider calls',async()=>{
+ const {controls,item}=financeUiFixture(),index={results:[item.entry]},noProvider=async()=>{throw Error('UNEXPECTED_PROVIDER_CALL');};
+ const result=await readScopedIndexResults({controls,index,files:new Map(),api:noProvider,download:noProvider});
+ assert.equal(result.verified.length,1);assert.equal(result.verified[0].result.kind,'FINANCE_UI_READONLY');assert.equal(result.upgraded,0);
+});
+test('final package rejects unprojected accepted evidence before any Git mutation or queue retirement',async()=>{
+ const {controls,map}=financeUiFixture(),before=JSON.stringify(controls.pointer.currentResultIncorporationQueue);
+ const out=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger});
+ const ref=out.descriptor.currentCumulativeTaskEvidenceMap,raw=jsonBytes(staleFinanceMap(map));
+ out.descriptor.currentCumulativeTaskEvidenceMap={...ref,gitBlob:gitBlob(raw),sha256:sha256(raw)};
+ out.pointer.currentResultIncorporationQueue=[];
+ const files=bindControlPaths(out,{matrixPath:out.descriptor.moduleTruthPath,ledgerPath:out.descriptor.findingsLedgerPath});files.set(ref.path,raw);
+ let mutations=0;
+ const api=async(route,body)=>{if(body)mutations++;assert.ok(route.includes('/git/ref/'));return {object:{sha:'expected'}};};
+ await assert.rejects(commitFiles(api,{expectedHead:'expected',files,controls,message:'must not publish'}),/CURRENT_SCOPED_EVIDENCE_NOT_PROJECTED|ACCEPTED_TASK_EVIDENCE_DROPPED/);
+ assert.equal(mutations,0);assert.equal(JSON.stringify(controls.pointer.currentResultIncorporationQueue),before);
+});
+test('fully projected published package passes final validation and keeps every accepted index key',async()=>{
+ const {controls}=financeUiFixture();
+ assert.deepEqual(await assertFinalControlPackage({controls,files:new Map()}),{pass:true});
+ const d=structuredClone(controls.descriptor);d.currentFunctionalEvidenceIndex.results.pop();
+ await assert.rejects(assertFinalControlPackage({controls,files:new Map([[DESCRIPTOR,jsonBytes(d)]])}),/ACCEPTED_EVIDENCE_KEY_DROPPED/);
+});
+test('changing a receipt kind cannot bypass indexed hash verification',async()=>{
+ const {controls,item}=financeUiFixture(),files=new Map([[item.entry.path,'{}\n']]);
+ await assert.rejects(assertFinalControlPackage({controls,files}),/INDEX_RECEIPT_HASH/);
+ const check=validateCurrentAuthorityAliases({...controls,readBytes:p=>files.has(p)?files.get(p):readFile(p)});
+ assert.equal(check.pass,false);assert.ok(check.failures.some(x=>x.includes('INDEX_RECEIPT_HASH')));
+});
+test('replacing an accepted entry under the same key is rejected even with matching replacement hashes',async()=>{
+ const {controls,item}=financeUiFixture(),d=structuredClone(controls.descriptor),p=structuredClone(controls.pointer),raw='{}\n';
+ for(const c of [d,p])Object.assign(c.currentFunctionalEvidenceIndex.results.find(x=>x.key===item.entry.key),{gitBlob:gitBlob(raw),sha256:sha256(raw)});
+ await assert.rejects(assertFinalControlPackage({controls,files:new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)],[item.entry.path,raw]])}),/ACCEPTED_EVIDENCE_ENTRY_CHANGED/);
+});
+for(const mode of ['remove map','remove C04 accepted scope'])test('final transaction preserves prior evidence: '+mode,async()=>{
+ const {controls,map}=financeUiFixture(),out=structuredClone({descriptor:controls.descriptor,pointer:controls.pointer,matrix:controls.matrix,ledger:controls.ledger});
+ const ref=out.descriptor.currentCumulativeTaskEvidenceMap,changed=structuredClone(map);
+ if(mode==='remove map')for(const c of Object.values(out))delete c.currentCumulativeTaskEvidenceMap;
+ else{const task=changed.tasks.find(x=>x.taskId==='C04');task.evidenceRefs=[];task.preservedEvidenceScope=[];const raw=jsonBytes(changed);out.descriptor.currentCumulativeTaskEvidenceMap={...ref,gitBlob:gitBlob(raw),sha256:sha256(raw)};}
+ const files=bindControlPaths(out,{matrixPath:out.descriptor.moduleTruthPath,ledgerPath:out.descriptor.findingsLedgerPath});
+ if(mode!=='remove map')files.set(ref.path,jsonBytes(changed));
+ await assert.rejects(assertFinalControlPackage({controls,files}),/ACCEPTED_EVIDENCE_MAP_DROPPED|ACCEPTED_TASK_EVIDENCE_DROPPED/);
+ if(mode==='remove map')assert.ok(validateCurrentAuthorityAliases({...out,readBytes:readFile}).failures.includes('CURRENT_SCOPED_EVIDENCE_MAP_MISSING'));
+});
+test('an added D08 binding is admitted only after its existing owner verifies the original request',async()=>{
+ const {controls}=financeUiFixture(),key='45520112416/1/138889998069';
+ const entry=controls.descriptor.currentFunctionalEvidenceIndex.results.find(x=>x.key===key),binding=structuredClone(entry.requestBinding);
+ assert.ok(binding);
+ delete entry.requestBinding;delete controls.pointer.currentFunctionalEvidenceIndex.results.find(x=>x.key===key).requestBinding;
+ const d=JSON.parse(readFile(DESCRIPTOR)),p=JSON.parse(readFile(POINTER)),files=new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)]]);
+ const producerLoader=async(_api,head)=>{
+  const at=file=>execFileSync('git',['show',head+':'+file],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});
+  const descriptor=JSON.parse(at(DESCRIPTOR)),pointer=JSON.parse(at(POINTER)),request=pointer.currentD08UiQaRequest;
+  return {descriptor,pointer,blobs:new Map([[request.path,gitBlob(at(request.path))]]),readBytes:async file=>at(file)};
+ };
+ assert.deepEqual(await assertFinalControlPackage({controls,files,producerLoader}),{pass:true});
+ for(const c of [d,p])c.currentFunctionalEvidenceIndex.results.find(x=>x.key===key).requestBinding.canonicalSha256='0'.repeat(64);
+ await assert.rejects(assertFinalControlPackage({controls,files:new Map([[DESCRIPTOR,jsonBytes(d)],[POINTER,jsonBytes(p)]]),producerLoader}),/D08_REQUEST_BINDING_NOT_VERIFIED/);
 });

@@ -104,6 +104,74 @@ function metadataAccepted(result,scopeSha256){
  return decision==='PASS_FINANCE_METADATA_SECOND_ADVANCE'?o.providerCommandsExecuted===2&&o.providerWrites===3&&o.idempotentReplay===true:o.providerCommandsExecuted===0&&o.providerWrites===0&&o.idempotentNoop===true;
 }
 
+// Read-only Finance credit belongs to its exact sessions and sealed source.
+// A successful transport or an export preview alone cannot settle these clauses.
+export function financeUiAccepted(r){
+ const o=r.observations||{},s=o.safety||{},sessions=o.sessions;
+ return r.kind==='FINANCE_UI_READONLY'&&r.state==='HOLD'&&r.decision==='RECORDED_FINANCE_UI_SCOPED_PASS'&&
+  r.producer?.decision==='PASS_C09_C10_ADVANCE_UI_AND_EXPORT_SCOPE'&&r.producer?.jobConclusion==='success'&&
+  r.identity?.complete===true&&exactGtIdentity(r.identity.observed)&&r.fullDomain===false&&r.phaseAComplete===false&&
+  r.newDomainMatches===0&&r.production===false&&r.ownerSpecificReceipts?.length===0&&r.failureCodes?.length===0&&r.unclassifiedFailureCount===0&&
+  o.sameArtifactReadback?.verified===true&&o.stage==='COMPLETE'&&o.independentAdminSessions===2&&o.advanceCount===2&&
+  ['currentAdminClaimsVerified','browserServerReadVerified','committedMetadataReceiptVerified','firstAdvanceUnchanged','secondMetadataExact','sameCashPeriod','newSessionParity','financialDocumentsStable'].every(k=>o[k]===true)&&
+  s.production===false&&['authIdentityOrClaimsWrites','directFirestoreWrites','providerCommandsExecuted','financialMutationRequestsDispatched'].every(k=>s[k]===0)&&
+  Array.isArray(sessions)&&sessions.length===2&&sessions.every(x=>
+   ['newContextEmpty','exactCurrentAdminClaims','serverReadConfirmed','advancePairExact','firstAdvanceUnchanged','secondMetadataExact'].every(k=>x[k]===true)&&
+   x.movementExport?.decision==='PASS_EXPORT_PARITY'&&['xlsx','pdf'].every(k=>x.movementExport[k]?.parsed===true&&x.movementExport[k]?.contentMatches===true)&&
+   x.dashboard?.decision==='PASS_EXPORT_PARITY'&&x.dashboard.realRows===true&&x.dashboard.independentHrKpisCertified===false);
+}
+
+export function projectFinanceUiMap({cumulativeMap,verified}){
+ if(!cumulativeMap)return {cumulativeMap,mapChanged:false};
+ const out=structuredClone(cumulativeMap);
+ for(const {entry,result}of verified){
+  if(!financeUiAccepted(result))continue;
+  must(Array.isArray(out.tasks)&&out.evidence&&typeof out.evidence==='object','FINANCE_MAP_SHAPE');
+  const source=result.identity.observed.sourceSha.slice(0,4);
+  const scope=`Two independent Admin sessions on sealed${source}: exact advances and server rows, Movimientos preview/XLSX/native PDF and real-row Dashboard export parity; no financial mutations. Does not certify independent HR KPIs, payments, liquidation, batch, support or the full C09/C10 tasks.`;
+  const existing=Object.keys(out.evidence).find(k=>['path','gitBlob','sha256'].every(f=>out.evidence[k]?.[f]===entry[f]));
+  const key=existing||'financeUi'+entry.sha256.slice(0,12);
+  must(!out.evidence[key]||['path','gitBlob','sha256'].every(f=>out.evidence[key][f]===entry[f]),'FINANCE_MAP_EVIDENCE_COLLISION');
+  out.evidence[key]={...out.evidence[key],path:entry.path,gitBlob:entry.gitBlob,sha256:entry.sha256,scope};
+  const boundaries={
+   C09:`Preserve the exact two-session Admin Movimientos and Dashboard export PASS on sealed${source}. Remaining evidence concerns independent same-HR KPI parity, finance-only role/support permissions and the other uncovered original C09 clauses. Do not repeat the verified PDFs or reopen accepted B5/B6 because B8 settlement remains open.`,
+   C10:`Two-session Movimientos, exact advances and export parity passed on sealed${source} and remain accepted within that recorded scope. Full terminal account, liquidation, batch, support and uncovered cross-role/session clauses remain pending; preserve the original period and financial-write boundaries.`
+  };
+  const obsolete={
+   C09:'Actual PDF content/extraction failure remains unresolved; current same-cut/currency/export and finance-only cross-role residuals remain. Do not reopen accepted B5/B6 merely because B8 settlement is open.',
+   C10:'Current two-session finance/exactadvance/export verification not passed; RUN2787 did not start. Full terminal account/movement/liquidation/batch/support flow still requires uncovered evidence.'
+  };
+  for(const id of ['C09','C10']){
+   const task=out.tasks.find(x=>x.taskId===id);must(task&&Array.isArray(task.evidenceRefs)&&Array.isArray(task.preservedEvidenceScope)&&Array.isArray(task.remainingOrMappingBoundary),'FINANCE_MAP_TASK_'+id);
+   if(!task.evidenceRefs.includes(key))task.evidenceRefs.push(key);
+   if(!task.preservedEvidenceScope.includes(scope))task.preservedEvidenceScope.push(scope);
+   // Replace only the two demonstrated stale clauses. Unknown obligations and
+   // every original acceptance, prior credit and full-task status stay intact.
+   task.remainingOrMappingBoundary=task.remainingOrMappingBoundary.map(text=>text===obsolete[id]?boundaries[id]:text);
+   must(!task.remainingOrMappingBoundary.some(text=>/PDF content\/extraction failure remains unresolved|two-session finance\/exactadvance\/export verification not passed/.test(text)),'FINANCE_MAP_UNKNOWN_STALE_CLAUSE_'+id);
+  }
+ }
+ return {cumulativeMap:out,mapChanged:!same(cumulativeMap,out)};
+}
+
+export function validateScopedEvidenceProjection({descriptor,matrix,readBytes}){
+ const ref=descriptor.currentCumulativeTaskEvidenceMap;
+ try{
+  const blob=raw=>createHash('sha1').update(`blob ${Buffer.byteLength(raw)}\0`).update(raw).digest('hex');
+  const hash=raw=>createHash('sha256').update(raw).digest('hex');
+  const verified=[];
+  for(const entry of descriptor.currentFunctionalEvidenceIndex?.results||[]){
+   const raw=readBytes(entry.path);
+   must(blob(raw)===entry.gitBlob&&hash(raw)===entry.sha256,'INDEX_RECEIPT_HASH');
+   if(JSON.parse(raw).kind==='FINANCE_UI_READONLY')verified.push(verifiedTypedReceipt(entry,raw,{gitBlob:blob,sha256:hash}));
+  }
+  if(!ref){const missing=verified.some(x=>financeUiAccepted(x.result));return {pass:!missing,failures:missing?['CURRENT_SCOPED_EVIDENCE_MAP_MISSING']:[]};}
+  const bytes=readBytes(ref.path);must(blob(bytes)===ref.gitBlob&&hash(bytes)===ref.sha256,'CURRENT_MAP_HASH');
+  const projected=projectFinanceUiMap({cumulativeMap:JSON.parse(bytes),verified});
+  return {pass:!projected.mapChanged,failures:projected.mapChanged?['CURRENT_SCOPED_EVIDENCE_NOT_PROJECTED']:[]};
+ }catch(error){return {pass:false,failures:['CURRENT_SCOPED_EVIDENCE_INVALID:'+error.message]};}
+}
+
 // These IDs already exist in nextPlannedBlock. A completed diagnostic never
 // claims that the still-open F3 remote-write contract has passed.
 export function completedExecutionTaskIds(verified){
@@ -118,7 +186,7 @@ export function completedExecutionTaskIds(verified){
  return [...completed];
 }
 
-export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}){
+export function projectCurrentScopedClauses({matrix,cumulativeMap,verified,financeScopeSha256}){
  const credit=new Map();
  const unique=new Map();
  for(const item of verified){
@@ -153,7 +221,8 @@ export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}
    if(!credit.has(id))credit.set(id,{clauseId:id,evidenceIndexKey:entry.key,scopeSha256:financeScopeSha256});
   }
  }
- if(!credit.size)return {matrix:structuredClone(matrix),changedDomains:[],changed:false};
+ const mapProjection=projectFinanceUiMap({cumulativeMap,verified:ordered});
+ if(!credit.size)return {matrix:structuredClone(matrix),changedDomains:[],...mapProjection,changed:mapProjection.mapChanged};
  const out=structuredClone(matrix),changedDomains=[];
  const hn=credit.get(PASSWORD_ID),gt=credit.get(GT_PASSWORD_ID),apis=API_CASES.map(id=>credit.get('A08.api.users.denial.'+id)),api=apis.every(Boolean),finance=credit.get('FINANCE.NOVEMBER_SECOND_ADVANCE_METADATA');
  const update=(domain,proofs,change)=>{
@@ -206,5 +275,5 @@ export function projectCurrentScopedClauses({matrix,verified,financeScopeSha256}
   preserve(r,'RUN2783 exact second November advance metadata correction, committed readback and replay PASS; first advance and financial facts unchanged. Financial UI, payability and settlement residuals remain pending.');
  });
  must(same(matrix.classificationCounts,out.classificationCounts)&&same(matrix.modules.map(m=>[m.domain,m.classification]),out.modules.map(m=>[m.domain,m.classification])),'CLASSIFICATION_CHANGED');
- return {matrix:out,changedDomains,changed:changedDomains.length>0};
+ return {matrix:out,changedDomains,...mapProjection,changed:changedDomains.length>0||mapProjection.mapChanged};
 }

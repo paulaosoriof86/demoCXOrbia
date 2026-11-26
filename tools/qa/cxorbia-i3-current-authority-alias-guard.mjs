@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {isDeepStrictEqual} from 'node:util';
 import {validateProjectionRegistry,executionProviderOf,DESCRIPTOR} from './cxorbia-i3-current-control-projection.mjs';
+import {validateScopedEvidenceProjection} from './cxorbia-i3-scoped-clause-projection.mjs';
 
 // Producer descriptors can exceed Node's default 1 MiB subprocess output limit.
 export const nativeGitRead=args=>execFileSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -107,7 +108,7 @@ export function validateSealedExecutionAuthority({seal,receipt,aliases=[],gitRea
 /* Current control-plane compatibility aliases must not contradict the canonical
    descriptor-selected ledger and DEV seal. Historical nested evidence is immutable;
    only explicitly current top-level fields are compared here. */
-export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:m,gitRead=nativeGitRead}){
+export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l,matrix:m,gitRead=nativeGitRead,readBytes=file=>gitRead(['show','HEAD:'+file])}){
   const failures=[];
   const check=(condition,code)=>{if(!condition)failures.push(code);};
   const ids=Object.keys(l?.findings||{}).sort();
@@ -399,6 +400,7 @@ export function validateCurrentAuthorityAliases({descriptor:d,pointer:p,ledger:l
         :Boolean(d.currentExecutionReceipt?.receiptPath&&d.currentExecutionReceipt?.receiptBlob&&d.currentExecutionReceipt?.sourceSha===source&&d.currentExecutionReceipt?.production===false&&d.currentExecutionReceipt?.kind)),'CURRENT_OPERATIONAL_EXECUTION_RECEIPT_DESYNC');
   }
   failures.push(...validateProjectionRegistry({descriptor:d,pointer:p,ledger:l,matrix:m}).failures);
+  failures.push(...validateScopedEvidenceProjection({descriptor:d,matrix:m,readBytes}).failures);
   return {pass:failures.length===0,failures,findingCount:count,nextFindingId:next,ledgerPath,sourceSha:source,devRunId:seal?.runId||null};
 }
 
