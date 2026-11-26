@@ -1,0 +1,312 @@
+{
+  "schemaVersion": "cxorbia.f3.native-exact-owned-recovery.v1",
+  "target": {
+    "runId": "1795653493842440",
+    "attempt": "1",
+    "owner": "f3-qa-1795653493842440-1",
+    "controlSha": "a6f126005ef86d8effe903f73774669edb1c6441",
+    "firebaseProject": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "f3-qa-20261124",
+    "periodId": "f3-qa-20261124-2026-11",
+    "checkpoint": "f3.Z2A8q0Wr"
+  },
+  "state": "HOLD",
+  "decision": "PASS_FIRESTORE_AUTH_CLEANUP_MAKE_KEYS_PENDING",
+  "mode": "execute",
+  "startedAt": "2026-11-26T01:44:42.150Z",
+  "originalAttemptStatus": "FAIL_PRESERVED",
+  "applicationAckProven": false,
+  "b14Closed": false,
+  "newModuleMatches": 0,
+  "productionWrites": 0,
+  "hrWrites": 0,
+  "remoteMakeWrites": 0,
+  "commandPosts": 0,
+  "firestoreDeletes": 27,
+  "firestoreRestores": 0,
+  "authDeletes": 3,
+  "cleanup": {
+    "firestore": true,
+    "auth": true,
+    "remoteMake": "PENDING_ROOT_CONNECTOR"
+  },
+  "seals": [
+    {
+      "stage": "before-delete",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-01-before-delete-77babd89f5ad01fe4f29297ed34e33f780a42f10f940c85a881fcef9f143df03.json#1795657495001705",
+      "sha256": "77babd89f5ad01fe4f29297ed34e33f780a42f10f940c85a881fcef9f143df03"
+    },
+    {
+      "stage": "firestore-readback",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-02-firestore-readback-48a09d51340bcb97e00d7d828cc4e25cd12a1c84570fb2c5b5b395d8b52392e9.json#1795657509819368",
+      "sha256": "48a09d51340bcb97e00d7d828cc4e25cd12a1c84570fb2c5b5b395d8b52392e9"
+    },
+    {
+      "stage": "before-auth-1-admin",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-03-before-auth-1-admin-2893ea8734c08f47fe3603f2a6dbd2a2978e4fe78238aedf6ab06b867b6639d2.json#1795657515050746",
+      "sha256": "2893ea8734c08f47fe3603f2a6dbd2a2978e4fe78238aedf6ab06b867b6639d2"
+    },
+    {
+      "stage": "before-auth-shopper-gt",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-04-before-auth-shopper-gt-9ba2cfa9905c5b8dd663e3e390219bf92af1622559b7b6f28a7117cf4bcd2dbb.json#1795657520720215",
+      "sha256": "9ba2cfa9905c5b8dd663e3e390219bf92af1622559b7b6f28a7117cf4bcd2dbb"
+    },
+    {
+      "stage": "before-auth-shopper-hn",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-05-before-auth-shopper-hn-fd2c9fba1c936446fa48cb559bae1902ca408ef54038e95cb9372e5a1e0307ce.json#1795657526301085",
+      "sha256": "fd2c9fba1c936446fa48cb559bae1902ca408ef54038e95cb9372e5a1e0307ce"
+    },
+    {
+      "stage": "complete-firestore-auth",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/recovery-1795653493842440-2026-11-26T01-44-42-149Z-06-complete-firestore-auth-ae0a10ab6b92237139a99bccc81cee8359a9c95fab5ed839050960b58194dcad.json#1795657535396545",
+      "sha256": "ae0a10ab6b92237139a99bccc81cee8359a9c95fab5ed839050960b58194dcad"
+    }
+  ],
+  "remoteBaselineReadback": {
+    "decision": "PASS_F3_EXACT_REMOTE_BASELINE_READBACK",
+    "sourceRevision": "71e00ef940967aebc3930f79ba692dfa0b3526f4a37296b16f932a50e3da510b",
+    "visits": 2,
+    "fields": 8,
+    "readAt": "2026-11-26T01:44:45.341Z"
+  },
+  "makeAdjudication": {
+    "patchRequests": 1,
+    "patchHttpStatus": 404,
+    "applicationAck": false,
+    "writeExecutionId": "59660c881d63439f9eaceee173b3fea3",
+    "activeExecutions": 0,
+    "originalRunnerFinishedAt": "2026-11-26T00:40:28.903Z",
+    "observedAt": "2026-11-26T01:40:33.744Z",
+    "keysPendingDeletion": [
+      "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831"
+    ],
+    "sentinelPreserved": "757bfe4bd75b",
+    "makeMutationsByDriver": 0
+  },
+  "inputs": {
+    "inventory": {
+      "path": "/home/aysseguros2009/.cxorbia-i3-qa/f3.Z2A8q0Wr/readonly-inventory-2026-11-26T01-20-18-557Z.json",
+      "sha256": "e22e2fc0cdb9af46ac2603f98befd0b4b61618de1091df8b0967bce84411ff3f",
+      "digest": "09dd4b984e7ba49f6da87b41c539bd1a9b3f43ad1a3b7f4db82861be589c9754"
+    },
+    "baseline": {
+      "path": "/home/aysseguros2009/.cxorbia-i3-qa/f3.Z2A8q0Wr/CXORBIA_I3_F3_CLEANUP_FRESH_BASELINE_20261125.json",
+      "sha256": "1122c9d175484e560c66f065f434be86e2b492ccfeeefd2a0eb80ccc2e875a28",
+      "rawSha256": "16c2bdade1108d1833f58aee1a769e1c9ef3baf3fda6213e59ed562e885bceee"
+    },
+    "make": {
+      "path": "/home/aysseguros2009/.cxorbia-i3-qa/f3.Z2A8q0Wr/CXORBIA_I3_F3_CLEANUP_MAKE_CURRENT_20261125.json",
+      "sha256": "57791fb8e309653b5afc4f5100320ec8d2410b835356cd40996561973be8a63e",
+      "historySha256": "0e582159e7aea3704566a4b59bb427f99c30d84a6430bfb5212982d6bfc7a252"
+    },
+    "original": {
+      "rawSha256": "ae94d16bcd94e438a6e672e4e4d0afc1ddef2dc63845e5a385ba8cb1012ce5eb",
+      "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/result.json#1795653636911758",
+      "resultSha256": "4a5ff57092960336f744defb239d9d4354876cc597a75b04355a4872813d092d",
+      "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/evidence.zip#1795653630712949",
+      "archiveSha256": "f6c9f3319389c6fd95440e252aaa5d5edc53bc63ad77ac58b70cd46eb977466a",
+      "nativeReadbackVerified": true,
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+      "originalDecision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
+      "applicationAckProven": false,
+      "remoteValuesRestored": false,
+      "recoveryRequired": true
+    }
+  },
+  "plan": {
+    "documentCount": 26,
+    "deletePaths": [
+      "tenants/tya/commandReceipts/8c20528d36fc8562ccf9ac4e5e6935055d86fadf",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/effects/0e406809-2651-4184-9311-35801ddd11cb",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/effects/4b942882-e4d4-4052-988b-36bb586d4b8d",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/intents/0e406809-2651-4184-9311-35801ddd11cb",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/intents/4b942882-e4d4-4052-988b-36bb586d4b8d",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/stages/shoppers",
+      "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/stages/visits",
+      "tenants/tya/entityAuditTrail/57abdff1e55b5ef9479aa4346d5957d1e3c566a1",
+      "tenants/tya/integrationSettings/f3-qa-1795653493842440-1-GT",
+      "tenants/tya/integrationSettings/f3-qa-1795653493842440-1-HN",
+      "tenants/tya/projects/f3-qa-20261124",
+      "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+      "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831/attempts/c39cc664-7ab3-4152-8719-b40e04b281ec-effect",
+      "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831/attempts/c39cc664-7ab3-4152-8719-b40e04b281ec-intent",
+      "tenants/tya/projects/f3-qa-20261124/hrFieldEvents/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+      "tenants/tya/projects/f3-qa-20261124/hrFieldHeads/412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_45c62e0543d229c8ca625f3cf857",
+      "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_ec25c41b6656f0000daef0af1398",
+      "tenants/tya/shoppers/qa_f3_20261124_gt_a",
+      "tenants/tya/shoppers/qa_f3_20261124_gt_b",
+      "tenants/tya/shoppers/qa_f3_20261124_hn_a",
+      "tenants/tya/shoppers/qa_f3_20261124_hn_b",
+      "tenants/tya/users/f3-qa-1795653493842440-1-admin",
+      "tenants/tya/users/f3-qa-1795653493842440-1-shopper-gt",
+      "tenants/tya/users/f3-qa-1795653493842440-1-shopper-hn"
+    ],
+    "lockPath": "tenants/tya/commandReceipts/hr-scope-38ba66b3872622d6dcfa5d81598618cb11b30b347f6c49a26f7e3691843c186d",
+    "restoreLockBaseline": null,
+    "authUids": [
+      "f3-qa-1795653493842440-1-admin",
+      "f3-qa-1795653493842440-1-shopper-gt",
+      "f3-qa-1795653493842440-1-shopper-hn"
+    ],
+    "collections": [
+      [
+        "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/effects",
+        [
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/effects/0e406809-2651-4184-9311-35801ddd11cb",
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/effects/4b942882-e4d4-4052-988b-36bb586d4b8d"
+        ]
+      ],
+      [
+        "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/intents",
+        [
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/intents/0e406809-2651-4184-9311-35801ddd11cb",
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/intents/4b942882-e4d4-4052-988b-36bb586d4b8d"
+        ]
+      ],
+      [
+        "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/stages",
+        [
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/stages/shoppers",
+          "tenants/tya/commandReceipts/hr-dbea1318a010d5360be6605888eb23ee16dc00689df6dd2021f2c919ab6951d6/stages/visits"
+        ]
+      ],
+      [
+        "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries",
+        [
+          "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831"
+        ]
+      ],
+      [
+        "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831/attempts",
+        [
+          "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831/attempts/c39cc664-7ab3-4152-8719-b40e04b281ec-effect",
+          "tenants/tya/projects/f3-qa-20261124/hrFieldDeliveries/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831/attempts/c39cc664-7ab3-4152-8719-b40e04b281ec-intent"
+        ]
+      ],
+      [
+        "tenants/tya/projects/f3-qa-20261124/hrFieldEvents",
+        [
+          "tenants/tya/projects/f3-qa-20261124/hrFieldEvents/hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831"
+        ]
+      ],
+      [
+        "tenants/tya/projects/f3-qa-20261124/hrFieldHeads",
+        [
+          "tenants/tya/projects/f3-qa-20261124/hrFieldHeads/412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98"
+        ]
+      ],
+      [
+        "tenants/tya/projects/f3-qa-20261124/visits",
+        [
+          "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_45c62e0543d229c8ca625f3cf857",
+          "tenants/tya/projects/f3-qa-20261124/visits/hr_excel_ec25c41b6656f0000daef0af1398"
+        ]
+      ]
+    ],
+    "crosswalksMustRemainAbsent": [
+      "tenants/tya/shopperIdentityCrosswalk/shopper_gt_7a8efb9b6e",
+      "tenants/tya/shopperIdentityCrosswalk/shopper_gt_e4f29d49eb",
+      "tenants/tya/shopperIdentityCrosswalk/shopper_hn_2c9c745287",
+      "tenants/tya/shopperIdentityCrosswalk/shopper_hn_4dab8ab9da"
+    ],
+    "authBefore": [
+      {
+        "uid": "f3-qa-1795653493842440-1-admin",
+        "claims": {
+          "tenantId": "tya",
+          "role": "admin",
+          "authNamespace": "staff",
+          "projectIds": [
+            "f3-qa-20261124"
+          ],
+          "qaOwner": "f3-qa-1795653493842440-1"
+        },
+        "displayName": "CXOrbia isolated QA operator",
+        "disabled": false,
+        "emailSha256": "c3d4b09cd10f7d3a5f6881044642c5c3bb0b672ec9123718a1faeade2e47f8d6",
+        "providerIds": [
+          "password"
+        ],
+        "creationTime": "Thu, 26 Nov 2026 00:38:29 GMT",
+        "lastSignInTime": "Thu, 26 Nov 2026 00:38:29 GMT",
+        "tokensValidAfterTime": "Thu, 26 Nov 2026 00:38:29 GMT"
+      },
+      {
+        "uid": "f3-qa-1795653493842440-1-shopper-gt",
+        "claims": {
+          "tenantId": "tya",
+          "projectIds": [
+            "f3-qa-20261124"
+          ],
+          "role": "shopper",
+          "authNamespace": "shopper",
+          "shopperId": "qa_f3_20261124_gt_a",
+          "country": "GT",
+          "qaOwner": "f3-qa-1795653493842440-1"
+        },
+        "displayName": "CXOrbia F3 QA GT Shopper",
+        "disabled": false,
+        "emailSha256": "ba757b04114a0d60eafcbd305a18e3b1bdfbaf01d6ecfc0f3821aed939dd6178",
+        "providerIds": [
+          "password"
+        ],
+        "creationTime": "Thu, 26 Nov 2026 00:39:11 GMT",
+        "lastSignInTime": "Thu, 26 Nov 2026 00:39:28 GMT",
+        "tokensValidAfterTime": "Thu, 26 Nov 2026 00:39:11 GMT"
+      },
+      {
+        "uid": "f3-qa-1795653493842440-1-shopper-hn",
+        "claims": {
+          "tenantId": "tya",
+          "projectIds": [
+            "f3-qa-20261124"
+          ],
+          "role": "shopper",
+          "authNamespace": "shopper",
+          "shopperId": "qa_f3_20261124_hn_a",
+          "country": "HN",
+          "qaOwner": "f3-qa-1795653493842440-1"
+        },
+        "displayName": "CXOrbia F3 QA HN Shopper",
+        "disabled": false,
+        "emailSha256": "47b1d302517ca6534cc5145f1edeba1548b5775c0fa1326d01556d0c3b6bfac5",
+        "providerIds": [
+          "password"
+        ],
+        "creationTime": "Thu, 26 Nov 2026 00:39:11 GMT",
+        "lastSignInTime": "Thu, 26 Nov 2026 00:39:37 GMT",
+        "tokensValidAfterTime": "Thu, 26 Nov 2026 00:39:11 GMT"
+      }
+    ]
+  },
+  "planDigest": "424b851e7f4e20d8a6139db24c9ebd4deac3b6335f0b151f6528fdfe460fe802",
+  "firestoreTransactionAttempted": true,
+  "firestoreCommitOutcome": "CONFIRMED",
+  "firestoreTransactionCommitted": true,
+  "authAbsent": [
+    "f3-qa-1795653493842440-1-admin",
+    "f3-qa-1795653493842440-1-shopper-gt",
+    "f3-qa-1795653493842440-1-shopper-hn"
+  ],
+  "recoveryRequired": true,
+  "nextExactAction": {
+    "owner": "ROOT_MAKE_CONNECTOR",
+    "dataStoreId": 213856,
+    "deleteOnlyExactKeysAfterCurrentReadback": [
+      "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831"
+    ],
+    "sentinelMustRemain": "757bfe4bd75b",
+    "then": "Verify exactly sentinel remains and attach separate final cleanup receipt; original F3 remains FAIL."
+  },
+  "originalEvidenceUnchanged": true,
+  "finishedAt": "2026-11-26T01:45:39.459Z"
+}
