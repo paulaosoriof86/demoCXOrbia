@@ -37480,11 +37480,11 @@
     "production": false
   },
   "currentD08UiQaRequest": {
-    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json",
-    "gitBlob": "1250fc8b1997f83eb71a0afda10bb8e826434368",
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+    "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
     "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
-    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
-    "pairedRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
     "production": false
   },
   "currentRunnerContinuityCorrection": {

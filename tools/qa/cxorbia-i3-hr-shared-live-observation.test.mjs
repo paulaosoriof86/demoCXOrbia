@@ -64,7 +64,7 @@ function fixture({ secondMode = 'rolling_window', extraFresh = false, hideBadge 
     page.getByText=text=>{ assert.equal(text,'HR viva actualizada');return {waitFor:async()=>{}}; };
     return page;
   }
-  return { wire,snapshots, options:{ runId,tenantId,projectId,first:pageFor(0,'rolling_window'),second:pageFor(1,secondMode),scope,save:r=>snapshots.push(structuredClone(r))} };
+  return { wire,snapshots, options:{ runId,tenantId,projectId,first:pageFor(0,'rolling_window'),second:pageFor(1,secondMode),scope,sealedSource:src,save:r=>snapshots.push(structuredClone(r))} };
 }
 test('entry point clicks original button once, invokes each watcher once, and emits a separate partial receipt',async()=>{
   const f=fixture(), r=await runSharedHrAcceptance(f.options);
@@ -76,7 +76,7 @@ test('entry point clicks original button once, invokes each watcher once, and em
   assert.equal(f.options.first.listenerCount('response'),0);assert.equal(f.options.second.listenerCount('request'),0);
 });
 test('request pin and independent page contexts are checked before any egress',async()=>{
-  for (const options of [o=>({...o,scope:{...scope,sourceSha:'x'}}),o=>({...o,second:o.first}),o=>({...o,scope:{...scope,maxManualReads:2}})]) {
+  for (const options of [o=>({...o,scope:{...scope,sourceSha:'b'.repeat(40)}}),o=>({...o,second:o.first}),o=>({...o,scope:{...scope,maxManualReads:2}})]) {
     const f=fixture(), r=await runSharedHrAcceptance(options(f.options)); assert.equal(r.application.status,'HOLD'); assert.equal(f.wire.clicks,0);
   }
 });

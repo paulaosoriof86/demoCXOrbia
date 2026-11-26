@@ -859,6 +859,19 @@
         }
       },
       "originalWorkbookWrites": 0
+    },
+    "d08CurrentPairedScope": {
+      "path": "docs/checkpoints/CXORBIA_I3_D08_E10_QA_BOUND_6050930A_20261126.json",
+      "currentRequest": {
+        "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+        "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+        "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+        "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+        "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+        "production": false
+      },
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099"
     }
   },
   "lastChromeConnection": {
@@ -870,7 +883,7 @@
   },
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
-    "academy": "Preserve the current D08 source-bound request and credited Admin actions. After the materialization and receipt are verified, bind the next Shopper/Client observation to the eligible pair through the existing authenticated runner. The preparation has no native launch or new role proof.",
+    "academy": "Use this newly bound request on its paired source, verify the native current signer-independent QA transport and its clean browser and Firebase prerequisites, preserve the F3 restore allocation and serialize functional work. Record native results with the same consumer and exact cleanup.",
     "deployment": "I3 HOLD. Publish project-configured internal HR reader 72874c08560addf5d0bc4a23573d65ce86481c95 over observed DEV 9117f6ebeb165093805d1c2b69c54e534e317cf4 using the bound native paired job. Preserve original workbook headers, all prior evidence and exact source identity. Consume the resulting native receipt, then observe cold start, durable recovery, two sessions and manual refresh on the selected period. Continue outstanding process clauses and Gate20/Gate21. Production requires I3 GO and I4 approval.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",

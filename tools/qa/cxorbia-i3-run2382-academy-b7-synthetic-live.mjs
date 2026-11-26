@@ -757,7 +757,7 @@ async function runAcademyUiQa(){
           googleControl.verifyAcademyHrObservation(google,qa,seal);
           const {runSharedHrAcceptance}=await import('./cxorbia-i3-hr-shared-live-observation.mjs');
           await runSharedHrAcceptance({first:ses.page,second:fresh.page,tenantId,projectId,runId,
-            scope:qa.hrAcceptance,save:observation=>{result.independentHrAcceptance=observation;save();}});
+            scope:qa.hrAcceptance,sealedSource:seal.sourceSha,save:observation=>{result.independentHrAcceptance=observation;save();}});
         }catch(error){
           const reason=redact(error.message);
           result.independentHrAcceptance={...result.independentHrAcceptance,decision:'HOLD',application:{status:'HOLD',cause:reason}};save();

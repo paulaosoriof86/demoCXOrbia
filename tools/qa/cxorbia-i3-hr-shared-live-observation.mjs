@@ -2,7 +2,6 @@
 import { createHash } from 'node:crypto';
 
 const host = 'https://cxorbia-backend-dev.web.app';
-const source = '9117f6ebeb165093805d1c2b69c54e534e317cf4';
 const mode = 'MANUAL_FRESH_TWO_SHARED_PRESENTATIONS';
 const revision = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 const now = () => new Date().toISOString();
@@ -157,7 +156,7 @@ async function observe(page, label, endpoint, limits) {
   };
 }
 
-export async function runSharedHrAcceptance({ first, second, tenantId, projectId, runId, scope, save = () => {} }) {
+export async function runSharedHrAcceptance({ first, second, tenantId, projectId, runId, scope, sealedSource, save = () => {} }) {
   const report = {
     schemaVersion: 'cxorbia.i3.hr-shared-live-observation.v1', decision: 'HOLD', startedAt: now(),
     runId, tenantId, projectId, sourceSha: scope?.sourceSha, pairedRunId: scope?.pairedRunId,
@@ -167,7 +166,7 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
   const limits = { tenantId, projectId, phase: 'setup', manual: 0, shared: [], blocked: 0, operationalPostAttempts: 0 };
   const watches = [], pages = [first, second];
   try {
-    check(scope?.mode === mode && scope.sourceSha === source &&
+    check(scope?.mode === mode && scope.sourceSha === sealedSource && /^[a-f0-9]{40}$/.test(sealedSource || '') &&
       /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(scope.pairedRunId) &&
       scope.maxManualReads === 1 && scope.maxSharedChecks === 2 && /^[0-9]{8,}$/.test(runId) &&
       tenantId && projectId, 'SOURCE_FAILURE:HR_OBSERVATION_CONFIG');

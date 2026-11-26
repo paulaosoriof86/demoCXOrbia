@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.e10.paired-qa-binding.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "pairedControl": "384189a5de1d436cab5223cee886b28c475f5b74",
+  "materializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+  "materializationReceiptGitBlob": "3bfc3b6e27260877609751c9e59f8c98343e9525",
+  "newMaterialization": {
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "sourceTree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246"
+  },
+  "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+  "priorRequest": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json",
+    "gitBlob": "1250fc8b1997f83eb71a0afda10bb8e826434368",
+    "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "pairedRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "production": false
+  },
+  "currentRequest": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json",
+    "gitBlob": "0f7731d14fa119f1b3a372ea301d0f68852eeeb5",
+    "state": "REQUESTED_SEALED_GOOGLE_DEV_UI_WITH_PRIOR_OWNED_CLEANUP",
+    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "pairedRunId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "production": false
+  },
+  "d08OwnerParity": {
+    "app/modules/academia.js": {
+      "priorGitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4",
+      "currentGitBlob": "4c3e7aa2228899af24011cb20597892bcd1f37e4"
+    },
+    "app/core/manuales-data.js": {
+      "priorGitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+      "currentGitBlob": "b18921f9cc87cb78a4db34b6205a480749470f26"
+    },
+    "app/adapters/cxorbia-command-adapter-v1.js": {
+      "priorGitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca",
+      "currentGitBlob": "1d2f4bc6fc9e1c8b7650d0f064a628440f810cca"
+    },
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": {
+      "priorGitBlob": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "currentGitBlob": "c788b898f63388cda55a9f20945fc67741adb3de"
+    },
+    "app/core/backend-browser-auth.js": {
+      "priorGitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6",
+      "currentGitBlob": "1274e67e69a73fd619d81b0d01687e72894901e6"
+    },
+    "backend/contracts/cxorbia-academy-base-progress-contract-v1.json": {
+      "priorGitBlob": "6e22d060b4534413de58ca55b6a07ab34a84f83e",
+      "currentGitBlob": "6e22d060b4534413de58ca55b6a07ab34a84f83e"
+    }
+  },
+  "e10OwnerParity": {
+    "app/modules/importador.js": {
+      "priorGitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "currentGitBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "same": true
+    },
+    "app/core/importador.js": {
+      "priorGitBlob": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+      "currentGitBlob": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+      "same": true
+    },
+    "app/modules/operacion-extra.js": {
+      "priorGitBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+      "currentGitBlob": "5675754961d29e2784e04553bc08f651b51ba2b6",
+      "same": true
+    },
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": {
+      "priorGitBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "currentGitBlob": "c0868192d611007635b36f806d2150c36222e953",
+      "same": true
+    },
+    "backend/runtime/cxorbia-academy-command-provider-v1.mjs": {
+      "priorGitBlob": "353fbacd8fd24d1a3ae54249869211c13194aba9",
+      "currentGitBlob": "353fbacd8fd24d1a3ae54249869211c13194aba9",
+      "same": true
+    },
+    "backend/runtime/cxorbia-commercial-command-provider-v1.mjs": {
+      "priorGitBlob": "1fb37bb68bf0a7faeb8ed58e916d6346d8acb31f",
+      "currentGitBlob": "1fb37bb68bf0a7faeb8ed58e916d6346d8acb31f",
+      "same": true
+    },
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs": {
+      "priorGitBlob": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+      "currentGitBlob": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+      "same": true
+    },
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": {
+      "priorGitBlob": "d9d82a6ce33187dc5ecf3a1320940cf57b293646",
+      "currentGitBlob": "d9d82a6ce33187dc5ecf3a1320940cf57b293646",
+      "same": true
+    },
+    "backend/runtime/cxorbia-project-command-provider-v1.mjs": {
+      "priorGitBlob": "cecf7b01c9be7d3bd9b4af339dc46ac25fe87af2",
+      "currentGitBlob": "cecf7b01c9be7d3bd9b4af339dc46ac25fe87af2",
+      "same": true
+    },
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": {
+      "priorGitBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "currentGitBlob": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "same": true
+    },
+    "backend/adapters/hr-import-control-adapter.preview.mjs": {
+      "priorGitBlob": "203d827167ef89724b925a85f7a211d9189d0e5b",
+      "currentGitBlob": "203d827167ef89724b925a85f7a211d9189d0e5b",
+      "same": true
+    },
+    "backend/contracts/hr-import-control-phase-a-v1.json": {
+      "priorGitBlob": "98bc11c0a28c17379451564d40fb7a9e5160a4e6",
+      "currentGitBlob": "98bc11c0a28c17379451564d40fb7a9e5160a4e6",
+      "same": true
+    },
+    "backend/contracts/cxdata-firestore-phase-a-v1.json": {
+      "priorGitBlob": "6abab39bf31b7e554dc689ebd74eb9e677150207",
+      "currentGitBlob": "6abab39bf31b7e554dc689ebd74eb9e677150207",
+      "same": true
+    },
+    "firebase.json": {
+      "priorGitBlob": "ff7c31ad86776101fb07163cc7b666aef51a4a94",
+      "currentGitBlob": "ff7c31ad86776101fb07163cc7b666aef51a4a94",
+      "same": true
+    },
+    "firestore.rules": {
+      "priorGitBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "currentGitBlob": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "same": true
+    }
+  },
+  "qaReceipt": "docs/checkpoints/CXORBIA_I3_D08_NATIVE_PASSWORD_PREPARATION_20261126.json",
+  "e10OriginalReceipt": "docs/checkpoints/CXORBIA_I3_E10_DURABLE_ROUTE_READBACK_20261126.json",
+  "currentLiveD08Clauses": 0,
+  "currentE10RemoteRowClaims": 0,
+  "production": false,
+  "authorizationI4": false,
+  "auth": "FOUR_ATTEMPT_OWNED_UIDS_USING_VERIFIED_FIREBASE_PASSWORD_CLAIMS",
+  "preserve": "All prior accepted clauses and original request contract; new live D08 requires a separate authenticated invocation and exact cleanup."
+}
