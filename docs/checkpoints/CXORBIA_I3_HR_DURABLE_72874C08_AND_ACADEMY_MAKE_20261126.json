@@ -1,0 +1,641 @@
+{
+  "schemaVersion": "cxorbia.i3.durable-hr.independent-readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "durableReadback": {
+    "decision": "PASS_MANUAL_OBSERVATION_DURABLY_PUBLISHED_AND_RECOVERED",
+    "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "tree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+    "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "paired": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "applicationRun": "1795709264626667",
+    "readerFingerprint": "5e025860038639f98aa43a6a1c9473f75afa51b1b03897e9212d8913ca761798",
+    "before": {
+      "label": "before manual click",
+      "readTime": "2026-11-26T16:12:36.944Z",
+      "sourceReadAt": "2026-11-26T16:08:27.246Z",
+      "sourceReadStartedAt": "2026-11-26T16:08:15.558Z",
+      "generation": "9e0bcd5805e9c6e9df91f2c3034e86be4fe189d0fae23d267aa043812d144dab",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "origin": "durable_internal_snapshot",
+      "externalReadCurrent": false,
+      "documentGets": 3,
+      "visitCount": 88,
+      "readScope": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ]
+    },
+    "after": {
+      "label": "after manual UI completed",
+      "readTime": "2026-11-26T16:12:53.427Z",
+      "sourceReadAt": "2026-11-26T16:12:46.792Z",
+      "sourceReadStartedAt": "2026-11-26T16:12:37.521Z",
+      "generation": "9e0bcd5805e9c6e9df91f2c3034e86be4fe189d0fae23d267aa043812d144dab",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "origin": "durable_internal_snapshot",
+      "externalReadCurrent": false,
+      "documentGets": 3,
+      "visitCount": 88,
+      "readScope": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ]
+    },
+    "latest": {
+      "label": "independent current read in fresh process",
+      "readTime": "2026-11-26T16:32:19.837Z",
+      "sourceReadAt": "2026-11-26T16:12:46.792Z",
+      "sourceReadStartedAt": "2026-11-26T16:12:37.521Z",
+      "generation": "9e0bcd5805e9c6e9df91f2c3034e86be4fe189d0fae23d267aa043812d144dab",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "origin": "durable_internal_snapshot",
+      "externalReadCurrent": false,
+      "documentGets": 3,
+      "visitCount": 88,
+      "readScope": [
+        "cinepolis-2026-10",
+        "cinepolis-2026-11"
+      ]
+    },
+    "externalCalls": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "production": false,
+    "liveColdInstanceObserved": false
+  },
+  "sourceOwnerTested": "backend/runtime/hr-live-service/hr-read-model.mjs",
+  "method": "Read-only Firestore transactions at the recorded times before and after the click, then a new Node process using the exact served reader owner and project mapping. Pointer, manifest, immutable chunk checks, gzip and raw content verified by that owner. No application request or Make call was made by the verifier.",
+  "authenticatedSessions": [
+    {
+      "session": "admin",
+      "role": "admin",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "admin-new-session",
+      "role": "admin",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "admin-edit-new-session",
+      "role": "admin",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "shopper",
+      "role": "shopper",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "shopper-new-session",
+      "role": "shopper",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "cliente",
+      "role": "cliente",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "cliente-new-session",
+      "role": "cliente",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    },
+    {
+      "session": "other-shopper",
+      "role": "shopper",
+      "selectedPeriod": "cinepolis-2026-11",
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "separateInitiallyEmptyBrowserContext": true,
+      "authenticated": true
+    }
+  ],
+  "postClickProtectedTraffic": {
+    "protected200": 19,
+    "syncDue200": 6
+  },
+  "makeWindow": {
+    "schemaVersion": "cxorbia.i3.academy.native.make-window.v1",
+    "startGeneration": "1795709264626667",
+    "resultGeneration": "1795709882683841",
+    "from": "2026-11-26T16:07:44.626Z",
+    "to": "2026-11-26T16:18:02.684Z",
+    "completeScenarioWindows": 33,
+    "teamCredits": 156,
+    "runs": [
+      {
+        "id": "4565a2e7393842e89f4edc7d8bd8bafc",
+        "startedAt": "2026-11-26T16:17:33.963Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "10422a75364b414fa53d42bebccef928",
+        "startedAt": "2026-11-26T16:17:33.682Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "2be7b85291c14acabed305e5a433509d",
+        "startedAt": "2026-11-26T16:17:33.670Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "ab7bd9fc65784cd6993a5a5906859adb",
+        "startedAt": "2026-11-26T16:17:33.669Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "06cb17c0a69e4653a136905568476c15",
+        "startedAt": "2026-11-26T16:17:05.328Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "b57142a27e214ddda88f0f785fdea878",
+        "startedAt": "2026-11-26T16:17:05.055Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "fe85e30878a34dd1bdaee29e4f4a8d14",
+        "startedAt": "2026-11-26T16:17:05.025Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "cbaf1f66707a4d61b2a0de63aafaf3c9",
+        "startedAt": "2026-11-26T16:17:04.996Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "94b633b5530e4e6fa7e6755df50fc53c",
+        "startedAt": "2026-11-26T16:15:13.482Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "a41651dcc0ff490db2b5790be72e46a9",
+        "startedAt": "2026-11-26T16:15:13.344Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "328e7367bfe24c28b4da4ab6e6fd7c5a",
+        "startedAt": "2026-11-26T16:15:13.335Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "84b751f0bbe64e068c602847f055739d",
+        "startedAt": "2026-11-26T16:15:13.158Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "85dbc002c3684aa1937883dc1fb6502b",
+        "startedAt": "2026-11-26T16:14:41.896Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "07b24938697847969fe0298efabfd020",
+        "startedAt": "2026-11-26T16:14:41.680Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "9c4f81930b954ff481110353f77266f8",
+        "startedAt": "2026-11-26T16:14:41.674Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "23109176f877431aa6b1ad72a9b8c0bf",
+        "startedAt": "2026-11-26T16:14:41.664Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "4e7893f8675c442987039065d354c3e5",
+        "startedAt": "2026-11-26T16:14:17.026Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "ea4b4b433106485e9e1faa32131fce09",
+        "startedAt": "2026-11-26T16:14:16.782Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "ce65ba495fe54f5fbef2ef9f7f2bcb14",
+        "startedAt": "2026-11-26T16:14:16.782Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "9233936a1d7147c290d5a151d82f10c4",
+        "startedAt": "2026-11-26T16:14:16.770Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "85e4a11ef7b64924b7731c9988c8860b",
+        "startedAt": "2026-11-26T16:14:02.567Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "ff4184b19a32422aafed2cda21555e9b",
+        "startedAt": "2026-11-26T16:14:02.361Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "e00c169a15094c6ba1167b9a64d22de8",
+        "startedAt": "2026-11-26T16:14:02.302Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "485455850f334feda8db965acfc2cfa2",
+        "startedAt": "2026-11-26T16:14:02.269Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "872609f734b44af297812b7a1c41a522",
+        "startedAt": "2026-11-26T16:13:32.670Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "2243f57a1fbf4b61b0c745bb2f500043",
+        "startedAt": "2026-11-26T16:13:32.434Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "bcfdab0b5a1045e7b6c86a2423a46d55",
+        "startedAt": "2026-11-26T16:13:32.413Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "7bad43ca1e014f16bf3b2b0fc031c0f4",
+        "startedAt": "2026-11-26T16:13:32.412Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "961ba85294004adaaa69b9fe81673090",
+        "startedAt": "2026-11-26T16:12:57.212Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "3e39f2ff32e543fa91d46708cb7c43a2",
+        "startedAt": "2026-11-26T16:12:56.984Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "237ca22bcf9f444ab4ff33f829765b0c",
+        "startedAt": "2026-11-26T16:12:56.983Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "83629462d90f42659e6c5927c3518bae",
+        "startedAt": "2026-11-26T16:12:56.975Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "3772a0363af74f088ba64822c8061f1b",
+        "startedAt": "2026-11-26T16:12:41.187Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "e8968926af3b4f278b12c4a89c125252",
+        "startedAt": "2026-11-26T16:12:40.966Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "967619669c5546d98cebda64a60f009e",
+        "startedAt": "2026-11-26T16:12:40.966Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "da9d8ad39076470bbec1c190f519d1a7",
+        "startedAt": "2026-11-26T16:12:40.934Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "764d9f9051a14e52afcf85f26fdc168f",
+        "startedAt": "2026-11-26T16:12:28.536Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "d7624dc2666446a791a9f00c8e627c5b",
+        "startedAt": "2026-11-26T16:12:28.253Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "9b52fec7420a4c10b7641cd260eaad69",
+        "startedAt": "2026-11-26T16:12:28.250Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "6b16ae4d2016413dbabeb7e2b6d97372",
+        "startedAt": "2026-11-26T16:12:28.240Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "9916beb778614e0eae65af05a0b42d19",
+        "startedAt": "2026-11-26T16:10:21.948Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "22160788450e4d4aaa57f9b272e01e94",
+        "startedAt": "2026-11-26T16:10:21.695Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "2764099fe9564b30bcc6b889b4ca6731",
+        "startedAt": "2026-11-26T16:10:21.684Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "7c670425614e491e948436a4b82b8bce",
+        "startedAt": "2026-11-26T16:10:21.673Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "ae2500850f2b41b794b12df2e67181c8",
+        "startedAt": "2026-11-26T16:10:07.704Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "eee81b1acebb4028853556f5196df531",
+        "startedAt": "2026-11-26T16:10:07.693Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "914ed554aa63457ab5f688fcd4969173",
+        "startedAt": "2026-11-26T16:10:07.683Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "e40918f412a241309baceb98cc5e0d6e",
+        "startedAt": "2026-11-26T16:10:06.747Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "09639d4fe54a424b9da19ee42fcec4ed",
+        "startedAt": "2026-11-26T16:08:19.833Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "48c5a913cf4e442984841455e4f5a8fd",
+        "startedAt": "2026-11-26T16:08:19.578Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "2320318daaca4efe9e3edbdf01fae193",
+        "startedAt": "2026-11-26T16:08:19.557Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      },
+      {
+        "id": "dddadf38c41243acbbf133923b0590bc",
+        "startedAt": "2026-11-26T16:08:19.544Z",
+        "credits": 3,
+        "status": "success",
+        "scenarioId": 10200465
+      }
+    ],
+    "manualWindow": [
+      4,
+      12
+    ],
+    "beforeManualWindow": [
+      16,
+      48
+    ],
+    "availableBalanceReadback": {
+      "unusedCenticredits": 39200,
+      "availableCredits": 392,
+      "automaticPurchase": false
+    },
+    "production": false
+  },
+  "cloudRunInstances": {
+    "aca1701393fe4c8138609c49299a8d61d33e5ff9778a48104aee94e0c9717ec8": {
+      "startup": [
+        "2026-11-26T16:01:16.084397Z"
+      ],
+      "firstNonHealth": {
+        "at": "2026-11-26T16:02:01.042447Z",
+        "path": "/api/tya/cinepolis/hr-live",
+        "http": 200,
+        "insertId": "6b085814000559eb683304e2",
+        "protectedState": "",
+        "readModel": ""
+      }
+    }
+  },
+  "nativeLogRowCount": 88,
+  "nativeLogLimit": 5000,
+  "scaling": {
+    "serviceMin": "0",
+    "revisionMin": "1",
+    "max": "1",
+    "traffic": [
+      {
+        "revisionName": "cxorbia-live-hr-dev-00329-xac",
+        "percent": null
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00330-fim",
+        "percent": null
+      },
+      {
+        "revisionName": "cxorbia-live-hr-dev-00395-lnc",
+        "percent": 100
+      }
+    ]
+  },
+  "coldCurrentInstance": {
+    "decision": "HOLD_FIRST_PROTECTED_DURABLE_REQUEST_ON_COLD_SERVED_INSTANCE",
+    "classification": "ENVIRONMENT_FAILURE",
+    "cause": "Native startup observed. The first non-health request was the earlier paired canonical route. The runtime revision has min=1 and max=1. A fresh independent process did recover the real durable content. The existing instance cannot supply a different first request retroactively."
+  },
+  "qaInstrumentation": {
+    "scope": "Only Admin Chromium contexts requested for observing the HR read",
+    "serviceWorkerCoveredByOriginalNativeRun": true,
+    "localChromiumRealServedWorker": [
+      {
+        "mode": "allow",
+        "cache": "no-store",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 0,
+        "events": [
+          {
+            "routed": false,
+            "sw": true
+          }
+        ]
+      },
+      {
+        "mode": "allow",
+        "cache": "default",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 0,
+        "events": [
+          {
+            "routed": false,
+            "sw": true
+          }
+        ]
+      },
+      {
+        "mode": "block",
+        "cache": "no-store",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 1,
+        "events": [
+          {
+            "routed": true,
+            "sw": false
+          }
+        ]
+      },
+      {
+        "mode": "block",
+        "cache": "default",
+        "body": {
+          "ok": true
+        },
+        "intercepted": 1,
+        "events": [
+          {
+            "routed": true,
+            "sw": false
+          }
+        ]
+      }
+    ],
+    "controlTestsPass": 64
+  },
+  "outstanding": "Freshness and durable publication of the button and visible selected period are verified. Two explicitly due reads in the immediate post-click interval, their zero external calls and the first protected durable response of a cold served instance have not been jointly witnessed.",
+  "microsoftDirect": {
+    "status": "AUTH_FAILURE",
+    "currentTransport": "Delegated Make Graph for external Excel reads. Local durable reuse is available to presentations.",
+    "originalProof": "docs/checkpoints/CXORBIA_I3_HR_READ_ECONOMICS_20261125.json"
+  },
+  "operationalWorkbookEdits": 0,
+  "production": false,
+  "authorizationI4": false
+}

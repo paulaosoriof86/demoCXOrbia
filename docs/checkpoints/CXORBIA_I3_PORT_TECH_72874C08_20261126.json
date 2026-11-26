@@ -273,7 +273,7 @@
       "reason": "No attributable durable response in supplied witness"
     },
     "classification": "ENVIRONMENT_FAILURE",
-    "interpretation": "Two independently authenticated contexts shared revision and selected period before the click. The fresh request returned HTTP 200. The service worker made the page routing observer miss it. Durable generation after the click and first read on a cold instance require independent proof."
+    "interpretation": "The page network interceptor missed the HTTP transaction controlled by the service worker. New independent Firestore readback proves the manual observation was durably published and recovered. Eight isolated authenticated sessions showed the same revision and November. See hrDurableIndependentReadback for exact scopes and remaining conditions."
   },
   "e10": "docs/checkpoints/CXORBIA_I3_E10_DURABLE_ROUTE_READBACK_20261126.json",
   "finance": {
@@ -310,5 +310,12 @@
   "gate21": "HOLD",
   "authorizationI4": false,
   "production": false,
-  "next": "I3 HOLD. The current DEV pair 6050930a and D08 run 1795709264626667 are incorporated. Preserve F3 bounded GT L2 and D08's 25 scoped obligations. Complete only targeted shared HR manual/durable/cold evidence, remaining Finance, E10 authorized import owner and open original process clauses. Gate20/Gate21 and I4 remain open."
+  "next": "Only the first protected durable read on a new native served instance and the bounded immediate due-read pair remain for the shared HR proof. Incorporate these at the next authorized candidate/staging opportunity, retain all 25 D08 focal obligations and continue original B14, E10, Finance, other process clauses and Gate20/Gate21.",
+  "hrDurableIndependentReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_72874C08_AND_ACADEMY_MAKE_20261126.json",
+    "gitBlob": "771ca24df225e7c591f19fc772694e47acb9436a",
+    "decision": "PASS_MANUAL_OBSERVATION_DURABLY_PUBLISHED_AND_RECOVERED",
+    "academicMakeCredits": 156,
+    "manualReadCredits": 12
+  }
 }

@@ -587,7 +587,10 @@ async function runAcademyUiQa(){
     const course=await readDoc(tenant.collection('academyCourses').doc(customId).path,'proveState.course');verifyCourse(course.exists?course.data():null,committed,spec);snapshots.course=course.exists?hash(course.data()):null;return snapshots;
   }
   async function session(identity,label){
-    const context=await awaited(label+':context.new',()=>browser.newContext({viewport:{width:1440,height:1000}}),30000);contexts.push(context);
+    // An active service worker can hide protected requests from Playwright's page routes.
+    const options={viewport:{width:1440,height:1000}};
+    if(identity.role==='admin'&&qa.hrAcceptance)options.serviceWorkers='block';
+    const context=await awaited(label+':context.new',()=>browser.newContext(options),30000);contexts.push(context);
     context.setDefaultTimeout(30000);context.setDefaultNavigationTimeout(90000);
     const nativeClose=context.close.bind(context);context.close=()=>awaited(label+':context.close',()=>nativeClose(),10000);
     const empty=await awaited(label+':storage.empty',()=>context.storageState(),15000);check(empty.origins.length===0&&empty.cookies.length===0,'ENVIRONMENT_FAILURE:D08_NEW_CONTEXT_NOT_EMPTY');

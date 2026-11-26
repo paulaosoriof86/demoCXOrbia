@@ -881,7 +881,11 @@
     },
     "portTech72874c08": {
       "path": "docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json",
-      "gitBlob": "412449639d738ccf4436c0e9574b4d0cea4462cc"
+      "gitBlob": "adbbc2077a9cc94004e073e445399c96c0603cb1"
+    },
+    "durableHr72874c08": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_72874C08_AND_ACADEMY_MAKE_20261126.json",
+      "gitBlob": "771ca24df225e7c591f19fc772694e47acb9436a"
     }
   },
   "lastChromeConnection": {
@@ -926,7 +930,7 @@
       }
     },
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
-    "parallelHrManualRefresh": "I3 HOLD. The current DEV pair 6050930a and D08 run 1795709264626667 are incorporated. Preserve F3 bounded GT L2 and D08's 25 scoped obligations. Complete only targeted shared HR manual/durable/cold evidence, remaining Finance, E10 authorized import owner and open original process clauses. Gate20/Gate21 and I4 remain open.",
+    "parallelHrManualRefresh": "Only the first protected durable read on a new native served instance and the bounded immediate due-read pair remain for the shared HR proof. Incorporate these at the next authorized candidate/staging opportunity, retain all 25 D08 focal obligations and continue original B14, E10, Finance, other process clauses and Gate20/Gate21.",
     "e10": "Resolve the authorized durable import owner or adjudicate the missing implementation under the original E10 contract. The existing inventory covers six providers and 56 commands. Retain the mapping and preview as scoped evidence."
   },
   "newDevDeploys": 2,
