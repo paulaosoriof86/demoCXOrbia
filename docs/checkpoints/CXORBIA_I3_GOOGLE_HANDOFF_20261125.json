@@ -881,11 +881,15 @@
     },
     "portTech72874c08": {
       "path": "docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json",
-      "gitBlob": "adbbc2077a9cc94004e073e445399c96c0603cb1"
+      "gitBlob": "3a00917a973ac6c7c1c0f5b062b478610a6cda56"
     },
     "durableHr72874c08": {
       "path": "docs/checkpoints/CXORBIA_I3_HR_DURABLE_72874C08_AND_ACADEMY_MAKE_20261126.json",
       "gitBlob": "771ca24df225e7c591f19fc772694e47acb9436a"
+    },
+    "microsoftAndSync72874c08": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_SYNC_AND_DIRECT_MS_GT_20261126.json",
+      "gitBlob": "669bf444bf1893daaa2be2499aab6b8eed0cc6c4"
     }
   },
   "lastChromeConnection": {

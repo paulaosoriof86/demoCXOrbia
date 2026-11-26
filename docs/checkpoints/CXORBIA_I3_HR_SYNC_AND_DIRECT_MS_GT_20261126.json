@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.i3.hr.transport-and-sync-readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "pairedRun": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+  "syncObservation": {
+    "schemaVersion": "cxorbia.i3.protected-sync-native-window.v1",
+    "runId": "1795709264626667",
+    "requests": [
+      {
+        "start": "2026-11-26T16:13:27.232217Z",
+        "end": "2026-11-26T16:13:27.507903Z",
+        "liveQaBrowserContexts": [
+          "admin-edit-new-session"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085aa70007c5bc9fddffa3",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 40.44
+      },
+      {
+        "start": "2026-11-26T16:13:55.733194Z",
+        "end": "2026-11-26T16:13:56.039141Z",
+        "liveQaBrowserContexts": [
+          "shopper"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085ac400009e3f1b3327af",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 68.94
+      },
+      {
+        "start": "2026-11-26T16:14:36.677397Z",
+        "end": "2026-11-26T16:14:36.905268Z",
+        "liveQaBrowserContexts": [
+          "shopper-new-session"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085aec000dd668e7abcede",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 109.89
+      },
+      {
+        "start": "2026-11-26T16:15:07.178540Z",
+        "end": "2026-11-26T16:15:07.419916Z",
+        "liveQaBrowserContexts": [
+          "cliente"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085b0b00066f8e7be05e7b",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 140.39
+      },
+      {
+        "start": "2026-11-26T16:16:59.901488Z",
+        "end": "2026-11-26T16:17:00.148671Z",
+        "liveQaBrowserContexts": [
+          "cliente-new-session"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085b7c00024b7f1c42dd4d",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 253.11
+      },
+      {
+        "start": "2026-11-26T16:17:29.345897Z",
+        "end": "2026-11-26T16:17:29.633546Z",
+        "liveQaBrowserContexts": [
+          "other-shopper"
+        ],
+        "makeReaderStartsInRequestWith500msMargin": 0,
+        "insertId": "6b085b990009b0ce955d1674",
+        "format": [
+          "meta"
+        ],
+        "readModel": [
+          "1"
+        ],
+        "sourceObservationAgeSeconds": 282.55
+      }
+    ],
+    "scope": "Native HTTP 200 and independent Make activity. A single active QA context is temporal correlation only. Response bodies were not captured by the page interceptor.",
+    "production": false
+  },
+  "directMicrosoft": {
+    "scope": "single read-only metadata request on exact original Guatemala workbook configured by the project and active country binding",
+    "project": "cinepolis",
+    "tenant": "tya",
+    "provider": "Microsoft SharePoint get_drive_item",
+    "observationDate": "2026-11-26",
+    "httpStatus": 403,
+    "providerCode": "accessDenied",
+    "classification": "AUTH_FAILURE",
+    "externalWorkbookWrites": 0,
+    "downloadedWorkbook": false,
+    "makeCredentialAccess": false,
+    "makeCalls": 0,
+    "outcome": "The current Microsoft connector cannot read metadata on the configured item. This scopes the access failure to this identity and workbook. It does not identify a particular missing permission."
+  },
+  "production": false
+}

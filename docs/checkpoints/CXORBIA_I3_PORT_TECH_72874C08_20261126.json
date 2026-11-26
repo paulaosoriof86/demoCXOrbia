@@ -317,5 +317,9 @@
     "decision": "PASS_MANUAL_OBSERVATION_DURABLY_PUBLISHED_AND_RECOVERED",
     "academicMakeCredits": 156,
     "manualReadCredits": 12
+  },
+  "directMicrosoftAndSixDueReadbacks": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_SYNC_AND_DIRECT_MS_GT_20261126.json",
+    "gitBlob": "669bf444bf1893daaa2be2499aab6b8eed0cc6c4"
   }
 }
