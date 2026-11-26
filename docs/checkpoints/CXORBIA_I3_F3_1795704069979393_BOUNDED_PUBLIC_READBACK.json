@@ -1,0 +1,102 @@
+{
+  "runId": "1795704069979393",
+  "qaOwner": "f3-qa-1795704069979393-1",
+  "decision": "PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING",
+  "finishedAt": "2026-11-26T14:46:10.726Z",
+  "remoteValuesRestored": true,
+  "cleanup": {
+    "firestore": true,
+    "auth": true,
+    "remoteMake": false
+  },
+  "recoveryRequired": false,
+  "remoteBaseline": {
+    "revision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+    "rows": [
+      {
+        "countryCode": "GT",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "escenario": "CXOrbia QA Escenario A"
+      },
+      {
+        "countryCode": "HN",
+        "hrRowId": "CXR_B14_QA_HN_20261119!2",
+        "visitId": "hr_excel_ec25c41b6656f0000daef0af1398",
+        "escenario": "CXOrbia QA Escenario A"
+      }
+    ]
+  },
+  "remoteRestoreReadback": {
+    "decision": "PASS_F3_EXACT_REMOTE_BASELINE_READBACK",
+    "sourceRevision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+    "visits": 2,
+    "fields": 8,
+    "readAt": "2026-11-26T14:45:57.016Z"
+  },
+  "clientResponseLoss": {
+    "replayStartedAt": "2026-11-26T14:43:09.913Z",
+    "replayFinishedAt": "2026-11-26T14:43:39.417Z"
+  },
+  "events": [
+    {
+      "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+      "providerExecutionId": "38a52ab7a9734150967758131b629410",
+      "remoteEventKey": "event:hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "remoteHeadKey": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "base": null,
+      "before": "CXOrbia QA Escenario A",
+      "after": "CXOrbia QA Escenario B"
+    },
+    {
+      "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+      "providerExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+      "remoteEventKey": "event:hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "remoteHeadKey": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "base": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "before": "CXOrbia QA Escenario B",
+      "after": "CXOrbia QA Escenario A"
+    }
+  ],
+  "attempts": [
+    {
+      "start": "2026-11-26T14:42:12.826Z",
+      "end": "2026-11-26T14:43:01.834Z",
+      "key": "f3-qa-1795704069979393-1-field-1",
+      "loss": "CLIENT_ABORT_AFTER_HEADERS_BEFORE_BODY"
+    },
+    {
+      "start": "2026-11-26T14:43:09.913Z",
+      "end": "2026-11-26T14:43:39.416Z",
+      "key": "f3-qa-1795704069979393-1-field-1",
+      "loss": null
+    },
+    {
+      "start": "2026-11-26T14:43:56.591Z",
+      "end": "2026-11-26T14:44:03.753Z",
+      "key": "f3-qa-1795704069979393-1-field-1",
+      "loss": null
+    },
+    {
+      "start": "2026-11-26T14:44:04.412Z",
+      "end": "2026-11-26T14:44:11.513Z",
+      "key": "f3-qa-1795704069979393-1-stale-base",
+      "loss": null
+    },
+    {
+      "start": "2026-11-26T14:44:19.658Z",
+      "end": "2026-11-26T14:45:13.769Z",
+      "key": "f3-qa-1795704069979393-1-field-2",
+      "loss": null
+    },
+    {
+      "start": "2026-11-26T14:45:43.015Z",
+      "end": "2026-11-26T14:45:49.945Z",
+      "key": "f3-qa-1795704069979393-1-field-1",
+      "loss": null
+    }
+  ],
+  "production": false
+}

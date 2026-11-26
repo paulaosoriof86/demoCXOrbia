@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "cxorbia.i3.typed-result-summary.v1",
+  "kind": "F3_ENDPOINT",
+  "state": "HOLD",
+  "decision": "RECORDED_TYPED_RESULT_HOLD",
+  "producer": {
+    "schemaVersion": "cxorbia.i3.f3.qa-endpoint.v1",
+    "decision": "PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING",
+    "jobName": "i3-b14-qa-provider-proof",
+    "jobConclusion": "success"
+  },
+  "provenance": {
+    "provider": "GOOGLE_CLOUD_SHELL",
+    "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/start.json#1795704069979393",
+    "startGeneration": "1795704069979393",
+    "startSha256": "56f995eaf9a77eda632eb4c8a832e8a00b050e1f6c110254cf83d5ba8ba5c497",
+    "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/result.json#1795704378174692",
+    "resultGeneration": "1795704378174692",
+    "bundleSha256": "86c3d5c870a18c652e654b756a1e87fea51c05433d8d01db4fa54debb8c4f5cd",
+    "resultSha256": "692f722967bd5a8c452b4c2c0fdec0f95b36ea4aa7239e07a9916bc8bd35801e",
+    "entry": "receipt.json",
+    "controlHead": "fb7f80287f81691338fd868fc36881fc84781e0e",
+    "transportSha": "fb7f80287f81691338fd868fc36881fc84781e0e",
+    "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/evidence.zip#1795704372091930",
+    "archiveSha256": "4d56a5b21f2cf594a2fc2135fd6eb1557e04ad9ae910435f4343fdff1bed06b8",
+    "archiveVerified": true,
+    "evidenceEntries": [
+      "receipt.json"
+    ]
+  },
+  "identity": {
+    "observed": {
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48"
+    },
+    "complete": true
+  },
+  "classification": null,
+  "failureCodes": [],
+  "unclassifiedFailureCount": 0,
+  "observations": {
+    "authentication": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+    "applicationAckProven": true,
+    "remoteValuesRestored": true,
+    "recoveryRequired": false,
+    "notesPrivacyProven": false,
+    "ordinaryPasswordAuthenticationProven": false,
+    "caseCount": 8,
+    "eventCount": 2,
+    "remoteCommandAttemptCount": 6,
+    "cleanup": {
+      "firestore": true,
+      "auth": true,
+      "remoteMake": false,
+      "authPreservedForRecovery": null,
+      "errorCount": null
+    },
+    "safety": {
+      "productionWrites": 0,
+      "operationalHrWrites": 0
+    },
+    "guarantees": {
+      "atomicHumanExcelCas": false,
+      "observedBaseGuard": true,
+      "remoteReceiptAndIndependentRead": true,
+      "uncertainWriteRetry": false
+    },
+    "remoteCleanupRequired": true,
+    "clientResponseLoss": {
+      "decision": "PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING",
+      "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+      "providerExecutionId": "38a52ab7a9734150967758131b629410",
+      "proofDigest": "d6291b0abaa3d8b39104b9f395967b057c5049e4dfed48f261aa1575c205a791",
+      "declaredOriginalRemoteWriteRequests": 1,
+      "newJournalAttempts": 0,
+      "newLocalCommandWrites": 0,
+      "remoteReplayWrites": null,
+      "remoteReplayWriteCountProven": false,
+      "remoteExecutionAuditRequired": true,
+      "independentSourceRevisionBeforeReplay": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+      "independentReadbackAt": "2026-11-26T14:43:09.912Z",
+      "independentSourceRevisionAfterReplay": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+      "replayStartedAt": "2026-11-26T14:43:09.913Z",
+      "replayFinishedAt": "2026-11-26T14:43:39.417Z",
+      "transport": {
+        "faultBoundary": "APPLICATION_HTTP_RESPONSE_BODY_TO_QA_CLIENT",
+        "requestBodyFinished": true,
+        "responseHeadersObserved": true,
+        "semanticAckObserved": false,
+        "clientConnectionDestroyed": true,
+        "bodyBytesConsumed": 0,
+        "httpStatus": 200,
+        "commandDigest": "890097e1853457951447a0b8bd1da3778f9ef0e4481a25c880fae869427e2e25",
+        "idempotencyKey": "f3-qa-1795704069979393-1-field-1",
+        "startedAt": "2026-11-26T14:42:12.827Z",
+        "cutAt": "2026-11-26T14:43:01.833Z"
+      },
+      "remoteAudit": {
+        "scenarioId": 10199316,
+        "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+        "initialProviderExecutionId": "38a52ab7a9734150967758131b629410",
+        "idempotencyKey": "f3-qa-1795704069979393-1-field-1",
+        "requestStartedAt": "2026-11-26T14:42:12.826Z",
+        "replayStartedAt": "2026-11-26T14:43:09.913Z",
+        "replayFinishedAt": "2026-11-26T14:43:39.417Z",
+        "requiredObservedThroughUtc": "2026-11-26T14:45:09.417Z",
+        "readOnly": true,
+        "newScenarioRunRequired": false,
+        "writeCountStatus": "UNPROVEN_UNTIL_INDEPENDENT_EXECUTION_READBACK"
+      }
+    },
+    "shopperRoleProof": null,
+    "unproven": [
+      "application_client_response_loss_remote_write_count",
+      "provider_response_loss_live_fault_injection",
+      "external_human_concurrent_edit_atomicity",
+      "historical_period_live_fixture",
+      "T&A_private_notes_live_fixture"
+    ],
+    "boundedCell": {
+      "target": {
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "periodId": "f3-qa-20261124-2026-11",
+        "countryCode": "GT",
+        "fieldKey": "escenario",
+        "cell": "L2",
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "worksheetName": "CXR_B14_QA_GT_20261119",
+        "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d"
+      },
+      "events": [
+        {
+          "action": "CHANGE",
+          "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+          "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+          "providerExecutionId": "38a52ab7a9734150967758131b629410",
+          "sourceRevisionBefore": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+          "sourceRevisionAfter": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+          "applicationAck": true,
+          "independentReadback": true
+        },
+        {
+          "action": "RESTORE",
+          "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+          "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+          "providerExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+          "sourceRevisionBefore": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+          "sourceRevisionAfter": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+          "applicationAck": true,
+          "independentReadback": true
+        }
+      ],
+      "baselineRevision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+      "restoredRevision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+      "restoredFieldValueCount": 8,
+      "observedCases": [
+        "explicit_reconcile_initial",
+        "client_response_body_loss_same_key_replay_journal_unchanged",
+        "GT_escenario_write",
+        "same_key_changed_payload_rejected",
+        "stale_base_rejected",
+        "GT_escenario_restore",
+        "old_committed_receipt_replay_does_not_rollback",
+        "explicit_reconcile_restored"
+      ],
+      "expectedLegitimatePatches": 2,
+      "observedPhysicalPatches": null,
+      "replayPhysicalPatches": null,
+      "creditConsumption": null,
+      "completeIndependentMakeWindowRequired": true,
+      "remoteMakeCleanupPending": true,
+      "capacityReadAt": "2026-11-26T14:40:29.198Z",
+      "creditsBefore": 1001,
+      "preCleanupSeal": {
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/pre-cleanup.json#1795704365536663",
+        "sha256": "26290d1bd37a2160e11742ea3777bb01fbe8b2d2ca0461bbdf8bc81e19a33fa4"
+      },
+      "unproven": [
+        "HN",
+        "other_fields",
+        "shopper_UI_and_availability",
+        "provider_response_loss",
+        "concurrent_external_edit",
+        "external_origin_echo",
+        "historical_period",
+        "private_notes",
+        "ordinary_credentials_and_missing_shopper_upsert"
+      ]
+    }
+  },
+  "ownerSpecificReceipts": [],
+  "fullDomain": false,
+  "newDomainMatches": 0,
+  "phaseAComplete": false,
+  "productActionsPerformedByConsumer": 0,
+  "production": false,
+  "privateValuesStored": false
+}

@@ -37437,6 +37437,26 @@
         "producerDecision": "HOLD_F3_QA_CLEANUP_UNVERIFIED",
         "ownerReceiptCount": 0,
         "observedAt": "2026-11-26T00:40:36.911Z"
+      },
+      {
+        "key": "GOOGLE_CLOUD_SHELL/1795704069979393",
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json",
+        "gitBlob": "cd0c4409be8c2582dc45df26d7919f00ed0634cb",
+        "sha256": "7aab8ea8fcf1f5edafe94b207ce675430162fb795531bc91b8b0c5247a82ac3a",
+        "provider": "GOOGLE_CLOUD_SHELL",
+        "kind": "F3_ENDPOINT",
+        "controlHead": "fb7f80287f81691338fd868fc36881fc84781e0e",
+        "transportSha": "fb7f80287f81691338fd868fc36881fc84781e0e",
+        "startUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/start.json#1795704069979393",
+        "resultUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/result.json#1795704378174692",
+        "bundleSha256": "86c3d5c870a18c652e654b756a1e87fea51c05433d8d01db4fa54debb8c4f5cd",
+        "archiveUri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/evidence.zip#1795704372091930",
+        "archiveSha256": "4d56a5b21f2cf594a2fc2135fd6eb1557e04ad9ae910435f4343fdff1bed06b8",
+        "archiveVerified": true,
+        "decision": "RECORDED_TYPED_RESULT_HOLD",
+        "producerDecision": "PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING",
+        "ownerReceiptCount": 0,
+        "observedAt": "2026-11-26T14:46:18.174Z"
       }
     ],
     "production": false,
@@ -37444,11 +37464,11 @@
   },
   "currentTypedResultFailures": [],
   "lastTypedResultIncorporation": {
-    "observedAt": "2026-11-26T00:40:36.911Z",
+    "observedAt": "2026-11-26T14:46:18.174Z",
     "executionProvider": "GOOGLE_CLOUD_SHELL",
-    "key": "GOOGLE_CLOUD_SHELL/1795653493842440",
+    "key": "GOOGLE_CLOUD_SHELL/1795704069979393",
     "receipts": [
-      "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795653636911758_TYPED_RESULT.json"
+      "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json"
     ],
     "production": false,
     "newDomainMatches": 0
