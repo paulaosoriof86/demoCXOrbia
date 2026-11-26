@@ -93,6 +93,10 @@
           "path": "docs/checkpoints/CXORBIA_I3_E10_RULES_AND_FINANCE_20261126.json",
           "gitBlob": "b3f3f4ec29f1fa62645dfbec9e2dec34e2918a81"
         }
+      },
+      "latestNativeSourceAndRulesCompatibility": {
+        "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_AND_E08_SEPTEMBER_20261126.json",
+        "gitBlob": "f9cc9ac8f47bf3a3fba481922fbaa0f2bc3beaa3"
       }
     },
     {

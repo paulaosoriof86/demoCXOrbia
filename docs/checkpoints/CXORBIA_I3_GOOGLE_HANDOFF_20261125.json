@@ -893,7 +893,7 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "2762f80a2df32bb7276737c40a9b4466f8e90014",
+      "gitBlob": "0c8129be509b839a9a5fa46c63189a58fc9f6577",
       "decisionId": "PORT-DEC-040"
     },
     "pendingE10NativeSource": {
@@ -915,6 +915,10 @@
     "hrPostClickAppliedAndMake": {
       "path": "docs/checkpoints/CXORBIA_I3_HR_POST_CLICK_1795717472531143_20261126.json",
       "gitBlob": "74923e5fc4f6b17b9ae6470864b8f0e7df2a764d"
+    },
+    "e10Feea0c34AndE08Finance": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_AND_E08_SEPTEMBER_20261126.json",
+      "gitBlob": "f9cc9ac8f47bf3a3fba481922fbaa0f2bc3beaa3"
     }
   },
   "lastChromeConnection": {
@@ -960,7 +964,8 @@
     },
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
-    "e10": "Native authenticated dispatcher source proof is preserved in confirmed.pendingE10NativeSource. Resolve and test scoped release composition with visit read/query isolation before publishing and exercising the served frontend."
+    "e10": "Source feea0c34 preserves original ordinary project listings and registers source, audit and conflict records. Native ACK, password session replay and exact cleanup are verified. Compose exact rules through the existing DEV release controls before exercising the served UI.",
+    "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,

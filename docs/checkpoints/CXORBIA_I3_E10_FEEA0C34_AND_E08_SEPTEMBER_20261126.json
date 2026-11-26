@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.i3.e10-source-finance-e08-port.v1",
+  "decision": "HOLD_I3_NEW_SCOPED_NATIVE_EVIDENCE",
+  "e10": {
+    "source": "feea0c340bb0054ac067e9497748702e22599bf2",
+    "tree": "661611a4be6ca5e1a82f916f2543a2e384e3599b",
+    "sourceParent": "211b33abefd8b01b8421ad836f0e49c7d696a81d",
+    "cumulativePatch": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_NATIVE_SOURCE.patch",
+      "gitBlob": "8e83d750d6c107c6d7e75de7ff43985743f6da89",
+      "base": "54527b014b32fff2b129fb9538442a2f723a1cc9",
+      "sha256": "710aa7d9cc20a47884e25eef4f4d3e1723880f1a5b8f28938b6801a5808eb440",
+      "gitApplyCheck": true
+    },
+    "technicalTests": {
+      "e10AssignmentAndF3Journal": 104,
+      "failed": 0
+    },
+    "emulator": {
+      "threeRulesetsCompared": true,
+      "casesPerRuleset": 13,
+      "finalMatchesExpected": 13,
+      "priorSourceRegression": "Unassigned operator lost list access to an ordinary-only legacy project. Source successor fences imported queries only after first import activates the server-owned marker atomically.",
+      "nativeObject": {
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/successor-queries.json",
+        "generation": "1795718579999865",
+        "sha256": "295d3abfb6157eb3dfd3d45368c703002f13d8fb9deb66dc4d63527878aee347",
+        "byteReadbackVerified": true
+      }
+    },
+    "native": {
+      "run": "2f54ef2415ac49b2b08d7e4881bb4e30",
+      "status": "PASS",
+      "environment": "Authenticated Firebase sessions and real DEV Firestore accessed via loopback operational dispatcher",
+      "dryRunWrites": 0,
+      "rowStates": [
+        "new",
+        "duplicate",
+        "conflict",
+        "discarded"
+      ],
+      "transactionWrites": 6,
+      "newVisits": 1,
+      "conflictUnderReview": 1,
+      "syntheticDocumentsRemoved": 9,
+      "syntheticAuthRemoved": 1,
+      "secondSessionIndependentReadback": true,
+      "replayWrites": 0,
+      "cleanupVerified": true,
+      "makeCredits": 0,
+      "nativeObject": {
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/native-result.json",
+        "generation": "1795718575193692",
+        "sha256": "3143b5e0aa38da1c3aed7b209b875fdbde8f84d09ce95802bace97733240a222",
+        "byteReadbackVerified": true
+      }
+    },
+    "served": false,
+    "release": "RELEASE_COMPOSITION_FAILURE: runtime/hosting guard excludes rules, paired seal requires unchanged ruleset and the canonical result consumer requires zero rules deploys.",
+    "rulesActuallyDeployed": 0
+  },
+  "finance": {
+    "period": "cinepolis-2026-09",
+    "method": "Native consistent read-only Firestore transaction. Per-visit reconciliation against scoped source using the original RUN2595 owner.",
+    "visits": 44,
+    "reconciliations": 44,
+    "identityLinkRecords": 163,
+    "matchingShopperVisits": 32,
+    "identityConflictVisits": 12,
+    "zeroStructurallyAuthorizedLinks": 2,
+    "oneStructurallyAuthorizedLink": 5,
+    "multipleStructurallyAuthorizedLinks": 5,
+    "historicalAmountFieldPresent": 44,
+    "historicalConfirmationWithSource": 0,
+    "externalPaymentConfirmationWithSource": 0,
+    "eligibilityAdjudications": 0,
+    "bankWrites": 0,
+    "financeWrites": 0,
+    "nativeObject": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/cx27-sept-readback.json",
+      "generation": "1795718584765998",
+      "sha256": "2fedc15503239a11303a6808fd230031bf4fd8f2f6a4bdc3d25023e9b6db9298",
+      "byteReadbackVerified": true
+    }
+  },
+  "e08": {
+    "activeSource": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "activeRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "previousSecretMetadata": "NOT_FOUND",
+    "decision": "FIRST_DEV_ENCRYPTION_KEY_AND_SECRET_SCOPED_RUNTIME_ACCESS_VERIFIED",
+    "secret": "cxorbia-dev-user-mailbox-credential-key",
+    "numericVersion": "1",
+    "versionState": "ENABLED",
+    "newKey": true,
+    "verifiedRuntimeSecretAccessor": true,
+    "scope": "Only this secret and the current DEV runtime identity",
+    "newRuntimeRevisions": 0,
+    "keyReads": 0,
+    "credentialReads": 0,
+    "mailboxConnects": 0,
+    "smtpSends": 0,
+    "boundToActiveService": false,
+    "externalAck": false,
+    "nativeObject": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/e08-first-mailbox-key-20261126/metadata.json",
+      "generation": "1795718766434729",
+      "sha256": "b0f09cea81196ed980d828081eff810565f158c81d2b6ad81bace8b9428282c6",
+      "byteReadbackVerified": true
+    }
+  },
+  "f3PureResidualChecks": 8,
+  "newDomainMatches": 0,
+  "newProductDeployments": 0,
+  "production": false
+}
