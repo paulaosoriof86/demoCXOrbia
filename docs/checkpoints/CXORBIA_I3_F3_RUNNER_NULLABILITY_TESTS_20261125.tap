@@ -1,0 +1,35 @@
+✔ the same F3 fixture has exactly two country-scoped temporary Shopper principals (2.642644ms)
+✔ independent HR drives available-before and own-after country keysets (0.927764ms)
+✔ an expired or blocked baseline stays empty and is never invented as a positive transition (0.330456ms)
+✔ invalid independent HR fails closed x=>x.rows[0].projectId='cinepolis' (0.34691ms)
+✔ invalid independent HR fails closed x=>x.rows[1].id=x.rows[0].id (0.214255ms)
+✔ invalid independent HR fails closed x=>delete x.rows[0].canonicalFacets (0.230058ms)
+✔ invalid independent HR fails closed x=>x.revision='stale' (0.194235ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.uidMatches=false (0.239191ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.role='admin' (0.389292ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.projectIds=['cinepolis'] (0.541346ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sessionShopperId=actors[1].shopperId (1.243238ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.sourceRevision='b'.repeat(64) (0.163721ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.foreignVisitCount=1 (0.148058ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.duplicateVisitCount=1 (0.113447ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.availableIds=['wrong'] (0.092747ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.GT,qa.visits.GT] (0.12211ms)
+✔ wrong role, revision, scope, keyset, duplicate or foreign card cannot pass x=>x.ownCardIds=[qa.visits.HN] (0.309485ms)
+✔ browser blocks command, Firestore write, Auth mutation and Storage mutation but allows login and reads (0.509459ms)
+✔ only owned QA membership and Auth accounts are created, then absence is read back (2.239733ms)
+✔ foreign account collision prevents all setup writes (0.545242ms)
+✔ unverified Firestore cleanup preserves both QA accounts (0.673671ms)
+✔ member or Auth ownership drift blocks deletion (0.930538ms)
+✔ only an exact newly created empty-claims account can recover a failed claims setup (0.141738ms)
+✔ synthetic password credentials are unique, fixture-only and absent from published evidence (1.95871ms)
+✔ password QA signs in through Firebase password provider and never requests custom-token signing (2.386449ms)
+✔ readiness waits through restored Firebase user with null backend context, then requires authority and the exact scope (8.153677ms)
+✔ capture failures retain phase, country, stage and safe error metadata without raw error content (2.649826ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.992527

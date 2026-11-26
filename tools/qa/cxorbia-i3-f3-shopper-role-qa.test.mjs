@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import {f3RoleActors,f3RoleExpected,f3RoleCompare,f3RoleMutationRequest,f3RoleAuthOwned,createF3ShopperRoleQa,f3SyntheticCredentials,F3_SYNTHETIC_PASSWORD_AUTH,f3RoleSignIn} from './cxorbia-i3-f3-shopper-role-qa.mjs';
+import {f3RoleActors,f3RoleExpected,f3RoleCompare,f3RoleMutationRequest,f3RoleAuthOwned,createF3ShopperRoleQa,f3SyntheticCredentials,F3_SYNTHETIC_PASSWORD_AUTH,f3RoleSignIn,f3RolePageReady} from './cxorbia-i3-f3-shopper-role-qa.mjs';
 const qa={tenantId:'tya',projectId:'f3-qa-20261124',periodId:'f3-qa-20261124-2026-11',baseUrl:'https://cxorbia-backend-dev.web.app',visits:{GT:'qa-visit-gt',HN:'qa-visit-hn'}};
 const owner='f3-qa-45527777777-1',actors=f3RoleActors(owner,qa);
 function live(assigned=false){return{revision:'a'.repeat(64),rows:actors.map(a=>({id:qa.visits[a.country],tenantId:'tya',projectId:qa.projectId,periodId:qa.periodId,country:a.country,shopperId:assigned?a.shopperId:null,canonicalFacets:{available:!assigned,assigned}}))};}
@@ -70,4 +70,38 @@ test('password QA signs in through Firebase password provider and never requests
  assert.deepEqual(calls,[['persist','session'],['password',credentials.email,credentials.password]]);
  await assert.rejects(f3RoleSignIn({page,auth,uid:actors[1].uid,authentication:F3_SYNTHETIC_PASSWORD_AUTH,credentials}),/ACTOR_CREDENTIALS/);
  assert.equal(f3RoleMutationRequest('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword','POST',qa),false);
+});
+
+test('readiness waits through restored Firebase user with null backend context, then requires authority and the exact scope',()=>{
+ const expected={uid:actors[0].uid,revision:'a'.repeat(64),projectId:qa.projectId};
+ let context=null;
+ const user={uid:expected.uid};
+ const window={firebase:{auth:()=>({currentUser:user})},CX:{backendAuth:{context:()=>context},data:{currentProjectId:qa.projectId,previewMeta:{sourceRevision:expected.revision}}},
+  CX_PROTECTED_AUTH_HR_AUTHORITY:{applied:true}};
+ const ready=()=>vm.runInNewContext('('+f3RolePageReady.toString()+')(expected)',{window,expected});
+ assert.equal(ready(),false);
+ context={authenticated:true};window.CX_PROTECTED_AUTH_HR_AUTHORITY.applied=false;assert.equal(ready(),false);
+ window.CX_PROTECTED_AUTH_HR_AUTHORITY.applied=true;assert.equal(ready(),true);
+ user.uid='foreign';assert.equal(ready(),false);user.uid=expected.uid;
+ window.CX.data.currentProjectId='cinepolis';assert.equal(ready(),false);window.CX.data.currentProjectId=qa.projectId;
+ window.CX.data.previewMeta.sourceRevision='b'.repeat(64);assert.equal(ready(),false);
+ window.CX.data=null;assert.equal(ready(),false);
+});
+
+test('capture failures retain phase, country, stage and safe error metadata without raw error content',async()=>{
+ const p=providers(),secret='SYNTHETIC_SECRET_MUST_NOT_APPEAR_IN_EVIDENCE';let attempts=0;
+ const q=await createF3ShopperRoleQa({...p.args,openBrowser:async()=>({
+  async newContext(){const error=new TypeError(secret);if(attempts++===0)error.code='ECONNRESET';else{error.name=secret;error.code='Bearer '+secret;}throw error;},
+  async close(){}
+ })});
+ await q.prepare();await q.capture('before',live());
+ assert.equal(q.state.decision,'HOLD_F3_QA_SHOPPER_ROLE');assert.equal(q.state.failures.length,2);
+ assert.deepEqual(q.state.failureDetails.map(x=>({phase:x.phase,country:x.country,step:x.step})),[
+  {phase:'before',country:'GT',step:'context_create'},{phase:'before',country:'HN',step:'context_create'}]);
+ assert.equal(q.state.failureDetails[0].errorName,'TypeError');assert.equal(q.state.failureDetails[0].errorCode,'ECONNRESET');
+ assert.equal(q.state.failureDetails[1].errorName,'Error');assert.equal(q.state.failureDetails[1].errorCode,null);
+ assert.equal(q.state.failureDetails[1].errorCodeOmitted,true);
+ assert.equal(q.state.phases[0].countries[0].diagnostic.step,'context_create');
+ assert.equal(JSON.stringify(p.published).includes(secret),false);
+ assert.equal(q.state.blockedOperationalRequests,0);
 });

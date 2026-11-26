@@ -23,6 +23,26 @@ const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
 const sorted=x=>[...x].sort();
 const safeError=e=>String(e?.message||'').match(/(?:AUTH|SOURCE|MAPPING|PROVIDER|PERSISTENCE|FUNCTIONAL|VISUAL|ENVIRONMENT)_FAILURE:[A-Z0-9_]+|(?:FUNCTIONAL|VISUAL)_DEFECT:[A-Z0-9_]+/)?.[0]||(/timeout/i.test(String(e?.message||''))?'ENVIRONMENT_FAILURE:F3_ROLE_BROWSER_TIMEOUT':'FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED');
 
+export function f3RolePageReady({uid,revision,projectId}){
+ // Firebase can restore its user before the asynchronous backend context exists.
+ return window.firebase?.auth?.()?.currentUser?.uid===uid&&
+  window.CX?.backendAuth?.context?.()?.authenticated===true&&
+  window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&
+  window.CX?.data?.currentProjectId===projectId&&
+  window.CX?.data?.previewMeta?.sourceRevision===revision;
+}
+const diagnosticSteps=new Set(['not_started','prepare_browser','actor_absence','actor_setup','prepared','hr_expectation','context_create','route_guard','page_create','navigate','firebase_ready','firebase_signin','firebase_user','reload','authority_ready','period_picker','period_select','period_ready','available_view','own_view','role_compare','screenshot','assigned_reload','reload_compare','browser_close']);
+const diagnosticNames=new Set(['Error','TypeError','ReferenceError','SyntaxError','RangeError','TimeoutError','ProtocolError','TargetClosedError','FirebaseError']);
+const diagnosticCodes=new Set(['ENOENT','EACCES','ENOTFOUND','ECONNRESET','ECONNREFUSED','ETIMEDOUT','EPIPE','ERR_MODULE_NOT_FOUND','ERR_INVALID_ARG_TYPE']);
+function safeFailure(error,location={}){
+ const code=error?.code,knownCode=typeof code==='string'&&(diagnosticCodes.has(code)||/^auth\/[a-z-]{1,48}$/.test(code))?code:
+  Number.isInteger(code)&&code>=0&&code<=16?String(code):null;
+ // No raw message, stack, URL, browser arguments or credential values are stored.
+ return {failure:safeError(error),step:diagnosticSteps.has(location.step)?location.step:'not_started',
+  phase:['before','assigned'].includes(location.phase)?location.phase:null,country:['GT','HN'].includes(location.country)?location.country:null,
+  errorName:diagnosticNames.has(error?.name)?error.name:'Error',errorCode:knownCode,errorCodeOmitted:code!=null&&knownCode===null};
+}
+
 export function f3RoleActors(owner,qa){
  need(/^f3-qa-\d{8,}-\d+$/.test(owner)&&qa.tenantId==='tya'&&qa.projectId==='f3-qa-20261124'&&qa.periodId==='f3-qa-20261124-2026-11'&&qa.baseUrl==='https://cxorbia-backend-dev.web.app','AUTH_FAILURE:F3_ROLE_SCOPE');
  return ['GT','HN'].map(country=>{
@@ -74,21 +94,23 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
  const credentials=new Map();
  const actors=f3RoleActors(owner,qa),createdAuth=[],state={schemaVersion:'cxorbia.f3.scoped-shopper-role-qa.v1',decision:'PENDING',qaOwner:owner,
   sameFixture:true,automaticUpsertProven:false,ordinaryPasswordProven:false,authentication,
-  actors:actors.map(x=>({uid:x.uid,shopperId:x.shopperId,country:x.country})),phases:[],blockedOperationalRequests:0,failures:[],cleanup:{authDeleted:[],authAbsent:[],complete:false}};
+  actors:actors.map(x=>({uid:x.uid,shopperId:x.shopperId,country:x.country})),phases:[],blockedOperationalRequests:0,failures:[],failureDetails:[],lastStep:{step:'not_started',phase:null,country:null},cleanup:{authDeleted:[],authAbsent:[],complete:false}};
  let browser=null;
  const save=()=>publish(structuredClone(state));
- const recordFailure=e=>{state.failures.push(safeError(e));state.decision='HOLD_F3_QA_SHOPPER_ROLE';save();};
+ const stage=(step,details={})=>{state.lastStep={...state.lastStep,...details,step};save();};
+ const recordFailure=e=>{const diagnostic=safeFailure(e,state.lastStep);state.failures.push(diagnostic.failure);state.failureDetails.push(diagnostic);state.decision='HOLD_F3_QA_SHOPPER_ROLE';save();};
  const ready=async(page,actor,expected)=>{
-  await page.waitForFunction(({uid,revision,projectId})=>window.firebase?.auth?.().currentUser?.uid===uid&&window.CX?.backendAuth?.context?.().authenticated===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX.data.currentProjectId===projectId&&window.CX.data.previewMeta?.sourceRevision===revision,{uid:actor.uid,revision:expected.sourceRevision,projectId:qa.projectId},{timeout:60000});
-  const picker=page.locator('#periodSel');await picker.waitFor({timeout:15000});
-  await picker.selectOption(qa.periodId,{timeout:15000});
-  await page.waitForFunction(period=>window.CX?.data?.currentPeriodId===period,qa.periodId,{timeout:30000});
+  stage('authority_ready');
+  await page.waitForFunction(f3RolePageReady,{uid:actor.uid,revision:expected.sourceRevision,projectId:qa.projectId},{timeout:60000});
+  stage('period_picker');const picker=page.locator('#periodSel');await picker.waitFor({timeout:15000});
+  stage('period_select');await picker.selectOption(qa.periodId,{timeout:15000});
+  stage('period_ready');await page.waitForFunction(period=>window.CX?.data?.currentPeriodId===period,qa.periodId,{timeout:30000});
  };
  const snapshot=async(page,actor)=>{
-  await page.locator('#nav-visitas').click({timeout:15000});
+  stage('available_view');await page.locator('#nav-visitas').click({timeout:15000});
   await page.waitForFunction(()=>window.CX?.session?.view==='visitas'&&!!document.querySelector('#vList'),null,{timeout:30000});
   const availableIds=await page.locator('#vList [data-detail]').evaluateAll(x=>x.map(e=>e.dataset.detail));
-  await page.locator('#nav-misvisitas').click({timeout:15000});
+  stage('own_view');await page.locator('#nav-misvisitas').click({timeout:15000});
   await page.waitForFunction(()=>window.CX?.session?.view==='misvisitas'&&!!document.querySelector('#view [data-view="activas"]'),null,{timeout:30000});
   await page.locator('#view [data-view="activas"]').click();
   const actual=await page.evaluate(({uid,knownIds})=>{
@@ -104,12 +126,15 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
  const proof={state,
   async prepare(){
    // Dependencies fail before the two temporary accounts are created.
+   stage('prepare_browser',{phase:null,country:null});
    if(openBrowser)browser=await openBrowser();else{const {chromium}=await import('playwright');browser=await chromium.launch({headless:true});}
    for(const actor of actors){
+    stage('actor_absence',{country:actor.country});
     need(!(await db.doc(actor.path).get()).exists,'PERSISTENCE_FAILURE:F3_ROLE_MEMBER_EXISTS');
     try{await auth.getUser(actor.uid);throw Error('AUTH_FAILURE:F3_ROLE_AUTH_EXISTS');}catch(e){if(e.code!=='auth/user-not-found')throw e;}
    }
    for(const actor of actors){
+    stage('actor_setup',{country:actor.country});
     if(authentication===F3_SYNTHETIC_PASSWORD_AUTH)credentials.set(actor.uid,f3SyntheticCredentials(actor.uid));
     await auth.createUser({uid:actor.uid,displayName:actor.displayName,disabled:false,...(credentials.get(actor.uid)||{})});createdAuth.push(actor);save();
     await auth.setCustomUserClaims(actor.uid,actor.claims);
@@ -117,7 +142,7 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
     rememberDocument({path:actor.path,data:actor.data});await db.doc(actor.path).create(actor.data);
     need(same((await db.doc(actor.path).get()).data(),actor.data),'PERSISTENCE_FAILURE:F3_ROLE_MEMBER_READBACK');
    }
-   state.prepared=true;save();
+   state.prepared=true;stage('prepared',{country:null});
   },
   async capture(phase,live){
    if(!state.prepared)return;
@@ -125,26 +150,27 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
    const p={phase,sourceRevision:live.revision,countries:[]};state.phases.push(p);save();
    for(const actor of actors){let context;
     try{
-     const expected=f3RoleExpected(live,actor,qa);context=await browser.newContext({viewport:{width:1440,height:1000}});
-     await context.route('**/*',async route=>{
+     stage('hr_expectation',{phase,country:actor.country});const expected=f3RoleExpected(live,actor,qa);
+     stage('context_create');context=await browser.newContext({viewport:{width:1440,height:1000}});
+     stage('route_guard');await context.route('**/*',async route=>{
       const req=route.request();if(f3RoleMutationRequest(req.url(),req.method(),qa)){state.blockedOperationalRequests++;save();await route.abort('blockedbyclient');return;}
       await route.continue();
      });
-     const page=await context.newPage();const url=qa.baseUrl+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:qa.projectId,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxTechnicalAuthE2E:'YES_PAULA_20260801_REAL_USERS_E2E'});
-     await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-     await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:45000});
-     await f3RoleSignIn({page,auth,uid:actor.uid,authentication,credentials:credentials.get(actor.uid)});
-     await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid,actor.uid,{timeout:45000});
-     await page.reload({waitUntil:'domcontentloaded',timeout:60000});await ready(page,actor,expected);
-     const actual=await snapshot(page,actor),comparison=f3RoleCompare(actual,expected,actor,qa);
+     stage('page_create');const page=await context.newPage();const url=qa.baseUrl+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:qa.projectId,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxTechnicalAuthE2E:'YES_PAULA_20260801_REAL_USERS_E2E'});
+     stage('navigate');await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+     stage('firebase_ready');await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:45000});
+     stage('firebase_signin');await f3RoleSignIn({page,auth,uid:actor.uid,authentication,credentials:credentials.get(actor.uid)});
+     stage('firebase_user');await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid,actor.uid,{timeout:45000});
+     stage('reload');await page.reload({waitUntil:'domcontentloaded',timeout:60000});await ready(page,actor,expected);
+     const actual=await snapshot(page,actor);stage('role_compare');const comparison=f3RoleCompare(actual,expected,actor,qa);
      const observed={...comparison,expected,passed:true};p.countries.push(observed);save();
-     await page.locator('#view').screenshot({path:outDir+'/f3-role-'+phase+'-'+actor.country+'.png'});
+     stage('screenshot');await page.locator('#view').screenshot({path:outDir+'/f3-role-'+phase+'-'+actor.country+'.png'});
      if(phase==='assigned'){
       need(expected.ownVisitIds.length===1&&expected.availableIds.length===0,'SOURCE_FAILURE:F3_ROLE_ASSIGNED_BASELINE');
-      await page.reload({waitUntil:'domcontentloaded',timeout:60000});await ready(page,actor,expected);
-      f3RoleCompare(await snapshot(page,actor),expected,actor,qa);observed.reloadVerified=true;save();
+      stage('assigned_reload');await page.reload({waitUntil:'domcontentloaded',timeout:60000});await ready(page,actor,expected);
+      const reloaded=await snapshot(page,actor);stage('reload_compare');f3RoleCompare(reloaded,expected,actor,qa);observed.reloadVerified=true;save();
      }
-    }catch(e){p.countries.push({country:actor.country,passed:false,failure:safeError(e)});recordFailure(e);}
+    }catch(e){p.countries.push({country:actor.country,passed:false,failure:safeError(e),diagnostic:safeFailure(e,state.lastStep)});recordFailure(e);}
     finally{await context?.close().catch(()=>{});}
    }
    if(phase==='assigned'){
@@ -158,7 +184,7 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
    }
   },
   recordFailure,
-  async close(){await browser?.close();browser=null;},
+  async close(){stage('browser_close');await browser?.close();browser=null;},
   async cleanupAuth(firestoreClean){
    if(!firestoreClean){state.cleanup.preservedForRecovery=true;save();return false;}
    for(const actor of createdAuth){

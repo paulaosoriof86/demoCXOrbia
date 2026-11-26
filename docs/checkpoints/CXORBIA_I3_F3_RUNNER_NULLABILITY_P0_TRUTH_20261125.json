@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.runner-nullability-preedit-truth.v1",
+  "observedAt": "2026-11-26T01:43:49.087684+00:00",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "FUNCTIONAL_DEFECT",
+  "moduleTruthClassification": "TRUE_FUNCTIONAL_DEFECT",
+  "owner": "tools/qa/cxorbia-i3-f3-shopper-role-qa.mjs",
+  "allowedPatchFiles": [
+    "tools/qa/cxorbia-i3-f3-shopper-role-qa.mjs",
+    "tools/qa/cxorbia-i3-f3-shopper-role-qa.test.mjs"
+  ],
+  "source": {
+    "executedControlSha": "a6f126005ef86d8effe903f73774669edb1c6441",
+    "checkoutHead": "86e612e14c3e54eef7882fbe1d9a2cd030145daf",
+    "preeditSha256": "2e089a6e3b8af17ecf4b7f07515a57e22d0f187db0f3bbd385b313fa98fbbf9f",
+    "preeditGitBlob": "ddf80829d31b6c7c3c10e05d032171840af6a89d",
+    "sameAsExecutedControl": true
+  },
+  "nativeEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795653636911758_TYPED_RESULT.json",
+    "sha256": "2484123de8ae6cbfbfec351874145d73c3519289fce098a5ccfdd52d0e66a113",
+    "startGeneration": "1795653493842440",
+    "roleProof": {
+      "decision": "HOLD_F3_QA_SHOPPER_ROLE",
+      "authentication": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+      "sameFixture": true,
+      "prepared": true,
+      "automaticUpsertProven": false,
+      "ordinaryPasswordProven": false,
+      "availabilityRemovalProven": null,
+      "actorCount": 2,
+      "blockedOperationalRequests": 0,
+      "failureCount": 2,
+      "failureCodes": [
+        "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+      ],
+      "phases": [
+        {
+          "phase": "before",
+          "sourceRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+          "countries": [
+            {
+              "country": "GT",
+              "sourceRevision": null,
+              "available": null,
+              "own": null,
+              "foreignVisitCount": null,
+              "duplicateVisitCount": null,
+              "exactAvailableKeyset": null,
+              "exactOwnKeyset": null,
+              "passed": false,
+              "reloadVerified": null,
+              "failureCode": "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+            },
+            {
+              "country": "HN",
+              "sourceRevision": null,
+              "available": null,
+              "own": null,
+              "foreignVisitCount": null,
+              "duplicateVisitCount": null,
+              "exactAvailableKeyset": null,
+              "exactOwnKeyset": null,
+              "passed": false,
+              "reloadVerified": null,
+              "failureCode": "FUNCTIONAL_DEFECT:F3_ROLE_BROWSER_UNCLASSIFIED"
+            }
+          ]
+        }
+      ],
+      "positiveAvailabilityTransitions": [],
+      "limitations": [],
+      "cleanup": {
+        "complete": false,
+        "preservedForRecovery": true,
+        "authDeletedCount": 0,
+        "authAbsentCount": 0
+      }
+    },
+    "identity": {
+      "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+      "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+      "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+      "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48"
+    }
+  },
+  "provenDefect": "Readiness dereferences .authenticated on the nullable result of backendAuth.context() during authenticated Firebase restoration.",
+  "causalLimit": "The original run stored no exception name or stage; the code fault is reproduced deterministically, while exact original exception identity is unrecoverable from the typed receipt.",
+  "changes": {
+    "nullSafeReadiness": true,
+    "stageAndSafeErrorDiagnostics": true,
+    "signInFlowChanged": false,
+    "authBridgeChanged": false,
+    "productChanged": false,
+    "urlsChanged": false,
+    "passDecisionContractsChanged": false
+  },
+  "preserved": {
+    "sourceOnlyRunnerPatch": true,
+    "noNewGate": true,
+    "noNewModuleMatch": true,
+    "noB14Certification": true,
+    "noProductionAction": true
+  },
+  "agentActions": {
+    "repoEdits": 0,
+    "providerCalls": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "newScenarios": 0,
+    "publication": false
+  },
+  "patchSha256": "e75db35751e1b31aa75690b26c581099a503381908c53e426e37c807a41022b0",
+  "candidateOwnerSha256": "3298e5a6d6b15136ccd1446840904bee5a364e763bab0e5542244ee48d09fa02"
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.f3.runner-readiness-before-after.v1",
+  "observedAt": "2026-11-26T01:44:43.675Z",
+  "environment": "Node vm; actual old predicate extracted from pinned owner; actual patched exported callback; no browser or network",
+  "actualOldPredicate": "({uid,revision,projectId})=>window.firebase?.auth?.().currentUser?.uid===uid&&window.CX?.backendAuth?.context?.().authenticated===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX.data.currentProjectId===projectId&&window.CX.data.previewMeta?.sourceRevision===revision",
+  "preeditSha256": "2e089a6e3b8af17ecf4b7f07515a57e22d0f187db0f3bbd385b313fa98fbbf9f",
+  "candidateSha256": "3298e5a6d6b15136ccd1446840904bee5a364e763bab0e5542244ee48d09fa02",
+  "before": {
+    "throws": true,
+    "errorName": "TypeError",
+    "message": "Cannot read properties of null (reading 'authenticated')"
+  },
+  "after": {
+    "restoredFirebaseUserWithNullContext": false,
+    "contextReadyAuthorityPending": false,
+    "contextAndAuthorityReady": true
+  },
+  "preservedRejections": {
+    "foreignUid": false,
+    "foreignProject": false,
+    "staleRevision": false,
+    "missingData": false
+  },
+  "providerCalls": 0,
+  "providerWrites": 0,
+  "repoEdits": 0
+}
