@@ -88,7 +88,11 @@
         "nativeRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
         "nativeRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
         "matchesSealedPredecessor": true,
-        "guardUnmodified": true
+        "guardUnmodified": true,
+        "rulesEvaluation": {
+          "path": "docs/checkpoints/CXORBIA_I3_E10_RULES_AND_FINANCE_20261126.json",
+          "gitBlob": "b3f3f4ec29f1fa62645dfbec9e2dec34e2918a81"
+        }
       }
     },
     {
@@ -136,7 +140,11 @@
     {
       "id": "CX-CHAT-HO-HR-20261126-04",
       "disposition": "aprovechable",
-      "evidence": "Contextual mapping and durable Firestore lease already served. Preserve both. The proposed memory Map cannot enforce cross-instance admission. Retry/cost and cold/response-body proofs are residual."
+      "evidence": "Contextual mapping and durable Firestore lease already served. Preserve both. The proposed memory Map cannot enforce cross-instance admission. Retry/cost and cold/response-body proofs are residual.",
+      "servedResponsePair": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_ONLY_1795716580730794_20261126.json",
+        "gitBlob": "249d06c6852c9d43ca3ad1b48056a505e0bc9d02"
+      }
     }
   ],
   "makeBalanceAtReadback": {

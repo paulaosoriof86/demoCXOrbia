@@ -18,7 +18,7 @@ function evaluate(page, callback, argument) {
   return evaluatePage(callback, argument);
 }
 
-async function sessionInfo(page, tenantId, projectId, runId) {
+async function sessionInfo(page, tenantId, projectId, runId, hrOnly=false) {
   check(new URL(page.url()).origin === host, 'RELEASE_COMPOSITION_FAILURE:HR_DEV_ORIGIN');
   const info = await evaluate(page, () => {
     const app = window.CX;
@@ -45,7 +45,7 @@ async function sessionInfo(page, tenantId, projectId, runId) {
   });
   check(info.authenticated && info.sameActor && info.role === 'admin' && info.tenant === tenantId &&
     info.project === projectId && info.authorizedProject && info.bound &&
-    new RegExp('^qa_d08_' + runId + '_[0-9]+_admin$').test(info.uid), 'AUTH_FAILURE:HR_SYNTHETIC_ADMIN_SCOPE');
+    (hrOnly ? info.uid==='qa_hr_'+runId+'_admin' : new RegExp('^qa_d08_' + runId + '_[0-9]+_admin$').test(info.uid)), 'AUTH_FAILURE:HR_SYNTHETIC_ADMIN_SCOPE');
   check(info.applied && info.atomic && revision(info.revision) && info.revision === info.authorityRevision,
     'PERSISTENCE_FAILURE:HR_APPLIED_AUTHORITY');
   const { uid, ...summary } = info;
@@ -79,7 +79,7 @@ export function compareShared(manual, observations, pageResults) {
   };
 }
 
-async function observe(page, label, endpoint, limits) {
+async function observe(page, label, endpoint, limits, saveDueBody) {
   const events = [], errors = [], pending = new Set(), requests = new Map();
   const matches = url => url.origin === host && url.pathname === endpoint;
   const watchRequest = request => {
@@ -116,14 +116,16 @@ async function observe(page, label, endpoint, limits) {
     const query = new URL(response.url()).searchParams;
     check(response.status() === 200, 'PROVIDER_FAILURE:HR_HTTP_READ');
     check(/^Bearer .+/i.test((await request.headerValue('authorization')) || ''), 'AUTH_FAILURE:HR_PROTECTED_REQUEST');
-    const payload = await response.json();
+    const bytes = saveDueBody ? await response.body() : null;
+    const payload = bytes ? JSON.parse(bytes.toString('utf8')) : await response.json();
+    if(bytes && query.get('sync')==='due')await saveDueBody(label,bytes);
     const meta = payload._runtime || payload;
     check(meta.tenantId === limits.tenantId && meta.projectId === limits.projectId && meta.runtimeRead &&
       meta.sourceSafe && meta.production === false && meta.hrWrites === false &&
       meta.operationalWrites === false && meta.imports === false, 'MAPPING_FAILURE:HR_RESPONSE_SCOPE');
     check(revision(meta.revision) && Number.isFinite(Date.parse(meta.sourceReadAt)), 'PERSISTENCE_FAILURE:HR_RESPONSE_IDENTITY');
     events.push({
-      label, ...timing, received: Date.now(), format: query.get('format'), fresh: query.get('fresh') === '1',
+      label, ...(bytes ? {bodySha256:createHash('sha256').update(bytes).digest('hex')} : {}), ...timing, received: Date.now(), format: query.get('format'), fresh: query.get('fresh') === '1',
       sync: query.get('sync'), periodParam: query.get('hrPeriodId'), queryTimestamp: query.get('ts'),
       trace: (response.headers()['x-cloud-trace-context'] || '').split('/')[0] || null,
       scopeMode: meta.readScope?.mode, periods: meta.readScope?.periodIds, currentPeriod: meta.readScope?.currentPeriodId,
@@ -156,7 +158,7 @@ async function observe(page, label, endpoint, limits) {
   };
 }
 
-export async function runSharedHrAcceptance({ first, second, tenantId, projectId, runId, scope, sealedSource, save = () => {} }) {
+export async function runSharedHrAcceptance({ first, second, tenantId, projectId, runId, scope, sealedSource, saveDueBody, save = () => {} }) {
   const report = {
     schemaVersion: 'cxorbia.i3.hr-shared-live-observation.v1', decision: 'HOLD', startedAt: now(),
     runId, tenantId, projectId, sourceSha: scope?.sourceSha, pairedRunId: scope?.pairedRunId,
@@ -164,7 +166,7 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
     coldStart: { status: 'PENDING_NATIVE_INSTANCE_CORRELATION' }, production: false
   };
   const limits = { tenantId, projectId, phase: 'setup', manual: 0, shared: [], blocked: 0, operationalPostAttempts: 0 };
-  const watches = [], pages = [first, second];
+  const watches = [], pages = [first, second], hrOnly=scope?.syntheticNamespace==='HR_ONLY';
   try {
     check(scope?.mode === mode && scope.sourceSha === sealedSource && /^[a-f0-9]{40}$/.test(sealedSource || '') &&
       /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(scope.pairedRunId) &&
@@ -172,12 +174,12 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
       tenantId && projectId, 'SOURCE_FAILURE:HR_OBSERVATION_CONFIG');
     check(first && second && first.context() !== second.context() &&
       first.context().browser() && first.context().browser() === second.context().browser(), 'AUTH_FAILURE:HR_INDEPENDENT_CONTEXTS');
-    report.before = await Promise.all(pages.map(page => sessionInfo(page, tenantId, projectId, runId)));
+    report.before = await Promise.all(pages.map(page => sessionInfo(page, tenantId, projectId, runId, hrOnly)));
     check(report.before[0].uidSha256 === report.before[1].uidSha256, 'AUTH_FAILURE:HR_SYNTHETIC_ADMIN_MISMATCH');
     check(report.before.every(s => s.scopeMode === 'rolling_window' && !s.requestedPeriod && s.selectedPeriod),
       'MAPPING_FAILURE:HR_ROLLING_PRESENTATIONS_REQUIRED');
     const endpoint = '/api/tenants/' + encodeURIComponent(tenantId) + '/projects/' + encodeURIComponent(projectId) + '/hr-live';
-    for (const [index, page] of pages.entries()) watches.push(await observe(page, ['visitas','academia'][index], endpoint, limits));
+    for (const [index, page] of pages.entries()) watches.push(await observe(page, ['visitas',hrOnly?'segunda-sesion':'academia'][index], endpoint, limits, saveDueBody));
     await evaluate(first, () => { window.CX.router.nav('visitas'); });
     const button = first.locator('#vRefreshHR');
     await button.waitFor({ state: 'visible', timeout: 10000 });
@@ -191,7 +193,7 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
     const fresh = watches[0].events.filter(r => r.phase === 'manual' && r.fresh);
     check(fresh.length === 1 && limits.manual === 1, 'PROVIDER_FAILURE:HR_MANUAL_READ_COUNT');
     const manual = fresh[0];
-    const afterClick = await sessionInfo(first, tenantId, projectId, runId);
+    const afterClick = await sessionInfo(first, tenantId, projectId, runId, hrOnly);
     check(manual.scopeMode === 'rolling_window' && Array.isArray(manual.periods) && manual.periods.includes(afterClick.selectedPeriod) &&
       afterClick.selectedPeriod === report.before[0].selectedPeriod && afterClick.uidSha256 === report.before[0].uidSha256 &&
       afterClick.revision === manual.revision, 'MAPPING_FAILURE:HR_MANUAL_PERIOD_OR_REVISION');
@@ -224,7 +226,7 @@ export async function runSharedHrAcceptance({ first, second, tenantId, projectId
       'PROVIDER_FAILURE:HR_AUXILIARY_EXTERNAL_READ');
     report.auxiliaryDurableResponses = auxiliary.length;
     report.proof = compareShared(manual, watches.map(w => w.events.filter(x => x.sync === 'due')), report.watcherResults);
-    report.after = await Promise.all(pages.map(page => sessionInfo(page, tenantId, projectId, runId)));
+    report.after = await Promise.all(pages.map(page => sessionInfo(page, tenantId, projectId, runId, hrOnly)));
     check(report.after.every((s, i) => s.revision === manual.revision && s.uidSha256 === report.before[i].uidSha256 &&
       s.selectedPeriod === report.before[i].selectedPeriod), 'PERSISTENCE_FAILURE:HR_APPLIED_SESSION_REVISION');
     check(report.after.every(s => s.freshness === 'last_confirmed' && s.sourceReadAt === manual.sourceReadAt &&

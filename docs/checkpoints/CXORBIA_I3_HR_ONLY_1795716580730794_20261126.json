@@ -1,0 +1,326 @@
+{
+  "nativeRun": "1795716580730794",
+  "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "build": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+  "from": "2026-11-26T18:11:57.292Z",
+  "to": "2026-11-26T18:12:46.825Z",
+  "cleanup": true,
+  "requests": {
+    "manualFresh": 1,
+    "sharedDue": 2,
+    "blockedOutOfScope": 0,
+    "operationalPostAttempts": 0
+  },
+  "application": {
+    "status": "HOLD",
+    "cause": "PERSISTENCE_FAILURE:HR_APPLIED_SESSION_REVISION"
+  },
+  "proof": {
+    "snapshotRevision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+    "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+    "sourceReadAt": "2026-11-26T18:12:38.692Z",
+    "manualExternalResponseCount": 1,
+    "sharedDurableResponseCount": 2,
+    "genuineExternalReadsReportedBySharedResponses": 0
+  },
+  "watchers": [
+    {
+      "ok": true,
+      "skipped": false,
+      "changed": false,
+      "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "timedOut": false
+    },
+    {
+      "ok": true,
+      "skipped": false,
+      "changed": true,
+      "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "timedOut": false
+    }
+  ],
+  "windows": [
+    "2026-11-26T18:12:27.269Z",
+    "2026-11-26T18:12:45.509Z"
+  ],
+  "manual": {
+    "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+    "sourceReadAt": "2026-11-26T18:12:38.692Z",
+    "start": 1795716747390,
+    "received": 1795716764617,
+    "generation": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+    "providerPeriodReads": null
+  },
+  "sessions": [
+    {
+      "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "authorityRevision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "selectedPeriod": "cinepolis-2026-11",
+      "scopeMode": "rolling_window",
+      "freshness": "last_confirmed",
+      "applied": true,
+      "atomic": true,
+      "requestedPeriod": null,
+      "sourceMarker": "hr-last-confirmed",
+      "visibleCanonicalBadge": false
+    },
+    {
+      "revision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "authorityRevision": "b25a58c96814e07c31557fe364476ac4bd121e6981e64d6192370e42493b4795",
+      "selectedPeriod": "cinepolis-2026-11",
+      "scopeMode": "rolling_window",
+      "freshness": "last_confirmed",
+      "applied": true,
+      "atomic": true,
+      "requestedPeriod": null,
+      "sourceMarker": "hr-last-confirmed",
+      "visibleCanonicalBadge": false
+    }
+  ],
+  "before": [
+    "cinepolis-2026-11",
+    "cinepolis-2026-11"
+  ],
+  "due": [
+    {
+      "label": "segunda-sesion",
+      "bodySha256": "e62b086295b8eab0146e2bcae85fc2bdce9431d15311105061dbf96a8b987a8b",
+      "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+      "start": 1795716765516,
+      "received": 1795716766060,
+      "sourceReadAt": "2026-11-26T18:12:38.692Z",
+      "current": false,
+      "origin": "durable_internal_snapshot",
+      "trace": "9a7ef1fa392beda93a25f9d7afdfdb28",
+      "queryTimestamp": "1795716765513",
+      "currentPeriod": "cinepolis-2026-11",
+      "scopeMode": "rolling_window",
+      "published": false,
+      "sharedRefreshFailed": false,
+      "sharedRefreshPending": false,
+      "privateObject": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/hr-only-1810/segunda-sesion-due.body",
+      "objectGeneration": "1795716835404895",
+      "bytes": 9930,
+      "verifiedByIndependentStorageReadback": true
+    },
+    {
+      "label": "visitas",
+      "bodySha256": "c2d06bf36647e42850bc12632225ad352cce2c3cacabc3143965c6c1e2b054af",
+      "revision": "d86b9d00050c2627c3249be5edce05ad7d6b94dec3f9e170b1c78106f023802c",
+      "durableGeneration": "bc26bf982ec2bbafafa412f02258a685d7a3de60361a245d998a36cd7f9cf0bd",
+      "start": 1795716765515,
+      "received": 1795716765998,
+      "sourceReadAt": "2026-11-26T18:12:38.692Z",
+      "current": false,
+      "origin": "durable_internal_snapshot",
+      "trace": "419d2aa0903692ea209380f030dafa53",
+      "queryTimestamp": "1795716765512",
+      "currentPeriod": "cinepolis-2026-11",
+      "scopeMode": "rolling_window",
+      "published": false,
+      "sharedRefreshFailed": false,
+      "sharedRefreshPending": false,
+      "privateObject": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/hr-only-1810/visitas-due.body",
+      "objectGeneration": "1795716831557153",
+      "bytes": 9930,
+      "verifiedByIndependentStorageReadback": true
+    }
+  ],
+  "totalHrRequestsBeforeCap": 8,
+  "capRejected": 1,
+  "schemaVersion": "cxorbia.i3.hr-only.native-observation.v1",
+  "scope": "Two served protected synchronizations after one manual click. HR-only synthetic membership and Auth identity cleaned.",
+  "makeWindow": {
+    "from": "2026-11-26T18:11:57.292Z",
+    "to": "2026-11-26T18:12:46.825Z",
+    "scenarios": [
+      {
+        "scenarioId": 8062238,
+        "runs": []
+      },
+      {
+        "scenarioId": 10228826,
+        "runs": []
+      },
+      {
+        "scenarioId": 5837393,
+        "runs": []
+      },
+      {
+        "scenarioId": 5843689,
+        "runs": []
+      },
+      {
+        "scenarioId": 5844641,
+        "runs": []
+      },
+      {
+        "scenarioId": 8301039,
+        "runs": []
+      },
+      {
+        "scenarioId": 10199316,
+        "runs": []
+      },
+      {
+        "scenarioId": 10199340,
+        "runs": []
+      },
+      {
+        "scenarioId": 10200465,
+        "runs": [
+          {
+            "id": "cfc36a2155a14ce0b4583efa991e5a73",
+            "startedAt": "2026-11-26T18:12:31.407Z",
+            "duration": 4080,
+            "status": "success",
+            "credits": 3,
+            "operations": 3
+          },
+          {
+            "id": "54b556928d614f16a9117ae157edb108",
+            "startedAt": "2026-11-26T18:12:31.240Z",
+            "duration": 6488,
+            "status": "success",
+            "credits": 3,
+            "operations": 3
+          },
+          {
+            "id": "3b65cb2bc8a0455a8ce487b7a95419d3",
+            "startedAt": "2026-11-26T18:12:31.186Z",
+            "duration": 4232,
+            "status": "success",
+            "credits": 3,
+            "operations": 3
+          },
+          {
+            "id": "19bd0a77160f48f39778236fb1713754",
+            "startedAt": "2026-11-26T18:12:31.170Z",
+            "duration": 6175,
+            "status": "success",
+            "credits": 3,
+            "operations": 3
+          }
+        ]
+      },
+      {
+        "scenarioId": 10195631,
+        "runs": []
+      },
+      {
+        "scenarioId": 10195759,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196061,
+        "runs": []
+      },
+      {
+        "scenarioId": 10198707,
+        "runs": []
+      },
+      {
+        "scenarioId": 10198752,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196338,
+        "runs": []
+      },
+      {
+        "scenarioId": 8146654,
+        "runs": []
+      },
+      {
+        "scenarioId": 10196136,
+        "runs": []
+      },
+      {
+        "scenarioId": 10221359,
+        "runs": []
+      },
+      {
+        "scenarioId": 10221181,
+        "runs": []
+      },
+      {
+        "scenarioId": 10195867,
+        "runs": []
+      },
+      {
+        "scenarioId": 8052232,
+        "runs": []
+      },
+      {
+        "scenarioId": 8767963,
+        "runs": []
+      },
+      {
+        "scenarioId": 8769925,
+        "runs": []
+      },
+      {
+        "scenarioId": 5510559,
+        "runs": []
+      },
+      {
+        "scenarioId": 5828312,
+        "runs": []
+      },
+      {
+        "scenarioId": 9283887,
+        "runs": []
+      },
+      {
+        "scenarioId": 9281674,
+        "runs": []
+      },
+      {
+        "scenarioId": 9377547,
+        "runs": []
+      },
+      {
+        "scenarioId": 8029478,
+        "runs": []
+      },
+      {
+        "scenarioId": 8073619,
+        "runs": []
+      },
+      {
+        "scenarioId": 5834176,
+        "runs": []
+      },
+      {
+        "scenarioId": 7213974,
+        "runs": []
+      },
+      {
+        "scenarioId": 5830276,
+        "runs": []
+      }
+    ],
+    "totalCredits": 12,
+    "readerCredits": 12,
+    "readerRuns": 4,
+    "dueOverlap": [
+      0,
+      0
+    ],
+    "dueStarts": [
+      0,
+      0
+    ]
+  },
+  "creditAdmission": {
+    "before": 372,
+    "maximumAttempt": 240,
+    "recoveryReserve": 100,
+    "subsequentBalance": 360,
+    "autoPurchasing": false
+  },
+  "coldInstanceFirstRequest": "PENDING_NEXT_LEGITIMATE_MATERIALIZATION",
+  "secondPresentation": "HOLD: watcher delegated reconciliation; the cap rejected one GET. No product defect attribution. First session applied the verified revision.",
+  "newDomainPasses": 0
+}

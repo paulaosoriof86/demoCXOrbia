@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "cxorbia.i3.e10-rules-and-c09-c10.actual-readback.v1",
+  "e10": {
+    "activeRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "method": "Firebase Rules API projects.test, in-memory source, no release mutation",
+    "source": "211b33abefd8b01b8421ad836f0e49c7d696a81d",
+    "baselineOutputSha256": "1a99a9a0d4246e2b77ceb4b288f306b6f829c1f6663039681e7cb92ac62fa901",
+    "proposedOutputSha256": "27a43c1302a6a912084e216807ca4ef22dd7a596edb9acf8855caebad26db9e7",
+    "cases": [
+      {
+        "name": "ordinary-get",
+        "baselineMatchesContract": true,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "ordinary-create",
+        "baselineMatchesContract": true,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "import-get",
+        "baselineMatchesContract": true,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "import-cross-project-get",
+        "baselineMatchesContract": false,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "import-browser-create",
+        "baselineMatchesContract": false,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "import-browser-delete",
+        "baselineMatchesContract": false,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "receipt-browser-create",
+        "baselineMatchesContract": true,
+        "proposedMatchesContract": true
+      },
+      {
+        "name": "import-other-tenant",
+        "baselineMatchesContract": true,
+        "proposedMatchesContract": true
+      }
+    ],
+    "releaseState": "HOLD",
+    "next": "Validate pre-existing collection query and membership semantics before composing a scoped rules unit through the existing release owners."
+  },
+  "finance": {
+    "schemaVersion": "cxorbia.i3.c09-c10.two-advance-readback.v1",
+    "observedAt": "2026-11-26T18:14:42.525Z",
+    "environment": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "entries": [
+      {
+        "idHash": "34a37eadefff74acf405d5c7b012a15e90957efa23ce00b47d869e4db75c5024",
+        "stableRead": true,
+        "amount": 7300,
+        "amountMirrorMatches": true,
+        "currency": "Q",
+        "currencyMirrorMatches": true,
+        "country": "GT",
+        "type": "anticipo",
+        "cashPeriod": "cinepolis-2026-10",
+        "sourceRefHash": "aafad4e14f9581771d7790b410b7595c4fc9568ddb8e8eb3f1f100c2815d31a9",
+        "sourceRefPresent": true,
+        "sourceMatchesPrior": null,
+        "explicitAccountVisitOrLot": false,
+        "applications": [
+          {
+            "collection": "financeAccounts",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "financeAccounts",
+            "key": "lastMovementId",
+            "count": 0
+          },
+          {
+            "collection": "financialMovements",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "paymentLots",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "paymentReconciliations",
+            "key": "sourceMovementId",
+            "count": 0
+          }
+        ],
+        "bankEvidenceInThisRead": false
+      },
+      {
+        "idHash": "e7ed2fb86e1770e390b3f12f1e7c6aa4352c222b4e02ee09323502aff7f50fbb",
+        "stableRead": true,
+        "amount": 7300,
+        "amountMirrorMatches": true,
+        "currency": "Q",
+        "currencyMirrorMatches": true,
+        "country": "GT",
+        "type": "anticipo",
+        "cashPeriod": "cinepolis-2026-10",
+        "sourceRefHash": "15a6a7ebc0f5248475f227ea084fef3758c153ddfc603182840a3e76b175e885",
+        "sourceRefPresent": true,
+        "sourceMatchesPrior": true,
+        "explicitAccountVisitOrLot": false,
+        "applications": [
+          {
+            "collection": "financeAccounts",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "financeAccounts",
+            "key": "lastMovementId",
+            "count": 0
+          },
+          {
+            "collection": "financialMovements",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "paymentLots",
+            "key": "sourceMovementId",
+            "count": 0
+          },
+          {
+            "collection": "paymentReconciliations",
+            "key": "sourceMovementId",
+            "count": 0
+          }
+        ],
+        "bankEvidenceInThisRead": false
+      }
+    ],
+    "allocationInference": false,
+    "financeWrites": 0
+  },
+  "financeEligibility": "Two cash records stable under current project. The five exact application queries per advance found no links. No bank confirmation or eligibility allocation.",
+  "production": false
+}

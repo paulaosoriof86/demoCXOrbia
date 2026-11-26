@@ -893,7 +893,7 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "919f6a39391c262de5449cc905aa14f03759fb74",
+      "gitBlob": "9724f549a89318ec7e366d5952563f16e9815d5a",
       "decisionId": "PORT-DEC-040"
     },
     "pendingE10NativeSource": {
@@ -903,6 +903,14 @@
       "generation": "1795715840493531",
       "sha256": "85e68d709361f4f124cdb0d17ad4a38748a1af48ff50b46633e1e6a981b8429a",
       "independentStorageReadback": true
+    },
+    "hrOnlyPostClick": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_ONLY_1795716580730794_20261126.json",
+      "gitBlob": "249d06c6852c9d43ca3ad1b48056a505e0bc9d02"
+    },
+    "e10RulesAndFinanceReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_RULES_AND_FINANCE_20261126.json",
+      "gitBlob": "b3f3f4ec29f1fa62645dfbec9e2dec34e2918a81"
     }
   },
   "lastChromeConnection": {
@@ -947,8 +955,8 @@
       }
     },
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
-    "parallelHrManualRefresh": "Only the first protected durable read on a new native served instance and the bounded immediate due-read pair remain for the shared HR proof. Incorporate these at the next authorized candidate/staging opportunity, retain all 25 D08 focal obligations and continue original B14, E10, Finance, other process clauses and Gate20/Gate21.",
-    "e10": "Resolve the authorized durable import owner or adjudicate the missing implementation under the original E10 contract. The existing inventory covers six providers and 56 commands. Retain the mapping and preview as scoped evidence."
+    "parallelHrManualRefresh": "Two post-click HTTP bodies and Make-window readback are retained in confirmed.hrOnlyPostClick. Isolate the remaining second-presentation reconciliation observation and instrument the first protected cold-native request at the next genuine successor.",
+    "e10": "Native authenticated dispatcher source proof is preserved in confirmed.pendingE10NativeSource. Resolve and test scoped release composition with visit read/query isolation before publishing and exercising the served frontend."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,
