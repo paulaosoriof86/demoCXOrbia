@@ -1,6 +1,6 @@
 {
   "contractId": "tya-hr-column-map-r20-v1",
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "historyScope": "all_detected_hr_periods",
@@ -12,6 +12,19 @@
     "País",
     "ID CINEMA",
     "Shopping"
+  ],
+  "readHeaderAliases": [
+    {
+      "field": "shopper",
+      "label": "Shopper"
+    },
+    {
+      "field": "shopper",
+      "label": "Columna1",
+      "countries": ["GT"],
+      "previousField": "quincena",
+      "nextField": "telefono"
+    }
   ],
   "columns": {
     "pais": {

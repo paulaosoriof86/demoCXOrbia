@@ -4,7 +4,7 @@
  */
 import crypto from 'node:crypto';
 import {resolveCountryHrPeriodBinding} from './cxorbia-country-hr-binding-v1.mjs';
-import {parseTab} from '../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
+import {parseTab,projectReadHeader} from '../../tools/hr-source/tya-build-live-hr-source-safe-r20.mjs';
 const str=v=>String(v??'').trim();
 const digest=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const fail=(category,code)=>{throw new Error(category+':B14_'+code);};
@@ -17,7 +17,7 @@ export function validateGraphColumnMap(values,contract,countryCode){
   for(let i=0;i<Math.min(14,values.length);i++){
     const row=values[i];
     if(!Array.isArray(row))continue;
-    const cells=row.map(normalize);
+    const cells=projectReadHeader(row,contract,countryCode).map(normalize);
     for(const variant of contract.headerVariants){
       const countries=Array.isArray(variant.allowedCountries)?variant.allowedCountries:[];
       if(countries.length&&!countries.includes(countryCode))continue;

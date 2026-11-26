@@ -205,6 +205,29 @@ async function readFromGvizCsv(apiError){const candidates=candidateTabs();const 
 async function readLiveHr(){try{return await readFromSheetsApi();}catch(error){if(error?.hrSourceFailure||/^HR_SOURCE_RANGE_|^HR_SOURCE_READ_JSON_INVALID/.test(String(error?.message||'')))throw error;if(/^HR_MONTH_(YEAR_UNRESOLVED|YEAR_AMBIGUOUS|DUPLICATE):/.test(String(error?.message||error)))throw error;console.warn('[HR live] Sheets API unavailable; using per-tab GViz CSV read-only fallback.');console.warn(String(error?.message||error).slice(0,800));return readFromGvizCsv(error);}}
 
 function keyText(value){return normalizedText(value).replace(/[^a-z0-9ñ]+/g,' ').replace(/\s+/g,' ').trim();}
+
+// Resolve declared source labels on a private copy. Provider hashes, writer
+// guards and diagnostics continue to refer to the original workbook headers.
+export function projectReadHeader(row, columnMap, country) {
+  const rules = columnMap.readHeaderAliases;
+  if (!rules?.length) return row;
+  const labels = row.map(keyText);
+  const matchesField = (label, field) =>
+    columnMap.columns[field]?.aliases.some(alias => keyText(alias) === label);
+  return row.map((original, index) => {
+    const matches = rules.filter(rule =>
+      labels[index] === keyText(rule.label) &&
+      (!rule.countries || rule.countries.includes(country)) &&
+      (!rule.previousField || matchesField(labels[index - 1], rule.previousField)) &&
+      (!rule.nextField || matchesField(labels[index + 1], rule.nextField)));
+    if (!matches.length) return original;
+    const targets = new Set(matches.map(rule => rule.field));
+    if (targets.size !== 1 || !columnMap.columns[matches[0].field]?.aliases?.[0]) {
+      throw new Error('MAPPING_FAILURE:READ_HEADER_ALIAS_CONFLICT');
+    }
+    return columnMap.columns[matches[0].field].aliases[0];
+  });
+}
 /* R20_TAB_SCOPED_HEADER_VARIANT — supports explicit full headers and declared tab-scoped compact headers without silent inference. */
 function headerVariants(columnMap){
   const configured=Array.isArray(columnMap?.headerVariants)?columnMap.headerVariants:[];
@@ -214,7 +237,7 @@ function headerVariants(columnMap){
 function findHeader(values,tab,columnMap){
   const variants=headerVariants(columnMap);
   for(let index=0;index<Math.min(values.length,14);index++){
-    const row=values[index]||[],cells=row.map(keyText);
+    const row=values[index]||[],cells=projectReadHeader(row,columnMap,tab?.country).map(keyText);
     for(const variant of variants){
       const allowedCountries=(variant.allowedCountries||[]).map(value=>String(value||'').trim().toUpperCase()).filter(Boolean);
       if(allowedCountries.length&&!allowedCountries.includes(String(tab?.country||'').trim().toUpperCase()))continue;
