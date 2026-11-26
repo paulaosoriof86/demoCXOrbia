@@ -64,7 +64,7 @@ test('dry-run through the operational dispatcher verifies auth, classifies every
 test('response loss, independent receipt read and old replay preserve a later valid visit update',async()=>{
   const f=fixture(),c=command('dry_run'),p=f.provider(),preview=await p.execute('session-a',c),commit=confirm(preview,c);
   const first=await p.execute('session-a',commit);
-  assert.equal(first.providerWrites,3);assert.equal(first.readbackVerified,true);
+  assert.equal(first.providerWrites,5);assert.equal(first.readbackVerified,true);
   const path=project+'/visits/'+first.outcomes[0].visitId;
   f.seed(path,{...f.docs.get(path),estado:'programada'});
   const before=JSON.stringify([...f.docs]),second=f.provider();
@@ -102,4 +102,20 @@ test('existing rows in the selected country and period only participate in the p
   assert.equal((await p.execute('session-a',c)).outcomes[0].state,'new');
   f.seed(project+'/visits/same-country',{...baseRow,periodId:scope.periodId,pais:'CO'});
   assert.equal((await p.execute('session-a',c)).outcomes[0].state,'duplicate');
+});
+
+test('the import atomically activates scoped visits, archives the audit, and retains conflicts for review',async()=>{
+  const f=fixture(),p=f.provider(),c=command('dry_run',[baseRow,{...baseRow,fecha:'2026-11-06'}]);
+  const prepared=await p.execute('session-a',c);
+  const marker=project+'/hrImportRuns/visit-access-v1';
+  assert.equal(f.docs.has(marker),false);
+  const result=await p.execute('session-a',confirm(prepared,c));
+  assert.equal(result.readbackVerified,true);assert.equal(result.providerWrites,6);
+  assert.equal(f.docs.get(marker).firstRunId,result.runId);
+  const receipt=f.docs.get(project+'/hrImportRuns/'+result.runId),audit=f.docs.get(receipt.auditRef);
+  assert.equal(receipt.status,'promoted_audited');assert.equal(audit.createdVisits,1);
+  const conflicts=[...f.docs].filter(([k])=>k.startsWith(project+'/importConflicts/'));
+  assert.equal(conflicts.length,1);assert.equal(conflicts[0][1].status,'review_required');
+  assert.equal(conflicts[0][1].reviewerUid,null);
+  const replay=await p.execute('session-b',confirm(prepared,c));assert.equal(replay.providerWrites,0);
 });

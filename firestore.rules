@@ -478,13 +478,17 @@ service cloud.firestore {
         }
 
         match /visits/{visitId} {
-          allow read: if tenantAllowed(tenantId) &&
-            (!visitId.matches('e10-[0-9a-f]{64}') || projectAssigned(projectId) || isSuper()) && (
-            isOperator() ||
-            isClient() && projectAssigned(projectId) ||
-            isOwnResource() ||
-            isAvailableVisitForShopper(projectId)
-          );
+          function canReadVisit() {
+            return tenantAllowed(tenantId) && (isOperator() ||
+              isClient() && projectAssigned(projectId) || isOwnResource() ||
+              isAvailableVisitForShopper(projectId));
+          }
+          allow get: if canReadVisit() &&
+            (isSuper() || projectAssigned(projectId) || !visitId.matches('e10-[0-9a-f]{64}'));
+          // The first import creates this server-owned marker in the same transaction as its visits.
+          // Legacy projects keep their established collection queries until they accept an import.
+          allow list: if canReadVisit() && (isSuper() || projectAssigned(projectId) ||
+            !exists(/databases/$(database)/documents/tenants/$(tenantId)/projects/$(projectId)/hrImportRuns/visit-access-v1));
           allow create, delete: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && isOperator();
           allow update: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && (
             isOperator() ||

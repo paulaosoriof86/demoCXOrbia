@@ -37,7 +37,7 @@ function allowedDate(period, value) {
   return keys.size===1 && keys.has(value.slice(0,7));
 }
 
-function classify(rows, existing, scope, period) {
+function classify(rows, existing, scope, period, sourceDigest) {
   const references=new Map(), naturals=new Map(), creates=[], outcomes=[];
   function index(map,key,row) {
     if (!key) return;
@@ -52,7 +52,8 @@ function classify(rows, existing, scope, period) {
   for (const row of existing) add(row);
   for (const [indexInFile,raw] of rows.entries()) {
     const row=projectRow(raw||{}), digest=rowHash(row);
-    const outcome={index:indexInFile,rowDigest:digest};
+    const sourceRowId='row-'+hash([sourceDigest,indexInFile,digest]);
+    const outcome={index:indexInFile,rowDigest:digest,sourceRowId};
     const badShape=!raw||typeof raw!=='object'||Array.isArray(raw)||
       Object.keys(raw).some(k=>!fields.includes(k))||
       fields.some(k=>raw[k]!=null&&(typeof raw[k]!=='string'||raw[k].length>240||/[\u0000-\u001f<>]/.test(raw[k])));
@@ -71,7 +72,7 @@ function classify(rows, existing, scope, period) {
     const id='e10-'+hash([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,ref||key]);
     const visit={...row,...scope,id,visitId:id,extId:row.ref,periodKey:row.fecha.slice(0,7),pais:scope.countryCode,
       status:'disponible',estado:'disponible',availableFrom:row.fecha,disponibleDesde:row.fecha,
-      shopperId:null,shopper:null,version:1,importRowDigest:digest};
+      shopperId:null,shopper:null,version:1,importRowDigest:digest,importSourceRowId:sourceRowId};
     creates.push(visit);
     add(visit);
     outcomes.push({...outcome,state:'new',visitId:id});
@@ -85,11 +86,25 @@ async function verifyImport(project, run, exact) {
   requireValue(saved && saved.plan===run.plan && saved.actorUid===run.actorUid && saved.digest===run.digest &&
     saved.tenantId===run.tenantId && saved.periodId===run.periodId && saved.projectId===run.projectId && saved.countryCode===run.countryCode && saved.sourceDigest===run.sourceDigest &&
     saved.mappingDigest===run.mappingDigest && hash(saved.outcomes)===hash(run.outcomes),'RECEIPT_READBACK_PENDING');
+  const auditRef=project.collection('hrImportRuns').doc('audit-'+run.digest);
+  requireValue(saved.auditRef===auditRef.path,'AUDIT_READBACK_PENDING');
+  const [auditSnap,accessSnap]=await Promise.all([auditRef.get(),project.collection('hrImportRuns').doc('visit-access-v1').get()]);
+  const audit=auditSnap.data(),access=accessSnap.data();
+  requireValue(access?.kind==='imported_visit_query_scope' && access.tenantId===run.tenantId && access.projectId===run.projectId,
+    'ACCESS_MARKER_READBACK_PENDING');
+  requireValue(audit?.actorUid===run.actorUid && audit.plan===run.plan && audit.importRunId===run.id &&
+    audit.sourceDigest===run.sourceDigest && audit.mappingDigest===run.mappingDigest,'AUDIT_READBACK_PENDING');
+  await Promise.all(saved.outcomes.filter(row=>row.state==='conflict').map(async row=>{
+    const ref=project.collection('importConflicts').doc(hash([run.digest,row.index]));
+    const conflict=(await ref.get()).data();
+    requireValue(conflict?.importRunId===run.id && conflict.sourceRowDigest===row.rowDigest &&
+      conflict.index===row.index && conflict.periodId===run.periodId && conflict.sourceRowId===row.sourceRowId,'CONFLICT_READBACK_PENDING');
+  }));
   const ids=saved.outcomes.filter(row=>row.state==='new');
   const visits=await Promise.all(ids.map(row=>project.collection('visits').doc(row.visitId).get()));
   for(const [i,visit] of visits.entries()) {
     const data=visit.data();
-    requireValue(data && data.importRunId===run.id && data.importRowDigest===ids[i].rowDigest &&
+    requireValue(data && data.importRunId===run.id && data.importRowDigest===ids[i].rowDigest && data.importSourceRowId===ids[i].sourceRowId &&
       data.tenantId===run.tenantId && data.projectId===run.projectId && data.periodId===run.periodId &&
       (!exact || rowHash(data)===ids[i].rowDigest),'VISIT_READBACK_PENDING');
   }
@@ -129,7 +144,11 @@ export async function executeVisitImport(db,command,actor) {
     const periodRef=project.collection('periods').doc(periodId);
     // Serialize overlapping batches, including different files sharing natural keys.
     const lockRef=project.collection('hrImportRuns').doc('lock-'+hash([periodId,countryCode]));
-    const [memberSnap,projectSnap,periodSnap,prior,lock]=await Promise.all([member,project,periodRef,runRef,lockRef].map(ref=>tx.get(ref)));
+    const accessRef=project.collection('hrImportRuns').doc('visit-access-v1');
+    const [memberSnap,projectSnap,periodSnap,prior,lock,access]=await Promise.all(
+      [member,project,periodRef,runRef,lockRef,accessRef].map(ref=>tx.get(ref)));
+    if(access.exists)requireValue(access.data().tenantId===tenantId && access.data().projectId===projectId &&
+      access.data().kind==='imported_visit_query_scope','INVALID_ACCESS_MARKER');
     checkMembership(memberSnap.data(),actor,command);
     const config=projectSnap.data(), period=periodSnap.data();
     requireValue(config?.tenantId===tenantId && (config.projectId||config.id)===projectId && config.active!==false && !['archived','inactive','deleted','disabled'].includes(config.status) &&
@@ -148,18 +167,30 @@ export async function executeVisitImport(db,command,actor) {
     const query=project.collection('visits').where('periodId','==',periodId);
     const snapshot=await tx.get(query);
     const scoped=snapshot.docs.map(s=>({...s.data(),id:s.id})).filter(v=>(v.countryCode||v.pais)===countryCode);
-    const scope={tenantId,projectId,periodId,countryCode}, {creates,outcomes}=classify(rows,scoped,scope,period);
+    const scope={tenantId,projectId,periodId,countryCode}, {creates,outcomes}=classify(rows,scoped,scope,period,sourceDigest);
     const plan=hash([digest,config.version,period.version,outcomes]);
-    const run={...scope,id:runId,digest,plan,sourceDigest,mappingDigest,actorUid:actor.uid,projectVersion:config.version,periodVersion:period.version,outcomes};
+    const run={...scope,id:runId,importRunId:runId,digest,plan,sourceDigest,mappingDigest,actorUid:actor.uid,
+      hrSourceId:'file-'+sourceDigest,sourcePeriodFrom:periodId,sourcePeriodTo:periodId,
+      projectVersion:config.version,periodVersion:period.version,outcomes};
     if(!commit)return {run,replay:false,providerWrites:0};
     requireValue(command.expectedVersion===config.version && payload.plan===plan,'PLAN_CHANGED');
     requireValue(creates.length>0,'NO_NEW_VISITS');
     const createdAt=new Date().toISOString();
     const currency=config.currency?.[countryCode]||period.currency?.[countryCode];
+    const auditRef=project.collection('hrImportRuns').doc('audit-'+digest);
+    const conflicts=outcomes.filter(row=>row.state==='conflict');
+    for(const row of conflicts){
+      const ref=project.collection('importConflicts').doc(hash([digest,row.index]));
+      tx.create(ref,{...scope,importRunId:runId,sourceRowId:row.sourceRowId,sourceRowDigest:row.rowDigest,index:row.index,
+        reason:row.reason,status:'review_required',reviewerUid:null,createdAt});
+    }
+    tx.create(auditRef,{...scope,kind:'import_commit_audit',importRunId:runId,actorUid:actor.uid,
+      sourceDigest,mappingDigest,plan,createdAt,createdVisits:creates.length,reviewCount:conflicts.length});
+    if(!access.exists)tx.create(accessRef,{tenantId,projectId,kind:'imported_visit_query_scope',firstRunId:runId});
     for(const visit of creates)tx.create(project.collection('visits').doc(visit.id),{...visit,importRunId:runId,createdAt,createdBy:actor.uid,...(currency?{currency}:{})});
-    tx.create(runRef,{...run,createdAt});
+    tx.create(runRef,{...run,createdAt,createdBy:actor.uid,mode:'promote_reviewed',status:'promoted_audited',auditRef:auditRef.path});
     tx.set(lockRef,{sequence:(lock.data()?.sequence||0)+1,lastRunId:runId,tenantId,projectId,periodId,countryCode});
-    return {run,replay:false,providerWrites:creates.length+2};
+    return {run,replay:false,providerWrites:creates.length+3+conflicts.length+(access.exists?0:1)};
   });
   const {run,replay,providerWrites}=result;
   if(commit||replay)await verifyImport(project,run,!replay);

@@ -64,10 +64,10 @@ try{
   const commit={...command('commit',{...payload,plan:plan.plan}),expectedVersion:plan.expectedVersion,idempotencyKey:plan.batchKey};
   assert(!(await call(sessionA,{...commit,payload:{...payload,plan:'0'.repeat(64)}})).ok);check('WRONG_PLAN_DENIED');
   assert(!(await call(sessionA,{...dry,tenantId:'other-qa'})).ok);check('OTHER_TENANT_DENIED');
-  const first=await call(sessionA,commit);assert(first.providerAck && first.readbackVerified);assert.equal(first.providerWrites,3);
+  const first=await call(sessionA,commit);assert(first.providerAck && first.readbackVerified);assert.equal(first.providerWrites,6);
   check('COMMIT_ACK_AND_INDEPENDENT_READBACK');receipt.createdVisitCount=1;
   const sessionB=await login();
-  const snapshot=async()=>Promise.all(['visits','hrImportRuns'].map(async coll=>(await db.collection(base+'/'+coll).get()).docs.map(s=>[s.id,s.updateTime.toMillis()])));
+  const snapshot=async()=>Promise.all(['visits','hrImportRuns','importConflicts'].map(async coll=>(await db.collection(base+'/'+coll).get()).docs.map(s=>[s.id,s.updateTime.toMillis()])));
   const before=await snapshot();
   const again=await call(sessionB,commit);
   assert(again.idempotentReplay && again.providerAck);assert.equal(again.providerWrites,0);
@@ -91,10 +91,28 @@ finally{
         assert(s.createTime.isEqual(s.updateTime),'changed visit');allowed.set(s.ref.path,v);
       }
       for(const s of ledger.docs){
-        const v=s.data();assert.equal(v.tenantId,tenantId);assert.equal(v.projectId,project);assert.equal(v.periodId,periodId);
-        if(s.id===plan?.runId){assert.equal(v.actorUid,uid);assert.equal(v.plan,plan.plan);}
-        else{assert.equal(s.id,'lock-'+bytes([periodId,payload.countryCode]));assert.equal(v.lastRunId,plan.runId);assert.equal(v.sequence,1);}
+        const v=s.data();assert.equal(v.tenantId,tenantId);assert.equal(v.projectId,project);
+        if(s.id==='visit-access-v1'){
+          assert.equal(v.kind,'imported_visit_query_scope');assert.equal(v.firstRunId,plan.runId);
+        }else{
+          assert.equal(v.periodId,periodId);
+          if(s.id===plan.runId){assert.equal(v.actorUid,uid);assert.equal(v.plan,plan.plan);}
+          else if(s.id==='audit-'+plan.runId.slice(4)){
+            assert.equal(v.kind,'import_commit_audit');assert.equal(v.actorUid,uid);
+            assert.equal(v.importRunId,plan.runId);assert.equal(v.plan,plan.plan);
+          }else{
+            assert.equal(s.id,'lock-'+bytes([periodId,payload.countryCode]));assert.equal(v.lastRunId,plan.runId);assert.equal(v.sequence,1);
+          }
+        }
         assert(s.createTime.isEqual(s.updateTime),'changed receipt');allowed.set(s.ref.path,v);
+      }
+      for(const s of (await db.collection(base+'/importConflicts').get()).docs){
+        const v=s.data(),row=plan.outcomes.find(o=>o.state==='conflict'&&o.index===v.index);
+        assert(row);assert.equal(s.id,bytes([plan.runId.slice(4),row.index]));
+        assert.equal(v.tenantId,tenantId);assert.equal(v.projectId,project);assert.equal(v.periodId,periodId);
+        assert.equal(v.importRunId,plan.runId);assert.equal(v.sourceRowDigest,row.rowDigest);
+        assert.equal(v.sourceRowId,row.sourceRowId);assert.equal(v.status,'review_required');
+        assert.equal(v.reviewerUid,null);assert(s.createTime.isEqual(s.updateTime));allowed.set(s.ref.path,v);
       }
       const allowedPaths=new Set(allowed.keys());
       const projectChildren=await db.doc(base).listCollections();
