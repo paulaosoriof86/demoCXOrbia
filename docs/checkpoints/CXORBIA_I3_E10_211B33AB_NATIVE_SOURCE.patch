@@ -1,0 +1,673 @@
+diff --git a/app/adapters/cxorbia-command-adapter-v1.js b/app/adapters/cxorbia-command-adapter-v1.js
+index 1d2f4bc6f..f056c9669 100644
+--- a/app/adapters/cxorbia-command-adapter-v1.js
++++ b/app/adapters/cxorbia-command-adapter-v1.js
+@@ -131,6 +131,12 @@
+     let result;
+     try{result=await transports.get(activeTransport).execute(clean(command));}
+     catch(error){return blocked(command,'COMMAND_TRANSPORT_ERROR',{error:str(error?.message||error)});}
++    if(command.commandType==='import.visits.dry_run' && result?.ok===true && result.status==='dry_run' &&
++      result.providerWrites===0 && result.committed===false && result.providerAck===false)return clean(result);
++    if(command.commandType==='import.visits.read' && result?.ok===true && result.status==='readback' &&
++      result.providerWrites===0 && result.readbackVerified===true && result.committed===false)return clean(result);
++    if(command.commandType==='import.visits.commit' && result?.readbackVerified!==true)
++      return Object.assign(blocked(command,result?.code||'IMPORT_READBACK_PENDING'),{error:result?.error});
+     const hrFieldsPending=arr(result?.hrFieldEventIds).length>0;
+     const committed=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&
+       (!hrFieldsPending||(result.hrProviderAck===true&&result.readbackVerified===true));
+diff --git a/app/core/importador.js b/app/core/importador.js
+index b689b1b2d..324bfb16d 100644
+--- a/app/core/importador.js
++++ b/app/core/importador.js
+@@ -12,6 +12,8 @@ window.CX = window.CX || {};
+   const FIELDS = {
+     ref:        {label:'Ref / Fila', syn:['fila','ref','no','num','#','id']},
+     sucursal:   {label:'Sucursal', syn:['sucursal','cinema','tienda','local','agencia','punto','establecimiento','sede']},
++    pais:       {label:'País (código)', syn:['pais','country','countrycode']},
++    quincena:   {label:'Quincena',syn:['quincena','fortnight']},
+     ciudad:     {label:'Ciudad', syn:['ciudad','city','ubicacion','plaza','localidad']},
+     franja:     {label:'Franja', syn:['franja','horario','jornada','turno','wknd','wk']},
+     fecha:      {label:'Fecha', syn:['fecha','date','prog','programada','dia','realiz','realizada']},
+@@ -167,6 +169,50 @@ window.CX = window.CX || {};
+       return {creadas, shoppersNuevos, shoppersFusionados};
+     },
+ 
++    async durablePlan(parsed, mapping, countryCode, sourceText) {
++      const fields=Object.fromEntries(Object.entries(mapping).map(([index,name])=>[name,Number(index)]));
++      if(fields.sucursal===undefined || fields.fecha===undefined)
++        throw Error('Mapea Sucursal y Fecha antes de solicitar el plan.');
++      if(new Set(Object.values(mapping)).size!==Object.values(mapping).length)
++        throw Error('Hay dos columnas mapeadas al mismo campo.');
++      const digest=async value=>{
++        const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value)));
++        return Array.from(new Uint8Array(bytes),v=>v.toString(16).padStart(2,'0')).join('');
++      };
++      const rows=parsed.rows.map(source=>{
++        const read=key=>String(source[fields[key]]??'').trim();
++        const row=Object.fromEntries(['ref','sucursal','ciudad','escenario','quincena','franja','fecha'].map(key=>[key,read(key)]));
++        row.fecha=this._date(row.fecha);
++        // The provider reports this row as discarded without transmitting sensitive cell values.
++        const existingActivity=['shopper','honorario','reembolso','obs'].some(key=>read(key)!=='') ||
++          (read('estado') && !/^(disponible|sin asignar|pendiente (de )?asignar)$/i.test(read('estado')));
++        if(existingActivity || (read('pais') && read('pais').toUpperCase()!==countryCode))row.excluded=true;
++        return row;
++      });
++      const {tenantId,projectId,periodId}=CX.data.ctx();
++      const payload={countryCode,rows,mappingDigest:await digest([parsed.headers,Object.entries(mapping)]),sourceDigest:await digest(sourceText??[parsed.headers,parsed.rows])};
++      const command={entityType:'hrImport',tenantId,projectId,periodId,source:'importador',expectedVersion:'current',idempotencyKey:'preview:'+payload.sourceDigest,payload};
++      const response=await this.importCommand('import.visits.dry_run',command);
++      if(response.status!=='dry_run'||response.providerWrites!==0||!Array.isArray(response.outcomes))throw Error('Vista previa sin confirmar.');
++      return {command,response};
++    },
++    async importCommand(commandType,command) {
++      const current=CX.data.ctx();
++      if(['tenantId','projectId','periodId'].some(key=>current[key]!==command[key]))
++        throw Error('El proyecto o período cambió. Vuelve a calcular la vista previa.');
++      const result=await CX.commandAdapter.execute({...command,commandType,authorization:{providerEnforcementRequired:true,permission:commandType}});
++      if(!result?.ok)throw Error(result?.code||'No se recibió una respuesta válida del proveedor.');
++      return result;
++    },
++    async confirmPlan({command,response}) {
++      const committed=await this.importCommand('import.visits.commit',{...command,idempotencyKey:response.batchKey,
++        expectedVersion:response.expectedVersion,payload:{...command.payload,plan:response.plan}});
++      if(!committed.providerAck||!committed.readbackVerified)throw Error('Lectura del recibo pendiente.');
++      const saved=await this.importCommand('import.visits.read',{...command,entityId:committed.runId,payload:{}});
++      if(!saved.readbackVerified||saved.runId!==committed.runId)throw Error('La lectura independiente está pendiente.');
++      return saved;
++    },
++
+     /* HR de ejemplo (genérica) para demostrar el flujo */
+     sample(){
+       return `Fila;Fecha Prog;Sucursal;Ciudad · Franja;Shopper;Compra;Combo;Estado
+diff --git a/app/modules/importador.js b/app/modules/importador.js
+index ad4f6b462..3b67ae3f6 100644
+--- a/app/modules/importador.js
++++ b/app/modules/importador.js
+@@ -300,6 +300,7 @@ Responde SOLO con JSON válido con este formato exacto:
+   const FIELDS=CX.importador&&CX.importador.FIELDS||{};
+   const fieldOpts=(sel)=>`<option value="">— ignorar —</option>`+Object.keys(FIELDS).map(f=>`<option value="${f}" ${f===sel?'selected':''}>${FIELDS[f]?FIELDS[f].label:f}</option>`).join('');
+ 
++  const escapeCell=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+   const drawHR=(body)=>{
+     if(hr.step===1){
+       body.innerHTML=`
+@@ -326,7 +327,7 @@ Responde SOLO con JSON válido con este formato exacto:
+         if(!CX.importador){ui.toast('Módulo importador no disponible','err');return;}
+         const parsed=CX.importador.parse(txt);
+         if(!parsed.headers.length||!parsed.rows.length){ui.toast('No detecté filas. Verifica que hay encabezado + datos.','err');return;}
+-        hr.parsed=parsed;hr.map=CX.importador.autoMap(parsed.headers);hr.step=2;drawHR(body);
++        hr.parsed=parsed;hr.sourceText=txt;hr.map=CX.importador.autoMap(parsed.headers);hr.step=2;drawHR(body);
+       });
+     } else if(hr.step===2){
+       const h=hr.parsed.headers;
+@@ -335,9 +336,9 @@ Responde SOLO con JSON válido con este formato exacto:
+         <div class="card-h"><div class="card-t">Revisa el mapeo de columnas</div>${ui.bdg(hr.parsed.rows.length+' filas','b')}</div>
+         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Ajusta a qué campo del sistema corresponde cada columna de tu archivo.</p>
+         <div class="grid g2" style="gap:10px 14px">
+-          ${h.map((col,i)=>`<div><label class="lbl">${col||'(col '+(i+1)+')'}</label>
++          ${h.map((col,i)=>`<div><label class="lbl">${escapeCell(col||'(col '+(i+1)+')')}</label>
+             <select class="sel hrMap" data-i="${i}">${fieldOpts(hr.map[i])}</select>
+-            <div style="font-size:10.5px;color:var(--t3);margin-top:3px">ej: ${(hr.parsed.rows[0]||[])[i]||'—'}</div></div>`).join('')}
++            <div style="font-size:10.5px;color:var(--t3);margin-top:3px">ej: ${escapeCell((hr.parsed.rows[0]||[])[i]||'—')}</div></div>`).join('')}
+         </div>
+         <div class="flex" style="justify-content:space-between;margin-top:14px">
+           <button class="btn btn-ghost btn-sm" id="hrBack2">← Atrás</button>
+@@ -383,29 +384,64 @@ Responde SOLO con JSON válido con este formato exacto:
+         <div class="card-h"><div class="card-t">Vista previa y confirmación</div><div class="flex" style="gap:6px">${ui.bdg(d.nuevos.length+' nuevos','g')} ${ui.bdg(d.dups.length+' duplicados (omitidos)','n')}${d.conflicts&&d.conflicts.length?ui.bdg(d.conflicts.length+' en conflicto (retenidos)','a'):''}${d.discarded&&d.discarded.length?ui.bdg(d.discarded.length+' descartados (dato insuficiente)','r'):''}</div></div>
+         ${periodInfo}
+         <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--brand-dark);margin:12px 0">Anti-duplicado por <b>sucursal + fecha</b>. Los duplicados exactos no se importan. Un <b>conflicto</b> (misma sucursal+fecha, pero shopper u honorario distinto entre HR y la visita ya existente) se retiene para revisión humana — no se sobrescribe automáticamente. Los descartados no tienen sucursal/fecha válida para dedupe real.</div>
+-        ${d.conflicts&&d.conflicts.length?`<div class="card" style="border-left:3px solid var(--amber);padding:11px 13px;margin-bottom:12px"><b style="font-size:12.5px">⚠️ ${d.conflicts.length} en conflicto — requieren revisión</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">${d.conflicts.slice(0,3).map(c=>c.sucursal+' · HR: '+(c.shopper||'—')+' ('+(c.honorario||0)+') vs. existente: '+((c._conflictWith&&c._conflictWith.shopper)||'—')+' ('+((c._conflictWith&&c._conflictWith.honorario)||0)+')').join('<br>')}</div></div>`:''}
++        ${d.conflicts&&d.conflicts.length?`<div class="card" style="border-left:3px solid var(--amber);padding:11px 13px;margin-bottom:12px"><b style="font-size:12.5px">⚠️ ${d.conflicts.length} en conflicto — requieren revisión</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">${d.conflicts.slice(0,3).map(c=>escapeCell(c.sucursal+' · HR: '+(c.shopper||'—')+' ('+(c.honorario||0)+') vs. existente: '+((c._conflictWith&&c._conflictWith.shopper)||'—')+' ('+((c._conflictWith&&c._conflictWith.honorario)||0)+')')).join('<br>')}</div></div>`:''}
+         <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
+           <table class="tbl" style="min-width:700px"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th></th></tr></thead>
+           <tbody>${[...d.nuevos.map(c=>hrRow(c,'nuevo')),...d.conflicts.map(c=>hrRow(c,'conflicto')),...d.dups.map(c=>hrRow(c,'dup')),...(d.discarded||[]).map(c=>hrRow(c,'descartado'))].join('')}</tbody></table>
+         </div>
+         <div class="flex" style="justify-content:space-between;margin-top:14px">
+           <button class="btn btn-ghost btn-sm" id="hrBack3">← Atrás</button>
+-          <button class="btn btn-green btn-sm" id="hrCommit" ${d.nuevos.length?'':'disabled'}>✓ Importar ${d.nuevos.length} visita(s)</button>
++          <label>País del lote <select id="hrCountry"></select></label>
++          <button class="btn btn-green btn-sm" id="hrCommit">Verificar con el proveedor</button>
+         </div>
+       </div>`;
+       body.querySelector('#hrBack3')?.addEventListener('click',()=>{hr.step=2;drawHR(body);});
+-      const cb=body.querySelector('#hrCommit');
+-      if(cb)cb.addEventListener('click',()=>{
+-        if(!CX.importador)return;
+-        const res=CX.importador.commit(d.nuevos,p);
+-        ui.toast(res.creadas+' visita(s) preparadas (preview)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':'')+' · import real pendiente de backend','ok',4000);
+-        hr={step:1,parsed:null,map:{},cands:[],diff:null};
+-        CX.router.nav('visitas');
++      const country=body.querySelector('#hrCountry'), cb=body.querySelector('#hrCommit');
++      for(const code of data.project()?.countries||p.countries||[])country.add(new Option(code,code));
++      const status=document.createElement('div');
++      status.setAttribute('role','status');
++      cb.parentElement.after(status);
++      let plan=null;
++      country.onchange=()=>{plan=null;cb.textContent='Verificar con el proveedor';status.replaceChildren();};
++      cb.addEventListener('click',async()=>{
++        cb.disabled=true;country.disabled=true;
++        try{
++          if(!plan){
++            plan=await CX.importador.durablePlan(hr.parsed,hr.map,country.value,hr.sourceText);
++            const counts={new:0,duplicate:0,conflict:0,discarded:0};
++            const details=document.createElement('ul');
++            for(const row of plan.response.outcomes){
++              counts[row.state]++;
++              const item=document.createElement('li');
++              const labels={new:'nueva',duplicate:'duplicada',conflict:'en conflicto',discarded:'descartada'};
++              item.textContent='Fila '+(row.index+2)+' · '+labels[row.state]+(row.reason?' · '+row.reason:'');
++              details.append(item);
++            }
++            const summary=document.createElement('p');
++            summary.textContent=counts.new+' nuevas · '+counts.duplicate+' duplicadas · '+counts.conflict+' en conflicto · '+counts.discarded+' descartadas.';
++            status.replaceChildren(summary,details);
++            cb.textContent=plan.response.alreadyCommitted?'Verificar importación existente':'Confirmar '+counts.new+' nuevas visitas';
++            cb.disabled=!counts.new;
++          }else{
++            const saved=await CX.importador.confirmPlan(plan);
++            status.textContent='Importación verificada en el proveedor. Recibo '+saved.runId+'.';
++            cb.textContent='Importación verificada';cb.disabled=true;
++            CX.bus?.emit?.('visit-flow');
++          }
++        }catch(error){
++          status.textContent=error.message;
++          if(error.message==='E10_PLAN_CHANGED'){plan=null;cb.textContent='Volver a verificar';}
++          cb.disabled=false;
++        }finally{
++          country.disabled=false;
++          if(plan&&cb.textContent.startsWith('Confirmar')&&plan.response.outcomes.some(row=>row.state==='new'))cb.disabled=false;
++          if(plan&&cb.textContent.startsWith('Verificar importación'))cb.disabled=false;
++        }
+       });
+     }
+   };
+   const hrRow=(c,kind)=>{const cfg={nuevo:['','Nuevo','g'],dup:['opacity:.45','Dup','n'],conflicto:['background:var(--amber-bg)','Conflicto','a'],descartado:['opacity:.45','Descartado','r']}[kind]||['','Nuevo','g'];
+-    return `<tr style="${cfg[0]}"><td style="font-size:11.5px">${c.ref}</td><td><b style="font-size:12px">${c.sucursal}</b><div style="font-size:10px;color:var(--t3)">${c.ciudad} ${c.franja?'· '+c.franja:''}</div></td><td style="font-size:12px">${c.shopper||'—'}</td><td style="font-size:11.5px">${c.escenario}</td><td style="font-size:11.5px">${c.fecha||'—'}</td><td style="font-size:11.5px">${c.honorario||'—'}</td><td>${ui.estadoBadge?ui.estadoBadge(c.estado):c.estado}</td><td>${ui.bdg(cfg[1],cfg[2])}</td></tr>`;};
++    return `<tr style="${cfg[0]}"><td style="font-size:11.5px">${escapeCell(c.ref)}</td><td><b style="font-size:12px">${escapeCell(c.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${escapeCell(c.ciudad)} ${escapeCell(c.franja?'· '+c.franja:'')}</div></td><td style="font-size:12px">${escapeCell(c.shopper||'—')}</td><td style="font-size:11.5px">${escapeCell(c.escenario)}</td><td style="font-size:11.5px">${escapeCell(c.fecha||'—')}</td><td style="font-size:11.5px">${escapeCell(c.honorario||'—')}</td><td>${ui.estadoBadge?ui.estadoBadge(c.estado):c.estado}</td><td>${ui.bdg(cfg[1],cfg[2])}</td></tr>`;};
+ 
+   /* ── Tab: Pagos · Certificaciones · Documentos (dry-run separado, P1 backlog importador) ── */
+   const ENT_CFG={
+diff --git a/backend/runtime/cxorbia-operational-command-provider-v1.mjs b/backend/runtime/cxorbia-operational-command-provider-v1.mjs
+index d9d82a6ce..95e1c5a57 100644
+--- a/backend/runtime/cxorbia-operational-command-provider-v1.mjs
++++ b/backend/runtime/cxorbia-operational-command-provider-v1.mjs
+@@ -6,9 +6,11 @@
+    HR writes, Make, Gemini, Storage and payments are intentionally outside this provider.
+ */
+ import crypto from 'node:crypto';
++import {IMPORT_COMMANDS,executeVisitImport} from './cxorbia-visit-import.mjs';
+ 
+ export const VERSION='cxorbia-operational-command-provider-v1';
+ export const COMMAND_TYPES=Object.freeze([
++  ...IMPORT_COMMANDS,
+   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
+   'visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
+   'support.ticket.create','support.ticket.update','client.nps.submit','client.note.create','client.meeting.request'
+@@ -1167,6 +1169,7 @@ export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null
+       let actor;
+       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
+       try{
++        if(IMPORT_COMMANDS.includes(command.commandType))return await executeVisitImport(db,command,actor);
+         const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled);
+         return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
+       }catch(error){return blocked(command,str(error?.message||error));}
+diff --git a/backend/runtime/cxorbia-visit-import.mjs b/backend/runtime/cxorbia-visit-import.mjs
+new file mode 100644
+index 000000000..72f320900
+--- /dev/null
++++ b/backend/runtime/cxorbia-visit-import.mjs
+@@ -0,0 +1,170 @@
++import {createHash} from 'node:crypto';
++
++export const IMPORT_COMMANDS = ['import.visits.dry_run', 'import.visits.commit', 'import.visits.read'];
++const fields = ['ref', 'sucursal', 'ciudad', 'escenario', 'quincena', 'franja', 'fecha'];
++const clean = value => typeof value === 'string' ? value.trim() : '';
++const norm = value => clean(value).normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().replace(/\s+/g,' ');
++const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
++const segment = value => typeof value === 'string' && /^[\w-][\w.:-]{0,159}$/.test(value);
++const sha = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
++const validDate = value => /^\d{4}-\d\d-\d\d$/.test(value) && !isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0,10)===value;
++const requireValue = (condition, code) => { if (!condition) throw new Error('E10_'+code); };
++const natural = row => [row.sucursal,row.ciudad,row.escenario,row.quincena].map(norm).join('|');
++const projectRow = row => Object.fromEntries(fields.map(key=>[key,clean(row[key])]));
++const rowHash = row => hash(fields.map(key=>clean(row[key])));
++
++function checkMembership(member, actor, command) {
++  requireValue(member?.active===true && member.tenantId===command.tenantId && member.role==='admin' &&
++    member.authNamespace==='staff' && member.projectIds?.includes(command.projectId) &&
++    !['inactive','disabled','deleted','revoked'].includes(member.status) && actor.role==='admin' &&
++    actor.namespace==='staff' && actor.tenantId===command.tenantId && actor.projectId===command.projectId,'MEMBERSHIP_DENIED');
++}
++
++function allowedDate(period, value) {
++  if (!validDate(value)) return false;
++  const start = period.startDate || period.fechaInicio;
++  const end = period.endDate || period.fechaFin;
++  if (start || end) return validDate(start) && validDate(end) && start<=value && value<=end;
++  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
++  const keys = new Set();
++  for (const key of [period.periodKey,period.key,period.periodId,period.periodo,period.ronda,period.name]) {
++    const label = clean(key).toLowerCase();
++    for (const match of label.matchAll(/(20\d\d)[-/](0?[1-9]|1[0-2])(?!\d)/g))
++      keys.add(match[1]+'-'+match[2].padStart(2,'0'));
++    for (const match of label.matchAll(/\b(ene(?:ro)?|feb(?:rero)?|mar(?:zo)?|abr(?:il)?|may(?:o)?|jun(?:io)?|jul(?:io)?|ago(?:sto)?|sep(?:tiembre)?|oct(?:ubre)?|nov(?:iembre)?|dic(?:iembre)?)[\s./-]+(20\d\d|\d\d)\b/g))
++      keys.add((match[2].length===2?'20':'')+match[2]+'-'+String(months.indexOf(match[1].slice(0,3))+1).padStart(2,'0'));
++  }
++  return keys.size===1 && keys.has(value.slice(0,7));
++}
++
++function classify(rows, existing, scope, period) {
++  const references=new Map(), naturals=new Map(), creates=[], outcomes=[];
++  function index(map,key,row) {
++    if (!key) return;
++    const entries=map.get(key)||[];
++    entries.push(row);
++    map.set(key,entries);
++  }
++  function add(row) {
++    index(references,norm(row.ref||row.extId),row);
++    index(naturals,natural(row),row);
++  }
++  for (const row of existing) add(row);
++  for (const [indexInFile,raw] of rows.entries()) {
++    const row=projectRow(raw||{}), digest=rowHash(row);
++    const outcome={index:indexInFile,rowDigest:digest};
++    const badShape=!raw||typeof raw!=='object'||Array.isArray(raw)||
++      Object.keys(raw).some(k=>!fields.includes(k))||
++      fields.some(k=>raw[k]!=null&&(typeof raw[k]!=='string'||raw[k].length>240||/[\u0000-\u001f<>]/.test(raw[k])));
++    if (badShape||!row.sucursal||!allowedDate(period,row.fecha)) {
++      outcomes.push({...outcome,state:'discarded',reason:badShape?'FIELD_DENIED':!row.sucursal?'BRANCH_REQUIRED':'DATE_OR_PERIOD'});
++      continue;
++    }
++    const ref=norm(row.ref), key=natural(row);
++    const hits=new Set([...(references.get(ref)||[]),...(naturals.get(key)||[])]);
++    if (hits.size) {
++      const [prior]=hits;
++      const duplicate=hits.size===1 && rowHash({...prior,ref:prior.ref||prior.extId,fecha:prior.fecha||prior.disponibleDesde})===digest;
++      outcomes.push({...outcome,state:duplicate?'duplicate':'conflict',reason:duplicate?'EXACT_ROW':'REF_OR_NATURAL_KEY'});
++      continue;
++    }
++    const id='e10-'+hash([scope.tenantId,scope.projectId,scope.periodId,scope.countryCode,ref||key]);
++    const visit={...row,...scope,id,visitId:id,extId:row.ref,periodKey:row.fecha.slice(0,7),pais:scope.countryCode,
++      status:'disponible',estado:'disponible',availableFrom:row.fecha,disponibleDesde:row.fecha,
++      shopperId:null,shopper:null,version:1,importRowDigest:digest};
++    creates.push(visit);
++    add(visit);
++    outcomes.push({...outcome,state:'new',visitId:id});
++  }
++  return {creates,outcomes};
++}
++
++async function verifyImport(project, run, exact) {
++  const snap=await project.collection('hrImportRuns').doc(run.id).get();
++  const saved=snap.data();
++  requireValue(saved && saved.plan===run.plan && saved.actorUid===run.actorUid && saved.digest===run.digest &&
++    saved.tenantId===run.tenantId && saved.periodId===run.periodId && saved.projectId===run.projectId && saved.countryCode===run.countryCode && saved.sourceDigest===run.sourceDigest &&
++    saved.mappingDigest===run.mappingDigest && hash(saved.outcomes)===hash(run.outcomes),'RECEIPT_READBACK_PENDING');
++  const ids=saved.outcomes.filter(row=>row.state==='new');
++  const visits=await Promise.all(ids.map(row=>project.collection('visits').doc(row.visitId).get()));
++  for(const [i,visit] of visits.entries()) {
++    const data=visit.data();
++    requireValue(data && data.importRunId===run.id && data.importRowDigest===ids[i].rowDigest &&
++      data.tenantId===run.tenantId && data.projectId===run.projectId && data.periodId===run.periodId &&
++      (!exact || rowHash(data)===ids[i].rowDigest),'VISIT_READBACK_PENDING');
++  }
++  return saved;
++}
++
++export async function executeVisitImport(db,command,actor) {
++  const {tenantId,projectId,periodId,commandType}=command, payload=command.payload||{};
++  requireValue([tenantId,projectId,periodId].every(segment) && command.entityType==='hrImport' &&
++    command.authorization?.permission===commandType && IMPORT_COMMANDS.includes(commandType),'SCOPE_OR_PERMISSION');
++  requireValue(actor.role==='admin' && actor.namespace==='staff','ROLE_DENIED');
++  const project=db.doc('tenants/'+tenantId+'/projects/'+projectId);
++  const member=db.doc('tenants/'+tenantId+'/users/'+actor.uid);
++  if (commandType==='import.visits.read') {
++    requireValue(/^e10-[0-9a-f]{64}$/.test(command.entityId||''),'RECEIPT_ID');
++    const [m,s]=await Promise.all([member.get(),project.collection('hrImportRuns').doc(command.entityId).get()]);
++    checkMembership(m.data(),actor,command);
++    const run=s.data();
++    requireValue(run && run.actorUid===actor.uid && run.tenantId===tenantId && run.projectId===projectId && run.periodId===periodId,'RECEIPT_SCOPE');
++    await verifyImport(project,run,false);
++    return {ok:true,status:'readback',providerAck:false,committed:false,readbackVerified:true,providerWrites:0,runId:run.id,outcomes:run.outcomes};
++  }
++  const {rows,countryCode,mappingDigest,sourceDigest}=payload;
++  requireValue(!command.entityId && sha(mappingDigest) && sha(sourceDigest) && /^[A-Z]{2}$/.test(countryCode) &&
++    Object.keys(payload).every(key=>['rows','countryCode','mappingDigest','sourceDigest','plan'].includes(key)) &&
++    Array.isArray(rows) && rows.length>0 && rows.length<=400,'INPUT_OR_ATOMIC_BATCH_SIZE');
++  const identity=[tenantId,projectId,periodId,countryCode,sourceDigest,mappingDigest];
++  const inputRows=rows.map(raw=>{
++    if(!raw || typeof raw!=='object' || Array.isArray(raw))return ['invalid',typeof raw];
++    return Object.keys(raw).sort().map(key=>[key,typeof raw[key],typeof raw[key]==='string'?raw[key]:null]);
++  });
++  const digest=hash([...identity,inputRows]);
++  const runId='e10-'+digest, runRef=project.collection('hrImportRuns').doc(runId);
++  const commit=commandType==='import.visits.commit';
++  if(commit)requireValue(command.idempotencyKey==='import:'+digest && sha(payload.plan),'CONFIRMATION_REQUIRED');
++  const result=await db.runTransaction(async tx=>{
++    const periodRef=project.collection('periods').doc(periodId);
++    // Serialize overlapping batches, including different files sharing natural keys.
++    const lockRef=project.collection('hrImportRuns').doc('lock-'+hash([periodId,countryCode]));
++    const [memberSnap,projectSnap,periodSnap,prior,lock]=await Promise.all([member,project,periodRef,runRef,lockRef].map(ref=>tx.get(ref)));
++    checkMembership(memberSnap.data(),actor,command);
++    const config=projectSnap.data(), period=periodSnap.data();
++    requireValue(config?.tenantId===tenantId && (config.projectId||config.id)===projectId && config.active!==false && !['archived','inactive','deleted','disabled'].includes(config.status) &&
++      config.countries?.includes(countryCode),'PROJECT_SCOPE');
++    const source=config.operationalSource||config.routeSource;
++    requireValue(source?.mode==='internal' && source.providerType==='internal_firestore' && source.readPolicy==='internal_live' &&
++      source.writePolicy==='platform_only' && (!source.authority?.visits||source.authority.visits==='platform'),'VISITS_SOURCE_PROTECTED');
++    requireValue(period?.tenantId===tenantId && period.projectId===projectId && (period.periodId||period.id)===periodId,'PERIOD_SCOPE');
++    if(prior.exists){
++      const run=prior.data();
++      requireValue(run.actorUid===actor.uid && run.digest===digest && (!commit||run.plan===payload.plan),'RECEIPT_CONFLICT');
++      return {run,replay:true,providerWrites:0};
++    }
++    requireValue(period.state==='activo' && period.sourceMode==='internal','PERIOD_CLOSED_OR_EXTERNAL');
++    requireValue(Number.isSafeInteger(config.version) && Number.isSafeInteger(period.version),'SCOPE_VERSION');
++    const query=project.collection('visits').where('periodId','==',periodId);
++    const snapshot=await tx.get(query);
++    const scoped=snapshot.docs.map(s=>({...s.data(),id:s.id})).filter(v=>(v.countryCode||v.pais)===countryCode);
++    const scope={tenantId,projectId,periodId,countryCode}, {creates,outcomes}=classify(rows,scoped,scope,period);
++    const plan=hash([digest,config.version,period.version,outcomes]);
++    const run={...scope,id:runId,digest,plan,sourceDigest,mappingDigest,actorUid:actor.uid,projectVersion:config.version,periodVersion:period.version,outcomes};
++    if(!commit)return {run,replay:false,providerWrites:0};
++    requireValue(command.expectedVersion===config.version && payload.plan===plan,'PLAN_CHANGED');
++    requireValue(creates.length>0,'NO_NEW_VISITS');
++    const createdAt=new Date().toISOString();
++    const currency=config.currency?.[countryCode]||period.currency?.[countryCode];
++    for(const visit of creates)tx.create(project.collection('visits').doc(visit.id),{...visit,importRunId:runId,createdAt,createdBy:actor.uid,...(currency?{currency}:{})});
++    tx.create(runRef,{...run,createdAt});
++    tx.set(lockRef,{sequence:(lock.data()?.sequence||0)+1,lastRunId:runId,tenantId,projectId,periodId,countryCode});
++    return {run,replay:false,providerWrites:creates.length+2};
++  });
++  const {run,replay,providerWrites}=result;
++  if(commit||replay)await verifyImport(project,run,!replay);
++  return {ok:true,status:commit?'committed':'dry_run',committed:commit,providerAck:commit,successUiAllowed:commit,
++    readbackVerified:commit||replay,alreadyCommitted:replay,idempotentReplay:commit&&replay,providerWrites,
++    tenantId,projectId,periodId,entityId:runId,runId,batchKey:'import:'+digest,plan:run.plan,
++    expectedVersion:run.projectVersion,outcomes:run.outcomes,localMutation:false,localStorageWrite:false};
++}
+diff --git a/backend/runtime/hr-live-service/Dockerfile b/backend/runtime/hr-live-service/Dockerfile
+index 9fa6635df..ee79b31b8 100644
+--- a/backend/runtime/hr-live-service/Dockerfile
++++ b/backend/runtime/hr-live-service/Dockerfile
+@@ -23,6 +23,7 @@ COPY backend/runtime/cxorbia-country-hr-binding-v1.mjs ./backend/runtime/cxorbia
+ COPY backend/runtime/cxorbia-make-graph-provider-v1.mjs ./backend/runtime/cxorbia-make-graph-provider-v1.mjs
+ COPY backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs ./backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs
+ COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs
++COPY backend/runtime/cxorbia-visit-import.mjs ./backend/runtime/cxorbia-visit-import.mjs
+ COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+ COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js
+ COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs ./backend/runtime/cxorbia-finance-command-provider-v1.mjs
+diff --git a/backend/runtime/hr-live-service/server.mjs b/backend/runtime/hr-live-service/server.mjs
+index cdf2729ce..87230a6f8 100644
+--- a/backend/runtime/hr-live-service/server.mjs
++++ b/backend/runtime/hr-live-service/server.mjs
+@@ -910,6 +910,12 @@ const server=http.createServer(async(req,res)=>{
+   if(isCxorbiaCommandRuntimePath(url.pathname)){
+     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
+       configure:async command=>{
++        if(['import.visits.dry_run','import.visits.commit','import.visits.read'].includes(command?.commandType)){
++          // E10 reads its source authority and active membership in the operational provider.
++          // Selecting an internal project must never start an Excel/Make snapshot read.
++          const {auth,db}=ensureAdmin();
++          return {auth,db,operationalPolicy:operationalPolicy({tenantId:command.tenantId,projectId:command.projectId})};
++        }
+         const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
+           'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create','application.status.update','reservation.create','reservation.status.update','visit.sync.confirm','finance.reconcile.visit','finance.historical.reconcile']);
+         const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId,...(hrCommands.has(command?.commandType)&&command.periodId?{hrPeriodId:command.periodId}:{})}:undefined;
+diff --git a/backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs b/backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs
+new file mode 100644
+index 000000000..984c10588
+--- /dev/null
++++ b/backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs
+@@ -0,0 +1,105 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {createOperationalCommandProvider} from '../../cxorbia-operational-command-provider-v1.mjs';
++
++const scope={tenantId:'sample',projectId:'project',periodId:'period-2026-11'};
++const project='tenants/sample/projects/project',member='tenants/sample/users/admin';
++const baseRow={ref:'001',sucursal:'Sucursal 14',fecha:'2026-11-05',ciudad:'Ciudad',escenario:'Visita'};
++const policy={schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:['sample'],
++  allowedProjectIds:['project'],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
++
++// A transaction double with Firestore's read-before-write rule. New providers
++// receive independent auth objects and share only the durable document store.
++function fixture(){
++  const docs=new Map(),verified=[];
++  const seed=(path,v)=>docs.set(path,structuredClone(v));
++  seed(member,{tenantId:'sample',role:'admin',active:true,authNamespace:'staff',projectIds:['project']});
++  seed(project,{tenantId:'sample',projectId:'project',version:2,countries:['CO'],currency:{CO:'COP'},
++    operationalSource:{mode:'internal',providerType:'internal_firestore',readPolicy:'internal_live',writePolicy:'platform_only'}});
++  seed(project+'/periods/'+scope.periodId,{...scope,version:3,state:'activo',sourceMode:'internal'});
++  const snap=path=>({id:path.split('/').at(-1),exists:docs.has(path),data:()=>structuredClone(docs.get(path))});
++  const doc=path=>({path,get:async()=>snap(path),collection:name=>collection(path+'/'+name)});
++  const collection=path=>({doc:id=>doc(path+'/'+id),where:(key,op,value)=>{assert.equal(op,'==');return {path,key,value};}});
++  let tail=Promise.resolve();
++  const db={doc,collection,runTransaction(callback){
++    const work=tail.then(async()=>{
++      const staged=new Map();
++      const tx={get:async ref=>{
++        assert.equal(staged.size,0);
++        if(!ref.key)return snap(ref.path);
++        return {docs:[...docs.keys()].filter(k=>k.startsWith(ref.path+'/')&&docs.get(k)[ref.key]===ref.value).map(snap)};
++      },create(ref,data){assert(!docs.has(ref.path)&&!staged.has(ref.path));staged.set(ref.path,data);},
++        set:(ref,data)=>staged.set(ref.path,data)};
++      const value=await callback(tx);
++      for(const [key,data] of staged)seed(key,data);
++      return value;
++    });
++    tail=work.catch(()=>{});return work;
++  }};
++  function provider(role='admin'){
++    const auth={verifyIdToken:async(token,revoked)=>{verified.push([token,revoked]);assert.equal(revoked,true);
++      if(!token.startsWith('session-'))throw Error('invalid token');
++      return {uid:'admin',role,authNamespace:'staff',tenantId:'sample',projectIds:['project']};}};
++    return createOperationalCommandProvider({db,auth,policy});
++  }
++  return {docs,seed,verified,provider};
++}
++function command(type,rows=[baseRow]){
++  const commandType='import.visits.'+type;
++  return {...scope,version:'cxorbia-command-adapter-v1',entityType:'hrImport',commandType,expectedVersion:'current',
++    idempotencyKey:'preview',authorization:{providerEnforcementRequired:true,permission:commandType},
++    payload:{countryCode:'CO',sourceDigest:'a'.repeat(64),mappingDigest:'b'.repeat(64),rows}};
++}
++function confirm(preview,cmd){
++  const commit=command('commit',cmd.payload.rows);
++  return {...commit,idempotencyKey:preview.batchKey,expectedVersion:preview.expectedVersion,payload:{...cmd.payload,plan:preview.plan}};
++}
++test('dry-run through the operational dispatcher verifies auth, classifies every row and writes zero documents',async()=>{
++  const f=fixture(),before=JSON.stringify([...f.docs]),c=command('dry_run',[baseRow,baseRow,{...baseRow,fecha:'2026-11-06'},{...baseRow,fecha:'2026-10-30'},{...baseRow,shopper:'blocked'}]);
++  const r=await f.provider().execute('session-a',c);
++  assert.equal(r.status,'dry_run');assert.equal(r.providerWrites,0);assert.equal(r.providerAck,false);
++  assert.deepEqual(r.outcomes.map(x=>x.state),['new','duplicate','conflict','discarded','discarded']);
++  assert.deepEqual(f.verified,[['session-a',true]]);assert.equal(JSON.stringify([...f.docs]),before);
++});
++test('response loss, independent receipt read and old replay preserve a later valid visit update',async()=>{
++  const f=fixture(),c=command('dry_run'),p=f.provider(),preview=await p.execute('session-a',c),commit=confirm(preview,c);
++  const first=await p.execute('session-a',commit);
++  assert.equal(first.providerWrites,3);assert.equal(first.readbackVerified,true);
++  const path=project+'/visits/'+first.outcomes[0].visitId;
++  f.seed(path,{...f.docs.get(path),estado:'programada'});
++  const before=JSON.stringify([...f.docs]),second=f.provider();
++  const replay=await second.execute('session-b',commit);
++  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
++  const read=await second.execute('session-b',{...command('read'),entityId:first.runId,payload:{}});
++  assert.equal(read.readbackVerified,true);assert.equal(read.providerWrites,0);
++  assert.equal(JSON.stringify([...f.docs]),before);
++});
++test('missing confirmation, revoked member, actor scope, role, closed period and external source deny writes',async()=>{
++  for(const kind of ['confirmation','member','scope','role','period','source','token']){
++    const f=fixture(),p=f.provider(),c=command('dry_run'),pre=await p.execute('session-a',c),commit=confirm(pre,c);
++    if(kind==='confirmation')delete commit.payload.plan;
++    if(kind==='member')f.seed(member,{...f.docs.get(member),active:false});
++    if(kind==='scope')commit.projectId='other';
++    if(kind==='period'){const ref=project+'/periods/'+scope.periodId;f.seed(ref,{...f.docs.get(ref),state:'cerrado'});}
++    if(kind==='source')f.seed(project,{...f.docs.get(project),operationalSource:{mode:'external',providerType:'excel_online'}});
++    const before=JSON.stringify([...f.docs]),r=await f.provider(kind==='role'?'ops':'admin').execute(kind==='token'?'invalid':'session-b',commit);
++    assert.equal(r.ok,false,kind);assert.equal(JSON.stringify([...f.docs]),before,kind);
++  }
++});
++test('different files with overlapping identities serialize and invalidate an obsolete preview',async()=>{
++  const f=fixture(),p=f.provider(),a=command('dry_run'),b=command('dry_run');
++  b.payload.sourceDigest='c'.repeat(64);
++  const [ap,bp]=await Promise.all([p.execute('session-a',a),p.execute('session-b',b)]);
++  const results=await Promise.all([p.execute('session-a',confirm(ap,a)),p.execute('session-b',confirm(bp,b))]);
++  assert.equal(results.filter(x=>x.ok).length,1);
++  assert.equal(results.filter(x=>x.code==='E10_PLAN_CHANGED').length,1);
++  assert.equal([...f.docs.keys()].filter(k=>k.startsWith(project+'/visits/')).length,1);
++});
++test('existing rows in the selected country and period only participate in the plan',async()=>{
++  const f=fixture(),p=f.provider(),c=command('dry_run');
++  f.seed(project+'/visits/preexisting',{...baseRow,periodId:'older',pais:'CO'});
++  f.seed(project+'/visits/another-country',{...baseRow,periodId:scope.periodId,pais:'GT'});
++  assert.equal((await p.execute('session-a',c)).outcomes[0].state,'new');
++  f.seed(project+'/visits/same-country',{...baseRow,periodId:scope.periodId,pais:'CO'});
++  assert.equal((await p.execute('session-a',c)).outcomes[0].state,'duplicate');
++});
+diff --git a/firestore.rules b/firestore.rules
+index 9001a1a39..d5fc4fcc1 100644
+--- a/firestore.rules
++++ b/firestore.rules
+@@ -478,14 +478,15 @@ service cloud.firestore {
+         }
+ 
+         match /visits/{visitId} {
+-          allow read: if tenantAllowed(tenantId) && (
++          allow read: if tenantAllowed(tenantId) &&
++            (!visitId.matches('e10-[0-9a-f]{64}') || projectAssigned(projectId) || isSuper()) && (
+             isOperator() ||
+             isClient() && projectAssigned(projectId) ||
+             isOwnResource() ||
+             isAvailableVisitForShopper(projectId)
+           );
+-          allow create, delete: if tenantAllowed(tenantId) && isOperator();
+-          allow update: if tenantAllowed(tenantId) && (
++          allow create, delete: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && isOperator();
++          allow update: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && (
+             isOperator() ||
+             isOwnResource()
+           );
+diff --git a/tools/qa/cxorbia-i3-e10-durable-proof.mjs b/tools/qa/cxorbia-i3-e10-durable-proof.mjs
+new file mode 100644
+index 000000000..cd0ce64fd
+--- /dev/null
++++ b/tools/qa/cxorbia-i3-e10-durable-proof.mjs
+@@ -0,0 +1,115 @@
++// Native QA only. Uses the existing dispatcher and Firebase password auth in DEV.
++// A proof against a loopback dispatcher is recorded separately from a served release.
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import http from 'node:http';
++import {createRequire} from 'node:module';
++import {randomBytes,createHash} from 'node:crypto';
++import {maybeHandleCxorbiaCommandRuntimeRequest} from '../../backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs';
++
++const projectId='cxorbia-backend-dev',run=process.env.CXORBIA_E10_QA_RUN;
++assert.match(run||'',/^[a-f0-9]{32}$/);
++const out=process.env.CXORBIA_E10_QA_RECEIPT;
++assert(out && !fs.existsSync(out));
++const requireAdmin=createRequire((process.env.CXORBIA_QA_DEPENDENCIES||process.cwd())+'/package.json');
++const {initializeApp,applicationDefault,deleteApp}=requireAdmin('firebase-admin/app');
++const {getAuth}=requireAdmin('firebase-admin/auth'),{getFirestore}=requireAdmin('firebase-admin/firestore');
++const app=initializeApp({projectId,credential:applicationDefault()}),auth=getAuth(app),db=getFirestore(app);
++const tenantId='qa-e10-'+run,project='qa-import',periodId='qa-2026-11',uid='e10-'+run;
++const email=uid+'@qa.example.invalid',password=randomBytes(32).toString('hex');
++const base='tenants/'+tenantId+'/projects/'+project,member='tenants/'+tenantId+'/users/'+uid,period=base+'/periods/'+periodId;
++const seed=new Map([[base,{tenantId,projectId:project,version:1,countries:['CO'],currency:{CO:'COP'},qaRun:run,
++  operationalSource:{mode:'internal',providerType:'internal_firestore',readPolicy:'internal_live',writePolicy:'platform_only'}}],
++  [period,{tenantId,projectId:project,periodId,sourceMode:'internal',state:'activo',version:1,qaRun:run}],
++  [member,{tenantId,uid,role:'admin',authNamespace:'staff',projectIds:[project],active:true,qaRun:run}]]);
++const policy={schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:[tenantId],allowedProjectIds:[project],
++  conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
++const receipt={nativeRun:run,environment:projectId,mode:'NATIVE_FIRESTORE_AND_AUTH_LOOPBACK_DISPATCHER',production:false,realImports:0,steps:[]};
++let ownedAuth=false,seeded=false,server,plan;
++const check=(name)=>receipt.steps.push(name);
++const rows=[{ref:'sample-1',sucursal:'Sucursal 17',fecha:'2026-11-21',ciudad:'Ciudad'},
++  {ref:'sample-1',sucursal:'Sucursal 17',fecha:'2026-11-21',ciudad:'Ciudad'},
++  {ref:'sample-1',sucursal:'Otra sucursal',fecha:'2026-11-22'},
++  {ref:'sample-2',sucursal:'Otra sucursal',fecha:'2026-10-10'}];
++const bytes=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
++const ordered=v=>Array.isArray(v)?v.map(ordered):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,ordered(v[k])])):v;
++const same=(a,b)=>assert.deepEqual(ordered(a),ordered(b));
++const payload={rows,countryCode:'CO',sourceDigest:bytes(rows),mappingDigest:bytes(['ref','sucursal','fecha','ciudad'])};
++const command=(type,body=payload)=>({version:'cxorbia-command-adapter-v1',commandType:'import.visits.'+type,
++  entityType:'hrImport',tenantId,projectId:project,periodId,idempotencyKey:'preview',expectedVersion:'current',payload:body,
++  authorization:{permission:'import.visits.'+type,providerEnforcementRequired:true}});
++try{
++  const init=await (await fetch('https://cxorbia-backend-dev.web.app/__/firebase/init.json')).json();
++  assert.equal(init.projectId,projectId);assert(init.apiKey);
++  const login=async()=>{
++    const response=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(init.apiKey),
++      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password,returnSecureToken:true})});
++    assert.equal(response.status,200);const result=await response.json();assert.equal(result.localId,uid);return result.idToken;
++  };
++  const batch=db.batch();for(const [path,value] of seed)batch.create(db.doc(path),value);
++  assert(!(await db.doc(base).get()).exists);assert.equal((await db.doc(base).listCollections()).length,0);
++  await auth.createUser({uid,email,password,emailVerified:true});ownedAuth=true;
++  await auth.setCustomUserClaims(uid,{role:'admin',authNamespace:'staff',tenantId,projectIds:[project]});
++  await batch.commit();seeded=true;
++  const sessionA=await login();
++  server=http.createServer((req,res)=>maybeHandleCxorbiaCommandRuntimeRequest(req,res,new URL(req.url,'http://localhost'),
++    {configure:()=>({db,auth,operationalPolicy:policy})}));
++  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
++  const endpoint='http://127.0.0.1:'+server.address().port+'/v1/cxorbia/commands';
++  const call=async(token,body)=>(await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(body)})).json();
++  const dry=command('dry_run');
++  plan=await call(sessionA,dry);assert.equal(plan.status,'dry_run',plan.code);assert.equal(plan.providerWrites,0);
++  same(plan.outcomes.map(r=>r.state),['new','duplicate','conflict','discarded']);
++  assert((await db.collection(base+'/visits').get()).empty && (await db.collection(base+'/hrImportRuns').get()).empty);check('DRY_RUN_ZERO_WRITES_AND_FOUR_ROW_STATES');
++  const commit={...command('commit',{...payload,plan:plan.plan}),expectedVersion:plan.expectedVersion,idempotencyKey:plan.batchKey};
++  assert(!(await call(sessionA,{...commit,payload:{...payload,plan:'0'.repeat(64)}})).ok);check('WRONG_PLAN_DENIED');
++  assert(!(await call(sessionA,{...dry,tenantId:'other-qa'})).ok);check('OTHER_TENANT_DENIED');
++  const first=await call(sessionA,commit);assert(first.providerAck && first.readbackVerified);assert.equal(first.providerWrites,3);
++  check('COMMIT_ACK_AND_INDEPENDENT_READBACK');receipt.createdVisitCount=1;
++  const sessionB=await login();
++  const snapshot=async()=>Promise.all(['visits','hrImportRuns'].map(async coll=>(await db.collection(base+'/'+coll).get()).docs.map(s=>[s.id,s.updateTime.toMillis()])));
++  const before=await snapshot();
++  const again=await call(sessionB,commit);
++  assert(again.idempotentReplay && again.providerAck);assert.equal(again.providerWrites,0);
++  same(await snapshot(),before);check('SECOND_PASSWORD_SESSION_REPLAY_ZERO_WRITES');
++  const read=await call(sessionB,{...command('read',{}),entityId:first.runId});
++  assert(read.readbackVerified);assert.equal(read.runId,first.runId);check('INDEPENDENT_RECEIPT_SECOND_SESSION');
++  receipt.runId=first.runId;receipt.plan=plan.plan;receipt.status='PASS';
++}catch(error){receipt.status='HOLD';receipt.failure=String(error.message).slice(0,210);process.exitCode=1;}
++finally{
++  try{
++    if(server)await new Promise(resolve=>server.close(resolve));
++    if(seeded){
++      const ledger=await db.collection(base+'/hrImportRuns').get(),visits=await db.collection(base+'/visits').get();
++      const allowed=new Map(seed);
++      const projected=plan?.outcomes?.filter(r=>r.state==='new')||[];
++      for(const s of visits.docs){
++        const row=projected.find(r=>r.visitId===s.id);assert(row);
++        const v=s.data();assert.equal(v.importRunId,plan.runId);assert.equal(v.importRowDigest,row.rowDigest);
++        assert.equal(v.tenantId,tenantId);assert.equal(v.projectId,project);assert.equal(v.periodId,periodId);
++        assert.equal(v.createdBy,uid);assert.equal(v.version,1);assert.equal(v.estado,'disponible');
++        assert(s.createTime.isEqual(s.updateTime),'changed visit');allowed.set(s.ref.path,v);
++      }
++      for(const s of ledger.docs){
++        const v=s.data();assert.equal(v.tenantId,tenantId);assert.equal(v.projectId,project);assert.equal(v.periodId,periodId);
++        if(s.id===plan?.runId){assert.equal(v.actorUid,uid);assert.equal(v.plan,plan.plan);}
++        else{assert.equal(s.id,'lock-'+bytes([periodId,payload.countryCode]));assert.equal(v.lastRunId,plan.runId);assert.equal(v.sequence,1);}
++        assert(s.createTime.isEqual(s.updateTime),'changed receipt');allowed.set(s.ref.path,v);
++      }
++      const allowedPaths=new Set(allowed.keys());
++      const projectChildren=await db.doc(base).listCollections();
++      for(const collection of projectChildren)for(const item of (await collection.get()).docs){assert(allowedPaths.has(item.ref.path));assert.equal((await item.ref.listCollections()).length,0);}
++      await db.runTransaction(async tx=>{
++        const docs=await Promise.all([...allowed].map(async([path,body])=>{const ref=db.doc(path),s=await tx.get(ref);same(s.data(),body);return ref;}));
++        for(const ref of docs)tx.delete(ref);
++      });
++      for(const path of allowed.keys())assert(!(await db.doc(path).get()).exists);
++      assert.equal((await db.doc(base).listCollections()).length,0);receipt.ownedDocumentsRemoved=allowed.size;
++    }
++    if(ownedAuth){const user=await auth.getUser(uid);assert.equal(user.email,email);await auth.deleteUser(uid);
++      await assert.rejects(auth.getUser(uid),e=>e.code==='auth/user-not-found');receipt.ownedAuthRemoved=1;}
++    check('EXACT_OWNED_CLEANUP');receipt.cleanupVerified=true;
++  }catch(error){receipt.status='HOLD';receipt.cleanupVerified=false;receipt.cleanupFailure=String(error.message).slice(0,210);process.exitCode=1;}
++  await db.terminate();await deleteApp(app);fs.writeFileSync(out,JSON.stringify(receipt,null,2)+'\n',{flag:'wx',mode:0o600});
++  console.log(JSON.stringify(receipt));
++}

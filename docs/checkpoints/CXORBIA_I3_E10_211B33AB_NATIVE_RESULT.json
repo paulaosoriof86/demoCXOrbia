@@ -1,0 +1,23 @@
+{
+  "nativeRun": "cd695e94c96145c994167433ff3e4959",
+  "environment": "cxorbia-backend-dev",
+  "mode": "NATIVE_FIRESTORE_AND_AUTH_LOOPBACK_DISPATCHER",
+  "production": false,
+  "realImports": 0,
+  "steps": [
+    "DRY_RUN_ZERO_WRITES_AND_FOUR_ROW_STATES",
+    "WRONG_PLAN_DENIED",
+    "OTHER_TENANT_DENIED",
+    "COMMIT_ACK_AND_INDEPENDENT_READBACK",
+    "SECOND_PASSWORD_SESSION_REPLAY_ZERO_WRITES",
+    "INDEPENDENT_RECEIPT_SECOND_SESSION",
+    "EXACT_OWNED_CLEANUP"
+  ],
+  "createdVisitCount": 1,
+  "runId": "e10-9f47979010a2132125b7e1cab9f3e699c31a7cbe6051b5ba17d7b78f20d6b695",
+  "plan": "7a964e89946a54761fc6bc57948a29ef1c0cb6362ff985aa963eb6393b3a2752",
+  "status": "PASS",
+  "ownedDocumentsRemoved": 6,
+  "ownedAuthRemoved": 1,
+  "cleanupVerified": true
+}

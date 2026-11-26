@@ -893,8 +893,16 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "2ee2a65217956f2a2ebd77793f69b15396103db9",
+      "gitBlob": "919f6a39391c262de5449cc905aa14f03759fb74",
       "decisionId": "PORT-DEC-040"
+    },
+    "pendingE10NativeSource": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_211B33AB_NATIVE_RESULT.json",
+      "blob": "546f3f3d6df723a38fd7425d8fe5cf2608951375",
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/cd695e94c96145c994167433ff3e4959/e10-source-qa.json",
+      "generation": "1795715840493531",
+      "sha256": "85e68d709361f4f124cdb0d17ad4a38748a1af48ff50b46633e1e6a981b8429a",
+      "independentStorageReadback": true
     }
   },
   "lastChromeConnection": {

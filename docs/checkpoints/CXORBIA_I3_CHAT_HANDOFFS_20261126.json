@@ -53,7 +53,43 @@
     {
       "id": "CX-CHAT-HO-E10-20261126-01",
       "disposition": "SUBSTANTIAL_CHANGE",
-      "evidence": "Generated diff passed git apply --check. Fixture-only gate, hardcoded period and project-wide 501-document scan do not implement the operational contract. UI, provider, readback and Firestore rules require integration. Retain deterministic plan and scoped receipts."
+      "evidence": "Generated diff passed git apply --check. Fixture-only gate, hardcoded period and project-wide 501-document scan do not implement the operational contract. UI, provider, readback and Firestore rules require integration. Retain deterministic plan and scoped receipts.",
+      "sourceProof": {
+        "source": "211b33abefd8b01b8421ad836f0e49c7d696a81d",
+        "tree": "8787ebe5fe2f9047eeb977e2f7835c32b3148e7e",
+        "parent": "54527b014b32fff2b129fb9538442a2f723a1cc9",
+        "patch": {
+          "path": "docs/checkpoints/CXORBIA_I3_E10_211B33AB_NATIVE_SOURCE.patch",
+          "blob": "ceb80e999e54960fce2be3215f8a3435ca0fba53",
+          "sha256": "d6581f2f4a5e3e2e71900a77831b5ab1e46fc6863a68e10e976e5c521ba50f94",
+          "appliesToExactParent": true
+        },
+        "nativeResult": {
+          "path": "docs/checkpoints/CXORBIA_I3_E10_211B33AB_NATIVE_RESULT.json",
+          "blob": "546f3f3d6df723a38fd7425d8fe5cf2608951375",
+          "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/cd695e94c96145c994167433ff3e4959/e10-source-qa.json",
+          "generation": "1795715840493531",
+          "sha256": "85e68d709361f4f124cdb0d17ad4a38748a1af48ff50b46633e1e6a981b8429a",
+          "independentStorageReadback": true
+        },
+        "localRegression": {
+          "operationalAndE10": 70,
+          "priorMapping": 17,
+          "failed": 0
+        },
+        "served": false,
+        "makeScenarioInvocations": 0,
+        "qaScope": "Cloud Shell, real Firebase password sign-ins, native Firestore, operational dispatcher on loopback, two sessions. One synthetic visit, full fixture cleanup. No deployed UI or full domain pass."
+      },
+      "releaseReadback": {
+        "classification": "RELEASE_COMPOSITION_FAILURE",
+        "owner": "tools/qa/cxorbia-i3-shock-continuity-guard.mjs:validatePendingDevSuccessor",
+        "cause": "The paired runtime/hosting scope explicitly excludes firestore.rules and permits zero rules deploys. Source contains a change to protect imported visits. Keep source as a recoverable patch until a compatible scoped release unit is proven.",
+        "nativeRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+        "nativeRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+        "matchesSealedPredecessor": true,
+        "guardUnmodified": true
+      }
     },
     {
       "id": "CX-CHAT-HO-CI-20261126-02",
@@ -90,7 +126,11 @@
         ],
         "targetDriveTypeVerified": false,
         "targetOwnershipVerified": false,
-        "broadGrants": 0
+        "broadGrants": 0,
+        "targetPresentInVisibleDriveList": false,
+        "exactItemPermissionsHttp": 403,
+        "providerCode": "accessDenied",
+        "inferredMissingConsent": false
       }
     },
     {
