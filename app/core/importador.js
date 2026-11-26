@@ -12,6 +12,8 @@ window.CX = window.CX || {};
   const FIELDS = {
     ref:        {label:'Ref / Fila', syn:['fila','ref','no','num','#','id']},
     sucursal:   {label:'Sucursal', syn:['sucursal','cinema','tienda','local','agencia','punto','establecimiento','sede']},
+    pais:       {label:'País (código)', syn:['pais','country','countrycode']},
+    quincena:   {label:'Quincena',syn:['quincena','fortnight']},
     ciudad:     {label:'Ciudad', syn:['ciudad','city','ubicacion','plaza','localidad']},
     franja:     {label:'Franja', syn:['franja','horario','jornada','turno','wknd','wk']},
     fecha:      {label:'Fecha', syn:['fecha','date','prog','programada','dia','realiz','realizada']},
@@ -165,6 +167,50 @@ window.CX = window.CX || {};
       });
       CX.bus && CX.bus.emit('visit-flow');
       return {creadas, shoppersNuevos, shoppersFusionados};
+    },
+
+    async durablePlan(parsed, mapping, countryCode, sourceText) {
+      const fields=Object.fromEntries(Object.entries(mapping).map(([index,name])=>[name,Number(index)]));
+      if(fields.sucursal===undefined || fields.fecha===undefined)
+        throw Error('Mapea Sucursal y Fecha antes de solicitar el plan.');
+      if(new Set(Object.values(mapping)).size!==Object.values(mapping).length)
+        throw Error('Hay dos columnas mapeadas al mismo campo.');
+      const digest=async value=>{
+        const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value)));
+        return Array.from(new Uint8Array(bytes),v=>v.toString(16).padStart(2,'0')).join('');
+      };
+      const rows=parsed.rows.map(source=>{
+        const read=key=>String(source[fields[key]]??'').trim();
+        const row=Object.fromEntries(['ref','sucursal','ciudad','escenario','quincena','franja','fecha'].map(key=>[key,read(key)]));
+        row.fecha=this._date(row.fecha);
+        // The provider reports this row as discarded without transmitting sensitive cell values.
+        const existingActivity=['shopper','honorario','reembolso','obs'].some(key=>read(key)!=='') ||
+          (read('estado') && !/^(disponible|sin asignar|pendiente (de )?asignar)$/i.test(read('estado')));
+        if(existingActivity || (read('pais') && read('pais').toUpperCase()!==countryCode))row.excluded=true;
+        return row;
+      });
+      const {tenantId,projectId,periodId}=CX.data.ctx();
+      const payload={countryCode,rows,mappingDigest:await digest([parsed.headers,Object.entries(mapping)]),sourceDigest:await digest(sourceText??[parsed.headers,parsed.rows])};
+      const command={entityType:'hrImport',tenantId,projectId,periodId,source:'importador',expectedVersion:'current',idempotencyKey:'preview:'+payload.sourceDigest,payload};
+      const response=await this.importCommand('import.visits.dry_run',command);
+      if(response.status!=='dry_run'||response.providerWrites!==0||!Array.isArray(response.outcomes))throw Error('Vista previa sin confirmar.');
+      return {command,response};
+    },
+    async importCommand(commandType,command) {
+      const current=CX.data.ctx();
+      if(['tenantId','projectId','periodId'].some(key=>current[key]!==command[key]))
+        throw Error('El proyecto o período cambió. Vuelve a calcular la vista previa.');
+      const result=await CX.commandAdapter.execute({...command,commandType,authorization:{providerEnforcementRequired:true,permission:commandType}});
+      if(!result?.ok)throw Error(result?.code||'No se recibió una respuesta válida del proveedor.');
+      return result;
+    },
+    async confirmPlan({command,response}) {
+      const committed=await this.importCommand('import.visits.commit',{...command,idempotencyKey:response.batchKey,
+        expectedVersion:response.expectedVersion,payload:{...command.payload,plan:response.plan}});
+      if(!committed.providerAck||!committed.readbackVerified)throw Error('Lectura del recibo pendiente.');
+      const saved=await this.importCommand('import.visits.read',{...command,entityId:committed.runId,payload:{}});
+      if(!saved.readbackVerified||saved.runId!==committed.runId)throw Error('La lectura independiente está pendiente.');
+      return saved;
     },
 
     /* HR de ejemplo (genérica) para demostrar el flujo */

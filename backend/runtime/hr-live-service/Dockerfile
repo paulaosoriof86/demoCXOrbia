@@ -23,6 +23,7 @@ COPY backend/runtime/cxorbia-country-hr-binding-v1.mjs ./backend/runtime/cxorbia
 COPY backend/runtime/cxorbia-make-graph-provider-v1.mjs ./backend/runtime/cxorbia-make-graph-provider-v1.mjs
 COPY backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs ./backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs
 COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs
+COPY backend/runtime/cxorbia-visit-import.mjs ./backend/runtime/cxorbia-visit-import.mjs
 COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
 COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js
 COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs ./backend/runtime/cxorbia-finance-command-provider-v1.mjs

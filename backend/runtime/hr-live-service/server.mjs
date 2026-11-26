@@ -910,6 +910,12 @@ const server=http.createServer(async(req,res)=>{
   if(isCxorbiaCommandRuntimePath(url.pathname)){
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
       configure:async command=>{
+        if(['import.visits.dry_run','import.visits.commit','import.visits.read'].includes(command?.commandType)){
+          // E10 reads its source authority and active membership in the operational provider.
+          // Selecting an internal project must never start an Excel/Make snapshot read.
+          const {auth,db}=ensureAdmin();
+          return {auth,db,operationalPolicy:operationalPolicy({tenantId:command.tenantId,projectId:command.projectId})};
+        }
         const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
           'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create','application.status.update','reservation.create','reservation.status.update','visit.sync.confirm','finance.reconcile.visit','finance.historical.reconcile']);
         const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId,...(hrCommands.has(command?.commandType)&&command.periodId?{hrPeriodId:command.periodId}:{})}:undefined;

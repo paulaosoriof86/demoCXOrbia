@@ -478,14 +478,15 @@ service cloud.firestore {
         }
 
         match /visits/{visitId} {
-          allow read: if tenantAllowed(tenantId) && (
+          allow read: if tenantAllowed(tenantId) &&
+            (!visitId.matches('e10-[0-9a-f]{64}') || projectAssigned(projectId) || isSuper()) && (
             isOperator() ||
             isClient() && projectAssigned(projectId) ||
             isOwnResource() ||
             isAvailableVisitForShopper(projectId)
           );
-          allow create, delete: if tenantAllowed(tenantId) && isOperator();
-          allow update: if tenantAllowed(tenantId) && (
+          allow create, delete: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && isOperator();
+          allow update: if !visitId.matches('e10-[0-9a-f]{64}') && tenantAllowed(tenantId) && (
             isOperator() ||
             isOwnResource()
           );

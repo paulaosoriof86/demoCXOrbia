@@ -300,6 +300,7 @@ Responde SOLO con JSON válido con este formato exacto:
   const FIELDS=CX.importador&&CX.importador.FIELDS||{};
   const fieldOpts=(sel)=>`<option value="">— ignorar —</option>`+Object.keys(FIELDS).map(f=>`<option value="${f}" ${f===sel?'selected':''}>${FIELDS[f]?FIELDS[f].label:f}</option>`).join('');
 
+  const escapeCell=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const drawHR=(body)=>{
     if(hr.step===1){
       body.innerHTML=`
@@ -326,7 +327,7 @@ Responde SOLO con JSON válido con este formato exacto:
         if(!CX.importador){ui.toast('Módulo importador no disponible','err');return;}
         const parsed=CX.importador.parse(txt);
         if(!parsed.headers.length||!parsed.rows.length){ui.toast('No detecté filas. Verifica que hay encabezado + datos.','err');return;}
-        hr.parsed=parsed;hr.map=CX.importador.autoMap(parsed.headers);hr.step=2;drawHR(body);
+        hr.parsed=parsed;hr.sourceText=txt;hr.map=CX.importador.autoMap(parsed.headers);hr.step=2;drawHR(body);
       });
     } else if(hr.step===2){
       const h=hr.parsed.headers;
@@ -335,9 +336,9 @@ Responde SOLO con JSON válido con este formato exacto:
         <div class="card-h"><div class="card-t">Revisa el mapeo de columnas</div>${ui.bdg(hr.parsed.rows.length+' filas','b')}</div>
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Ajusta a qué campo del sistema corresponde cada columna de tu archivo.</p>
         <div class="grid g2" style="gap:10px 14px">
-          ${h.map((col,i)=>`<div><label class="lbl">${col||'(col '+(i+1)+')'}</label>
+          ${h.map((col,i)=>`<div><label class="lbl">${escapeCell(col||'(col '+(i+1)+')')}</label>
             <select class="sel hrMap" data-i="${i}">${fieldOpts(hr.map[i])}</select>
-            <div style="font-size:10.5px;color:var(--t3);margin-top:3px">ej: ${(hr.parsed.rows[0]||[])[i]||'—'}</div></div>`).join('')}
+            <div style="font-size:10.5px;color:var(--t3);margin-top:3px">ej: ${escapeCell((hr.parsed.rows[0]||[])[i]||'—')}</div></div>`).join('')}
         </div>
         <div class="flex" style="justify-content:space-between;margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="hrBack2">← Atrás</button>
@@ -383,29 +384,64 @@ Responde SOLO con JSON válido con este formato exacto:
         <div class="card-h"><div class="card-t">Vista previa y confirmación</div><div class="flex" style="gap:6px">${ui.bdg(d.nuevos.length+' nuevos','g')} ${ui.bdg(d.dups.length+' duplicados (omitidos)','n')}${d.conflicts&&d.conflicts.length?ui.bdg(d.conflicts.length+' en conflicto (retenidos)','a'):''}${d.discarded&&d.discarded.length?ui.bdg(d.discarded.length+' descartados (dato insuficiente)','r'):''}</div></div>
         ${periodInfo}
         <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--brand-dark);margin:12px 0">Anti-duplicado por <b>sucursal + fecha</b>. Los duplicados exactos no se importan. Un <b>conflicto</b> (misma sucursal+fecha, pero shopper u honorario distinto entre HR y la visita ya existente) se retiene para revisión humana — no se sobrescribe automáticamente. Los descartados no tienen sucursal/fecha válida para dedupe real.</div>
-        ${d.conflicts&&d.conflicts.length?`<div class="card" style="border-left:3px solid var(--amber);padding:11px 13px;margin-bottom:12px"><b style="font-size:12.5px">⚠️ ${d.conflicts.length} en conflicto — requieren revisión</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">${d.conflicts.slice(0,3).map(c=>c.sucursal+' · HR: '+(c.shopper||'—')+' ('+(c.honorario||0)+') vs. existente: '+((c._conflictWith&&c._conflictWith.shopper)||'—')+' ('+((c._conflictWith&&c._conflictWith.honorario)||0)+')').join('<br>')}</div></div>`:''}
+        ${d.conflicts&&d.conflicts.length?`<div class="card" style="border-left:3px solid var(--amber);padding:11px 13px;margin-bottom:12px"><b style="font-size:12.5px">⚠️ ${d.conflicts.length} en conflicto — requieren revisión</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">${d.conflicts.slice(0,3).map(c=>escapeCell(c.sucursal+' · HR: '+(c.shopper||'—')+' ('+(c.honorario||0)+') vs. existente: '+((c._conflictWith&&c._conflictWith.shopper)||'—')+' ('+((c._conflictWith&&c._conflictWith.honorario)||0)+')')).join('<br>')}</div></div>`:''}
         <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
           <table class="tbl" style="min-width:700px"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th></th></tr></thead>
           <tbody>${[...d.nuevos.map(c=>hrRow(c,'nuevo')),...d.conflicts.map(c=>hrRow(c,'conflicto')),...d.dups.map(c=>hrRow(c,'dup')),...(d.discarded||[]).map(c=>hrRow(c,'descartado'))].join('')}</tbody></table>
         </div>
         <div class="flex" style="justify-content:space-between;margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="hrBack3">← Atrás</button>
-          <button class="btn btn-green btn-sm" id="hrCommit" ${d.nuevos.length?'':'disabled'}>✓ Importar ${d.nuevos.length} visita(s)</button>
+          <label>País del lote <select id="hrCountry"></select></label>
+          <button class="btn btn-green btn-sm" id="hrCommit">Verificar con el proveedor</button>
         </div>
       </div>`;
       body.querySelector('#hrBack3')?.addEventListener('click',()=>{hr.step=2;drawHR(body);});
-      const cb=body.querySelector('#hrCommit');
-      if(cb)cb.addEventListener('click',()=>{
-        if(!CX.importador)return;
-        const res=CX.importador.commit(d.nuevos,p);
-        ui.toast(res.creadas+' visita(s) preparadas (preview)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':'')+' · import real pendiente de backend','ok',4000);
-        hr={step:1,parsed:null,map:{},cands:[],diff:null};
-        CX.router.nav('visitas');
+      const country=body.querySelector('#hrCountry'), cb=body.querySelector('#hrCommit');
+      for(const code of data.project()?.countries||p.countries||[])country.add(new Option(code,code));
+      const status=document.createElement('div');
+      status.setAttribute('role','status');
+      cb.parentElement.after(status);
+      let plan=null;
+      country.onchange=()=>{plan=null;cb.textContent='Verificar con el proveedor';status.replaceChildren();};
+      cb.addEventListener('click',async()=>{
+        cb.disabled=true;country.disabled=true;
+        try{
+          if(!plan){
+            plan=await CX.importador.durablePlan(hr.parsed,hr.map,country.value,hr.sourceText);
+            const counts={new:0,duplicate:0,conflict:0,discarded:0};
+            const details=document.createElement('ul');
+            for(const row of plan.response.outcomes){
+              counts[row.state]++;
+              const item=document.createElement('li');
+              const labels={new:'nueva',duplicate:'duplicada',conflict:'en conflicto',discarded:'descartada'};
+              item.textContent='Fila '+(row.index+2)+' · '+labels[row.state]+(row.reason?' · '+row.reason:'');
+              details.append(item);
+            }
+            const summary=document.createElement('p');
+            summary.textContent=counts.new+' nuevas · '+counts.duplicate+' duplicadas · '+counts.conflict+' en conflicto · '+counts.discarded+' descartadas.';
+            status.replaceChildren(summary,details);
+            cb.textContent=plan.response.alreadyCommitted?'Verificar importación existente':'Confirmar '+counts.new+' nuevas visitas';
+            cb.disabled=!counts.new;
+          }else{
+            const saved=await CX.importador.confirmPlan(plan);
+            status.textContent='Importación verificada en el proveedor. Recibo '+saved.runId+'.';
+            cb.textContent='Importación verificada';cb.disabled=true;
+            CX.bus?.emit?.('visit-flow');
+          }
+        }catch(error){
+          status.textContent=error.message;
+          if(error.message==='E10_PLAN_CHANGED'){plan=null;cb.textContent='Volver a verificar';}
+          cb.disabled=false;
+        }finally{
+          country.disabled=false;
+          if(plan&&cb.textContent.startsWith('Confirmar')&&plan.response.outcomes.some(row=>row.state==='new'))cb.disabled=false;
+          if(plan&&cb.textContent.startsWith('Verificar importación'))cb.disabled=false;
+        }
       });
     }
   };
   const hrRow=(c,kind)=>{const cfg={nuevo:['','Nuevo','g'],dup:['opacity:.45','Dup','n'],conflicto:['background:var(--amber-bg)','Conflicto','a'],descartado:['opacity:.45','Descartado','r']}[kind]||['','Nuevo','g'];
-    return `<tr style="${cfg[0]}"><td style="font-size:11.5px">${c.ref}</td><td><b style="font-size:12px">${c.sucursal}</b><div style="font-size:10px;color:var(--t3)">${c.ciudad} ${c.franja?'· '+c.franja:''}</div></td><td style="font-size:12px">${c.shopper||'—'}</td><td style="font-size:11.5px">${c.escenario}</td><td style="font-size:11.5px">${c.fecha||'—'}</td><td style="font-size:11.5px">${c.honorario||'—'}</td><td>${ui.estadoBadge?ui.estadoBadge(c.estado):c.estado}</td><td>${ui.bdg(cfg[1],cfg[2])}</td></tr>`;};
+    return `<tr style="${cfg[0]}"><td style="font-size:11.5px">${escapeCell(c.ref)}</td><td><b style="font-size:12px">${escapeCell(c.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${escapeCell(c.ciudad)} ${escapeCell(c.franja?'· '+c.franja:'')}</div></td><td style="font-size:12px">${escapeCell(c.shopper||'—')}</td><td style="font-size:11.5px">${escapeCell(c.escenario)}</td><td style="font-size:11.5px">${escapeCell(c.fecha||'—')}</td><td style="font-size:11.5px">${escapeCell(c.honorario||'—')}</td><td>${ui.estadoBadge?ui.estadoBadge(c.estado):c.estado}</td><td>${ui.bdg(cfg[1],cfg[2])}</td></tr>`;};
 
   /* ── Tab: Pagos · Certificaciones · Documentos (dry-run separado, P1 backlog importador) ── */
   const ENT_CFG={

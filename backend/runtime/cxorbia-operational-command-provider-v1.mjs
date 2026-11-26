@@ -6,9 +6,11 @@
    HR writes, Make, Gemini, Storage and payments are intentionally outside this provider.
 */
 import crypto from 'node:crypto';
+import {IMPORT_COMMANDS,executeVisitImport} from './cxorbia-visit-import.mjs';
 
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
+  ...IMPORT_COMMANDS,
   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
   'visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
   'support.ticket.create','support.ticket.update','client.nps.submit','client.note.create','client.meeting.request'
@@ -1167,6 +1169,7 @@ export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null
       let actor;
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
       try{
+        if(IMPORT_COMMANDS.includes(command.commandType))return await executeVisitImport(db,command,actor);
         const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled);
         return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
       }catch(error){return blocked(command,str(error?.message||error));}

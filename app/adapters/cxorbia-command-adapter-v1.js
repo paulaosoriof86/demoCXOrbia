@@ -131,6 +131,12 @@
     let result;
     try{result=await transports.get(activeTransport).execute(clean(command));}
     catch(error){return blocked(command,'COMMAND_TRANSPORT_ERROR',{error:str(error?.message||error)});}
+    if(command.commandType==='import.visits.dry_run' && result?.ok===true && result.status==='dry_run' &&
+      result.providerWrites===0 && result.committed===false && result.providerAck===false)return clean(result);
+    if(command.commandType==='import.visits.read' && result?.ok===true && result.status==='readback' &&
+      result.providerWrites===0 && result.readbackVerified===true && result.committed===false)return clean(result);
+    if(command.commandType==='import.visits.commit' && result?.readbackVerified!==true)
+      return Object.assign(blocked(command,result?.code||'IMPORT_READBACK_PENDING'),{error:result?.error});
     const hrFieldsPending=arr(result?.hrFieldEventIds).length>0;
     const committed=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&
       (!hrFieldsPending||(result.hrProviderAck===true&&result.readbackVerified===true));
