@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.f3.cleanup-make-readback.v1",
+  "observedAt": "2026-11-26T01:40:33.744Z",
+  "scenarioId": 10199316,
+  "dataStoreId": 213856,
+  "qaOwner": "f3-qa-1795653493842440-1",
+  "executionWindow": {
+    "executions": [
+      {
+        "id": "2ff218a03b8c4510abea0dcd096289b2",
+        "startedAt": "2026-11-26T00:50:25.526Z",
+        "status": "success",
+        "startedBy": "auto",
+        "duration": 8100,
+        "operations": 8,
+        "credits": 10,
+        "dataTransfer": 29198,
+        "isReplayable": true
+      },
+      {
+        "id": "59660c881d63439f9eaceee173b3fea3",
+        "startedAt": "2026-11-26T00:40:11.520Z",
+        "status": "success",
+        "startedBy": "auto",
+        "duration": 16250,
+        "operations": 19,
+        "credits": 23,
+        "dataTransfer": 47828,
+        "isReplayable": true
+      },
+      {
+        "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+        "startedAt": "2026-11-26T00:40:02.518Z",
+        "status": "success",
+        "startedBy": "auto",
+        "duration": 8038,
+        "operations": 8,
+        "credits": 10,
+        "dataTransfer": 20853,
+        "isReplayable": true
+      }
+    ]
+  },
+  "recordReadback": {
+    "records": [
+      {
+        "key": "757bfe4bd75b",
+        "data": {
+          "schemaVersion": 1,
+          "recordType": "sentinel",
+          "payloadJson": "{\"schemaVersion\":1,\"absent\":true}"
+        }
+      },
+      {
+        "key": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+        "data": {
+          "schemaVersion": 1,
+          "recordType": "head",
+          "payloadJson": "{\"schemaVersion\":1,\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"status\":\"uncertain\",\"afterValue\":\"CXOrbia QA Escenario B\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"updatedAt\":\"2026-11-26T00:40:25.525Z\"}"
+        }
+      },
+      {
+        "key": "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "data": {
+          "schemaVersion": 1,
+          "recordType": "event",
+          "payloadJson": "{\"schemaVersion\":1,\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"fieldKey\":\"escenario\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"beforeValue\":\"CXOrbia QA Escenario A\",\"afterValue\":\"CXOrbia QA Escenario B\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"status\":\"uncertain\",\"intentAt\":\"2026-11-26T00:40:17.588Z\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"writeObservedAt\":\"2026-11-26T00:40:21.323Z\",\"readbackObservedAt\":\"2026-11-26T00:40:25.525Z\"}"
+        }
+      }
+    ],
+    "total": 3,
+    "fields": [
+      {
+        "name": "schemaVersion",
+        "type": "number",
+        "required": true
+      },
+      {
+        "name": "recordType",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "payloadJson",
+        "type": "text",
+        "required": true
+      }
+    ]
+  },
+  "remoteMutations": 0
+}

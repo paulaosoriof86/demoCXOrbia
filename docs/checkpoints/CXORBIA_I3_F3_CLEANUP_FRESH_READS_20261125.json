@@ -1,0 +1,4990 @@
+{
+  "schemaVersion": "cxorbia.f3.qa-fresh-graph-read.v1",
+  "state": "TWO_COUNTRIES_READ_VERIFIED",
+  "readerScenarioId": 10200465,
+  "readerGetOnlyVerified": true,
+  "providerWriteRequests": 0,
+  "authMutations": 0,
+  "firestoreMutations": 0,
+  "manifest": {
+    "schemaVersion": "cxorbia.f3.remote-fixture.v1",
+    "status": "REMOTE_QA_FIXTURE_PREPARED_NOT_ENDPOINT_CERTIFIED",
+    "tenantId": "tya",
+    "projectId": "f3-qa-20261124",
+    "periodId": "f3-qa-20261124-2026-11",
+    "existingScenarioId": 10199316,
+    "readerScenarioId": 10200465,
+    "readerToolboxId": 4891,
+    "dataStoreId": 213856,
+    "production": false,
+    "rawRowsExposed": false,
+    "countries": {
+      "GT": {
+        "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+        "worksheetName": "CXR_B14_QA_GT_20261119",
+        "driveId": "B2D2B478DAC4DD05",
+        "itemId": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+        "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+        "hrRowId": "CXR_B14_QA_GT_20261119!2",
+        "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+        "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+        "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+        "headerValues": [
+          "fixtureId",
+          "fieldValue",
+          "eventId",
+          "eventDigest",
+          "País",
+          "ID CINEMA",
+          "CIUDAD",
+          "Shopping",
+          "Franja Horaria",
+          "Formato de Cine",
+          "Tipo de Combo",
+          "Tipo de Compra",
+          "Método de Pago",
+          "Quincena",
+          "Shopper Asignado",
+          "Telefono",
+          "Mail",
+          "Disponible a partir de",
+          "Fecha programada",
+          "Control día s/ franja horaria",
+          "Fecha realizada",
+          "Fecha Cuestionario completado",
+          "Precio de boleto",
+          "Precio de combo",
+          "Honorarios",
+          "Fecha submitido"
+        ],
+        "rowIdentityValues": [
+          "Guatemala",
+          2022002,
+          "C. Miraflores"
+        ],
+        "rowIdentityColumnIndexes": [
+          4,
+          5,
+          7
+        ],
+        "headerRangeAddress": "A1:Z1",
+        "rowRangeAddress": "A2:Z2",
+        "readRangeAddress": "A1:Z2",
+        "observedAt": "2026-11-24T10:18:39.586Z",
+        "observedAtMeaning": "provider execution completion; not human edit time",
+        "providerReadStatus": 200,
+        "providerExecutionId": "419793a205834f02a26c8449c2f47553",
+        "inventoryExecutionId": "de2b18e66ca24f94bd6df7b6d1488e02",
+        "createExecutionId": "e1ab02aaae5c44a3a7a2c927f173ada2",
+        "seedExecutionId": "b555738e64f442e4ae54405f5f387ac4",
+        "seedWriteStatus": 200,
+        "seedImmediateReadbackMatched": false,
+        "seedReplayWriteRequests": 0
+      },
+      "HN": {
+        "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+        "worksheetName": "CXR_B14_QA_HN_20261119",
+        "driveId": "B2D2B478DAC4DD05",
+        "itemId": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+        "visitId": "hr_excel_ec25c41b6656f0000daef0af1398",
+        "hrRowId": "CXR_B14_QA_HN_20261119!2",
+        "worksheetFingerprint": "3eff016a8c0884e0999c62bd6f5db56de383051fc31985c07105b6b49bcf3a98",
+        "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+        "rowIdentityFingerprint": "48429063593b090b83de53cdf83ccbf5fdb5f1abc9dcc7c670c898660bec5f88",
+        "headerValues": [
+          "fixtureId",
+          "fieldValue",
+          "eventId",
+          "eventDigest",
+          "País",
+          "ID CINEMA",
+          "CIUDAD",
+          "Shopping",
+          "Franja Horaria",
+          "Formato de Cine",
+          "Tipo de Combo",
+          "Tipo de Compra",
+          "Método de Pago",
+          "Quincena",
+          "Shopper Asignado",
+          "Telefono",
+          "Mail",
+          "Disponible a partir de",
+          "Fecha programada",
+          "Control día s/ franja horaria",
+          "Fecha realizada",
+          "Fecha Cuestionario completado",
+          "Precio de boleto",
+          "Precio de combo",
+          "Honorarios",
+          "Fecha submitido"
+        ],
+        "rowIdentityValues": [
+          "Honduras",
+          2052001,
+          "C. Las Cascadas Honduras"
+        ],
+        "rowIdentityColumnIndexes": [
+          4,
+          5,
+          7
+        ],
+        "headerRangeAddress": "A1:Z1",
+        "rowRangeAddress": "A2:Z2",
+        "readRangeAddress": "A1:Z2",
+        "observedAt": "2026-11-24T10:20:04.465Z",
+        "observedAtMeaning": "provider execution completion; not human edit time",
+        "providerReadStatus": 200,
+        "providerExecutionId": "3044ee3faac04034a18fe1abf384a855",
+        "inventoryExecutionId": "a279422a05d940e6b98f814bf07a2b67",
+        "createExecutionId": "2011345beb3545909aea6e5e4e28152c",
+        "seedExecutionId": "4e8bd6a8d52b409ba6df1393fbc5ff0e",
+        "seedWriteStatus": 200,
+        "seedImmediateReadbackMatched": false,
+        "seedReplayWriteRequests": 0
+      }
+    }
+  },
+  "exactReaderConfig": {
+    "content": [],
+    "structuredContent": {
+      "scenario": {
+        "id": 10200465,
+        "name": "CXOrbia B14 — proveedor Graph delegado de lectura por scope (DEV / on-demand)",
+        "teamId": 1975919,
+        "status": "active",
+        "isLockedForEditing": false,
+        "isWaitingOnIncompleteExecutions": false,
+        "incompleteExecutions": 0,
+        "lastEdit": "2026-11-24T21:31:30.662Z"
+      },
+      "trigger": {
+        "moduleId": 1,
+        "module": "scenario-service:StartSubscenario",
+        "kind": "on-demand",
+        "scheduling": {
+          "type": "on-demand"
+        }
+      },
+      "modules": [
+        {
+          "id": 1,
+          "module": "scenario-service:StartSubscenario",
+          "version": 2,
+          "root": "main"
+        },
+        {
+          "id": 5,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "label": "HR mensual — metadata Graph exacta antes de leer filas",
+          "follows": 1,
+          "filter": {
+            "name": "Workbook exacto por tenant/proyecto/pais; metadata only; operación acotada",
+            "conditions": [
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "^(read|inventory)$",
+                  "o": "text:pattern"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "^(read|inventory)$",
+                  "o": "text:pattern"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                }
+              ]
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "label": "B14 — GET Graph range 1 de scope validado por CXOrbia",
+          "follows": 5,
+          "filter": {
+            "name": "Tuplas registradas preservadas o nueva hoja mensual con metadata Graph validada",
+            "conditions": [
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{lower(trim(ascii(5.body.name; true)))}}",
+                  "b": "^(?:{{switch(substring(1.periodId; length(1.periodId) - 2; length(1.periodId)); \"10\"; \"octubre|oct|october\"; \"11\"; \"noviembre|nov|november\"; \"12\"; \"diciembre|dic|december|dec\"; \"01\"; \"enero|ene|january|jan\"; \"02\"; \"febrero|feb|february\"; \"03\"; \"marzo|mar|march\"; \"04\"; \"abril|abr|april|apr\"; \"05\"; \"mayo|may\"; \"06\"; \"june|junio|jun\"; \"07\"; \"julio|jul|july\"; \"08\"; \"agosto|ago|august|aug\"; \"09\"; \"septiembre|setiembre|sep|sept|september\"; \"__INVALID_MONTH__\")}})[\\s_/-]*(?:{{substring(1.periodId; length(1.periodId) - 7; length(1.periodId) - 3)}}|{{substring(1.periodId; length(1.periodId) - 5; length(1.periodId) - 3)}})$",
+                  "o": "text:pattern"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{lower(trim(ascii(5.body.name; true)))}}",
+                  "b": "^(?:{{switch(substring(1.periodId; length(1.periodId) - 2; length(1.periodId)); \"10\"; \"octubre|oct|october\"; \"11\"; \"noviembre|nov|november\"; \"12\"; \"diciembre|dic|december|dec\"; \"01\"; \"enero|ene|january|jan\"; \"02\"; \"febrero|feb|february\"; \"03\"; \"marzo|mar|march\"; \"04\"; \"abril|abr|april|apr\"; \"05\"; \"mayo|may\"; \"06\"; \"june|junio|jun\"; \"07\"; \"julio|jul|july\"; \"08\"; \"agosto|ago|august|aug\"; \"09\"; \"septiembre|setiembre|sep|sept|september\"; \"__INVALID_MONTH__\")}})[\\s_/-]*(?:{{substring(1.periodId; length(1.periodId) - 7; length(1.periodId) - 3)}}|{{substring(1.periodId; length(1.periodId) - 5; length(1.periodId) - 3)}})$",
+                  "o": "text:pattern"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0C00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0D00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-06",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0E00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-07",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0F00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-08",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1000-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-09",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1200-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-10",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1300-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1400-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-12",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1500-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-01",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1600-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-02",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1700-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-03",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1800-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-04",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1900-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1A00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-06",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1B00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-07",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1C00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-08",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1D00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-09",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{026C413B-5F8C-4771-874E-872AEB3ABF78}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-10",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{7FBC45CE-951F-41D7-8BF9-6690E2EC951F}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0C00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0D00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-06",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0E00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-07",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-0F00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-08",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1000-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-09",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1100-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-10",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1200-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1300-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2025-12",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1400-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-01",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1500-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-02",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1600-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-03",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1700-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-04",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1800-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1A00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-06",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1B00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-07",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1C00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-08",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{00000000-0001-0000-1D00-000000000000}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-09",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{201322D7-9242-49D1-924A-ED591CECD79B}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-10",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{5899E379-9B56-4FF7-87ED-78194D0EA544}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "cinepolis-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "read",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "cinepolis",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "^cinepolis-20[0-9]{2}-(0[1-9]|1[0-2])$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "^A([1-9]|[1-9][0-9]|1[0-9]{2}|200):([A-Z]|A[A-S])([1-9]|[1-9][0-9]|1[0-9]{2}|200)$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "GT",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                }
+              ],
+              [
+                {
+                  "a": "{{1.tenantId}}",
+                  "b": "tya",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.projectId}}",
+                  "b": "f3-qa-20261124",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.countryCode}}",
+                  "b": "HN",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.periodId}}",
+                  "b": "f3-qa-20261124-2026-11",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.driveId}}",
+                  "b": "B2D2B478DAC4DD05",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.itemId}}",
+                  "b": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.worksheetId}}",
+                  "b": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.rangeAddress}}",
+                  "b": "A1:Z2",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{1.bindingFingerprint}}",
+                  "b": "^[a-f0-9]{64}$",
+                  "o": "text:pattern"
+                },
+                {
+                  "a": "{{5.statusCode}}",
+                  "b": "200",
+                  "o": "number:equal"
+                },
+                {
+                  "a": "{{5.body.id}}",
+                  "b": "{{1.worksheetId}}",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{5.body.visibility}}",
+                  "b": "Visible",
+                  "o": "text:equal"
+                },
+                {
+                  "a": "{{ifempty(1.operation; \"read\")}}",
+                  "b": "inventory",
+                  "o": "text:equal"
+                }
+              ]
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "label": "B14 — GET Graph range 2 independiente (revisión)",
+          "follows": 2
+        },
+        {
+          "id": 4,
+          "module": "scenario-service:ReturnData",
+          "version": 2,
+          "label": "B14 — entregar a backend 2 lecturas + control",
+          "follows": 3
+        }
+      ],
+      "interface": {
+        "input": [
+          {
+            "name": "tenantId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "countryCode",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "periodId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "bindingFingerprint",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "driveId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "itemId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "worksheetId",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "rangeAddress",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "operation",
+            "type": "text",
+            "default": "read",
+            "required": false
+          }
+        ],
+        "output": [
+          {
+            "name": "tenantId",
+            "type": "text"
+          },
+          {
+            "name": "projectId",
+            "type": "text"
+          },
+          {
+            "name": "countryCode",
+            "type": "text"
+          },
+          {
+            "name": "periodId",
+            "type": "text"
+          },
+          {
+            "name": "bindingFingerprint",
+            "type": "text"
+          },
+          {
+            "name": "worksheetId",
+            "type": "text"
+          },
+          {
+            "name": "rangeAddress",
+            "type": "text"
+          },
+          {
+            "name": "status1",
+            "type": "integer"
+          },
+          {
+            "name": "status2",
+            "type": "integer"
+          },
+          {
+            "name": "rowCount1",
+            "type": "integer"
+          },
+          {
+            "name": "rowCount2",
+            "type": "integer"
+          },
+          {
+            "name": "hash1",
+            "type": "text"
+          },
+          {
+            "name": "hash2",
+            "type": "text"
+          },
+          {
+            "name": "values1",
+            "type": "any"
+          },
+          {
+            "name": "values2",
+            "type": "any"
+          },
+          {
+            "name": "inventory1",
+            "type": "any"
+          },
+          {
+            "name": "inventory2",
+            "type": "any"
+          },
+          {
+            "name": "operation",
+            "type": "text"
+          },
+          {
+            "name": "inventoryComplete1",
+            "type": "boolean"
+          },
+          {
+            "name": "inventoryComplete2",
+            "type": "boolean"
+          }
+        ]
+      },
+      "connections": [
+        {
+          "id": 9089470,
+          "label": "One",
+          "app": "azure",
+          "usedByModules": [
+            5,
+            2,
+            3
+          ],
+          "status": "ok"
+        }
+      ]
+    },
+    "isError": false
+  },
+  "exactReaderModules": {
+    "content": [],
+    "structuredContent": {
+      "modules": [
+        {
+          "id": 5,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "config": {
+            "parameters": {
+              "__IMTCONN__": 9089470
+            },
+            "mapper": {
+              "qs": [
+                {
+                  "key": "$select",
+                  "value": "id,name,visibility"
+                }
+              ],
+              "url": "/v1.0/drives/{{1.driveId}}/items/{{1.itemId}}/workbook/worksheets/{{1.worksheetId}}",
+              "method": "GET",
+              "headers": []
+            }
+          }
+        },
+        {
+          "id": 2,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "config": {
+            "parameters": {
+              "__IMTCONN__": 9089470
+            },
+            "mapper": {
+              "qs": [],
+              "url": "/v1.0/drives/{{1.driveId}}/items/{{1.itemId}}/workbook/worksheets{{if(1.operation = \"inventory\" & 1.projectId != \"f3-qa-20261124\"; emptystring; \"/\")}}{{if(1.operation = \"inventory\" & 1.projectId != \"f3-qa-20261124\"; emptystring; 1.worksheetId)}}{{if(1.operation = \"inventory\"; emptystring; \"/range(address='\")}}{{if(1.operation = \"inventory\"; emptystring; 1.rangeAddress)}}{{if(1.operation = \"inventory\"; emptystring; \"')\")}}{{if(1.operation = \"inventory\"; emptystring; \"?$select=values,rowCount,columnCount\")}}{{if(1.operation = \"inventory\" & 1.projectId = \"f3-qa-20261124\"; \"?$select=id,name,visibility\"; emptystring)}}",
+              "method": "GET",
+              "headers": []
+            }
+          }
+        },
+        {
+          "id": 3,
+          "module": "onedrive:makeApiCall",
+          "version": 2,
+          "config": {
+            "parameters": {
+              "__IMTCONN__": 9089470
+            },
+            "mapper": {
+              "qs": [],
+              "url": "/v1.0/drives/{{1.driveId}}/items/{{1.itemId}}/workbook/worksheets{{if(1.operation = \"inventory\" & 1.projectId != \"f3-qa-20261124\"; emptystring; \"/\")}}{{if(1.operation = \"inventory\" & 1.projectId != \"f3-qa-20261124\"; emptystring; 1.worksheetId)}}{{if(1.operation = \"inventory\"; emptystring; \"/range(address='\")}}{{if(1.operation = \"inventory\"; emptystring; 1.rangeAddress)}}{{if(1.operation = \"inventory\"; emptystring; \"')\")}}{{if(1.operation = \"inventory\"; emptystring; \"?$select=values,rowCount,columnCount\")}}{{if(1.operation = \"inventory\" & 1.projectId = \"f3-qa-20261124\"; \"?$select=id,name,visibility\"; emptystring)}}",
+              "method": "GET",
+              "headers": []
+            }
+          }
+        }
+      ]
+    },
+    "isError": false
+  },
+  "countries": {
+    "GT": {
+      "inputs": {
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "countryCode": "GT",
+        "periodId": "f3-qa-20261124-2026-11",
+        "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+        "driveId": "B2D2B478DAC4DD05",
+        "itemId": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+        "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+        "rangeAddress": "A1:Z2",
+        "operation": "read"
+      },
+      "requestedAt": "2026-11-26T01:39:03.265Z",
+      "observedAt": "2026-11-26T01:39:12.383Z",
+      "result": {
+        "content": [],
+        "structuredContent": {
+          "executionId": "5d6d0a57f244472c9f9a298132dbf2a5",
+          "status": "success",
+          "outputs": {
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "countryCode": "GT",
+            "periodId": "f3-qa-20261124-2026-11",
+            "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+            "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+            "rangeAddress": "A1:Z2",
+            "status1": 200,
+            "status2": 200,
+            "rowCount1": 2,
+            "rowCount2": 2,
+            "hash1": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+            "hash2": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+            "values1": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_GT",
+                "",
+                "qa_f3_fields_seed_20261124_GT",
+                "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+                "Guatemala",
+                2022002,
+                "Guatemala",
+                "C. Miraflores",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "values2": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_GT",
+                "",
+                "qa_f3_fields_seed_20261124_GT",
+                "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+                "Guatemala",
+                2022002,
+                "Guatemala",
+                "C. Miraflores",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "inventory1": null,
+            "inventory2": null,
+            "operation": "read",
+            "inventoryComplete1": true,
+            "inventoryComplete2": true
+          }
+        },
+        "isError": false
+      },
+      "executionGet": {
+        "content": [],
+        "structuredContent": {
+          "execution": {
+            "id": "5d6d0a57f244472c9f9a298132dbf2a5",
+            "status": "success",
+            "startedAt": "2026-11-26T01:39:05.680Z",
+            "duration": 6141,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10905
+          },
+          "outputs": {
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "countryCode": "GT",
+            "periodId": "f3-qa-20261124-2026-11",
+            "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+            "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+            "rangeAddress": "A1:Z2",
+            "status1": 200,
+            "status2": 200,
+            "rowCount1": 2,
+            "rowCount2": 2,
+            "hash1": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+            "hash2": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+            "values1": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_GT",
+                "",
+                "qa_f3_fields_seed_20261124_GT",
+                "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+                "Guatemala",
+                2022002,
+                "Guatemala",
+                "C. Miraflores",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "values2": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_GT",
+                "",
+                "qa_f3_fields_seed_20261124_GT",
+                "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+                "Guatemala",
+                2022002,
+                "Guatemala",
+                "C. Miraflores",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "inventory1": null,
+            "inventory2": null,
+            "operation": "read",
+            "inventoryComplete1": true,
+            "inventoryComplete2": true
+          }
+        },
+        "isError": false
+      }
+    },
+    "HN": {
+      "inputs": {
+        "tenantId": "tya",
+        "projectId": "f3-qa-20261124",
+        "countryCode": "HN",
+        "periodId": "f3-qa-20261124-2026-11",
+        "bindingFingerprint": "be44382ec7e30b85b38ac680407c90bb54cf347ac51e3e872da29ffcd9235b01",
+        "driveId": "B2D2B478DAC4DD05",
+        "itemId": "B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7",
+        "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+        "rangeAddress": "A1:Z2",
+        "operation": "read"
+      },
+      "requestedAt": "2026-11-26T01:39:18.728Z",
+      "observedAt": "2026-11-26T01:39:25.654Z",
+      "result": {
+        "content": [],
+        "structuredContent": {
+          "executionId": "ad571a10f3264506b715d09141bd4223",
+          "status": "success",
+          "outputs": {
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "countryCode": "HN",
+            "periodId": "f3-qa-20261124-2026-11",
+            "bindingFingerprint": "be44382ec7e30b85b38ac680407c90bb54cf347ac51e3e872da29ffcd9235b01",
+            "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+            "rangeAddress": "A1:Z2",
+            "status1": 200,
+            "status2": 200,
+            "rowCount1": 2,
+            "rowCount2": 2,
+            "hash1": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+            "hash2": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+            "values1": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_HN",
+                "",
+                "qa_f3_fields_seed_20261124_HN",
+                "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+                "Honduras",
+                2052001,
+                "Tegucigalpa",
+                "C. Las Cascadas Honduras",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "values2": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_HN",
+                "",
+                "qa_f3_fields_seed_20261124_HN",
+                "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+                "Honduras",
+                2052001,
+                "Tegucigalpa",
+                "C. Las Cascadas Honduras",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "inventory1": null,
+            "inventory2": null,
+            "operation": "read",
+            "inventoryComplete1": true,
+            "inventoryComplete2": true
+          }
+        },
+        "isError": false
+      },
+      "executionGet": {
+        "content": [],
+        "structuredContent": {
+          "execution": {
+            "id": "ad571a10f3264506b715d09141bd4223",
+            "status": "success",
+            "startedAt": "2026-11-26T01:39:20.984Z",
+            "duration": 4040,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 13510
+          },
+          "outputs": {
+            "tenantId": "tya",
+            "projectId": "f3-qa-20261124",
+            "countryCode": "HN",
+            "periodId": "f3-qa-20261124-2026-11",
+            "bindingFingerprint": "be44382ec7e30b85b38ac680407c90bb54cf347ac51e3e872da29ffcd9235b01",
+            "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+            "rangeAddress": "A1:Z2",
+            "status1": 200,
+            "status2": 200,
+            "rowCount1": 2,
+            "rowCount2": 2,
+            "hash1": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+            "hash2": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+            "values1": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_HN",
+                "",
+                "qa_f3_fields_seed_20261124_HN",
+                "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+                "Honduras",
+                2052001,
+                "Tegucigalpa",
+                "C. Las Cascadas Honduras",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "values2": [
+              [
+                "fixtureId",
+                "fieldValue",
+                "eventId",
+                "eventDigest",
+                "País",
+                "ID CINEMA",
+                "CIUDAD",
+                "Shopping",
+                "Franja Horaria",
+                "Formato de Cine",
+                "Tipo de Combo",
+                "Tipo de Compra",
+                "Método de Pago",
+                "Quincena",
+                "Shopper Asignado",
+                "Telefono",
+                "Mail",
+                "Disponible a partir de",
+                "Fecha programada",
+                "Control día s/ franja horaria",
+                "Fecha realizada",
+                "Fecha Cuestionario completado",
+                "Precio de boleto",
+                "Precio de combo",
+                "Honorarios",
+                "Fecha submitido"
+              ],
+              [
+                "qa_f3_20261123_HN",
+                "",
+                "qa_f3_fields_seed_20261124_HN",
+                "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+                "Honduras",
+                2052001,
+                "Tegucigalpa",
+                "C. Las Cascadas Honduras",
+                "WKND",
+                "2D",
+                "CXOrbia QA Combo A",
+                "CXOrbia QA Escenario A",
+                "Tarjeta",
+                "1Q",
+                "",
+                "",
+                "",
+                46327,
+                "",
+                "P x asignar",
+                "",
+                "",
+                0,
+                0,
+                0,
+                ""
+              ]
+            ],
+            "inventory1": null,
+            "inventory2": null,
+            "operation": "read",
+            "inventoryComplete1": true,
+            "inventoryComplete2": true
+          }
+        },
+        "isError": false
+      }
+    }
+  },
+  "bindingFingerprintEvidence": {
+    "existingRunnerWindow": {
+      "content": [],
+      "structuredContent": {
+        "executions": [
+          {
+            "id": "d3b9c891f5b44c2c9a123c0597f77ca1",
+            "startedAt": "2026-11-26T00:39:56.585Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3812,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 13589,
+            "isReplayable": true
+          },
+          {
+            "id": "3d80f01ccf454381a35c312c6584c572",
+            "startedAt": "2026-11-26T00:39:49.295Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3180,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10953,
+            "isReplayable": true
+          },
+          {
+            "id": "33deef3f3dea489dbed738fb75c41105",
+            "startedAt": "2026-11-26T00:39:49.277Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 5223,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 13462,
+            "isReplayable": true
+          },
+          {
+            "id": "4d501799a3bd4737a020dc08c88fc554",
+            "startedAt": "2026-11-26T00:39:41.987Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3776,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10826,
+            "isReplayable": true
+          },
+          {
+            "id": "0562f49444d0418cb2a8765cfcf0ccdb",
+            "startedAt": "2026-11-26T00:39:41.981Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 4903,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10778,
+            "isReplayable": true
+          },
+          {
+            "id": "ce5d3101c0004573a50bcf628dda18f6",
+            "startedAt": "2026-11-26T00:39:14.063Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 4084,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10953,
+            "isReplayable": true
+          },
+          {
+            "id": "58971387d131469dba058ce8b4ef2b59",
+            "startedAt": "2026-11-26T00:39:14.060Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 4795,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10778,
+            "isReplayable": true
+          },
+          {
+            "id": "9e3fe2c014af4b6681fce2fbf21a50ff",
+            "startedAt": "2026-11-26T00:39:03.035Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3203,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 16321,
+            "isReplayable": true
+          },
+          {
+            "id": "96e36efb31434003b7cc98550f623122",
+            "startedAt": "2026-11-26T00:39:03.031Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 5274,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10778,
+            "isReplayable": true
+          },
+          {
+            "id": "dc7b94c8470e40c6b7f212ff47db398e",
+            "startedAt": "2026-11-26T00:38:55.336Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 5240,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 13589,
+            "isReplayable": true
+          },
+          {
+            "id": "2ac71e3a276f43d0bbdb56aa617b4f20",
+            "startedAt": "2026-11-26T00:38:55.333Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3630,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 8269,
+            "isReplayable": true
+          },
+          {
+            "id": "ba7e282f2e7142f4b50c88cc32f42b75",
+            "startedAt": "2026-11-26T00:38:48.296Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 4689,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 16273,
+            "isReplayable": true
+          },
+          {
+            "id": "c76b6e6b1d924b529c25bc39d22c974a",
+            "startedAt": "2026-11-26T00:38:48.294Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 3812,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 10953,
+            "isReplayable": true
+          },
+          {
+            "id": "0455fcc0cbb543b19fbec59c5e4f8d24",
+            "startedAt": "2026-11-26T00:38:41.402Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 4538,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 11332,
+            "isReplayable": true
+          },
+          {
+            "id": "3fa3964cb63b4c3a8c6d13eaf6b837ca",
+            "startedAt": "2026-11-26T00:38:31.746Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 7333,
+            "operations": 3,
+            "credits": 3,
+            "dataTransfer": 8648,
+            "isReplayable": true
+          }
+        ]
+      },
+      "isError": false
+    },
+    "GT": {
+      "content": [],
+      "structuredContent": {
+        "execution": {
+          "id": "33deef3f3dea489dbed738fb75c41105",
+          "status": "success",
+          "startedAt": "2026-11-26T00:39:49.277Z",
+          "duration": 5223,
+          "operations": 3,
+          "credits": 3,
+          "dataTransfer": 13462
+        },
+        "outputs": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+          "rangeAddress": "A1:Z2",
+          "status1": 200,
+          "status2": 200,
+          "rowCount1": 2,
+          "rowCount2": 2,
+          "hash1": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+          "hash2": "8c137e309f7e010861353012bee138734d34da25852d2b3517d2a1bf2648f4cb",
+          "values1": [
+            [
+              "fixtureId",
+              "fieldValue",
+              "eventId",
+              "eventDigest",
+              "País",
+              "ID CINEMA",
+              "CIUDAD",
+              "Shopping",
+              "Franja Horaria",
+              "Formato de Cine",
+              "Tipo de Combo",
+              "Tipo de Compra",
+              "Método de Pago",
+              "Quincena",
+              "Shopper Asignado",
+              "Telefono",
+              "Mail",
+              "Disponible a partir de",
+              "Fecha programada",
+              "Control día s/ franja horaria",
+              "Fecha realizada",
+              "Fecha Cuestionario completado",
+              "Precio de boleto",
+              "Precio de combo",
+              "Honorarios",
+              "Fecha submitido"
+            ],
+            [
+              "qa_f3_20261123_GT",
+              "",
+              "qa_f3_fields_seed_20261124_GT",
+              "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+              "Guatemala",
+              2022002,
+              "Guatemala",
+              "C. Miraflores",
+              "WKND",
+              "2D",
+              "CXOrbia QA Combo A",
+              "CXOrbia QA Escenario A",
+              "Tarjeta",
+              "1Q",
+              "",
+              "",
+              "",
+              46327,
+              "",
+              "P x asignar",
+              "",
+              "",
+              0,
+              0,
+              0,
+              ""
+            ]
+          ],
+          "values2": [
+            [
+              "fixtureId",
+              "fieldValue",
+              "eventId",
+              "eventDigest",
+              "País",
+              "ID CINEMA",
+              "CIUDAD",
+              "Shopping",
+              "Franja Horaria",
+              "Formato de Cine",
+              "Tipo de Combo",
+              "Tipo de Compra",
+              "Método de Pago",
+              "Quincena",
+              "Shopper Asignado",
+              "Telefono",
+              "Mail",
+              "Disponible a partir de",
+              "Fecha programada",
+              "Control día s/ franja horaria",
+              "Fecha realizada",
+              "Fecha Cuestionario completado",
+              "Precio de boleto",
+              "Precio de combo",
+              "Honorarios",
+              "Fecha submitido"
+            ],
+            [
+              "qa_f3_20261123_GT",
+              "",
+              "qa_f3_fields_seed_20261124_GT",
+              "687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa",
+              "Guatemala",
+              2022002,
+              "Guatemala",
+              "C. Miraflores",
+              "WKND",
+              "2D",
+              "CXOrbia QA Combo A",
+              "CXOrbia QA Escenario A",
+              "Tarjeta",
+              "1Q",
+              "",
+              "",
+              "",
+              46327,
+              "",
+              "P x asignar",
+              "",
+              "",
+              0,
+              0,
+              0,
+              ""
+            ]
+          ],
+          "inventory1": null,
+          "inventory2": null,
+          "operation": "read",
+          "inventoryComplete1": true,
+          "inventoryComplete2": true
+        }
+      },
+      "isError": false
+    },
+    "HN": {
+      "content": [],
+      "structuredContent": {
+        "execution": {
+          "id": "3d80f01ccf454381a35c312c6584c572",
+          "status": "success",
+          "startedAt": "2026-11-26T00:39:49.295Z",
+          "duration": 3180,
+          "operations": 3,
+          "credits": 3,
+          "dataTransfer": 10953
+        },
+        "outputs": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "HN",
+          "periodId": "f3-qa-20261124-2026-11",
+          "bindingFingerprint": "be44382ec7e30b85b38ac680407c90bb54cf347ac51e3e872da29ffcd9235b01",
+          "worksheetId": "{1FF64C54-06F5-4D0A-BF2D-74B219A51EC4}",
+          "rangeAddress": "A1:Z2",
+          "status1": 200,
+          "status2": 200,
+          "rowCount1": 2,
+          "rowCount2": 2,
+          "hash1": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+          "hash2": "7db2bb65a83231c982092120959fd15bb9d6b2037241cddbbeb2e7a876ebe9c3",
+          "values1": [
+            [
+              "fixtureId",
+              "fieldValue",
+              "eventId",
+              "eventDigest",
+              "País",
+              "ID CINEMA",
+              "CIUDAD",
+              "Shopping",
+              "Franja Horaria",
+              "Formato de Cine",
+              "Tipo de Combo",
+              "Tipo de Compra",
+              "Método de Pago",
+              "Quincena",
+              "Shopper Asignado",
+              "Telefono",
+              "Mail",
+              "Disponible a partir de",
+              "Fecha programada",
+              "Control día s/ franja horaria",
+              "Fecha realizada",
+              "Fecha Cuestionario completado",
+              "Precio de boleto",
+              "Precio de combo",
+              "Honorarios",
+              "Fecha submitido"
+            ],
+            [
+              "qa_f3_20261123_HN",
+              "",
+              "qa_f3_fields_seed_20261124_HN",
+              "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+              "Honduras",
+              2052001,
+              "Tegucigalpa",
+              "C. Las Cascadas Honduras",
+              "WKND",
+              "2D",
+              "CXOrbia QA Combo A",
+              "CXOrbia QA Escenario A",
+              "Tarjeta",
+              "1Q",
+              "",
+              "",
+              "",
+              46327,
+              "",
+              "P x asignar",
+              "",
+              "",
+              0,
+              0,
+              0,
+              ""
+            ]
+          ],
+          "values2": [
+            [
+              "fixtureId",
+              "fieldValue",
+              "eventId",
+              "eventDigest",
+              "País",
+              "ID CINEMA",
+              "CIUDAD",
+              "Shopping",
+              "Franja Horaria",
+              "Formato de Cine",
+              "Tipo de Combo",
+              "Tipo de Compra",
+              "Método de Pago",
+              "Quincena",
+              "Shopper Asignado",
+              "Telefono",
+              "Mail",
+              "Disponible a partir de",
+              "Fecha programada",
+              "Control día s/ franja horaria",
+              "Fecha realizada",
+              "Fecha Cuestionario completado",
+              "Precio de boleto",
+              "Precio de combo",
+              "Honorarios",
+              "Fecha submitido"
+            ],
+            [
+              "qa_f3_20261123_HN",
+              "",
+              "qa_f3_fields_seed_20261124_HN",
+              "944b4ada58424fa94fead7f0e1661c38b928fbedc630ab6168bb19a8204b2340",
+              "Honduras",
+              2052001,
+              "Tegucigalpa",
+              "C. Las Cascadas Honduras",
+              "WKND",
+              "2D",
+              "CXOrbia QA Combo A",
+              "CXOrbia QA Escenario A",
+              "Tarjeta",
+              "1Q",
+              "",
+              "",
+              "",
+              46327,
+              "",
+              "P x asignar",
+              "",
+              "",
+              0,
+              0,
+              0,
+              ""
+            ]
+          ],
+          "inventory1": null,
+          "inventory2": null,
+          "operation": "read",
+          "inventoryComplete1": true,
+          "inventoryComplete2": true
+        }
+      },
+      "isError": false
+    },
+    "note": "Exact fingerprints taken from paired reads performed by the same F3 runner at 00:39:49 UTC; no invented Firestore stamps."
+  },
+  "writerWindow": {
+    "scenarioId": 10199316,
+    "observedAt": "2026-11-26T01:40:33.744Z",
+    "result": {
+      "content": [],
+      "structuredContent": {
+        "executions": [
+          {
+            "id": "2ff218a03b8c4510abea0dcd096289b2",
+            "startedAt": "2026-11-26T00:50:25.526Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 8100,
+            "operations": 8,
+            "credits": 10,
+            "dataTransfer": 29198,
+            "isReplayable": true
+          },
+          {
+            "id": "59660c881d63439f9eaceee173b3fea3",
+            "startedAt": "2026-11-26T00:40:11.520Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 16250,
+            "operations": 19,
+            "credits": 23,
+            "dataTransfer": 47828,
+            "isReplayable": true
+          },
+          {
+            "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+            "startedAt": "2026-11-26T00:40:02.518Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 8038,
+            "operations": 8,
+            "credits": 10,
+            "dataTransfer": 20853,
+            "isReplayable": true
+          }
+        ]
+      },
+      "isError": false
+    }
+  }
+}
