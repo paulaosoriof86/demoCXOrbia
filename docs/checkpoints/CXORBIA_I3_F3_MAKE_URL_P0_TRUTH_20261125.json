@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "cxorbia.i3.focal-module-truth.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "recordedBeforeProviderMutationAt": "2026-11-26T01:03:34.356581+00:00",
+  "moduleTruthMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261125-V426.json",
+  "domain": "canonical-hr-state-adapters",
+  "finding": "F3_MAKE_WORKSHEET_URL_404",
+  "classification": "TRUE_FUNCTIONAL_DEFECT",
+  "failureClass": "MAPPING_FAILURE",
+  "owner": {
+    "provider": "Make",
+    "scenarioId": 10199316,
+    "moduleId": 17,
+    "file": "config.mapper.codeEditorJavascript",
+    "functions": [
+      "validateRequest.patchUrl",
+      "validateRequest.readUrl"
+    ],
+    "consumers": [
+      36,
+      43
+    ]
+  },
+  "lastApprovedVersion": {
+    "scope": "Direct older fixture protocol only; no accepted application F3 write certificate",
+    "receipt": "docs/checkpoints/CXORBIA_I3_F3_MAKE_GT_HN_DIRECT_PROVIDER_PROOF_20261124.json",
+    "liveLastEdit": "2026-11-24T10:18:18.118Z",
+    "liveCodeSha256": "d3e8549b37c657993c9f24b31710e8732bbe34cb85f03fae33050c905f26a609"
+  },
+  "F9": {
+    "release": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "source": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "providerModule": "NOT_PRESENT_IN_F9_EXTERNAL_PROVIDER_CONFIGURATION"
+  },
+  "sourceSuccessor": {
+    "productSourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "productTreeSha": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "newProductCode": false
+  },
+  "HEAD": "a6f126005ef86d8effe903f73774669edb1c6441",
+  "live": {
+    "runtime": "cxorbia-live-hr-dev-00393-p54",
+    "hosting": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "providerModule17CodeSha256": "d3e8549b37c657993c9f24b31710e8732bbe34cb85f03fae33050c905f26a609"
+  },
+  "evidence": {
+    "executionId": "59660c881d63439f9eaceee173b3fea3",
+    "inspectionExecutionId": "e40d0e6e122b4fc9b0c666a26da0542c",
+    "mcpReinspectionExecutionId": "2ff218a03b8c4510abea0dcd096289b2",
+    "archive": "docs/checkpoints/CXORBIA_I3_F3_MAKE_FAILED_WINDOW_20261125.json",
+    "archiveSha256": "0e582159e7aea3704566a4b59bb427f99c30d84a6430bfb5212982d6bfc7a252",
+    "requests": {
+      "PATCH": 1,
+      "PATCHHttpStatus": 404,
+      "postWriteGETHttpStatus": 404,
+      "namedWorksheetPreReadHttpStatus": 200
+    },
+    "applicationError": "PROVIDER_FAILURE:B14_FIELD_RESPONSE_SCOPE",
+    "reason": "write/read URLs use encoded worksheet ID; named worksheet route succeeds in the same execution; handler zeroes failed HTTP response and produces empty observed identity arrays"
+  },
+  "allowedDelta": {
+    "moduleId": 17,
+    "exactSearch": "encodeURIComponent(ws.id)",
+    "exactReplacement": "encodeURIComponent(c.name)",
+    "occurrences": 2,
+    "expectedAfterCodeSha256": "6e61e155c862ec710431d2a1f47db75d242c518edae10b418887eb7e57d5a021",
+    "identityGuardsPreserved": [
+      "worksheetStatus 200",
+      "ws.id===r.worksheetId",
+      "ws.name===c.name",
+      "exact QA project, country, row and field",
+      "original requestIdentity and fingerprints"
+    ]
+  },
+  "nextExactAction": "Apply one CAS scenario module17 mapper update, verify exact returned code, recover only owned failed QA fixture after full remote evidence and fresh baseline, rerun existing F3 endpoint runner on the same DEV artifact",
+  "applicationAckProven": false,
+  "b14Closed": false,
+  "newModuleMatches": 0,
+  "productionChanged": false
+}

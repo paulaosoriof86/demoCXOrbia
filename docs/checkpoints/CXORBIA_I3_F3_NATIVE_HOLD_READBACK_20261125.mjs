@@ -1,0 +1,22 @@
+import fs from 'node:fs';
+import {execFileSync as run} from 'node:child_process';
+import {consumeGoogleF3Result} from '../tools/qa/cxorbia-i3-automatic-result-consumer.mjs';
+import {DESCRIPTOR,POINTER,gitBlob,sha256} from '../tools/qa/cxorbia-i3-current-control-projection.mjs';
+const pin='a6f126005ef86d8effe903f73774669edb1c6441',base='/repos/paulaosoriof86/demoCXOrbia',branch='recovery/cxorbia-phase-a-20260831',dir='/home/aysseguros2009/.cxorbia-i3-qa/f3.Z2A8q0Wr';
+const start='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/start.json#1795653493842440',uri='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/9dbabc11-bdd3-4043-a462-8da3df671d6a/result.json#1795653636911758';
+const need=(x,c)=>{if(!x)throw Error(c)},git=a=>run('git',a,{encoding:'utf8',maxBuffer:32*1024*1024});
+need(git(['rev-parse','HEAD']).trim()===pin,'CHECKOUT_PIN');run('git',['diff','--quiet','HEAD','--','tools/qa']);
+const blobs=new Map(git(['ls-tree','-r','-z',pin]).split('\0').filter(Boolean).flatMap(v=>{const m=/^[0-9]+ blob ([a-f0-9]{40})\t([\s\S]+)$/.exec(v);return m?[[m[2],m[1]]]:[]}));
+const readBytes=async p=>{const s=blobs.get(p);need(s,'MISSING:'+p);const b=git(['cat-file','blob',s]);need(gitBlob(b)===s,'BLOB:'+p);return b},readFile=async p=>JSON.parse(await readBytes(p));
+const descriptor=await readFile(DESCRIPTOR),pointer=await readFile(POINTER),matrix=await readFile(descriptor.moduleTruthPath),ledger=await readFile(descriptor.findingsLedgerPath);
+const controls={head:pin,descriptor,pointer,matrix,ledger,blobs,readBytes,readFile};
+const producerLoader=async(_api,h)=>{need(h===pin,'PRODUCER_PIN');return controls};
+const api=async(p,b,m='GET')=>{need(b===undefined&&m==='GET','GIT_WRITE_DENIED');if(p===base+'/git/ref/heads/'+branch)return {object:{sha:pin}};if(p===base+'/compare/'+pin+'...'+pin)return {status:'identical',merge_base_commit:{sha:pin}};throw Error('API_READ_DENIED:'+p)};
+const readNative=(cmd,args)=>{if(cmd==='git')need(args[0]==='rev-parse','NATIVE_GIT_DENIED');else{need(cmd==='gcloud'&&args[0]==='storage'&&(args[1]==='cat'||args[1]==='objects'&&args[2]==='describe'),'NATIVE_WRITE_DENIED');const u=args.find(x=>x.startsWith('gs://'));need(u===start||u===uri,'OBJECT_PIN');}return run(cmd,args,{encoding:'utf8',timeout:45000,maxBuffer:3*1024*1024})};
+const out=await consumeGoogleF3Result({api,uri,expected:{controlSha:pin,transportSha:pin},producerLoader,readNative,dryRun:true});
+need(out.decision==='DRY_RUN_GOOGLE_F3_VALIDATED','DRY_RUN_DECISION');const bytes=out.files.get(out.receiptPath),receipt=JSON.parse(bytes);
+need(receipt.state==='HOLD'&&receipt.producer.decision==='HOLD_F3_QA_CLEANUP_UNVERIFIED'&&receipt.ownerSpecificReceipts.length===0&&receipt.newDomainMatches===0&&receipt.phaseAComplete===false,'F3_SCOPE');
+fs.mkdirSync(dir+'/consumer-plan',{recursive:true});
+for(const [file,b]of out.files){fs.mkdirSync(dir+'/consumer-plan/'+file.split('/').slice(0,-1).join('/'),{recursive:true});fs.writeFileSync(dir+'/consumer-plan/'+file,b);}
+const summary={decision:out.decision,head:pin,controlSnapshotOnly:true,key:out.key,receiptPath:out.receiptPath,files:[...out.files].map(([p,b])=>({path:p,bytes:Buffer.byteLength(b),gitBlob:gitBlob(b),sha256:sha256(b)}))};
+fs.writeFileSync(dir+'/consumer-summary.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.make-url-fix.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_FOCAL_PROVIDER_CONFIG_SAVE_LIVE_WRITE_PENDING",
+  "scenarioId": 10199316,
+  "moduleId": 17,
+  "beforeLastEdit": "2026-11-24T10:18:18.118Z",
+  "afterLastEdit": "2026-11-26T01:03:46.482Z",
+  "applied": [
+    {
+      "op": "module_config_set",
+      "moduleId": 17
+    }
+  ],
+  "onlyTwoUrlExpressionsChanged": true,
+  "beforeCodeSha256": "d3e8549b37c657993c9f24b31710e8732bbe34cb85f03fae33050c905f26a609",
+  "afterCodeSha256": "6e61e155c862ec710431d2a1f47db75d242c518edae10b418887eb7e57d5a021",
+  "exactReturnedConfigVerified": true,
+  "scopeGuardsPreserved": true,
+  "backendSourceChanged": false,
+  "devArtifactChanged": false,
+  "applicationAckProven": false,
+  "b14Closed": false,
+  "productionChanged": false,
+  "truth": "docs/checkpoints/CXORBIA_I3_F3_MAKE_URL_P0_TRUTH_20261125.json",
+  "tests": "docs/checkpoints/CXORBIA_I3_F3_MAKE_URL_REGRESSION_20261125.json"
+}

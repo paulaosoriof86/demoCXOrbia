@@ -1,0 +1,782 @@
+{
+  "schemaVersion": "cxorbia.f3.make-readback.v1",
+  "scenarioId": 10199316,
+  "executionId": "e40d0e6e122b4fc9b0c666a26da0542c",
+  "provenance": {
+    "source": "Previously retrieved Make responses, retained in functions store.",
+    "newProviderCalls": false,
+    "providerMutations": false,
+    "originalProviderObservationTimeAvailable": false,
+    "observedAtSemantics": "observedAt is the local UTC time this artifact was assembled from cached responses; not a fresh Make observation.",
+    "readOnlyPayloadNote": "reusableInspectInput is the exact recorded StartSubscenario payload; operation was already inspect_event. This artifact does not execute it."
+  },
+  "execution": {
+    "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+    "status": "success",
+    "startedAt": "2026-11-26T00:40:02.518Z",
+    "duration": 8038,
+    "operations": 8,
+    "credits": 10,
+    "dataTransfer": 20853
+  },
+  "rawStartSubscenarioPayload": "{\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"driveId\":\"B2D2B478DAC4DD05\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"fieldKey\":\"escenario\",\"periodId\":\"f3-qa-20261124-2026-11\",\"tenantId\":\"tya\",\"operation\":\"inspect_event\",\"projectId\":\"f3-qa-20261124\",\"fieldValue\":\"CXOrbia QA Escenario B\",\"countryCode\":\"GT\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"rangeAddress\":\"L2\",\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"rowRangeAddress\":\"A2:Z2\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"headerRangeAddress\":\"A1:Z1\",\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"]}",
+  "reusableInspectInput": {
+    "itemId": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+    "driveId": "B2D2B478DAC4DD05",
+    "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+    "hrRowId": "CXR_B14_QA_GT_20261119!2",
+    "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+    "fieldKey": "escenario",
+    "periodId": "f3-qa-20261124-2026-11",
+    "tenantId": "tya",
+    "operation": "inspect_event",
+    "projectId": "f3-qa-20261124",
+    "fieldValue": "CXOrbia QA Escenario B",
+    "countryCode": "GT",
+    "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+    "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+    "baseRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+    "rangeAddress": "L2",
+    "protocolVersion": "cxorbia.hr-field-transport.v1",
+    "rowRangeAddress": "A2:Z2",
+    "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+    "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+    "headerRangeAddress": "A1:Z1",
+    "expectedBeforeValue": "CXOrbia QA Escenario A",
+    "expectedHeaderValues": [
+      "fixtureId",
+      "fieldValue",
+      "eventId",
+      "eventDigest",
+      "País",
+      "ID CINEMA",
+      "CIUDAD",
+      "Shopping",
+      "Franja Horaria",
+      "Formato de Cine",
+      "Tipo de Combo",
+      "Tipo de Compra",
+      "Método de Pago",
+      "Quincena",
+      "Shopper Asignado",
+      "Telefono",
+      "Mail",
+      "Disponible a partir de",
+      "Fecha programada",
+      "Control día s/ franja horaria",
+      "Fecha realizada",
+      "Fecha Cuestionario completado",
+      "Precio de boleto",
+      "Precio de combo",
+      "Honorarios",
+      "Fecha submitido"
+    ],
+    "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+    "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+    "rowIdentityColumnIndexes": [
+      4,
+      5,
+      7
+    ],
+    "expectedRowIdentityValues": [
+      "Guatemala",
+      2022002,
+      "C. Miraflores"
+    ]
+  },
+  "outputs": {
+    "protocolVersion": "cxorbia.hr-field-transport.v1",
+    "operation": "inspect_event",
+    "fixtureId": null,
+    "tenantId": "tya",
+    "projectId": "f3-qa-20261124",
+    "countryCode": "GT",
+    "periodId": "f3-qa-20261124-2026-11",
+    "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+    "hrRowId": "CXR_B14_QA_GT_20261119!2",
+    "fieldKey": "escenario",
+    "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+    "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+    "createdName": null,
+    "worksheetId": null,
+    "readStatus1": null,
+    "readStatus2": null,
+    "writeStatus": 0,
+    "createStatus": null,
+    "deleteStatus": null,
+    "values1": null,
+    "values2": null,
+    "inventory": null,
+    "inventory1": null,
+    "providerRequestId": null,
+    "decision": "BASE_OBSERVED_NO_CAS",
+    "providerWriteRequests": 0,
+    "providerAck": false,
+    "preReadStatus": null,
+    "preReadValues": null,
+    "preReadRequestId": null,
+    "remoteEventId": null,
+    "remoteEventDigest": null,
+    "remoteFieldValue": null,
+    "readRequestId": null,
+    "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+    "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+    "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+    "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+    "readStatus": 200,
+    "observedValue": "CXOrbia QA Escenario A",
+    "observedHeaderValues": [
+      "fixtureId",
+      "fieldValue",
+      "eventId",
+      "eventDigest",
+      "País",
+      "ID CINEMA",
+      "CIUDAD",
+      "Shopping",
+      "Franja Horaria",
+      "Formato de Cine",
+      "Tipo de Combo",
+      "Tipo de Compra",
+      "Método de Pago",
+      "Quincena",
+      "Shopper Asignado",
+      "Telefono",
+      "Mail",
+      "Disponible a partir de",
+      "Fecha programada",
+      "Control día s/ franja horaria",
+      "Fecha realizada",
+      "Fecha Cuestionario completado",
+      "Precio de boleto",
+      "Precio de combo",
+      "Honorarios",
+      "Fecha submitido"
+    ],
+    "observedRowIdentityValues": [
+      "Guatemala",
+      2022002,
+      "C. Miraflores"
+    ],
+    "preconditionAllowed": true,
+    "remoteReceiptVerified": false,
+    "remoteWriteStatus": 0,
+    "currentEventId": null,
+    "providerExecutionId": null,
+    "writeAttempted": false,
+    "status": "CONFLICT_NOOP"
+  },
+  "priorComparisons": {
+    "firstElevenFields": {
+      "fields": [
+        "protocolVersion",
+        "tenantId",
+        "projectId",
+        "periodId",
+        "countryCode",
+        "visitId",
+        "hrRowId",
+        "fieldKey",
+        "eventId",
+        "eventDigest",
+        "bindingFingerprint"
+      ],
+      "allPresent": true,
+      "allStrings": true,
+      "allStrictMatch": true
+    },
+    "extraFive": {
+      "fingerprints": [
+        {
+          "field": "rowIdentityFingerprint",
+          "input": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "inputType": "string",
+          "output": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "outputType": "string",
+          "strictEqual": true
+        },
+        {
+          "field": "worksheetFingerprint",
+          "input": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "inputType": "string",
+          "output": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "outputType": "string",
+          "strictEqual": true
+        },
+        {
+          "field": "headerFingerprint",
+          "input": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "inputType": "string",
+          "output": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "outputType": "string",
+          "strictEqual": true
+        }
+      ],
+      "arrays": [
+        {
+          "inputField": "expectedHeaderValues",
+          "outputField": "observedHeaderValues",
+          "input": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "output": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "inputType": "array",
+          "outputType": "array",
+          "inputLength": 26,
+          "outputLength": 26,
+          "canonicalJSONMatch": true,
+          "cells": [
+            {
+              "index": 0,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 1,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 2,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 3,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 4,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 5,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 6,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 7,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 8,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 9,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 10,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 11,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 12,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 13,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 14,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 15,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 16,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 17,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 18,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 19,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 20,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 21,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 22,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 23,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 24,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 25,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            }
+          ]
+        },
+        {
+          "inputField": "expectedRowIdentityValues",
+          "outputField": "observedRowIdentityValues",
+          "input": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "output": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "inputType": "array",
+          "outputType": "array",
+          "inputLength": 3,
+          "outputLength": 3,
+          "canonicalJSONMatch": true,
+          "cells": [
+            {
+              "index": 0,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            },
+            {
+              "index": 1,
+              "inputType": "number",
+              "outputType": "number",
+              "strictEqual": true
+            },
+            {
+              "index": 2,
+              "inputType": "string",
+              "outputType": "string",
+              "strictEqual": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "exactRecoveredResponses": {
+    "scenario_execution_get": {
+      "content": [],
+      "structuredContent": {
+        "execution": {
+          "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+          "status": "success",
+          "startedAt": "2026-11-26T00:40:02.518Z",
+          "duration": 8038,
+          "operations": 8,
+          "credits": 10,
+          "dataTransfer": 20853
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "inspect_event",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "BASE_OBSERVED_NO_CAS",
+          "providerWriteRequests": 0,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": null,
+          "remoteEventDigest": null,
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 200,
+          "observedValue": "CXOrbia QA Escenario A",
+          "observedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "observedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "preconditionAllowed": true,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": false,
+          "status": "CONFLICT_NOOP"
+        }
+      },
+      "isError": false
+    },
+    "scenario_execution_inspect": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Cycle numbers could not be determined for this run, so the cycle fields are absent. `scenario_execution_module_get` requires one: pass 1, which is right for the single-cycle runs that are the vast majority and wrong for a later cycle of a run that processed several batches of trigger data."
+        }
+      ],
+      "structuredContent": {
+        "execution": {
+          "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+          "status": "success",
+          "startedAt": "2026-11-26T00:40:02.518Z",
+          "duration": 8038,
+          "operations": 8,
+          "credits": 10
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "inspect_event",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "BASE_OBSERVED_NO_CAS",
+          "providerWriteRequests": 0,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": null,
+          "remoteEventDigest": null,
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 200,
+          "observedValue": "CXOrbia QA Escenario A",
+          "observedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "observedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "preconditionAllowed": true,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": false,
+          "status": "CONFLICT_NOOP"
+        },
+        "modules": [
+          {
+            "id": 1,
+            "name": "scenario-service: StartSubscenario",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:02.874Z"
+          },
+          {
+            "id": 12,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:04.354Z"
+          },
+          {
+            "id": 15,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:06.093Z"
+          },
+          {
+            "id": 17,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.343Z"
+          },
+          {
+            "id": 19,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.350Z"
+          },
+          {
+            "id": 22,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.359Z"
+          },
+          {
+            "id": 25,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.366Z"
+          },
+          {
+            "id": 27,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.372Z"
+          },
+          {
+            "id": 29,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:10.436Z"
+          },
+          {
+            "id": 33,
+            "name": "scenario-service: ReturnData",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:10.525Z"
+          }
+        ]
+      },
+      "isError": false
+    },
+    "startSubscenario_module_get": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "e40d0e6e122b4fc9b0c666a26da0542c",
+        "records": [
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"driveId\":\"B2D2B478DAC4DD05\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"fieldKey\":\"escenario\",\"periodId\":\"f3-qa-20261124-2026-11\",\"tenantId\":\"tya\",\"operation\":\"inspect_event\",\"projectId\":\"f3-qa-20261124\",\"fieldValue\":\"CXOrbia QA Escenario B\",\"countryCode\":\"GT\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"rangeAddress\":\"L2\",\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"rowRangeAddress\":\"A2:Z2\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"headerRangeAddress\":\"A1:Z1\",\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"]}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    }
+  },
+  "observedAt": "2026-11-26T00:49:04.823Z",
+  "hashes": {
+    "algorithm": "SHA-256",
+    "canonicalization": "JSON UTF-8; object keys sorted; ensure_ascii=False; separators comma/colon; no trailing newline",
+    "rawStartSubscenarioPayloadSha256": "67604253e3c8b428db2692db632d44c4dc1f64a204508b26ddae2e72114916fa",
+    "reusableInspectInputCanonicalSha256": "a425ade274d412fe6572447c0577f7caf0b9f2ee77525bbe2b02ce4505fa5c0a",
+    "outputsCanonicalSha256": "cf29da283db492d872303e0ae48cb114a0f1d384c9b7aacc339439fd877168d2",
+    "scenarioExecutionGetCanonicalSha256": "c78806e64d6645f6877153f66ad532bf7ec3aa5cf7d89241af905ba9c94a98fe",
+    "scenarioExecutionInspectCanonicalSha256": "ce614fa21a8cc15eb65492e63807fceff797da025e55d54cd23c65bcc76a0141",
+    "startSubscenarioModuleGetCanonicalSha256": "54d02005b961b1ec92ad452783a8266f389be6bcff8006334164dd5907cb2765"
+  }
+}

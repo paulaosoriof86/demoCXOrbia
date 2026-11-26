@@ -1,0 +1,1438 @@
+{
+  "schemaVersion": "cxorbia.f3.make-window-readback.v1",
+  "scenarioId": 10199316,
+  "dataStoreId": 213856,
+  "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+  "queryWindow": {
+    "from": "2026-11-26T00:39:00Z",
+    "observedAt": "2026-11-26T00:58:46Z",
+    "toParameterOmitted": true,
+    "executionListCount": 3,
+    "hasMoreReported": false
+  },
+  "mutationPolicy": {
+    "auditProviderMutations": false,
+    "repoMutations": false,
+    "scenarioRunsStartedByAuditor": 0
+  },
+  "findings": {
+    "executions": [
+      {
+        "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+        "operation": "inspect_event",
+        "startedAt": "2026-11-26T00:40:02.518Z",
+        "operations": 8,
+        "credits": 10,
+        "patchModule36Invocations": 0,
+        "providerWriteRequests": 0
+      },
+      {
+        "id": "59660c881d63439f9eaceee173b3fea3",
+        "operation": "write_field",
+        "startedAt": "2026-11-26T00:40:11.520Z",
+        "operations": 19,
+        "credits": 23,
+        "patchModule36Invocations": 1,
+        "providerWriteRequests": 1,
+        "patchError": "[404] The requested resource doesn't exist.",
+        "readbackError": "[404] The requested resource doesn't exist.",
+        "declaredStatus": "ACK_READBACK_PENDING",
+        "declaredDecision": "INSPECT_ONLY_RECOVERY_REQUIRED"
+      },
+      {
+        "id": "2ff218a03b8c4510abea0dcd096289b2",
+        "operation": "inspect_event",
+        "startedAt": "2026-11-26T00:50:25.526Z",
+        "operations": 8,
+        "credits": 10,
+        "patchModule36Invocations": 0,
+        "providerWriteRequests": 0,
+        "declaredDecision": "EXISTING_EVENT_INSPECT_ONLY"
+      }
+    ],
+    "totalOperations": 35,
+    "totalCredits": 43,
+    "successfulExcelWritesEstablished": false,
+    "failureChain": "write_field module36 PATCH and module43 readback GET target percent-encoded worksheet id and each return 404; Resume modules38/44 substitute statusCode0/body{}; module45/48 returns empty observed identity arrays; this response differs from the two successful inspect_event identity arrays.",
+    "routeComparison": {
+      "successfulWorksheetSegment": "CXR_B14_QA_GT_20261119",
+      "failedWorksheetSegment": "%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D",
+      "sameDriveAndItem": true,
+      "preReadHttp200Evidence": "module17Write output.result.observation.actualHttpStatus and readStatus; module12Write raw response is truncated",
+      "metadataHttp200Evidence": "module15Write full output",
+      "urlConstructionOwner": "module17 validateRequest patchUrl/readUrl; module36/43 consume generated URLs"
+    },
+    "narrowProposedChangeReview": {
+      "changedExpressions": 2,
+      "from": "encodeURIComponent(ws.id)",
+      "to": "encodeURIComponent(c.name)",
+      "supported": true,
+      "preservedGuard": "Number(input.worksheetStatus) === 200 && ws.id === r.worksheetId && ws.name === c.name",
+      "noPatchPerformedByAuditor": true,
+      "requiresScopedPostChangeEvidence": true
+    },
+    "datastoreCleanupCandidatesReadOnly": [
+      {
+        "key": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+        "recordType": "head",
+        "status": "uncertain",
+        "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+        "writeExecutionId": "59660c881d63439f9eaceee173b3fea3",
+        "writeHttpStatus": 0
+      },
+      {
+        "key": "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "recordType": "event",
+        "status": "uncertain",
+        "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+        "writeExecutionId": "59660c881d63439f9eaceee173b3fea3",
+        "writeHttpStatus": 0
+      }
+    ],
+    "datastoreSentinelMustRemain": [
+      "757bfe4bd75b"
+    ],
+    "datastoreOrigin": "head/event were written in execution59660...; inspect executions e40d... and2ff... have no AddRecord/UpdateRecord invocations"
+  },
+  "parsedDatastore": [
+    {
+      "key": "757bfe4bd75b",
+      "recordType": "sentinel",
+      "payload": {
+        "schemaVersion": 1,
+        "absent": true
+      }
+    },
+    {
+      "key": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+      "recordType": "head",
+      "payload": {
+        "schemaVersion": 1,
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario"
+        },
+        "request": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "baseEventId": null,
+          "baseEventOrigin": null,
+          "baseRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+          "driveId": "B2D2B478DAC4DD05",
+          "itemId": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+          "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+          "rangeAddress": "L2",
+          "headerRangeAddress": "A1:Z1",
+          "rowRangeAddress": "A2:Z2",
+          "rowIdentityColumnIndexes": [
+            4,
+            5,
+            7
+          ],
+          "expectedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "expectedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "expectedBeforeValue": "CXOrbia QA Escenario A",
+          "fieldValue": "CXOrbia QA Escenario B"
+        },
+        "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+        "status": "uncertain",
+        "afterValue": "CXOrbia QA Escenario B",
+        "writeHttpStatus": 0,
+        "writeExecutionId": "59660c881d63439f9eaceee173b3fea3",
+        "updatedAt": "2026-11-26T00:40:25.525Z"
+      }
+    },
+    {
+      "key": "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+      "recordType": "event",
+      "payload": {
+        "schemaVersion": 1,
+        "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+        "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario"
+        },
+        "fieldKey": "escenario",
+        "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+        "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+        "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+        "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+        "request": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "baseEventId": null,
+          "baseEventOrigin": null,
+          "baseRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+          "driveId": "B2D2B478DAC4DD05",
+          "itemId": "B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e",
+          "worksheetId": "{DE95C2A6-0011-427C-980D-D266CAE84B1B}",
+          "rangeAddress": "L2",
+          "headerRangeAddress": "A1:Z1",
+          "rowRangeAddress": "A2:Z2",
+          "rowIdentityColumnIndexes": [
+            4,
+            5,
+            7
+          ],
+          "expectedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "expectedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "expectedBeforeValue": "CXOrbia QA Escenario A",
+          "fieldValue": "CXOrbia QA Escenario B"
+        },
+        "beforeValue": "CXOrbia QA Escenario A",
+        "afterValue": "CXOrbia QA Escenario B",
+        "baseEventId": null,
+        "baseEventOrigin": null,
+        "baseRevision": "3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645",
+        "status": "uncertain",
+        "intentAt": "2026-11-26T00:40:17.588Z",
+        "writeHttpStatus": 0,
+        "writeExecutionId": "59660c881d63439f9eaceee173b3fea3",
+        "writeObservedAt": "2026-11-26T00:40:21.323Z",
+        "readbackObservedAt": "2026-11-26T00:40:25.525Z"
+      }
+    }
+  ],
+  "truncationDisclosure": {
+    "module12Write": [
+      {
+        "direction": "output",
+        "cycle": 1,
+        "operation": 1
+      }
+    ],
+    "module17Write": [
+      {
+        "direction": "input",
+        "cycle": 1,
+        "operation": 1
+      }
+    ],
+    "module39Write": [
+      {
+        "direction": "input",
+        "cycle": 1,
+        "operation": 1
+      },
+      {
+        "direction": "output",
+        "cycle": 1,
+        "operation": 1
+      }
+    ],
+    "module45Write": [
+      {
+        "direction": "input",
+        "cycle": 1,
+        "operation": 1
+      }
+    ]
+  },
+  "exactRecoveredResponses": {
+    "clockAtWindowQuery": {
+      "current_time": "2026-11-26 00:58:46 UTC"
+    },
+    "ALLWINDOW": {
+      "content": [],
+      "structuredContent": {
+        "executions": [
+          {
+            "id": "2ff218a03b8c4510abea0dcd096289b2",
+            "startedAt": "2026-11-26T00:50:25.526Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 8100,
+            "operations": 8,
+            "credits": 10,
+            "dataTransfer": 29198,
+            "isReplayable": true
+          },
+          {
+            "id": "59660c881d63439f9eaceee173b3fea3",
+            "startedAt": "2026-11-26T00:40:11.520Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 16250,
+            "operations": 19,
+            "credits": 23,
+            "dataTransfer": 47828,
+            "isReplayable": true
+          },
+          {
+            "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+            "startedAt": "2026-11-26T00:40:02.518Z",
+            "status": "success",
+            "startedBy": "auto",
+            "duration": 8038,
+            "operations": 8,
+            "credits": 10,
+            "dataTransfer": 20853,
+            "isReplayable": true
+          }
+        ]
+      },
+      "isError": false
+    },
+    "datastore213856Page0": {
+      "content": [],
+      "structuredContent": {
+        "records": [
+          {
+            "key": "757bfe4bd75b",
+            "data": {
+              "schemaVersion": 1,
+              "recordType": "sentinel",
+              "payloadJson": "{\"schemaVersion\":1,\"absent\":true}"
+            }
+          },
+          {
+            "key": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+            "data": {
+              "schemaVersion": 1,
+              "recordType": "head",
+              "payloadJson": "{\"schemaVersion\":1,\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"status\":\"uncertain\",\"afterValue\":\"CXOrbia QA Escenario B\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"updatedAt\":\"2026-11-26T00:40:25.525Z\"}"
+            }
+          },
+          {
+            "key": "event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+            "data": {
+              "schemaVersion": 1,
+              "recordType": "event",
+              "payloadJson": "{\"schemaVersion\":1,\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"fieldKey\":\"escenario\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"beforeValue\":\"CXOrbia QA Escenario A\",\"afterValue\":\"CXOrbia QA Escenario B\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"status\":\"uncertain\",\"intentAt\":\"2026-11-26T00:40:17.588Z\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"writeObservedAt\":\"2026-11-26T00:40:21.323Z\",\"readbackObservedAt\":\"2026-11-26T00:40:25.525Z\"}"
+            }
+          }
+        ],
+        "total": 3,
+        "fields": [
+          {
+            "name": "schemaVersion",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "recordType",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "payloadJson",
+            "type": "text",
+            "required": true
+          }
+        ]
+      },
+      "isError": false
+    },
+    "initialInspectExecutionGet": {
+      "content": [],
+      "structuredContent": {
+        "execution": {
+          "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+          "status": "success",
+          "startedAt": "2026-11-26T00:40:02.518Z",
+          "duration": 8038,
+          "operations": 8,
+          "credits": 10,
+          "dataTransfer": 20853
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "inspect_event",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "BASE_OBSERVED_NO_CAS",
+          "providerWriteRequests": 0,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": null,
+          "remoteEventDigest": null,
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 200,
+          "observedValue": "CXOrbia QA Escenario A",
+          "observedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "observedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "preconditionAllowed": true,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": false,
+          "status": "CONFLICT_NOOP"
+        }
+      },
+      "isError": false
+    },
+    "initialInspectExecutionInspect": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Cycle numbers could not be determined for this run, so the cycle fields are absent. `scenario_execution_module_get` requires one: pass 1, which is right for the single-cycle runs that are the vast majority and wrong for a later cycle of a run that processed several batches of trigger data."
+        }
+      ],
+      "structuredContent": {
+        "execution": {
+          "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+          "status": "success",
+          "startedAt": "2026-11-26T00:40:02.518Z",
+          "duration": 8038,
+          "operations": 8,
+          "credits": 10
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "inspect_event",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "BASE_OBSERVED_NO_CAS",
+          "providerWriteRequests": 0,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": null,
+          "remoteEventDigest": null,
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 200,
+          "observedValue": "CXOrbia QA Escenario A",
+          "observedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "observedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "preconditionAllowed": true,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": false,
+          "status": "CONFLICT_NOOP"
+        },
+        "modules": [
+          {
+            "id": 1,
+            "name": "scenario-service: StartSubscenario",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:02.874Z"
+          },
+          {
+            "id": 12,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:04.354Z"
+          },
+          {
+            "id": 15,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:06.093Z"
+          },
+          {
+            "id": 17,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.343Z"
+          },
+          {
+            "id": 19,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.350Z"
+          },
+          {
+            "id": 22,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.359Z"
+          },
+          {
+            "id": 25,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.366Z"
+          },
+          {
+            "id": 27,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:08.372Z"
+          },
+          {
+            "id": 29,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:10.436Z"
+          },
+          {
+            "id": 33,
+            "name": "scenario-service: ReturnData",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:10.525Z"
+          }
+        ]
+      },
+      "isError": false
+    },
+    "writeExecutionInspect": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Cycle numbers could not be determined for this run, so the cycle fields are absent. `scenario_execution_module_get` requires one: pass 1, which is right for the single-cycle runs that are the vast majority and wrong for a later cycle of a run that processed several batches of trigger data."
+        }
+      ],
+      "structuredContent": {
+        "execution": {
+          "id": "59660c881d63439f9eaceee173b3fea3",
+          "status": "success",
+          "startedAt": "2026-11-26T00:40:11.520Z",
+          "duration": 16250,
+          "operations": 19,
+          "credits": 23
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "write_field",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "INSPECT_ONLY_RECOVERY_REQUIRED",
+          "providerWriteRequests": 1,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "remoteEventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 0,
+          "observedValue": null,
+          "observedHeaderValues": [],
+          "observedRowIdentityValues": [],
+          "preconditionAllowed": false,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": true,
+          "status": "ACK_READBACK_PENDING"
+        },
+        "modules": [
+          {
+            "id": 1,
+            "name": "scenario-service: StartSubscenario",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:11.823Z"
+          },
+          {
+            "id": 12,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:13.868Z"
+          },
+          {
+            "id": 15,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:15.436Z"
+          },
+          {
+            "id": 17,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:17.561Z"
+          },
+          {
+            "id": 19,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:17.567Z"
+          },
+          {
+            "id": 22,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:17.572Z"
+          },
+          {
+            "id": 25,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:17.577Z"
+          },
+          {
+            "id": 27,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:17.581Z"
+          },
+          {
+            "id": 29,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:19.750Z"
+          },
+          {
+            "id": 31,
+            "name": "datastore: AddRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:19.782Z"
+          },
+          {
+            "id": 34,
+            "name": "datastore: AddRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:19.809Z"
+          },
+          {
+            "id": 36,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:21.321Z"
+          },
+          {
+            "id": 39,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:23.735Z"
+          },
+          {
+            "id": 40,
+            "name": "datastore: UpdateRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:23.751Z"
+          },
+          {
+            "id": 41,
+            "name": "datastore: UpdateRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:23.772Z"
+          },
+          {
+            "id": 42,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:23.783Z"
+          },
+          {
+            "id": 43,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:25.523Z"
+          },
+          {
+            "id": 45,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:27.626Z"
+          },
+          {
+            "id": 46,
+            "name": "datastore: UpdateRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:27.642Z"
+          },
+          {
+            "id": 47,
+            "name": "datastore: UpdateRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:27.663Z"
+          },
+          {
+            "id": 48,
+            "name": "scenario-service: ReturnData",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:40:27.743Z"
+          }
+        ]
+      },
+      "isError": false
+    },
+    "diagnosticInspectExecutionInspect": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Cycle numbers could not be determined for this run, so the cycle fields are absent. `scenario_execution_module_get` requires one: pass 1, which is right for the single-cycle runs that are the vast majority and wrong for a later cycle of a run that processed several batches of trigger data."
+        }
+      ],
+      "structuredContent": {
+        "execution": {
+          "id": "2ff218a03b8c4510abea0dcd096289b2",
+          "status": "success",
+          "startedAt": "2026-11-26T00:50:25.526Z",
+          "duration": 8100,
+          "operations": 8,
+          "credits": 10
+        },
+        "outputs": {
+          "protocolVersion": "cxorbia.hr-field-transport.v1",
+          "operation": "inspect_event",
+          "fixtureId": null,
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "countryCode": "GT",
+          "periodId": "f3-qa-20261124-2026-11",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario",
+          "bindingFingerprint": "eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194",
+          "eventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "createdName": null,
+          "worksheetId": null,
+          "readStatus1": null,
+          "readStatus2": null,
+          "writeStatus": 0,
+          "createStatus": null,
+          "deleteStatus": null,
+          "values1": null,
+          "values2": null,
+          "inventory": null,
+          "inventory1": null,
+          "providerRequestId": null,
+          "decision": "EXISTING_EVENT_INSPECT_ONLY",
+          "providerWriteRequests": 0,
+          "providerAck": false,
+          "preReadStatus": null,
+          "preReadValues": null,
+          "preReadRequestId": null,
+          "remoteEventId": "hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831",
+          "remoteEventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "remoteFieldValue": null,
+          "readRequestId": null,
+          "eventDigest": "1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617",
+          "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d",
+          "headerFingerprint": "498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e",
+          "rowIdentityFingerprint": "33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e",
+          "readStatus": 200,
+          "observedValue": "CXOrbia QA Escenario A",
+          "observedHeaderValues": [
+            "fixtureId",
+            "fieldValue",
+            "eventId",
+            "eventDigest",
+            "País",
+            "ID CINEMA",
+            "CIUDAD",
+            "Shopping",
+            "Franja Horaria",
+            "Formato de Cine",
+            "Tipo de Combo",
+            "Tipo de Compra",
+            "Método de Pago",
+            "Quincena",
+            "Shopper Asignado",
+            "Telefono",
+            "Mail",
+            "Disponible a partir de",
+            "Fecha programada",
+            "Control día s/ franja horaria",
+            "Fecha realizada",
+            "Fecha Cuestionario completado",
+            "Precio de boleto",
+            "Precio de combo",
+            "Honorarios",
+            "Fecha submitido"
+          ],
+          "observedRowIdentityValues": [
+            "Guatemala",
+            2022002,
+            "C. Miraflores"
+          ],
+          "preconditionAllowed": false,
+          "remoteReceiptVerified": false,
+          "remoteWriteStatus": 0,
+          "currentEventId": null,
+          "providerExecutionId": null,
+          "writeAttempted": false,
+          "status": "CONFLICT_NOOP"
+        },
+        "modules": [
+          {
+            "id": 1,
+            "name": "scenario-service: StartSubscenario",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:26.024Z"
+          },
+          {
+            "id": 12,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:28.233Z"
+          },
+          {
+            "id": 15,
+            "name": "onedrive: makeApiCall",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:29.311Z"
+          },
+          {
+            "id": 17,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:31.455Z"
+          },
+          {
+            "id": 19,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:31.461Z"
+          },
+          {
+            "id": 22,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:31.466Z"
+          },
+          {
+            "id": 25,
+            "name": "datastore: ExistRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:31.470Z"
+          },
+          {
+            "id": 27,
+            "name": "datastore: GetRecord",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:31.474Z"
+          },
+          {
+            "id": 29,
+            "name": "code: ExecuteCode",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:33.462Z"
+          },
+          {
+            "id": 33,
+            "name": "scenario-service: ReturnData",
+            "invocations": 1,
+            "errors": 0,
+            "lastFinishedAt": "2026-11-26T00:50:33.545Z"
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module12Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"url\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/CXR_B14_QA_GT_20261119/range(address='A1:Z2')\",\"method\":\"GET\"}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"body\":{\"@odata.context\":\"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.workbookRange\",\"@odata.id\":\"/drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets(%27%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D%27)/range(address=%27A1:Z2%27)\",\"address\":\"CXR_B14_QA_GT_20261119!A1:Z2\",\"addressLocal\":\"CXR_B14_QA_GT_20261119!A1:Z2\",\"columnCount\":26,\"cellCount\":52,\"columnHidden\":false,\"rowHidden\":false,\"numberFormat\":[[\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\"],[\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"m/d/yyyy\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\"]],\"columnIndex\":0,\"text\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",\"2022002\",\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",\"11/1/2026\",\"\",\"P x asignar\",\"\",\"\",\"0\",\"0\",\"0\",\"\"]],\"formulas\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"formulasLocal\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"formulasR1C1\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"hidden\":false,\"rowCount\":2,\"rowIndex\":0,\"valueTypes\":[[\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\"],[\"String\",\"Empty\",\"String\",\"String\",\"String\",\"Double\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"Empty\",\"Empty\",\"Empty\",\"Double\",\"Empty\",\"String\",\"Empty\",\"Empty\",\"Double\",\"Double\",\"Double\",\"Empty\"]],\"values\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]]},\"headers\":{\"cache-control\":\"no-cache\",\"transfer-encoding\":\"chunked\",\"content-type\":\"application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8\",\"vary\":\"Accept-Encoding\",\"strict-transport-security\":\"max-age=31536000\",\"request-id\":\"b5f1c046-544c-4c9f-b5e2-381a145fd550\",\"client-request-id\":\"b5f1c046-544c-4c9f-b5e2-381a145fd550\",\"x-ms-ags-diagnostic\":\"{\\\"ServerInfo\\\":{\\\"DataCenter\\\":\\\"North Europe\\\",\\\"Slice\\\":\\\"E\\\",\\\"Ring\\\":\\\"4\\\",\\\"ScaleUnit\\\":\\\"005\\\",\\\"RoleInstance\\\":\\\"DU6PEPF0004470B\\\"}}\",\"content-security-policy\":\"font-src data: 'self' res.public.onecdn.static.microsoft *.cdn.office.net *.public.onecdn.static.microsoft res-cn.cdn.partner.office365.cn res-4.cdn.partner.office365.cn res-3.cdn.partner.office365.cn res.onecdn.microsoft.scloud res.onecdn.eaglex.ic.gov res-1-cdn.azureedge.microsoft.scloud res-1-cdn.azureedge.eaglex.ic.gov res-dev.cdn.officeppe.net *.onecdn.usgovcloud-static.microsoft *.onecdn.sovcloud-static.cn *.onecdn.sovcloud-static.fr *.onecdn.sovcloud-static.de *.skype.com *.skypeassets.com *.msocdn.com sway.com *.sway-cdn.com sway-cdn.com *.sharepointonline.com spoprod-a.akamaihd.net *.azureedge.net content.lifecycle.office.net www.microsoft.com pmservices.cp.microsoft.com paymentinstruments.mp.microsoft.com paymentinstruments-int.mp.microsoft.com edge.payments.microsoft.com fs.microsoft.com *.officeapps.live.com; script-src 'nonce-Vn+mnEqfNFcwvXMAaZmSXjh5wdMTpxdB1sWFtOt0lik=' 'strict-dynamic' 'unsafe-inline' 'unsafe-eval' res.public.onecdn.static.microsoft *.officeapps.live.com *.msftauth.net js.monitor.azure.com *.skype.com *.skypeassets.com *.msocdn.com js.live.net appsforoffice.microsoft.com contentstorage.osi.office.net *.growth.office.net *.rt.microsoft.com res-prod.cdn.office.net res.cdn.office.net messaging.office.com messaging.growth.office.com messaging.action.office.com messaging.engagement.office.com content.lifecycle.office.net www.microsoft.com pmservices.cp.microsoft.com paymentinstruments.mp.microsoft.com paymentinstruments-int.mp.microsoft.com edge.payments.microsoft.com *.cdn.office.net *.public.onecdn.static.microsoft res-cn.cdn.partner.office365.cn res-4.cdn.partner.office365.cn res-3.cdn.partner.office365.cn res.onecdn.microsoft.scloud res.onecdn.eaglex.ic.gov res-1-cdn.azureedge.microsoft.scloud res-1-cdn.azureedge.eaglex.ic.gov res-dev.cdn.officeppe.net *.onecdn.usgovcloud-static.microsoft *.onecdn.sovcloud-static.cn *.onecdn.sovcloud-static.fr *.onecdn.sovcloud-static.de; require-trusted-types-for 'script'; style-src 'self' 'unsafe-inline' 'unsafe-eval' res.public.onecdn.static.microsoft *.skype.com *.skypeassets.com *.msocdn.com js.live.net sway.com *.sway-cdn.com sway-cdn.com *.cdn.office.net *.public.onecdn.static.microsoft res-cn.cdn.partner.office365.cn res-4.cdn.partner.office365.cn res-3.cdn.partne…[truncated]"
+            ],
+            "truncated": true
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module15Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"url\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/CXR_B14_QA_GT_20261119\",\"method\":\"GET\"}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"body\":{\"@odata.context\":\"https://graph.microsoft.com/v1.0/$metadata#drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets/$entity\",\"@odata.id\":\"/drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets(%27%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D%27)\",\"id\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"name\":\"CXR_B14_QA_GT_20261119\",\"position\":35,\"visibility\":\"Visible\"},\"headers\":{\"cache-control\":\"no-cache\",\"transfer-encoding\":\"chunked\",\"content-type\":\"application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8\",\"vary\":\"Accept-Encoding\",\"strict-transport-security\":\"max-age=31536000\",\"request-id\":\"5b808383-1e90-4984-9931-1c66a53b2fc5\",\"client-request-id\":\"5b808383-1e90-4984-9931-1c66a53b2fc5\",\"x-ms-ags-diagnostic\":\"{\\\"ServerInfo\\\":{\\\"DataCenter\\\":\\\"North Europe\\\",\\\"Slice\\\":\\\"E\\\",\\\"Ring\\\":\\\"4\\\",\\\"ScaleUnit\\\":\\\"005\\\",\\\"RoleInstance\\\":\\\"DU6PEPF0002CDE7\\\"}}\",\"content-security-policy\":\"trusted-types ; require-trusted-types-for 'script'; report-uri https://cspv2.core.microsoft/report/de2f5e7c-25b1-4cc6-8a47-0364cb117473/OfficeOnline-Prod\",\"odata-version\":\"4.0\",\"date\":\"Thu, 26 Nov 2026 00:40:14 GMT\",\"connection\":\"close\"},\"statusCode\":200}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module17Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"input\":[{\"name\":\"request\",\"value\":{\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"driveId\":\"B2D2B478DAC4DD05\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"fieldKey\":\"escenario\",\"periodId\":\"f3-qa-20261124-2026-11\",\"tenantId\":\"tya\",\"operation\":\"write_field\",\"projectId\":\"f3-qa-20261124\",\"fieldValue\":\"CXOrbia QA Escenario B\",\"countryCode\":\"GT\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"rangeAddress\":\"L2\",\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"rowRangeAddress\":\"A2:Z2\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"headerRangeAddress\":\"A1:Z1\",\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"]}},{\"name\":\"worksheet\",\"value\":{\"@odata.context\":\"https://graph.microsoft.com/v1.0/$metadata#drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets/$entity\",\"@odata.id\":\"/drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets(%27%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D%27)\",\"id\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"name\":\"CXR_B14_QA_GT_20261119\",\"position\":35,\"visibility\":\"Visible\"}},{\"name\":\"worksheetStatus\",\"value\":200},{\"name\":\"graphBody\",\"value\":{\"@odata.context\":\"https://graph.microsoft.com/v1.0/$metadata#microsoft.graph.workbookRange\",\"@odata.id\":\"/drives('B2D2B478DAC4DD05')/items('B2D2B478DAC4DD05%21s7752e15fa45d4038b05c88522834cb6e')/workbook/worksheets(%27%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D%27)/range(address=%27A1:Z2%27)\",\"address\":\"CXR_B14_QA_GT_20261119!A1:Z2\",\"addressLocal\":\"CXR_B14_QA_GT_20261119!A1:Z2\",\"columnCount\":26,\"cellCount\":52,\"columnHidden\":false,\"rowHidden\":false,\"numberFormat\":[[\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\"],[\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"m/d/yyyy\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\",\"General\"]],\"columnIndex\":0,\"text\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",\"2022002\",\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",\"11/1/2026\",\"\",\"P x asignar\",\"\",\"\",\"0\",\"0\",\"0\",\"\"]],\"formulas\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"formulasLocal\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"formulasR1C1\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]],\"hidden\":false,\"rowCount\":2,\"rowIndex\":0,\"valueTypes\":[[\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\"],[\"String\",\"Empty\",\"String\",\"String\",\"String\",\"Double\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"String\",\"Empty\",\"Empty\",\"Empty\",\"Double\",\"Empty\",\"String\",\"Empty\",\"Empty\",\"Double\",\"Double\",\"Double\",\"Empty\"]],\"values\":[[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],[\"qa_f3_20261123_GT\",\"\",\"qa_f3_fields_seed_20261124_GT\",\"687f3e9e9a911892545fc89f58abaebed41db1c1644b12fd5ece857573c33bfa\",\"Guatemala\",2022002,\"Guatemala\",\"C. Miraflores\",\"WKND\",\"2D\",\"CXOrbia QA Combo A\",\"CXOrbia QA Escenario A\",\"Tarjeta\",\"1Q\",\"\",\"\",\"\",46327,\"\",\"P x asignar\",\"\",\"\",0,0,0,\"\"]]}},{\"name\":\"graphStatus\",\"value\":200},{\"name\":\"observedAt\",\"value\":\"2026-11-26T00:40:15.437Z\"}],\"language\":\"javascript\",\"inputFormat\":\"editor\",\"codeEditorJavascript\":\"// Proposal for the EXISTING Make scenario 10199316. No network or SDK imports.\\n// The production branch is intentionally absent: every address is a fixed QA tab.\\nconst PROTOCOL = 'cxorbia.hr-field-transport.v1';\\nconst SCOPE_KEYS = ['tenantId','projectId','periodId','countryCode','visitId','hrRowId','fieldKey'];\\nconst ECHO_KEYS = […[truncated]"
+            ],
+            "truncated": true
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"logs\":{\"stdout\":[],\"stderr\":[]},\"executionTimeMs\":513,\"result\":{\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"operation\":\"write_field\",\"eventKey\":\"event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"headCanonical\":\"[\\\"tya\\\",\\\"f3-qa-20261124\\\",\\\"f3-qa-20261124-2026-11\\\",\\\"GT\\\",\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"escenario\\\"]\",\"observedWorksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"validatedAt\":\"2026-11-26T00:40:15.437Z\",\"cellIndex\":11,\"patchUrl\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D/range(address='L2')\",\"readUrl\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D/range(address='A1:Z2')\",\"patchBody\":\"{\\\"values\\\":[[\\\"CXOrbia QA Escenario B\\\"]]}\",\"observation\":{\"shape\":true,\"headers\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"identities\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"value\":\"CXOrbia QA Escenario A\",\"headerMatch\":true,\"rowMatch\":true,\"formulaSafe\":true,\"physicalMatch\":true,\"actualHttpStatus\":200,\"readStatus\":200,\"headerCanonical\":\"[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"]\",\"rowIdentityCanonical\":\"{\\\"countryCode\\\":\\\"GT\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"sourceRow\\\":2,\\\"tenantId\\\":\\\"tya\\\",\\\"values\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\"}\",\"observedAt\":\"2026-11-26T00:40:15.437Z\"}}}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module36Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"url\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D/range(address='L2')\",\"body\":\"{\\\"values\\\":[[\\\"CXOrbia QA Escenario B\\\"]]}\",\"method\":\"PATCH\",\"headers\":[{\"key\":\"Content-Type\",\"value\":\"application/json\"}]}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"body\":{},\"headers\":{},\"statusCode\":0}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"type\":\"RuntimeError\",\"message\":\"[404] The requested resource doesn't exist.\"}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module39Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"input\":[{\"name\":\"plan\",\"value\":{\"action\":\"write\",\"headKey\":\"412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98\",\"eventKey\":\"event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"event\":{\"schemaVersion\":1,\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"fieldKey\":\"escenario\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"beforeValue\":\"CXOrbia QA Escenario A\",\"afterValue\":\"CXOrbia QA Escenario B\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"status\":\"intent\",\"intentAt\":\"2026-11-26T00:40:17.588Z\",\"writeHttpStatus\":0,\"writeExecutionId\":null,\"writeObservedAt\":null,\"readbackObservedAt\":null},\"eventJson\":\"{\\\"schemaVersion\\\":1,\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"fieldKey\\\":\\\"escenario\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"],\\\"expectedRowIdentityValues\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"expectedBeforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"fieldValue\\\":\\\"CXOrbia QA Escenario B\\\"},\\\"beforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"afterValue\\\":\\\"CXOrbia QA Escenario B\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"status\\\":\\\"intent\\\",\\\"intentAt\\\":\\\"2026-11-26T00:40:17.588Z\\\",\\\"writeHttpStatus\\\":0,\\\"writeExecutionId\\\":null,\\\"writeObservedAt\\\":null,\\\"readbackObservedAt\\\":null}\",\"headJson\":\"{\\\"schemaVersion\\\":1,\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"…[truncated]"
+            ],
+            "truncated": true
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"logs\":{\"stdout\":[],\"stderr\":[]},\"executionTimeMs\":537,\"result\":{\"event\":{\"schemaVersion\":1,\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"fieldKey\":\"escenario\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"beforeValue\":\"CXOrbia QA Escenario A\",\"afterValue\":\"CXOrbia QA Escenario B\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"status\":\"uncertain\",\"intentAt\":\"2026-11-26T00:40:17.588Z\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"writeObservedAt\":\"2026-11-26T00:40:21.323Z\",\"readbackObservedAt\":null},\"eventKey\":\"event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"headKey\":\"412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98\",\"eventJson\":\"{\\\"schemaVersion\\\":1,\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"fieldKey\\\":\\\"escenario\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"],\\\"expectedRowIdentityValues\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"expectedBeforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"fieldValue\\\":\\\"CXOrbia QA Escenario B\\\"},\\\"beforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"afterValue\\\":\\\"CXOrbia QA Escenario B\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"status\\\":\\\"uncertain\\\",\\\"intentAt\\\":\\\"2026-11-26T00:40:17.588Z\\\",\\\"writeHttpStatus\\\":0,\\\"writeExecutionId\\\":\\\"59660c881d63439f9eaceee173b3fea3\\\",\\\"writeObservedAt\\\":\\\"2026-11-26T00:40:21.323Z\\\",\\\"readbackObservedAt\\\":null}\",\"headJson\":\"{\\\"schemaVersion\\\":1,\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"…[truncated]"
+            ],
+            "truncated": true
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module43Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"url\":\"/v1.0/drives/B2D2B478DAC4DD05/items/B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e/workbook/worksheets/%7BDE95C2A6-0011-427C-980D-D266CAE84B1B%7D/range(address='A1:Z2')\",\"method\":\"GET\"}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"body\":{},\"headers\":{},\"statusCode\":0}"
+            ]
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"type\":\"RuntimeError\",\"message\":\"[404] The requested resource doesn't exist.\"}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    },
+    "module45Write": {
+      "content": [],
+      "structuredContent": {
+        "executionId": "59660c881d63439f9eaceee173b3fea3",
+        "records": [
+          {
+            "direction": "input",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"input\":[{\"name\":\"ack\",\"value\":{\"event\":{\"schemaVersion\":1,\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"scope\":{\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\"},\"fieldKey\":\"escenario\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"request\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"driveId\":\"B2D2B478DAC4DD05\",\"itemId\":\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\",\"worksheetId\":\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\",\"rangeAddress\":\"L2\",\"headerRangeAddress\":\"A1:Z1\",\"rowRangeAddress\":\"A2:Z2\",\"rowIdentityColumnIndexes\":[4,5,7],\"expectedHeaderValues\":[\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"],\"expectedRowIdentityValues\":[\"Guatemala\",2022002,\"C. Miraflores\"],\"expectedBeforeValue\":\"CXOrbia QA Escenario A\",\"fieldValue\":\"CXOrbia QA Escenario B\"},\"beforeValue\":\"CXOrbia QA Escenario A\",\"afterValue\":\"CXOrbia QA Escenario B\",\"baseEventId\":null,\"baseEventOrigin\":null,\"baseRevision\":\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\",\"status\":\"uncertain\",\"intentAt\":\"2026-11-26T00:40:17.588Z\",\"writeHttpStatus\":0,\"writeExecutionId\":\"59660c881d63439f9eaceee173b3fea3\",\"writeObservedAt\":\"2026-11-26T00:40:21.323Z\",\"readbackObservedAt\":null},\"eventKey\":\"event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"headKey\":\"412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98\",\"eventJson\":\"{\\\"schemaVersion\\\":1,\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"fieldKey\\\":\\\"escenario\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"],\\\"expectedRowIdentityValues\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"expectedBeforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"fieldValue\\\":\\\"CXOrbia QA Escenario B\\\"},\\\"beforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"afterValue\\\":\\\"CXOrbia QA Escenario B\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"status\\\":\\\"uncertain\\\",\\\"intentAt\\\":\\\"2026-11-26T00:40:17.588Z\\\",\\\"writeHttpStatus\\\":0,\\\"writeExecutionId\\\":\\\"59660c881d63439f9eaceee173b3fea3\\\",\\\"writeObservedAt\\\":\\\"2026-11-26T00:40:21.323Z\\\",\\\"readbackObservedAt\\\":null}\",\"headJson\":\"{\\\"schemaVersion\\\":1,\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventD…[truncated]"
+            ],
+            "truncated": true
+          },
+          {
+            "direction": "output",
+            "cycle": 1,
+            "operation": 1,
+            "error": false,
+            "data": [
+              "{\"logs\":{\"stdout\":[],\"stderr\":[]},\"executionTimeMs\":570,\"result\":{\"eventKey\":\"event:hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"headKey\":\"412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98\",\"eventJson\":\"{\\\"schemaVersion\\\":1,\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"fieldKey\\\":\\\"escenario\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"],\\\"expectedRowIdentityValues\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"expectedBeforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"fieldValue\\\":\\\"CXOrbia QA Escenario B\\\"},\\\"beforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"afterValue\\\":\\\"CXOrbia QA Escenario B\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"status\\\":\\\"uncertain\\\",\\\"intentAt\\\":\\\"2026-11-26T00:40:17.588Z\\\",\\\"writeHttpStatus\\\":0,\\\"writeExecutionId\\\":\\\"59660c881d63439f9eaceee173b3fea3\\\",\\\"writeObservedAt\\\":\\\"2026-11-26T00:40:21.323Z\\\",\\\"readbackObservedAt\\\":\\\"2026-11-26T00:40:25.525Z\\\"}\",\"headJson\":\"{\\\"schemaVersion\\\":1,\\\"scope\\\":{\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\"},\\\"request\\\":{\\\"protocolVersion\\\":\\\"cxorbia.hr-field-transport.v1\\\",\\\"tenantId\\\":\\\"tya\\\",\\\"projectId\\\":\\\"f3-qa-20261124\\\",\\\"periodId\\\":\\\"f3-qa-20261124-2026-11\\\",\\\"countryCode\\\":\\\"GT\\\",\\\"visitId\\\":\\\"hr_excel_45c62e0543d229c8ca625f3cf857\\\",\\\"hrRowId\\\":\\\"CXR_B14_QA_GT_20261119!2\\\",\\\"fieldKey\\\":\\\"escenario\\\",\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"bindingFingerprint\\\":\\\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\\\",\\\"worksheetFingerprint\\\":\\\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\\\",\\\"headerFingerprint\\\":\\\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\\\",\\\"rowIdentityFingerprint\\\":\\\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\\\",\\\"baseEventId\\\":null,\\\"baseEventOrigin\\\":null,\\\"baseRevision\\\":\\\"3201bb48e32602c15c00cafc9c679256bb517ee855a9ec3d77337222209a0645\\\",\\\"driveId\\\":\\\"B2D2B478DAC4DD05\\\",\\\"itemId\\\":\\\"B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e\\\",\\\"worksheetId\\\":\\\"{DE95C2A6-0011-427C-980D-D266CAE84B1B}\\\",\\\"rangeAddress\\\":\\\"L2\\\",\\\"headerRangeAddress\\\":\\\"A1:Z1\\\",\\\"rowRangeAddress\\\":\\\"A2:Z2\\\",\\\"rowIdentityColumnIndexes\\\":[4,5,7],\\\"expectedHeaderValues\\\":[\\\"fixtureId\\\",\\\"fieldValue\\\",\\\"eventId\\\",\\\"eventDigest\\\",\\\"País\\\",\\\"ID CINEMA\\\",\\\"CIUDAD\\\",\\\"Shopping\\\",\\\"Franja Horaria\\\",\\\"Formato de Cine\\\",\\\"Tipo de Combo\\\",\\\"Tipo de Compra\\\",\\\"Método de Pago\\\",\\\"Quincena\\\",\\\"Shopper Asignado\\\",\\\"Telefono\\\",\\\"Mail\\\",\\\"Disponible a partir de\\\",\\\"Fecha programada\\\",\\\"Control día s/ franja horaria\\\",\\\"Fecha realizada\\\",\\\"Fecha Cuestionario completado\\\",\\\"Precio de boleto\\\",\\\"Precio de combo\\\",\\\"Honorarios\\\",\\\"Fecha submitido\\\"],\\\"expectedRowIdentityValues\\\":[\\\"Guatemala\\\",2022002,\\\"C. Miraflores\\\"],\\\"expectedBeforeValue\\\":\\\"CXOrbia QA Escenario A\\\",\\\"fieldValue\\\":\\\"CXOrbia QA Escenario B\\\"},\\\"eventId\\\":\\\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\\\",\\\"eventDigest\\\":\\\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\\\",\\\"status\\\":\\\"uncertain\\\",\\\"afterValue\\\":\\\"CXOrbia QA Escenario B\\\",\\\"writeHttpStatus\\\":0,\\\"writeExecutionId\\\":\\\"59660c881d63439f9eaceee173b3fea3\\\",\\\"updatedAt\\\":\\\"2026-11-26T00:40:25.525Z\\\"}\",\"output\":{\"protocolVersion\":\"cxorbia.hr-field-transport.v1\",\"tenantId\":\"tya\",\"projectId\":\"f3-qa-20261124\",\"periodId\":\"f3-qa-20261124-2026-11\",\"countryCode\":\"GT\",\"visitId\":\"hr_excel_45c62e0543d229c8ca625f3cf857\",\"hrRowId\":\"CXR_B14_QA_GT_20261119!2\",\"fieldKey\":\"escenario\",\"eventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"eventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"bindingFingerprint\":\"eafdca54c11282510ffb5c8d831fed1611ed13fbdc102b17a59df584d5ed6194\",\"worksheetFingerprint\":\"39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d\",\"headerFingerprint\":\"498aa366a8ed4644d3ce6a10b259facc46273dfbe5084c776befe73244db931e\",\"rowIdentityFingerprint\":\"33be0e992227f4add7c9fffcde5a09a7433e06c7acdeea6da2bdfddfdba5980e\",\"operation\":\"write_field\",\"readStatus\":0,\"observedValue\":null,\"observedHeaderValues\":[],\"observedRowIdentityValues\":[],\"preconditionAllowed\":false,\"remoteReceiptVerified\":false,\"remoteWriteStatus\":0,\"remoteEventId\":\"hfe-d9a5925fb8f9546836a0da4e52def7ffe19cf27065997f1c601311f63ca39831\",\"remoteEventDigest\":\"1ccee2a3230d81e23b8bf5d0c09b8b5639fe87fcb722badd816f296afd9e6617\",\"currentEventId\":null,\"providerExecutionId\":null,\"writeStatus\":0,\"writeAttempted\":true,\"providerWriteRequests\":1,\"providerAck\":false,\"status\":\"ACK_READBACK_PENDING\",\"decision\":\"INSPECT_ONLY_RECOVERY_REQUIRED\"}}}"
+            ]
+          }
+        ]
+      },
+      "isError": false
+    },
+    "currentModule36_43_38_44Config": {
+      "content": [],
+      "structuredContent": {
+        "modules": [
+          {
+            "id": 36,
+            "module": "onedrive:makeApiCall",
+            "version": 2,
+            "config": {
+              "parameters": {
+                "__IMTCONN__": 9089470
+              },
+              "mapper": {
+                "url": "{{17.result.patchUrl}}",
+                "body": "{{17.result.patchBody}}",
+                "method": "PATCH",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "id": 43,
+            "module": "onedrive:makeApiCall",
+            "version": 2,
+            "config": {
+              "parameters": {
+                "__IMTCONN__": 9089470
+              },
+              "mapper": {
+                "url": "{{17.result.readUrl}}",
+                "method": "GET"
+              }
+            }
+          },
+          {
+            "id": 38,
+            "module": "builtin:Resume",
+            "version": 1,
+            "config": {
+              "mapper": {
+                "body": {},
+                "headers": {},
+                "statusCode": 0
+              }
+            }
+          },
+          {
+            "id": 44,
+            "module": "builtin:Resume",
+            "version": 1,
+            "config": {
+              "mapper": {
+                "body": {},
+                "headers": {},
+                "statusCode": 0
+              }
+            }
+          }
+        ]
+      },
+      "isError": false
+    },
+    "currentModule17Config": {
+      "content": [],
+      "structuredContent": {
+        "modules": [
+          {
+            "id": 17,
+            "module": "code:ExecuteCode",
+            "version": 1,
+            "config": {
+              "parameters": {},
+              "mapper": {
+                "input": [
+                  {
+                    "name": "request",
+                    "value": "{{`1`}}"
+                  },
+                  {
+                    "name": "worksheet",
+                    "value": "{{15.body}}"
+                  },
+                  {
+                    "name": "worksheetStatus",
+                    "value": "{{15.statusCode}}"
+                  },
+                  {
+                    "name": "graphBody",
+                    "value": "{{12.body}}"
+                  },
+                  {
+                    "name": "graphStatus",
+                    "value": "{{12.statusCode}}"
+                  },
+                  {
+                    "name": "observedAt",
+                    "value": "{{formatDate(now; \"YYYY-MM-DDTHH:mm:ss.SSS[Z]\"; \"UTC\")}}"
+                  }
+                ],
+                "language": "javascript",
+                "inputFormat": "editor",
+                "codeEditorJavascript": "// Proposal for the EXISTING Make scenario 10199316. No network or SDK imports.\n// The production branch is intentionally absent: every address is a fixed QA tab.\nconst PROTOCOL = 'cxorbia.hr-field-transport.v1';\nconst SCOPE_KEYS = ['tenantId','projectId','periodId','countryCode','visitId','hrRowId','fieldKey'];\nconst ECHO_KEYS = ['protocolVersion',...SCOPE_KEYS,'eventId','eventDigest','bindingFingerprint','worksheetFingerprint','headerFingerprint','rowIdentityFingerprint'];\nconst TARGET_KEYS = [...ECHO_KEYS,'baseEventId','baseEventOrigin','baseRevision','driveId','itemId','worksheetId','rangeAddress','headerRangeAddress','rowRangeAddress','rowIdentityColumnIndexes','expectedHeaderValues','expectedRowIdentityValues','expectedBeforeValue','fieldValue'];\nconst QA = {\n  driveId:'B2D2B478DAC4DD05', tenantId:'tya', projectId:'f3-qa-20261124', periodId:'f3-qa-20261124-2026-11',\n  GT:{itemId:'B2D2B478DAC4DD05!s7752e15fa45d4038b05c88522834cb6e',name:'CXR_B14_QA_GT_20261119',cinema:'2022002',shopping:'C. Miraflores',visitId:'hr_excel_45c62e0543d229c8ca625f3cf857'},\n  HN:{itemId:'B2D2B478DAC4DD05!s314e10a513f74ddd829bacab1503c0f7',name:'CXR_B14_QA_HN_20261119',cinema:'2052001',shopping:'C. Las Cascadas Honduras',visitId:'hr_excel_ec25c41b6656f0000daef0af1398'},\n  fields:{escenario:{cell:'L2',index:11},tipoCombo:{cell:'K2',index:10},agendada:{cell:'S2',index:18},shopperId:{cell:'O2',index:14}}\n};\nfunction canonical(v){return Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v;}\nfunction same(a,b){return JSON.stringify(canonical(a))===JSON.stringify(canonical(b));}\nfunction cellSame(r,a,b){\n  if(r.fieldKey!=='agendada')return same(a,b);\n  const day=v=>{if(v==='')return '';if(typeof v==='number'&&Number.isFinite(v)&&v>=1&&v<=100000)return new Date(Date.UTC(1899,11,30)+Math.floor(v)*86400000).toISOString().slice(0,10);return typeof v==='string'&&/^20\\d\\d-\\d\\d-\\d\\d$/.test(v)&&Number.isFinite(Date.parse(v+'T00:00:00Z'))&&new Date(v+'T00:00:00Z').toISOString().slice(0,10)===v?v:null;};\n  return day(a)!==null&&day(a)===day(b);\n}\nfunction fail(code){throw new Error('F3_QA:'+code);}\nfunction scalar(v){return typeof v==='string'||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v);}\nfunction parseObject(v,code){if(typeof v==='string'){try{v=JSON.parse(v);}catch{fail(code);}}if(!v||Array.isArray(v)||typeof v!=='object')fail(code);return v;}\nfunction requestIdentity(r){return Object.fromEntries(TARGET_KEYS.map(k=>[k,['baseEventId','baseEventOrigin','baseRevision'].includes(k)?r[k]??null:r[k]]));}\nfunction fieldScope(r){return Object.fromEntries(SCOPE_KEYS.map(k=>[k,r[k]]));}\nfunction nowIso(input){const s=String(input.observedAt||'');if(!/^20\\d\\d-\\d\\d-\\d\\dT/.test(s)||!Number.isFinite(Date.parse(s)))fail('OBSERVED_TIME_REQUIRED');return new Date(s).toISOString();}\nfunction validateRequest(input,expectedHeaders){\n  const r=parseObject(input.request,'REQUEST_OBJECT'),c=QA[r.countryCode],f=QA.fields[r.fieldKey];\n  if(r.protocolVersion!==PROTOCOL||!['inspect_event','write_field'].includes(r.operation)||!c||!f)fail('PROTOCOL_OR_FIELD');\n  if(r.tenantId!==QA.tenantId||r.projectId!==QA.projectId||r.periodId!==QA.periodId||r.driveId!==QA.driveId||r.itemId!==c.itemId)fail('QA_SCOPE_ONLY');\n  if(r.visitId!==c.visitId||r.hrRowId!==c.name+'!2')fail('ROW_SCOPE');\n  if(!/^hfe-[a-f0-9]{64}$/.test(r.eventId)||!/^[a-f0-9]{64}$/.test(r.eventDigest))fail('EVENT_IDENTITY');\n  for(const k of ['bindingFingerprint','worksheetFingerprint','headerFingerprint','rowIdentityFingerprint'])if(!/^[a-f0-9]{64}$/.test(r[k]))fail('FINGERPRINT');\n  if(r.baseEventId!=null&&!/^hfe-[a-f0-9]{64}$/.test(r.baseEventId))fail('BASE_EVENT');\n  if(![null,undefined,'hr','platform'].includes(r.baseEventOrigin))fail('BASE_ORIGIN');\n  if(r.baseRevision!=null&&!/^[a-f0-9]{64}$/.test(r.baseRevision))fail('BASE_REVISION');\n  if((r.baseEventId==null)!==(r.baseEventOrigin==null))fail('BASE_ORIGIN_PAIR');\n  if(r.baseEventOrigin==='hr'&&!/^[a-f0-9]{64}$/.test(r.baseRevision))fail('HR_BASE_REVISION_REQUIRED');\n  if(r.rangeAddress!==f.cell||r.headerRangeAddress!=='A1:Z1'||r.rowRangeAddress!=='A2:Z2'||!same(r.rowIdentityColumnIndexes,[4,5,7]))fail('QA_CELL_ONLY');\n  if(!same(r.expectedHeaderValues,expectedHeaders)||!Array.isArray(r.expectedRowIdentityValues)||r.expectedRowIdentityValues.length!==3)fail('EXPECTED_IDENTITY_ARRAYS');\n  if(!['GT','Guatemala'].includes(r.expectedRowIdentityValues[0])&&r.countryCode==='GT'||!['HN','Honduras'].includes(r.expectedRowIdentityValues[0])&&r.countryCode==='HN')fail('COUNTRY_IDENTITY');\n  if(String(r.expectedRowIdentityValues[1])!==c.cinema||r.expectedRowIdentityValues[2]!==c.shopping)fail('QA_BUSINESS_IDENTITY');\n  if(!scalar(r.expectedBeforeValue)||!scalar(r.fieldValue))fail('NULL_OR_NONSCALAR_FORBIDDEN');\n  for(const v of [r.expectedBeforeValue,r.fieldValue])if(typeof v==='string'&&(v.length>500||/^[=+@]/.test(v)))fail('FORMULA_OR_TEXT_UNSUPPORTED');\n  if(r.fieldKey==='shopperId'&&![r.expectedBeforeValue,r.fieldValue].every(v=>v===''||v==='CXOrbia QA '+r.countryCode+' F3 A'||v==='CXOrbia QA '+r.countryCode+' F3 B'))fail('SYNTHETIC_SHOPPER_LABEL_ONLY');\n  if(r.fieldKey==='agendada'&&r.fieldValue!==''&&(!/^20\\d\\d-\\d\\d-\\d\\d$/.test(r.fieldValue)||new Date(r.fieldValue+'T00:00:00Z').toISOString().slice(0,10)!==r.fieldValue))fail('DATE_FORMAT');\n  const ws=parseObject(input.worksheet,'WORKSHEET_RESPONSE');\n  if(Number(input.worksheetStatus)!==200||ws.id!==r.worksheetId||ws.name!==c.name)fail('REMOTE_WORKSHEET_IDENTITY');\n  const result={request:requestIdentity(r),operation:r.operation,eventKey:'event:'+r.eventId,\n    headCanonical:JSON.stringify([r.tenantId,r.projectId,r.periodId,r.countryCode,r.visitId,r.fieldKey]),\n    observedWorksheetId:ws.id,validatedAt:nowIso(input),cellIndex:f.index,\n    patchUrl:'/v1.0/drives/'+encodeURIComponent(QA.driveId)+'/items/'+encodeURIComponent(c.itemId)+'/workbook/worksheets/'+encodeURIComponent(ws.id)+\"/range(address='\"+f.cell+\"')\",\n    readUrl:'/v1.0/drives/'+encodeURIComponent(QA.driveId)+'/items/'+encodeURIComponent(c.itemId)+'/workbook/worksheets/'+encodeURIComponent(ws.id)+\"/range(address='A1:Z2')\",\n    patchBody:JSON.stringify({values:[[r.fieldValue]]})};\n  return {...result,observation:observation(r,input)};\n}\nfunction observation(r,input){\n  let body;try{body=parseObject(input.graphBody,'GRAPH_BODY');}catch{body={};}\n  const rows=body.values,shape=Number(input.graphStatus)===200&&Array.isArray(rows)&&rows.length===2&&rows.every(x=>Array.isArray(x)&&x.length===26);\n  const headers=shape?rows[0]:[],row=shape?rows[1]:[],identities=shape?r.rowIdentityColumnIndexes.map(i=>row[i]):[];\n  const value=shape?row[QA.fields[r.fieldKey].index]:null;\n  const headerMatch=shape&&same(headers,r.expectedHeaderValues),rowMatch=shape&&same(identities,r.expectedRowIdentityValues);\n  const formula=shape&&Array.isArray(body.formulas?.[1])?body.formulas[1][QA.fields[r.fieldKey].index]:null;\n  const formulaSafe=shape&&Array.isArray(body.formulas?.[1])&&body.formulas[1].length===26&&(typeof formula!=='string'||!/^=/.test(formula));\n  const qaOwned=shape&&rows[1][0]==='qa_f3_20261123_'+r.countryCode&&/^qa[_a-zA-Z0-9.:-]+$/.test(rows[1][2])&&/^[a-f0-9]{64}$/.test(rows[1][3]);\n  const physicalMatch=shape&&headerMatch&&rowMatch&&formulaSafe&&qaOwned&&scalar(value);\n  return {shape,headers,identities,value,headerMatch,rowMatch,formulaSafe,physicalMatch,\n    actualHttpStatus:Number(input.graphStatus)||0,readStatus:physicalMatch?200:0,\n    headerCanonical:JSON.stringify(canonical(headers)),\n    rowIdentityCanonical:JSON.stringify(canonical({tenantId:r.tenantId,projectId:r.projectId,periodId:r.periodId,countryCode:r.countryCode,worksheetFingerprint:r.worksheetFingerprint,sourceRow:2,values:identities})),\n    observedAt:nowIso(input)};\n}\nfunction decodeStore(exists,raw,type){\n  if(typeof exists!=='boolean')fail('STORE_EXISTENCE_BOOLEAN');\n  const record=parseObject(raw,'STORE_READ_OBJECT');\n  if(record.schemaVersion!==1)fail('STORE_RECORD_VERSION');\n  const payload=parseObject(record.payloadJson,'STORE_PAYLOAD_JSON');\n  if(!exists){if(record.recordType!=='sentinel'||!same(payload,{schemaVersion:1,absent:true}))fail('STORE_SENTINEL');return null;}\n  if(record.recordType!==type||payload.schemaVersion!==1)fail('STORE_RECORD_TYPE');\n  return payload;\n}\nfunction receiptProven(e,r){\n  return !!e&&e.schemaVersion===1&&same(e.request,requestIdentity(r))&&e.eventId===r.eventId&&e.eventDigest===r.eventDigest&&e.writeHttpStatus===200&&/^[a-f0-9]{32}$/.test(e.writeExecutionId)&&['write_ack_readback_pending','committed','conflict'].includes(e.status);\n}\nfunction headFor(event){return {schemaVersion:1,scope:event.scope,request:event.request,eventId:event.eventId,eventDigest:event.eventDigest,status:event.status,afterValue:event.afterValue,writeHttpStatus:event.writeHttpStatus,writeExecutionId:event.writeExecutionId,updatedAt:event.readbackObservedAt||event.writeObservedAt||event.intentAt};}\nfunction outputFor(r,obs,e,head,changes={}){\n  const verified=receiptProven(e,r),sameHead=!!head&&head.eventId===r.eventId&&head.eventDigest===r.eventDigest;\n  const current=verified&&sameHead&&obs.readStatus===200&&cellSame(r,obs.value,e.afterValue);\n  return {...Object.fromEntries(ECHO_KEYS.map(k=>[k,r[k]])),operation:r.operation,readStatus:obs.readStatus,observedValue:obs.value,\n    observedHeaderValues:obs.headers,observedRowIdentityValues:obs.identities,preconditionAllowed:false,\n    remoteReceiptVerified:verified,remoteWriteStatus:verified?200:0,\n    remoteEventId:e?.eventId||null,remoteEventDigest:e?.eventDigest||null,currentEventId:current?r.eventId:null,\n    providerExecutionId:verified?e.writeExecutionId:null,writeStatus:0,writeAttempted:false,providerWriteRequests:0,\n    providerAck:current,status:verified&&current?'REPLAY_NOOP':'CONFLICT_NOOP',decision:'NO_WRITE',...changes};\n}\nfunction decide(input){\n  const v=parseObject(input.validated,'VALIDATION_REQUIRED'),r={...v.request,operation:v.operation},obs=observation(r,input);\n  const event=decodeStore(input.eventExists,input.eventStore,'event'),head=decodeStore(input.headExists,input.headStore,'head');\n  const headKey=String(input.headHash||'');if(!/^[a-f0-9]{64}$/.test(headKey))fail('HEAD_HASH');\n  const fingerprints=input.worksheetHash===r.worksheetFingerprint&&input.headerHash===r.headerFingerprint&&input.rowIdentityHash===r.rowIdentityFingerprint;\n  if(!fingerprints)obs.readStatus=0;\n  const reject=reason=>({action:'return',headKey,eventKey:v.eventKey,output:outputFor(r,obs,null,null,{decision:reason})});\n  if(event&&!same(event.request,requestIdentity(r)))return {action:'return',headKey,eventKey:v.eventKey,output:outputFor(r,obs,null,null,{remoteEventId:event.eventId||null,remoteEventDigest:event.eventDigest||null,decision:'EVENT_SCOPE_OR_DIGEST_CONFLICT'})};\n  if(head&&(!same(head.scope,fieldScope(r))||!same(Object.fromEntries(['bindingFingerprint','worksheetFingerprint','headerFingerprint','rowIdentityFingerprint','driveId','itemId','worksheetId','rangeAddress'].map(k=>[k,head.request?.[k]])),Object.fromEntries(['bindingFingerprint','worksheetFingerprint','headerFingerprint','rowIdentityFingerprint','driveId','itemId','worksheetId','rangeAddress'].map(k=>[k,r[k]])))))return reject('HEAD_SCOPE_OR_BINDING_CONFLICT');\n  if(event){\n    const out=outputFor(r,obs,event,head,{decision:'EXISTING_EVENT_INSPECT_ONLY'});\n    if(receiptProven(event,r)&&obs.readStatus===200&&cellSame(r,obs.value,event.afterValue)&&head?.eventId===event.eventId&&head.eventDigest===event.eventDigest&&(event.status!=='committed'||head.status!=='committed')){\n      const committed={...event,status:'committed',readbackObservedAt:obs.observedAt};\n      return {action:'settle',headKey,eventKey:v.eventKey,eventJson:JSON.stringify(committed),headJson:JSON.stringify(headFor(committed)),output:{...out,status:'REPLAY_NOOP',providerAck:true,decision:'DURABLE_ACK_RECOVERED_NO_PATCH'}};\n    }\n    if(receiptProven(event,r)&&obs.readStatus===200&&!cellSame(r,obs.value,event.afterValue)&&!cellSame(r,obs.value,event.beforeValue)&&head?.eventId===event.eventId&&head.eventDigest===event.eventDigest&&head.status!=='conflict'){\n      const conflict={...event,status:'conflict',readbackObservedAt:obs.observedAt};\n      return {action:'settle',headKey,eventKey:v.eventKey,eventJson:JSON.stringify(conflict),headJson:JSON.stringify(headFor(conflict)),output:{...out,status:'CONFLICT_NOOP',providerAck:false,decision:'EXTERNAL_DIVERGENCE_NO_PATCH'}};\n    }\n    return {action:'return',headKey,eventKey:v.eventKey,output:out};\n  }\n  if(obs.readStatus!==200)return reject(!obs.formulaSafe?'FORMULA_CELL_NO_WRITE':'HEADER_ROW_OR_FINGERPRINT_CONFLICT');\n  if(head&&!['committed','conflict'].includes(head.status))return reject('UNSETTLED_EARLIER_EVENT_NO_WRITE');\n  const owner=head?.status==='committed'&&head.writeHttpStatus===200&&cellSame(r,obs.value,head.afterValue)?head.eventId:null;\n  const initial=!head&&r.baseEventId==null&&r.baseEventOrigin==null;\n  const causal=owner?r.baseEventOrigin==='platform'&&r.baseEventId===owner:r.baseEventOrigin==='hr'&&/^hfe-[a-f0-9]{64}$/.test(r.baseEventId)&&/^[a-f0-9]{64}$/.test(r.baseRevision)||initial;\n  const allowed=causal&&cellSame(r,obs.value,r.expectedBeforeValue);\n  const out=outputFor(r,obs,null,head,{preconditionAllowed:allowed,decision:allowed?'BASE_OBSERVED_NO_CAS':'BASE_CAUSAL_OR_VALUE_CONFLICT'});\n  if(r.operation!=='write_field'||!allowed)return {action:'return',headKey,eventKey:v.eventKey,output:out};\n  const intent={schemaVersion:1,eventId:r.eventId,eventDigest:r.eventDigest,scope:fieldScope(r),fieldKey:r.fieldKey,\n    bindingFingerprint:r.bindingFingerprint,worksheetFingerprint:r.worksheetFingerprint,headerFingerprint:r.headerFingerprint,rowIdentityFingerprint:r.rowIdentityFingerprint,\n    request:requestIdentity(r),beforeValue:r.expectedBeforeValue,afterValue:r.fieldValue,baseEventId:r.baseEventId??null,baseEventOrigin:r.baseEventOrigin??null,baseRevision:r.baseRevision??null,\n    status:'intent',intentAt:obs.observedAt,writeHttpStatus:0,writeExecutionId:null,writeObservedAt:null,readbackObservedAt:null};\n  return {action:'write',headKey,eventKey:v.eventKey,event:intent,eventJson:JSON.stringify(intent),headJson:JSON.stringify(headFor(intent)),output:out};\n}\nfunction saveAck(input){\n  const plan=parseObject(input.plan,'WRITE_PLAN'),r=plan.event?.request;if(plan.action!=='write'||!r)fail('WRITE_PLAN_REQUIRED');\n  const status=Number(input.patchStatus)||0,id=String(input.executionId||'');\n  if(!/^[a-f0-9]{32}$/.test(id))fail('REAL_EXECUTION_ID_REQUIRED');\n  const ack=status===200,event={...plan.event,status:ack?'write_ack_readback_pending':'uncertain',writeHttpStatus:status,writeExecutionId:id,writeObservedAt:nowIso(input)};\n  return {event,eventKey:plan.eventKey,headKey:plan.headKey,eventJson:JSON.stringify(event),headJson:JSON.stringify(headFor(event)),writeStatus:status,writeAttempted:true};\n}\nfunction finishWrite(input){\n  const ack=parseObject(input.ack,'ACK_RECORD'),r=ack.event.request,stored=decodeStore(true,input.eventStore,'event');\n  if(!same(stored,ack.event))fail('DURABLE_RECEIPT_READBACK_MISMATCH');\n  const obs=observation(r,input),verified=receiptProven(stored,r),committed=verified&&obs.readStatus===200&&cellSame(r,obs.value,stored.afterValue);\n  const divergent=verified&&obs.readStatus===200&&!cellSame(r,obs.value,stored.afterValue)&&!cellSame(r,obs.value,stored.beforeValue);\n  const event={...stored,status:committed?'committed':divergent?'conflict':stored.status,readbackObservedAt:obs.observedAt},head=headFor(event);\n  return {eventKey:ack.eventKey,headKey:ack.headKey,eventJson:JSON.stringify(event),headJson:JSON.stringify(head),\n    output:outputFor(r,obs,event,head,{operation:'write_field',writeStatus:ack.writeStatus,writeAttempted:true,providerWriteRequests:1,\n      status:committed?'WRITE_ACK_READBACK':'ACK_READBACK_PENDING',providerAck:committed,\n      decision:committed?'PATCH_200_DURABLE_RECEIPT_AND_INDEPENDENT_READ':'INSPECT_ONLY_RECOVERY_REQUIRED'})};\n}\nfunction seedPrepare(input,seed){\n  const r=parseObject(input.request,'SEED_REQUEST'),country=seed.countries[r.countryCode],qa=QA[r.countryCode];\n  if(r.protocolVersion!=='cxorbia.f3.field-fixture-setup.v1'||r.operation!=='seed_fields'||r.fixtureId!==seed.fixtureId||r.tenantId!==seed.tenantId||r.projectId!==seed.projectId||r.periodId!==seed.periodId||!country||!qa)fail('SEED_QA_SCOPE_ONLY');\n  const body=parseObject(input.graphBody,'SEED_GET'),rows=body.values;\n  if(Number(input.graphStatus)!==200||!Array.isArray(rows)||rows.length!==2||rows.some(x=>!Array.isArray(x)||x.length!==26)||!same(rows[0].slice(0,4),['fixtureId','fieldValue','eventId','eventDigest'])||rows[1][0]!=='qa_f3_20261123_'+r.countryCode||!/^qa[_a-zA-Z0-9.:-]+$/.test(rows[1][2])||!/^[a-f0-9]{64}$/.test(rows[1][3]))fail('SEED_OLD_FIXTURE_OWNERSHIP');\n  const actual=rows.map(row=>row.slice(4)),already=same(actual,country.values),blank=actual.every(row=>row.every(cell=>cell===''));\n  if(!already&&!blank)fail('SEED_NONEMPTY_CONFLICT');\n  return {shouldWrite:blank,fixtureId:seed.fixtureId,countryCode:r.countryCode,beforePrefix:rows.map(row=>row.slice(0,4)),seedValues:country.values,\n    patchUrl:'/v1.0/drives/'+encodeURIComponent(QA.driveId)+'/items/'+encodeURIComponent(qa.itemId)+'/workbook/worksheets/'+encodeURIComponent(qa.name)+\"/range(address='E1:Z2')\",patchBody:JSON.stringify({values:country.values}),\n    readUrl:'/v1.0/drives/'+encodeURIComponent(QA.driveId)+'/items/'+encodeURIComponent(qa.itemId)+'/workbook/worksheets/'+encodeURIComponent(qa.name)+\"/range(address='A1:Z2')\"};\n}\nfunction seedFinish(input){\n  const p=parseObject(input.plan,'SEED_PLAN'),body=parseObject(input.graphBody,'SEED_READBACK'),rows=body.values;\n  const verified=Number(input.graphStatus)===200&&Array.isArray(rows)&&rows.length===2&&rows.every(row=>Array.isArray(row)&&row.length===26)&&same(rows.map(row=>row.slice(0,4)),p.beforePrefix)&&same(rows.map(row=>row.slice(4)),p.seedValues);\n  return {protocolVersion:'cxorbia.f3.field-fixture-setup.v1',fixtureId:p.fixtureId,countryCode:p.countryCode,providerWriteRequests:p.shouldWrite?1:0,writeAttempted:p.shouldWrite,writeStatus:p.shouldWrite?Number(input.patchStatus)||0:0,readStatus:Number(input.graphStatus)||0,providerAck:verified&&(!p.shouldWrite||Number(input.patchStatus)===200),status:verified?'FIXTURE_READY':'FIXTURE_READBACK_PENDING',decision:p.shouldWrite?'SEED_QA_E_Z_ONLY':'SEED_REPLAY_NOOP',values2:rows};\n}\n\nreturn validateRequest(input, [\"fixtureId\",\"fieldValue\",\"eventId\",\"eventDigest\",\"País\",\"ID CINEMA\",\"CIUDAD\",\"Shopping\",\"Franja Horaria\",\"Formato de Cine\",\"Tipo de Combo\",\"Tipo de Compra\",\"Método de Pago\",\"Quincena\",\"Shopper Asignado\",\"Telefono\",\"Mail\",\"Disponible a partir de\",\"Fecha programada\",\"Control día s/ franja horaria\",\"Fecha realizada\",\"Fecha Cuestionario completado\",\"Precio de boleto\",\"Precio de combo\",\"Honorarios\",\"Fecha submitido\"]);"
+              }
+            }
+          }
+        ]
+      },
+      "isError": false
+    }
+  },
+  "assembledAt": "2026-11-26T01:02:41.440Z",
+  "hashes": {
+    "algorithm": "SHA-256",
+    "canonicalization": "JSON UTF-8, sorted object keys, compact comma/colon separators, ensure_ascii=False, no trailing newline",
+    "exactRecoveredResponses": {
+      "clockAtWindowQuery": "f5e7cada28896f87bb525462502d7b3806882e8c7c79ca5ae568739c2c3cc5dd",
+      "ALLWINDOW": "e86cdaff15b1bb17644c5a4e9ee8d2bc81080fc13483c0dae22bf3e4debe7691",
+      "datastore213856Page0": "b3ae693c89f1182af86cc9b0cf1d8fb2d3f241b57d3c9206d76770ac57e0685f",
+      "initialInspectExecutionGet": "c78806e64d6645f6877153f66ad532bf7ec3aa5cf7d89241af905ba9c94a98fe",
+      "initialInspectExecutionInspect": "ce614fa21a8cc15eb65492e63807fceff797da025e55d54cd23c65bcc76a0141",
+      "writeExecutionInspect": "f88614e94ecf79196fcf211fb12fedd23c9d68a13d9672d026f9a40cf0161478",
+      "diagnosticInspectExecutionInspect": "36a8599685d2e698353bbaca60f0f2bdd218453ba22f2b4bf4fbd07e1d7e2f7c",
+      "module12Write": "e7977387fe954923e3d556b7552416dbad8bc4e1956c2787995f7563b0ffcc5a",
+      "module15Write": "785811ba48ff2dc7e849ce47d75c49c97b942b5c2f659d282e1f2b48e5bba1e8",
+      "module17Write": "aba4489d601f7f8c78a32154bc10c6fa32f3d37af00ac567c403d12a298c4179",
+      "module36Write": "a13cfe8c3570e8bc446602ee1d334f46fb0d220f491e1558f647e3aa881fcaf5",
+      "module39Write": "ed151a2596f8a4fc44804f8bb77425c56faf59055ff16b25f0224dd4dd4ad2dd",
+      "module43Write": "d98c395464a1a1c448dc7ba85f299753b24f7fd07c9ab79b9128cdb2f524fac4",
+      "module45Write": "905ad4f3b7819448122dc6697f74b954cefdd2cff13cd46e4b24bb0bff9b46a0",
+      "currentModule36_43_38_44Config": "57f19d4d1a8b87a37b3f239fc19b3f47beb3968ef0cd449927426e60b8df4786",
+      "currentModule17Config": "7485b3f97e52426532e3bd422053d17118e38da591edd31fdabfae108ebd5df5"
+    }
+  }
+}

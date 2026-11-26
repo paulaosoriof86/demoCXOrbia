@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.make-url-regression.v1",
+  "decision": "PASS_16_FOCAL_PROVIDER_CONFIG_CASES",
+  "scenarioId": 10199316,
+  "moduleId": 17,
+  "beforeCodeSha256": "d3e8549b37c657993c9f24b31710e8732bbe34cb85f03fae33050c905f26a609",
+  "afterCodeSha256": "6e61e155c862ec710431d2a1f47db75d242c518edae10b418887eb7e57d5a021",
+  "changedExpressions": 2,
+  "cases": [
+    {
+      "case": "GT_escenario_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "GT_tipoCombo_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "GT_agendada_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "GT_shopperId_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "HN_escenario_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "HN_tipoCombo_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "HN_agendada_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "HN_shopperId_only_urls_changed",
+      "pass": true
+    },
+    {
+      "case": "foreign_worksheet_id_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "foreign_worksheet_name_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "metadata_not_200_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "foreign_project_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "foreign_item_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "foreign_range_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "formula_still_rejected",
+      "pass": true
+    },
+    {
+      "case": "null_value_still_rejected",
+      "pass": true
+    }
+  ],
+  "liveWriteCertified": false,
+  "backendChanged": false
+}
