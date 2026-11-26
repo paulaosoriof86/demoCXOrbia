@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.capacity-and-access-preparation.v1",
+  "observedAt": "2026-11-26 02:11:20 UTC",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlHead": "2071dccf52f65b704de421c377d9504a9f95ba01",
+  "sourceServed": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "pairedDevExecution": "5670f782-19af-47aa-bdda-47cf94c689f2",
+  "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+  "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+  "organization": {
+    "id": 4090072,
+    "name": "AyS - TyA",
+    "zone": "eu2.make.com",
+    "plan": "Core",
+    "isPaused": false,
+    "availableCenticredits": "104000",
+    "availableCredits": 1040,
+    "unusedOperations": "1047",
+    "creditsConsumed": 14960,
+    "extraCredits": 6000,
+    "autoPurchasingActivated": false,
+    "autoPurchaseInProgress": false,
+    "nextReset": "2026-12-19T12:33:54.259Z"
+  },
+  "estimate": {
+    "path": "docs/checkpoints/CXORBIA_I3_F3_MAKE_CAPACITY_ESTIMATE_20261125.json",
+    "totalCredits": 1184,
+    "qualification": "CODE_DERIVED_ESTIMATE_USING_OBSERVED_UNIT_COSTS_NOT_A_NEW_QUOTA_FAILURE_OR_MEASURED_SUCCESSFUL_FULL_RUN",
+    "additionalCostsUnpriced": [
+      "browser reads",
+      "inventory discovery",
+      "bounded retries",
+      "concurrent organization activity"
+    ],
+    "possibleExtraPostReadCredits": 340,
+    "fullRunStartedAfterCleanup": false
+  },
+  "proposedCapacity": {
+    "oneTimeCredits": 1000,
+    "expectedBalanceWithoutOtherConsumption": 2040,
+    "automaticPurchaseRequested": false,
+    "purchaseCount": 0,
+    "subscriptionChanges": 0,
+    "actualCheckoutPrice": "NOT_OBSERVED",
+    "currencyAndTax": "NOT_OBSERVED",
+    "spendingAuthorization": "NOT_GRANTED"
+  },
+  "browserAccess": {
+    "observedZone": "eu2.make.com",
+    "account": "aysseguros2009@gmail.com",
+    "state": "EMAIL_PASSWORD_SIGN_IN_REQUIRED",
+    "googleSsoResult": "Make reported account uses email and password; existing account selected through Google basic-profile sign-in",
+    "passwordEnteredByAssistant": false,
+    "passwordResetAttempted": false,
+    "signInFormPrepared": true,
+    "connectorBillingOperationsAvailable": false,
+    "manualHandoffRequested": false
+  },
+  "completedCleanup": {
+    "attempt": "1795653493842440",
+    "receipt": "docs/checkpoints/CXORBIA_I3_F3_NATIVE_1795653493842440_COMPLETE_QA_RECOVERY_20261125.json",
+    "publishedCommit": "2071dccf52f65b704de421c377d9504a9f95ba01",
+    "state": "PASS_EXACT_OWNED_QA_RECOVERY",
+    "repeatCleanup": false
+  },
+  "authority": {
+    "nativeF3AuthMode": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+    "newSignBlobGrant": false,
+    "forwardedSigningWindowIsNotAnAuthorization": true,
+    "productionMutation": false,
+    "phaseAComplete": false,
+    "remoteWriteCertified": false,
+    "b14Closed": false,
+    "newGate": false,
+    "newCandidate": false,
+    "newTransport": false
+  },
+  "nextExactAction": "After Make email/password sign-in, inspect the smallest one-time credit addition; obtain explicit merchant/item/spending-limit approval before payment; verify actual capacity. Then execute only the existing native F3 job on this paired DEV with the published repaired runner/provider, independently audit the complete provider window, restore the baseline and verify cleanup, and consume the exact immutable result. Preserve original FAIL and prior scoped PASS.",
+  "officialBillingRulesSource": "https://help.make.com/extra-credits",
+  "independentCostReview": {
+    "doubleCountFound": false,
+    "backendFilesMatchServedSource": true,
+    "existingSupportedFullScopeModeWithinObservedBalance": false,
+    "existingSupportedFocalMakeWriteReplayRestoreMode": false,
+    "qualification": "The historical default Google Sheets probe does not prove the Excel/Make owner or application ACK; fixed historical recovery modes do not write HR. No new mode or scope reduction is proposed."
+  }
+}

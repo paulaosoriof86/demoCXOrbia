@@ -25,7 +25,7 @@ The existing transport dispatches F3, verifies its config against the paired rec
 
 ## Exact next action
 
-Run the existing `i3-b14-qa-provider-proof` job via `cxorbia-i3-finance-google-transport.sh` on this published control package and the same served DEV. The runner verifies `iam.serviceAccounts.signBlob` for the existing DEV signer before fixture creation; it creates no IAM grant. A missing permission produces a durable `AUTH_FAILURE` receipt before a fixture is created. Paula supplied Work's report that its prior temporary signing window expired and Work requested a new two-hour window. That forwarded request is not recorded here as a grant.
+Run the existing `i3-b14-qa-provider-proof` job via `cxorbia-i3-finance-google-transport.sh` on the published current control package and the same served DEV, after resolving the observed Make capacity requirement below. Native F3 uses `FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY` for three new disposable QA identities and does not require `iam.serviceAccounts.signBlob`. The original custom-token path alone checks its existing signing permission. The forwarded request for a two-hour signing window remains a request, not a grant. Do not repeat the already completed recovery of native attempt `1795653493842440`.
 
 For a successful endpoint chain, independently inspect all Make executions in the response-loss/replay interval, verify the exact owned datastore keys, restore the baseline and read cleanup absence. Only those observations can settle remote physical write count and cleanup. HR durable recovery, provider-response loss, human concurrent editing, external-origin echo and the remaining business clauses retain their existing residuals; they are not credited by this transport change.
 
@@ -40,3 +40,38 @@ The native F3 branch now uses `FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY`: the same th
 The original Actions custom-token path stays available. Native password QA keeps `ordinaryPasswordProven:false` and `ordinaryPasswordAuthenticationProven:false` for operational users. Its scoped evidence cannot close A08. Tests verify that password QA never invokes custom-token signing, rejects credentials for another actor and keeps passwords out of all published state.
 
 Validation of this incremental authentication change: `CXORBIA_I3_F3_PASSWORD_QA_TESTS_20261125.tap`, **221 tests, 221 PASS, zero failure/skip**. It includes the previous 219 checks and two behavioral checks of isolated credential generation, provider selection, zero custom-token signing and credential exclusion from published evidence.
+
+## Verified outcome and exact resumption — 25 November, Guatemala
+
+I3 remains HOLD. The product remains the paired DEV above; no approved product delta is waiting for deployment. No production replacement or Phase A certificate is asserted.
+
+The first native attempt `1795653493842440` authenticated its synthetic Admin and completed the initial durable reconciliation. Its field write did not receive a valid remote ACK. The complete Make window contains one physical PATCH attempt returning HTTP 404, plus two inspect-only executions. The original FAIL and its immutable Google provenance are incorporated in descriptor and pointer by `86e612e14c3e54eef7882fbe1d9a2cd030145daf`.
+
+The exact provider owner was scenario `10199316`, module `17`, generating PATCH/readback worksheet URLs from an encoded worksheet ID. The verified metadata/name route had succeeded. The provider change replaces only the two URL expressions with the already verified worksheet name, preserving the exact ID/name and scope guards. Sixteen before/after and negative-scope cases passed. Provider configuration and evidence are recorded in `e30b20c484ac7812469b671a16f3ce446ced5d92`; a successful live write after that change is still pending.
+
+The F3 role runner independently had a reproducible null-context dereference during asynchronous authentication restoration. `a5cf321a8830e099dc079cc4390d32d595785cd5` fixes that wait and retains safe failure stages. Its 27 tests passed. The original run did not retain its exception stage, so the exact original role exception is not retrospectively claimed. No product owner, ordinary-user credential, IAM permission or PASS contract was changed.
+
+### Recovery completed
+
+Fresh GT/HN executions `5d6d0a57f244472c9f9a298132dbf2a5` and `ad571a10f3264506b715d09141bd4223` independently read the original eight values. Both returned two matching HTTP-200 arrays. Their projection was verified with the served source's own reader functions and then compared against the original native `raw.remoteBaseline`.
+
+The exact owned cleanup finished at 19:45:39 Guatemala. It removed 26 synthetic documents plus the temporary scope-lock document (27 Firestore deletions), restored the original absent lock baseline, and removed all three exact QA Auth accounts. Readback verified absence; evidence was sealed in the existing native GCS prefix before deletion and after verification. The original FAIL was unchanged.
+
+At 19:50:09 Guatemala the Make connector verified deletion of exactly the failed attempt's event and head keys; only sentinel `757bfe4bd75b` remained. The whole provider window still contained the same three terminal executions. The complete recovery and native cleanup receipt are published in `2071dccf52f65b704de421c377d9504a9f95ba01`:
+
+- `CXORBIA_I3_F3_NATIVE_1795653493842440_OWNED_CLEANUP_20261125.json`
+- `CXORBIA_I3_F3_NATIVE_1795653493842440_COMPLETE_QA_RECOVERY_20261125.json`
+
+### Capacity and access required for the next full execution
+
+Make organization `4090072` (AyS - TyA), Core, had 1,040 available credits, with automatic purchases disabled. The full current F3 route is estimated at 1,184 credits before variable UI/inventory/retry costs. This is a projection from code and observed unit costs, not an observed new quota failure. A new full F3 execution has not been started after recovery; do not spend the restoration budget on an incomplete run.
+
+The minimal proposed capacity addition is a one-time purchase of 1,000 credits. No purchase, subscription change or automatic-purchase activation has occurred. Actual checkout price remains unverified: Make's UI requires email/password sign-in; Google sign-in reported that this account uses email and password. The connector does not expose billing or purchase operations. The proposed purchase needs its merchant/item/spending limit authorized before payment.
+
+Evidence: `CXORBIA_I3_F3_MAKE_CAPACITY_ESTIMATE_20261125.json` and `CXORBIA_I3_F3_MAKE_CAPACITY_PREPARATION_20261125.json`.
+
+Next: finish the Make billing sign-in; inspect and authorize the minimum exact one-time purchase, read back capacity; run the existing native F3 job using the same fixture contract and served DEV with the published corrected runner. Audit the complete Make window for original/replay writes, restore all eight values, verify exact cleanup, and incorporate the native result through the existing atomic consumer. Credit only proven clauses.
+
+### Other Phase A residuals remain explicit
+
+Preserve accepted Finance/Admin-Academia scopes and the six MATCH domains. Remaining work includes Academia Shopper/Client sessions, authenticated persistent E10 import, ordinary access exceptions and role denials, postulation/assignment and remaining cross-module clauses, Finance/KPI residuals and E08 provider ACK. Gate20/Gate21 and the immutable I4 artifact remain pending. Their authoritative detailed scope is the current cumulative matrix/ledger and execution pointer; this checkpoint introduces no additional gate or candidate.

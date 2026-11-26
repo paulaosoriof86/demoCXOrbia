@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "cxorbia.f3-make-capacity-estimate.v1",
+  "assessment": "ESTIMATED_FULL_PASS_REQUIREMENT_EXCEEDS_OBSERVED_BALANCE",
+  "observedAt": "2026-11-26 01:48:04 UTC",
+  "sourceHead": "a5cf321a8830e099dc079cc4390d32d595785cd5",
+  "readOnlyAudit": true,
+  "scenarioRunsByThisAudit": 0,
+  "providerMutationsByThisAudit": 0,
+  "organization": {
+    "id": 4090072,
+    "isPaused": false,
+    "unusedCenticredits": "104000",
+    "availableCredits": 1040,
+    "unusedOperations": "1047",
+    "autoPurchasingActivated": false,
+    "autoPurchaseInProgress": false,
+    "nextReset": "2026-12-19T12:33:54.259Z"
+  },
+  "observedUnitCosts": {
+    "reader": [
+      {
+        "id": "627c075d3fb14881b5f3fcc06314aafb",
+        "status": "success",
+        "startedAt": "2026-11-26T01:12:08.086Z",
+        "duration": 5992,
+        "operations": 3,
+        "credits": 3,
+        "dataTransfer": 13589
+      },
+      {
+        "id": "283b1ce28ba7402197f8a31f234438a0",
+        "status": "success",
+        "startedAt": "2026-11-26T01:14:10.707Z",
+        "duration": 3742,
+        "operations": 3,
+        "credits": 3,
+        "dataTransfer": 16321
+      }
+    ],
+    "writer": [
+      {
+        "id": "2ff218a03b8c4510abea0dcd096289b2",
+        "status": "success",
+        "startedAt": "2026-11-26T00:50:25.526Z",
+        "operations": 8,
+        "credits": 10
+      },
+      {
+        "id": "59660c881d63439f9eaceee173b3fea3",
+        "status": "success",
+        "startedAt": "2026-11-26T00:40:11.520Z",
+        "operations": 19,
+        "credits": 23
+      },
+      {
+        "id": "e40d0e6e122b4fc9b0c666a26da0542c",
+        "status": "success",
+        "startedAt": "2026-11-26T00:40:02.518Z",
+        "operations": 8,
+        "credits": 10
+      }
+    ],
+    "writeCostQualification": "23 credits observed for the write_field path whose PATCH/readback returned 404. A complete successful F3 has not yet been measured. The same main module sequence contains 19 billable operations and four Code modules; projection remains an estimate, not an observed full-run invoice."
+  },
+  "fullSuccessRouteCounts": {
+    "physicalWrites": 17,
+    "writeBreakdown": {
+      "fourFieldsTwoCountries": 8,
+      "orderedSuccessorGT": 1,
+      "restoresFourFieldsTwoCountries": 8
+    },
+    "explicitProjectReadLive": 43,
+    "explicitProjectReadBreakdown": {
+      "beforeAfterEachWrite": 34,
+      "clientResponseLossExtraReads": 2,
+      "baseline": 1,
+      "beforeReconciles": 2,
+      "shopperCaptureArguments": 2,
+      "afterOldReplay": 1,
+      "finalBaseline": 1
+    },
+    "commandPostSnapshots": 22,
+    "commandPostBreakdown": {
+      "physicalWriteCommands": 17,
+      "lostResponseExactReplay": 1,
+      "ordinaryReplay": 1,
+      "tamperedSameKey": 1,
+      "staleNewKey": 1,
+      "oldCommittedReplay": 1
+    },
+    "internalReconcileSnapshots": 2,
+    "projectSnapshotsTotal": 67,
+    "countriesPerProjectSnapshot": 2,
+    "readerRunsForProjectSnapshots": 134,
+    "targetResolutionCountryReaderRuns": 17,
+    "readerRunsTotal": 151,
+    "readerCredits": 453,
+    "writerPreInspections": 17,
+    "writerWriteFieldCalls": 17,
+    "writerIndependentPostInspectionsMinimum": 17,
+    "writerRunsTotalMinimum": 51,
+    "writerCreditsEstimated": 731,
+    "allScenarioRunsMinimumEstimate": 202,
+    "totalCreditsEstimated": 1184,
+    "deficitVersusObservedBalance": 144
+  },
+  "additionalUnpricedCosts": [
+    "Shopper browser reads depend on request/caching paths; 10 page navigations/reloads are not a deterministic 10 source reads.",
+    "Inventory discovery can require scenario calls when cache is missing.",
+    "Other organization workloads can consume shared credits.",
+    "A stale independent postread can cause up to two extra inspections per write: +340 credits for all 17 writes.",
+    "Bounded endpoint retries for statuses 0/202/503/504 can cause further forced source reads."
+  ],
+  "assumptions": [
+    "One successful provider write per intended field change, no partial failure, no transport retries, first independent postread confirms ACK.",
+    "Each explicit forceFresh project snapshot reads the two configured original-country fixture sheets once.",
+    "Each field target is independently resolved with one country reader call.",
+    "No concurrent in-flight source reads coalesce these sequential runner requests."
+  ],
+  "codeEvidence": [
+    {
+      "file": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "scope": "executeField, postWithLostClientResponse, reconcile and main happy path"
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "scope": "command configure calls forceFresh before provider execution; writeOriginalHrField target source reader"
+    },
+    {
+      "file": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "scope": "configure before execute/replay decision; reconcile fresh snapshot"
+    },
+    {
+      "file": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "scope": "executeExcelFieldEventThroughMake requires pre-inspection + write + independent post-inspection; resolveExcelFieldWriteTarget independent read"
+    }
+  ],
+  "sourceSha256": [
+    {
+      "file": "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs",
+      "sha256": "3ec801e4cef4f879724ba168ebdaeea0d3169e0770bbda46386332b70fd533af"
+    },
+    {
+      "file": "tools/qa/cxorbia-i3-f3-shopper-role-qa.mjs",
+      "sha256": "3298e5a6d6b15136ccd1446840904bee5a364e763bab0e5542244ee48d09fa02"
+    },
+    {
+      "file": "backend/runtime/hr-live-service/server.mjs",
+      "sha256": "9d49c95793f6bc5b9af82f587aba74f55df36113a847489ec4bfa4fcd14946d6"
+    },
+    {
+      "file": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "sha256": "48c4b5aeca61d6f300067eb2ba2c7f961cb134029cd4442146d7dcde18eb1fbc"
+    },
+    {
+      "file": "backend/runtime/cxorbia-make-graph-provider-v1.mjs",
+      "sha256": "c0c210322f9a3f15a4e93a58ef359a48c2382c02c4d27b1fce061be425d7b83e"
+    }
+  ],
+  "conclusion": "Observed balance 1040 credits is below the code-derived successful-run estimate 1184 before variable browser/inventory/recovery costs. This is a quantified resource risk; it is not proof of an actual quota failure in a new run, and no certificate or new gate is issued."
+}
