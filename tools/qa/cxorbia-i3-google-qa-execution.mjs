@@ -1,5 +1,5 @@
 import {execFileSync} from 'node:child_process';
-import {createHash} from 'node:crypto';
+import {createHash,randomBytes} from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -13,6 +13,8 @@ const sha = /^[a-f0-9]{40}$/;
 const objectUri = /^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-qa\/([a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})\/(start|result)\.json#([1-9]\d{7,19})$/;
 const runnerFiles = ['tools/qa/cxorbia-i3-finance-ui-readonly.mjs','tools/qa/cxorbia-i3-google-qa-execution.mjs','tools/qa/cxorbia-i3-finance-ui-readonly-contract.mjs'];
 export const academyJob='i3-run2382-academy-b7-isolated-dev-qa';
+export const academyPasswordConfig='docs/checkpoints/CXORBIA_I3_D08_NATIVE_QA_AUTH_20261126.json';
+export const academyHrObserver='tools/qa/cxorbia-i3-hr-shared-live-observation.mjs';
 export const academyAbsenceScope='docs/checkpoints/CXORBIA_I3_D08_2783_ABSENCE_SCOPE_20261125.json';
 export const f3Job='i3-b14-qa-provider-proof';
 export const f3ConfigPath='docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json';
@@ -166,7 +168,8 @@ function verifyStart(uri,job,sourceSha,sourceTree,controlSha,read){
     start.sourceSha===sourceSha&&start.sourceTree===sourceTree&&start.controlSha===controlSha&&sha.test(start.transportSha)&&
     sourceTree===read('git',['rev-parse',sourceSha+'^{tree}']).trim(),'GOOGLE_QA_PRODUCER_SCOPE');
   return {provider:start.provider,startUri:uri,startGeneration:marker.generation,startSha256:marker.sha256,
-    job,controlSha,transportSha:start.transportSha,branch,repository,signer,runId:marker.generation,runAttempt:'1'};
+    job,controlSha,transportSha:start.transportSha,branch,repository,signer,
+    ...(job===academyJob&&start.passwordConfigSha256?{passwordConfigSha256:start.passwordConfigSha256}:{}),runId:marker.generation,runAttempt:'1'};
 }
 export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readCommand){
   if(!env.CXORBIA_GOOGLE_QA_START)return null;
@@ -180,6 +183,80 @@ export function readGoogleQaExecution(env,job,sourceSha,sourceTree,read=readComm
   }
   verifiedQaExecutions.add(start);
   return deepFreeze(start);
+}
+
+// Each native attempt owns four disposable Auth identities. Credentials live only
+// in this process. The original transport commit and immutable GCS start object
+// bind the login mode; a caller cannot select it through an environment flag.
+export function createAcademyPasswordActors(execution,request,read=readCommand){
+  need(isVerifiedGoogleQaExecution(execution)&&execution.job===academyJob&&
+    /^[a-f0-9]{64}$/.test(execution.passwordConfigSha256||''),'D08_PASSWORD_NATIVE_AUTHORITY');
+  const bytes=read('git',['show',execution.transportSha+':'+academyPasswordConfig]);
+  need(hash(bytes)===execution.passwordConfigSha256,'D08_PASSWORD_CONFIG_DIGEST');
+  const config=JSON.parse(bytes),labels=['admin','shopper','cliente','other'];
+  need(config.schemaVersion==='cxorbia.i3.d08.native-qa-auth.v1'&&
+    config.authentication==='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY'&&config.project===project&&
+    config.tenantId==='tya'&&config.projectId==='cinepolis'&&config.country==='GT'&&
+    config.emailDomain==='cxorbia.invalid'&&config.production===false&&
+    config.requestBinding==='CURRENT_SEALED_D08_UI_WITH_RECOVERY'&&
+    JSON.stringify(config.labels)===JSON.stringify(labels),'D08_PASSWORD_CONFIG_SCOPE');
+  need(request.schemaVersion==='cxorbia.i3.d08-ui-qa-request.v1'&&
+    request.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&request.executionMode==='UI_WITH_RECOVERY'&&
+    request.production===false&&request.hrIndependent===true&&
+    ['tenantId','projectId','country'].every(k=>request[k]===config[k]),'D08_PASSWORD_REQUEST_SCOPE');
+  const credentials=new Map(labels.map(label=>{
+    const uid='qa_d08_'+execution.runId+'_'+execution.runAttempt+'_'+label;
+    return [uid,{email:uid+'@'+config.emailDomain,password:'Qa!1'+randomBytes(32).toString('base64url')}];
+  }));
+  function forUid(uid){
+    need(credentials.has(uid),'D08_PASSWORD_UNOWNED_UID');
+    return credentials.get(uid);
+  }
+  return {
+    mode:config.authentication, forUid,
+    async signIn(page,uid){
+      const login=forUid(uid);
+      await page.evaluate(async ({email,password})=>{
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await firebase.auth().signInWithEmailAndPassword(email,password);
+      },login);
+    },
+    clear(){for(const c of credentials.values())c.password='';credentials.clear();}
+  };
+}
+
+// The optional HR observation has a separate result. The sealed request binds
+// its two clean sessions, budget and observer to one served DEV materialization.
+export function verifyAcademyHrObservation(execution,request,seal,read=readCommand){
+  const scope=request.hrAcceptance;
+  need(isVerifiedGoogleQaExecution(execution)&&execution.job===academyJob&&
+    /^[a-f0-9]{64}$/.test(execution.passwordConfigSha256||''),'D08_HR_OBSERVER_NATIVE_AUTHORITY');
+  need(request.production===false&&request.authorization==='PAULA_AUTHORIZED_D08_DEV_ONLY'&&
+    request.executionMode==='UI_WITH_RECOVERY'&&request.hrIndependent===true&&
+    request.tenantId==='tya'&&request.projectId==='cinepolis'&&request.country==='GT'&&
+    scope?.mode==='MANUAL_FRESH_TWO_SHARED_PRESENTATIONS'&&scope.maxManualReads===1&&scope.maxSharedChecks===2&&
+    scope.sourceSha===request.sourceSha&&scope.sourceSha===seal.sourceSha&&sha.test(scope.sourceSha)&&
+    scope.pairedRunId===request.pairedRunId&&scope.pairedRunId===seal.runId&&
+    /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(scope.pairedRunId)&&
+    seal.mode==='CURRENT_SOURCE_SERVING'&&request.pairedReceiptGitBlob===seal.receiptBlob&&
+    scope.observerPath===academyHrObserver&&sha.test(scope.observerGitBlob),'D08_HR_OBSERVER_SCOPE');
+  need(read('git',['rev-parse',execution.transportSha+':'+academyHrObserver]).trim()===scope.observerGitBlob&&
+    read('git',['hash-object',academyHrObserver]).trim()===scope.observerGitBlob,'D08_HR_OBSERVER_BLOB');
+}
+
+export async function academyPasswordClaimProof(page,identity){
+  const actual=await page.evaluate(async keys=>{
+    const user=window.firebase.auth().currentUser;
+    if(!user)return null;
+    const proof=await user.getIdTokenResult();
+    return {uid:user.uid,provider:proof.signInProvider,subject:proof.claims.sub,
+      claims:Object.fromEntries(keys.map(k=>[k,proof.claims[k]]))};
+  },Object.keys(identity.expectedClaims));
+  if(actual?.uid!==identity.uid || actual.subject!==identity.uid || actual.provider!=='password' ||
+    JSON.stringify(canonical(actual.claims))!==JSON.stringify(canonical(identity.expectedClaims))){
+    throw new Error('AUTH_FAILURE:D08_PASSWORD_SESSION_CLAIMS');
+  }
+  return {uid:actual.uid,signInProvider:actual.provider,claimsSha256:hash(JSON.stringify(canonical(actual.claims)))};
 }
 
 function readEncryptedPdfEvidence(bundle,raw,id,read){
@@ -331,6 +408,11 @@ export function readGoogleAcademyResult(uri,expected,read=readCommand,readArchiv
   need(hash(text)===bundle.resultSha256&&raw.schemaVersion==='cxorbia.i3.d08-ui-provider-new-session.v1'&&raw.production===false&&
     Object.entries(start).every(([k,v])=>raw.externalExecution?.[k]===v)&&raw.runId===start.runId&&raw.runAttempt===start.runAttempt&&
     raw.controlSha===start.controlSha&&['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>raw[k]===expected[k]),'GOOGLE_D08_RESULT_IDENTITY');
+  if(start.passwordConfigSha256){
+    const bytes=read('git',['show',start.transportSha+':'+academyPasswordConfig]);
+    need(hash(bytes)===start.passwordConfigSha256 && raw.authentication==='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY' &&
+      raw.ordinaryPasswordAuthenticationProven===false,'GOOGLE_D08_PASSWORD_RESULT_BINDING');
+  }
   const transport={...start,resultRef:bundle.archiveUri,resultUri:uri,resultGeneration:result.generation,bundleSha256:result.sha256,
     archiveUri:bundle.archiveUri,archiveSha256:bundle.archiveSha256,archiveVerified:true,entry:'result.json',resultSha256:bundle.resultSha256,
     jobName:academyJob,jobConclusion:bundle.exitCode===0?'success':'failure',controlHead:start.controlSha};

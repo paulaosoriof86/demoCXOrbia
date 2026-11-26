@@ -523,6 +523,7 @@ async function runAcademyUiQa(){
   check(/^[A-Z]{2}$/.test(country)&&same(qa.draftScope?.tenantId,[tenantId])&&same(qa.draftScope?.rol,['admin'])&&same(qa.draftScope?.projectId,[])&&Object.keys(qa.draftScope).every(k=>['tenantId','projectId','pais','rol','nivel','modulo','paquete'].includes(k)),'SOURCE_FAILURE:D08_FIXTURE_SCOPE');
   const draftScope={tenantId:[tenantId],projectId:qa.draftScope.projectId,pais:[],rol:['admin'],nivel:[],modulo:[],paquete:[]};
   check(same({...draftScope,...qa.draftScope},draftScope),'SOURCE_FAILURE:D08_FIXTURE_UNSUPPORTED_SCOPE');
+  const passwordActors=google?googleControl.createAcademyPasswordActors(google,qa):null;
   const base=readJson('backend/contracts/cxorbia-academy-base-progress-contract-v1.json');
   const selections=[['admin','admin','a_fin_op'],['shopper','shopper','s_ruta'],['cliente','cliente','cl_ruta'],['other','shopper',null]];
   const identities=selections.map(([label,role,courseId])=>({uid:tag+'_'+label,label,role,courseId,observer:label==='other',namespace:role==='shopper'?'shopper':'staff',name:'QA D08 '+runId+' '+label,memberPath:'tenants/'+tenantId+'/users/'+tag+'_'+label,profilePath:role==='shopper'?'tenants/'+tenantId+'/shoppers/'+tag+'_'+label:null,state:'PLANNED_ABSENT'}));
@@ -530,16 +531,18 @@ async function runAcademyUiQa(){
   check(courses.every(c=>c&&c.lessons.length>=2&&c.lessons.some(l=>l.quiz.length>0)&&!c.technicalOnly),'SOURCE_FAILURE:D08_BASE_CONTRACT');
   const spec={tenantId,projectId,runId,attempt,identities,courses,courseId:customId,draftScope,draftName:'QA D08 '+runId+' borrador',draftDescription:'Fixture temporal de edición autorizada D08.',updatedName:'QA D08 '+runId+' editado',updatedDescription:'Edición D08 confirmada por proveedor y sesión nueva.'};
   fs.mkdirSync(out,{recursive:true});
-  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName,...(google?{serviceAccountId:google.signer}:{})});
+  if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:projectName});
   const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
-  const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',...(google?{externalExecution:google,controlSha:google.controlSha}:{}),decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
+  const result={schemaVersion:'cxorbia.i3.d08-ui-provider-new-session.v1',...(google?{externalExecution:google,controlSha:google.controlSha,authentication:passwordActors.mode,ordinaryPasswordAuthenticationProven:false}:{}),decision:'HOLD',moduleDomain:'certifications',findingIds:[],sourceSha,sourceTree,runId,runAttempt:attempt,tenantId,projectId,periodId:null,hrIndependent:true,production:false,phaseAComplete:false,fullDomain:false,
+    ...(qa.hrAcceptance?{independentHrAcceptance:{schemaVersion:'cxorbia.i3.hr-shared-live-observation.v1',decision:'HOLD',
+      application:{status:'PENDING',cause:'TWO_AUTHENTICATED_ADMIN_CONTEXTS_PENDING'},production:false,sourceSha,pairedRunId:qa.pairedRunId,runId,tenantId,projectId}}:{}),
     runtimeRevision:qa.runtimeRevision,runtimeDigest:qa.runtimeDigest,hostingVersion:qa.hostingVersion,scope:'D08_FOCAL_UI_PROVIDER_PROGRESS_EDIT_AND_ROLE_NEGATIVES_NOT_FULL_CERTIFICATIONS_DOMAIN',
     identities,creationJournal:[],requestJournal:[],awaitJournal:[],roles:{},negatives:[],resources:[],sessionDiagnostics:[],cleanup:{ok:false},serving:{},safety:{hrWrites:0,realLearnerWrites:0,realCourseWrites:0,realVisitsWritten:0,paymentWrites:0,emailCalls:0,calendarCalls:0,productionDeploys:0}};
   const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');save();
   const records=new Map(),contexts=[],liveSessions=[];let browser=null,fixturesStarted=false,productionBefore='';
   const authIdentity=u=>({uid:u.uid,displayName:u.displayName||'',disabled:u.disabled,email:u.email||null,emailVerified:u.emailVerified,phoneNumber:u.phoneNumber||null,photoURL:u.photoURL||null,creationTime:u.metadata.creationTime,providerData:u.providerData||[],mfa:u.multiFactor?.enrolledFactors||[]});
   const gcloud=args=>execFileSync('gcloud',args,{encoding:'utf8',timeout:45000,maxBuffer:8*1024*1024}).trim();
-  const redact=v=>String(v??'').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,700);
+  const redact=v=>String(v??'').replace(/Qa!1[A-Za-z0-9_-]{40,}/g,'[CREDENTIAL]').replace(/Bearer\s+\S+|eyJ[A-Za-z0-9_.-]+/g,'[TOKEN]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[EMAIL]').replace(/(https?:\/\/[^\s?#]+)[?#][^\s]*/g,'$1').slice(0,700);
   const awaited=d08DeadlineHarness(result,save,redact);
   // SDK/Auth calls do not all accept AbortSignal. Persist their deadline and hold
   // destructive cleanup if a dispatched command has no terminal HTTP response.
@@ -611,12 +614,19 @@ async function runAcademyUiQa(){
     try{
       for(let i=0;i<3;i++){
         await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>window.firebase?.apps?.length>0,null,{timeout:90000});
-        const token=await auth.createCustomToken(identity.uid);
-        try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}catch(error){if(!/context was destroyed|navigation|network|interrupted/i.test(String(error)))throw error;}
+        try{
+          if(passwordActors){
+            await passwordActors.signIn(page,identity.uid);
+          }else{
+            const token=await auth.createCustomToken(identity.uid);
+            await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+          }
+        }catch(error){if(!/context was destroyed|navigation|network|interrupted/i.test(String(error)))throw error;}
         await page.waitForLoadState('domcontentloaded');if(await page.evaluate(uid=>window.firebase?.auth?.().currentUser?.uid===uid,identity.uid).catch(()=>false))break;
       }
       await page.goto('about:blank');await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
       await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid&&typeof window.CX?.backendAuth?.ensureAuthenticated==='function',identity.uid,{timeout:90000});
+      if(passwordActors)diagnostic.passwordProof=await googleControl.academyPasswordClaimProof(page,identity);
       await page.evaluate(()=>CX.backendAuth.ensureAuthenticated());diagnostic.stage='AUTHENTICATED_WAITING_CONTEXT';save();
       const ready=({uid,role,namespace,tenantId,projectId})=>{
         const a=window.CX?.backendAuth?.context?.()||{},p=window.CX_BACKEND_AUTHORIZED_STATE?.principal||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},h=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},academy=d.__academyState||{};
@@ -726,7 +736,7 @@ async function runAcademyUiQa(){
     fixturesStarted=true;result.fixtureIdsPreflightAbsent=true;save();
     for(const identity of identities){
       const claims={tenantId,projectIds:identity.role==='admin'?canonicalAdminProjects:[projectId],role:identity.role,authNamespace:identity.namespace,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08',...(identity.role==='shopper'?{shopperId:identity.uid,country}:{})};
-      identity.expectedClaims=claims;identity.state='AUTH_CREATE_DISPATCHED';save();const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false});identity.authIdentity=authIdentity(created);identity.state='CLAIMS_DISPATCHED';save();await auth.setCustomUserClaims(identity.uid,claims);
+      identity.expectedClaims=claims;identity.state='AUTH_CREATE_DISPATCHED';save();const created=await auth.createUser({uid:identity.uid,displayName:identity.name,disabled:false,...(passwordActors?passwordActors.forUid(identity.uid):{})});identity.authIdentity=authIdentity(created);identity.state='CLAIMS_DISPATCHED';save();await auth.setCustomUserClaims(identity.uid,claims);
       const staff=identity.role==='admin'?{entitlementMode:'TYA_COMPLETE',claimsDigest:hash(JSON.stringify({authNamespace:'staff',projectIds:canonicalAdminProjects,role:'admin',tenantId})),providerUidFingerprint:hash('cxorbia-provider-uid-v1\0'+identity.uid)}:{};
       identity.expectedMembership={uid:identity.uid,...claims,name:identity.name,active:true,status:'active',...staff,...(identity.role==='shopper'?h.shopperFixtureMembership(identity.uid,claims):{})};identity.memberCreateDispatched=true;save();await awaited('fixture.member.create:'+identity.uid,()=>db.doc(identity.memberPath).create(identity.expectedMembership));
       if(identity.profilePath){identity.expectedProfile={id:identity.uid,shopperId:identity.uid,tenantId,projectIds:[projectId],pais:country,country,nombre:identity.name,active:true,status:'active',qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};identity.profileCreateDispatched=true;save();await awaited('fixture.profile.create:'+identity.uid,()=>db.doc(identity.profilePath).create(identity.expectedProfile));check(same((await readDoc(identity.profilePath,'fixture.profile.readback')).data(),identity.expectedProfile),'PERSISTENCE_FAILURE:D08_PROFILE_READBACK');}
@@ -737,7 +747,22 @@ async function runAcademyUiQa(){
     const args=result.browserTransport==='HTTP1_DIAGNOSTIC'?['--disable-http2','--disable-quic']:[];
     browser=await awaited('browser.launch',()=>chromium.launch({headless:true,args}),45000);
     for(const identity of identities.filter(x=>!x.observer)){
-      const ses=await session(identity,identity.label);await resource(ses);await progressUi(ses);await ses.context.close();const fresh=await newSessionProof(identity);
+      const ses=await session(identity,identity.label);await resource(ses);await progressUi(ses);
+      const observeHr=identity.role==='admin'&&!!qa.hrAcceptance;
+      if(!observeHr)await ses.context.close();
+      const fresh=await newSessionProof(identity);
+      if(observeHr){
+        try{
+          check(google,'SOURCE_FAILURE:D08_HR_OBSERVER_REQUIRES_NATIVE_EXECUTION');
+          googleControl.verifyAcademyHrObservation(google,qa,seal);
+          const {runSharedHrAcceptance}=await import('./cxorbia-i3-hr-shared-live-observation.mjs');
+          await runSharedHrAcceptance({first:ses.page,second:fresh.page,tenantId,projectId,runId,
+            scope:qa.hrAcceptance,save:observation=>{result.independentHrAcceptance=observation;save();}});
+        }catch(error){
+          const reason=redact(error.message);
+          result.independentHrAcceptance={...result.independentHrAcceptance,decision:'HOLD',application:{status:'HOLD',cause:reason}};save();
+        }finally{await ses.context.close();}
+      }
       if(identity.role==='admin'){
         const payload={id:customId,n:spec.draftName,desc:spec.draftDescription,cat:'Operación',ic:'🧪',color:'#475569',cert:false,lessons:[],scope:draftScope,qaSynthetic:true,qaRunId:runId,qaRunAttempt:attempt,qaPurpose:'D08'};
         await perform(fresh,{type:'academy.course.create',mode:'write'},()=>fresh.page.evaluate(p=>CX.acadData.addCourse('admin',p,CX.permissions.ctx()),payload));
@@ -771,6 +796,7 @@ async function runAcademyUiQa(){
     check(!result.interceptionError&&['admin','shopper','cliente'].every(role=>result.roles[role]?.independentNewSession&&result.roles[role]?.replayNoDuplicate)&&result.resources.length===3&&result.authorizedAdminEdit?.independentNewSession,'FUNCTIONAL_DEFECT:D08_COVERAGE_INCOMPLETE');result.functionalPass=true;save();
   }catch(error){result.error=redact(error.message||error);result.classification=result.error.match(/(SOURCE_FAILURE|MAPPING_FAILURE|PROVIDER_FAILURE|PERSISTENCE_FAILURE|AUTH_FAILURE|FUNCTIONAL_DEFECT|VISUAL_DEFECT|RELEASE_COMPOSITION_FAILURE|ENVIRONMENT_FAILURE):/)?.[1]||'FUNCTIONAL_DEFECT';save();}
   finally{
+    passwordActors?.clear();
     await Promise.allSettled(liveSessions.map(ses=>awaited(ses.label+':http.abort',()=>ses.page.__d08NativeEvaluate(()=>window.__D08_REQUEST_ABORT?.abort()),3000)));
     await Promise.allSettled(contexts.map(c=>c.close()));if(browser)await awaited('browser.close',()=>browser.close(),10000).catch(()=>{});
     if(!fixturesStarted)result.cleanup={ok:true,writesNotStarted:true,remainingOwnedDocuments:0,remainingOwnedAuth:0};

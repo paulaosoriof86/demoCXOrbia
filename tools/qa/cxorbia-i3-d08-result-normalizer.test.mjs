@@ -108,3 +108,22 @@ test('Google Academy receipt preserves 25 scopes and rejects mixed provenance or
     assert.throws(()=>normalize({...transport,...bad}),/GOOGLE_TRANSPORT_IDENTITY/);
   }
 });
+
+test('native password proof binds each of eight clean independent browser sessions to its own fixture, claims and password provider',()=>{
+  const {raw,inputs}=d08SyntheticFixture();
+  const prefix='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/5573055a-facf-48a5-8e80-2d9698b4c21b';
+  const startUri=prefix+'/start.json#'+raw.runId,archiveUri=prefix+'/evidence.zip#1795624414514001',passwordConfigSha256='4'.repeat(64);
+  const {jobId,artifactId,artifactDigest,verifiedArchiveDigest,...base}=inputs.transport;
+  raw.controlSha=base.controlHead;raw.externalExecution={startUri,transportSha:'a'.repeat(40),passwordConfigSha256};
+  raw.authentication='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY';raw.ordinaryPasswordAuthenticationProven=false;raw.priorAbsence={status:'VERIFIED_ABSENT',writes:0};
+  for(const s of raw.sessionDiagnostics){
+    const label=s.label.split('-')[0],actor=raw.identities.find(a=>a.label===label);
+    actor.authIdentity.email=actor.uid+'@cxorbia.invalid';
+    s.passwordProof={uid:actor.uid,signInProvider:'password',claimsSha256:h(actor.expectedClaims)};
+  }
+  const run=r=>{const resultText=JSON.stringify(r);return normalizeD08Result({...inputs,resultText,transport:{...base,provider:'GOOGLE_CLOUD_SHELL',startGeneration:r.runId,startUri,resultGeneration:'1795624414514002',resultUri:prefix+'/result.json#1795624414514002',archiveUri,resultRef:archiveUri,archiveVerified:true,archiveSha256:'2'.repeat(64),bundleSha256:'3'.repeat(64),startSha256:'4'.repeat(64),transportSha:'a'.repeat(40),resultSha256:h(resultText),passwordConfigSha256}});};
+  assert.equal(run(raw).focalObligationCount,25);
+  for(const mutant of [r=>delete r.sessionDiagnostics[0].passwordProof,r=>r.sessionDiagnostics[1].passwordProof.uid='foreign',r=>r.sessionDiagnostics.at(-1).passwordProof.signInProvider='custom',r=>r.sessionDiagnostics[1].passwordProof.claimsSha256='3'.repeat(64),r=>r.identities[0].authIdentity.email='foreign@example.com',r=>delete r.externalExecution.passwordConfigSha256,r=>r.ordinaryPasswordAuthenticationProven=true]){
+    const other=structuredClone(raw);mutant(other);assert.throws(()=>run(other),/PASSWORD/);
+  }
+});

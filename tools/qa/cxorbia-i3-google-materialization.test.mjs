@@ -5,7 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readGooglePairedArchive} from './cxorbia-i3-google-qa-execution.mjs';
-import {makeMaterializationReceipt,projectMaterialization,bindControlPaths,validateProjectionRegistry,executionProviderOf,actionsCursorOf,DESCRIPTOR,POINTER,jsonBytes,gitBlob} from './cxorbia-i3-current-control-projection.mjs';
+import {makeMaterializationReceipt,projectMaterialization,bindControlPaths,readBoundedF3CellProof,validateProjectionRegistry,executionProviderOf,actionsCursorOf,DESCRIPTOR,POINTER,jsonBytes,gitBlob} from './cxorbia-i3-current-control-projection.mjs';
 
 const root=path.resolve(import.meta.dirname,'../..'),read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
 const hash=b=>createHash('sha256').update(b).digest('hex');
@@ -164,4 +164,76 @@ test('return to Actions requires exact Google predecessor and advances only the 
  assert.equal(next.descriptor.currentMaterialization.executionProvider,'GITHUB_ACTIONS');
  for(const name of ['descriptor','pointer','ledger','matrix'])assert.equal(String(next[name].actionsScanCursor.runId),String(runId));
  assert.deepEqual(next.descriptor.currentC3PreterminalAudit,f.controls.descriptor.currentC3PreterminalAudit);
+});
+
+function scopedCellFixture(){
+ const f=fixture(), producer='d'.repeat(40), receiptBlob='b'.repeat(40), hash='b'.repeat(64);
+ const typed={provider:'GOOGLE_CLOUD_SHELL',kind:'F3_ENDPOINT',key:'GOOGLE_CLOUD_SHELL/1999999999999901',
+  path:'docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json',gitBlob:receiptBlob,controlHead:producer};
+ const scoped={path:'docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_MAKE_WINDOW_AND_CLEANUP_20261126.json',
+  gitBlob:'a'.repeat(40),sha256:hash,typedResultKey:typed.key,typedResultPath:typed.path,typedResultBlob:typed.gitBlob,
+  taskId:'B14',terminalTaskPass:false,fullB14:false,fullF3:false,production:false};
+ const d08={path:'docs/checkpoints/CXORBIA_I3_GOOGLE_D08_REQUEST.json',gitBlob:'e'.repeat(40),production:false};
+ for(const o of [f.controls.descriptor,f.controls.pointer,f.controls.ledger,f.controls.matrix])o.currentF3BoundedCellEvidence=structuredClone(scoped);
+ for(const o of [f.controls.descriptor,f.controls.pointer]){
+  o.currentFunctionalEvidenceIndex={...o.currentFunctionalEvidenceIndex,results:[...(o.currentFunctionalEvidenceIndex?.results||[]),typed]};
+  o.currentD08UiQaRequest=structuredClone(d08);
+ }
+ const domains=['canonical-hr-state-adapters','persistence-command-ack-boundary'];
+ const pending=['Retain proven GT L2 scenarios bound to the predecessor.','Complete external-origin conflict and echo.'];
+ for(const domain of domains){
+  const mod=f.controls.matrix.modules.find(m=>m.domain===domain);
+  mod.currentF3BoundedCellEvidence=structuredClone(scoped);mod.currentResidualClauses=[...pending];
+ }
+ return {f,scoped,typed,d08,domains,pending};
+}
+test('paired materialization retains the scoped GT cell receipt and both HR residuals after D08 is bound',()=>{
+ const {f,scoped,typed,d08,domains,pending}=scopedCellFixture();
+ const {out}=projected(f);
+ for(const domain of domains){
+  const mod=out.matrix.modules.find(m=>m.domain===domain);
+  assert.deepEqual(mod.currentResidualClauses,pending);
+  assert.deepEqual(mod.currentF3BoundedCellEvidence,scoped);
+  assert.equal(mod.actionRequired,pending.join(' '));
+ }
+ assert.equal(out.descriptor.nextExactAction.includes(pending[0]),true);
+ assert.deepEqual(out.descriptor.currentD08UiQaRequest,d08);
+ assert.deepEqual(out.pointer.currentD08UiQaRequest,d08);
+ assert.equal(out.descriptor.currentFunctionalEvidenceIndex.results.filter(e=>e.key===typed.key).length,1);
+ assert.equal(out.descriptor.authorizationI4===true,false);
+});
+
+test('paired projection rejects mismatched exact F3 evidence and module references',()=>{
+ const {f}=scopedCellFixture();
+ f.controls.pointer.currentF3BoundedCellEvidence.gitBlob='e'.repeat(40);
+ assert.throws(()=>projected(f),/F3_BOUNDED_CELL_EVIDENCE_BINDING/);
+ const second=scopedCellFixture();
+ const mod=second.f.controls.matrix.modules.find(m=>m.domain==='canonical-hr-state-adapters');
+ mod.currentF3BoundedCellEvidence.typedResultBlob='f'.repeat(40);
+ assert.throws(()=>projected(second.f),/F3_BOUNDED_CELL_MODULE_BINDING/);
+});
+
+test('the current authority guard reads the exact scoped evidence bytes and rejects tampering',()=>{
+ const {f,scoped,typed,domains}=scopedCellFixture(), controls=f.controls;
+ const identity={sourceSha:'c'.repeat(40),sourceTree:'d'.repeat(40),runtimeRevision:'test-revision',hostingVersion:'test-version'};
+ const acceptanceBindingSha256='a'.repeat(64);
+ const seal={nativeStartGeneration:typed.key.split('/')[1],nativeResultGeneration:'1999999999999902',
+  nativeResult:{sourceAndRuntime:{observed:identity},path:typed.path,baselineRevision:'base',restoredRevision:'base'},
+  independentAudit:{windowDefects:[],physicalPatchRequests:2,replayAndRejectedPhysicalPatches:0,remoteCleanupVerified:true},
+  businessProcessAcceptance:{originalTaskId:'B14',frozenAcceptanceBindingSha256:acceptanceBindingSha256,
+   ownerDomains:domains,wholeOriginalTaskComplete:false},b14Closed:false,fullF3Closed:false,production:false};
+ const owners=[controls.descriptor,controls.pointer,controls.matrix,controls.ledger,...controls.matrix.modules.filter(m=>domains.includes(m.domain))];
+ const bind=bytes=>{
+  const ref={...scoped,...identity,acceptanceBindingSha256,nativeResultGeneration:seal.nativeResultGeneration,
+   gitBlob:gitBlob(bytes),sha256:createHash('sha256').update(bytes).digest('hex')};
+  for(const owner of owners)owner.currentF3BoundedCellEvidence=structuredClone(ref);
+  return ref;
+ };
+ const bytes=jsonBytes(seal), ref=bind(bytes);
+ assert.deepEqual(readBoundedF3CellProof(controls,()=>Buffer.from(bytes)),ref);
+ assert.throws(()=>readBoundedF3CellProof(controls,()=>bytes+' '),/F3_BOUNDED_CELL_RECEIPT_BYTES/);
+ const promoted=jsonBytes({...seal,fullF3Closed:true});bind(promoted);
+ assert.throws(()=>readBoundedF3CellProof(controls,()=>promoted),/F3_BOUNDED_CELL_RECEIPT_SCOPE/);
+ delete controls.descriptor.currentF3BoundedCellEvidence;
+ assert.throws(()=>readBoundedF3CellProof(controls),/F3_BOUNDED_CELL_EVIDENCE_BINDING/);
 });

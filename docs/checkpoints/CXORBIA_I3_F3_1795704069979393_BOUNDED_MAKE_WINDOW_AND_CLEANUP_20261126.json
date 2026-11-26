@@ -1,0 +1,1178 @@
+{
+  "schemaVersion": "cxorbia.i3.make-bounded-provider-readback.v1",
+  "iteration": "I3",
+  "nativeStartGeneration": "1795704069979393",
+  "nativeResultGeneration": "1795704378174692",
+  "nativeFinishedAt": "2026-11-26T14:46:10.726Z",
+  "state": "HOLD",
+  "window": {
+    "from": "2026-11-26T14:40:29.000Z",
+    "to": "2026-11-26T14:48:12.794Z",
+    "observedAt": "2026-11-26T14:48:24.545Z"
+  },
+  "listPages": {
+    "writerPages": [
+      {
+        "from": "2026-11-26T14:40:29.000Z",
+        "to": "2026-11-26T14:45:03.295Z",
+        "fullListSha256": "b5206692f0e6b50d6072782276e1e8012248ea5e22e300edd7f980fc164eeaac",
+        "count": 5,
+        "hasMore": false
+      },
+      {
+        "from": "2026-11-26T14:45:03.295Z",
+        "to": "2026-11-26T14:46:37.853Z",
+        "fullListSha256": "73f1bc1266821624d71225629bfb31471a98687c70a28a0deb08e26653e45335",
+        "count": 1,
+        "hasMore": false
+      },
+      {
+        "from": "2026-11-26T14:46:37.853Z",
+        "to": "2026-11-26T14:48:12.794Z",
+        "fullListSha256": "abbc7fbc4163dfe1425271e2c94b02d37797886bfd4a851d6b8c087fdd15f156",
+        "count": 0,
+        "hasMore": false
+      }
+    ],
+    "readerPages": [
+      {
+        "from": "2026-11-26T14:40:29.000Z",
+        "to": "2026-11-26T14:42:46.147Z",
+        "fullListSha256": "e39cb5f4927c8f268186367e02aebd88554a1b30f50e74b4b4f46166c654874c",
+        "count": 13,
+        "hasMore": false
+      },
+      {
+        "from": "2026-11-26T14:42:46.147Z",
+        "to": "2026-11-26T14:45:03.295Z",
+        "fullListSha256": "1fe2b589be5b44dcb1d1a37cf43de1a570ef220004f2f6fac069e2031ac3cab5",
+        "count": 17,
+        "hasMore": false
+      },
+      {
+        "from": "2026-11-26T14:45:03.295Z",
+        "to": "2026-11-26T14:46:37.853Z",
+        "fullListSha256": "d5a8bdc030ddc8bc89e321f014eb202c44d4e259e5c47c6a2b87a5451f0b3e2d",
+        "count": 10,
+        "hasMore": false
+      },
+      {
+        "from": "2026-11-26T14:46:37.853Z",
+        "to": "2026-11-26T14:48:12.794Z",
+        "fullListSha256": "abbc7fbc4163dfe1425271e2c94b02d37797886bfd4a851d6b8c087fdd15f156",
+        "count": 0,
+        "hasMore": false
+      }
+    ]
+  },
+  "writerExecutions": [
+    {
+      "start": "2026-11-26T14:42:27.156Z",
+      "executionId": "b25907f023a04b4ca557bbb540398a8c",
+      "credits": 10,
+      "status": "success",
+      "operation": "inspect_event",
+      "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+      "writeStatus": 0,
+      "readStatus": 200,
+      "providerExecutionId": null,
+      "remoteReceiptVerified": false,
+      "observedValue": "CXOrbia QA Escenario A",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:28.900Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario A",
+            "fullPacketSha256": "65ea06cec4a338631dd74f96738f8c440111c1d0ff7809b2040da2adb834de73",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:31.386Z"
+        }
+      },
+      "fullInspectSha256": "602fc67178ea799f69275ba7d55f10ae939b71c948f556cb84eeba75f50462b0"
+    },
+    {
+      "start": "2026-11-26T14:42:36.453Z",
+      "executionId": "38a52ab7a9734150967758131b629410",
+      "credits": 23,
+      "status": "success",
+      "operation": "write_field",
+      "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+      "writeStatus": 200,
+      "readStatus": 200,
+      "providerExecutionId": "38a52ab7a9734150967758131b629410",
+      "remoteReceiptVerified": true,
+      "observedValue": "CXOrbia QA Escenario B",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:38.383Z"
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:39.879Z"
+        },
+        "36": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:46.477Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='L2')",
+            "method": "PATCH",
+            "body": {
+              "values": [
+                [
+                  "CXOrbia QA Escenario B"
+                ]
+              ]
+            },
+            "observedL2": "CXOrbia QA Escenario B",
+            "fullPacketSha256": "588fda73a5dbfe22baf6e49187e539446e88554ec7f750945d2c478bdb081052",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        },
+        "43": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:50.153Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario B",
+            "fullPacketSha256": "cbcb580991d167506f204d36cc1a64484e26cdfc3a76729a9e36787527db4a4b",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        }
+      },
+      "fullInspectSha256": "5bc36691404707ef7eea854f4f60b5f641e0aa965f029c2869d9732f7488a5d7"
+    },
+    {
+      "start": "2026-11-26T14:42:53.257Z",
+      "executionId": "712e7b2011b1489083b78bd84e6ad037",
+      "credits": 10,
+      "status": "success",
+      "operation": "inspect_event",
+      "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+      "writeStatus": 0,
+      "readStatus": 200,
+      "providerExecutionId": "38a52ab7a9734150967758131b629410",
+      "remoteReceiptVerified": true,
+      "observedValue": "CXOrbia QA Escenario B",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:55.113Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario B",
+            "fullPacketSha256": "008233c6190793d31222907b6deb26e98a52c01916016a0e14f451a4f424764c",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:42:56.448Z"
+        }
+      },
+      "fullInspectSha256": "fad15c22671d7b7ef088434e156ff4909631fa11628a99cc10089b5ac0bc08e1"
+    },
+    {
+      "start": "2026-11-26T14:44:35.286Z",
+      "executionId": "23237ecafea4403ab9c6082ede489805",
+      "credits": 10,
+      "status": "success",
+      "operation": "inspect_event",
+      "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+      "writeStatus": 0,
+      "readStatus": 200,
+      "providerExecutionId": null,
+      "remoteReceiptVerified": false,
+      "observedValue": "CXOrbia QA Escenario B",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:44:37.105Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario B",
+            "fullPacketSha256": "7f2566d27366a915720ab3572fadc7a71f2b1831e65a4a46787025175756d84f",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:44:39.104Z"
+        }
+      },
+      "fullInspectSha256": "f209cb847d8aeb40bc15bc7b991e0d94a58c5af3d0dad096976ec7373cb75e8b"
+    },
+    {
+      "start": "2026-11-26T14:44:44.945Z",
+      "executionId": "f1296c2602554d2ba4d6db4375a64a27",
+      "credits": 23,
+      "status": "success",
+      "operation": "write_field",
+      "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+      "writeStatus": 200,
+      "readStatus": 200,
+      "providerExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+      "remoteReceiptVerified": true,
+      "observedValue": "CXOrbia QA Escenario A",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:44:46.715Z"
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:44:48.077Z"
+        },
+        "36": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:44:57.590Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='L2')",
+            "method": "PATCH",
+            "body": {
+              "values": [
+                [
+                  "CXOrbia QA Escenario A"
+                ]
+              ]
+            },
+            "observedL2": "CXOrbia QA Escenario A",
+            "fullPacketSha256": "de3995a17935c467ff12ca6fba7a6bf68634d69e0bbdbcb18947254998f1bf01",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        },
+        "43": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:45:01.101Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario A",
+            "fullPacketSha256": "69972d63db83545ffc7b032a329200a4018000025ff06c70bc6166ffcf651bfc",
+            "rawOutputTruncated": false,
+            "rawStatuses": [
+              200
+            ]
+          }
+        }
+      },
+      "fullInspectSha256": "d8e97cd5e44188eef0b38b46efc8ed48bba4921cc36cf53b18bd5821f3c031b0"
+    },
+    {
+      "start": "2026-11-26T14:45:04.385Z",
+      "executionId": "91a10464b3274aadaf6e0da1b377fc6e",
+      "credits": 10,
+      "status": "success",
+      "operation": "inspect_event",
+      "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+      "writeStatus": 0,
+      "readStatus": 200,
+      "providerExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+      "remoteReceiptVerified": true,
+      "observedValue": "CXOrbia QA Escenario A",
+      "moduleDetails": {
+        "12": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:45:06.593Z",
+          "http": {
+            "target": "CXR_B14_QA_GT_20261119/range(address='A1:Z2')",
+            "method": "GET",
+            "body": null,
+            "observedL2": "CXOrbia QA Escenario A",
+            "fullPacketSha256": "656e7845ac08196997916d41307b0eb9635d2b8d67b768902290c31d99c13c34",
+            "rawOutputTruncated": true,
+            "rawStatuses": []
+          }
+        },
+        "15": {
+          "invocations": 1,
+          "errors": 0,
+          "lastFinishedAt": "2026-11-26T14:45:08.709Z"
+        }
+      },
+      "fullInspectSha256": "aeeb0731e293079e154d34b16942284daf5ca783560d90668078ce41dce43fd4"
+    }
+  ],
+  "readerExecutions": [
+    {
+      "start": "2026-11-26T14:41:29.455Z",
+      "executionId": "cbb503b02fda4a02a15e0358e4603be9",
+      "credits": 3,
+      "operation": "inventory",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "84125222af5975d3032d07e3830ab33646f4316cfb73ef8df04b5ee3598f7b05"
+    },
+    {
+      "start": "2026-11-26T14:41:37.318Z",
+      "executionId": "e3c006d7a41c4f13ac2b39e273f72351",
+      "credits": 3,
+      "operation": "inventory",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "cd92542b44120c121ecc84f566372b8ac3f67aaee5f5f845afdbf9a1effab246"
+    },
+    {
+      "start": "2026-11-26T14:41:43.980Z",
+      "executionId": "fbb8af77f3fc4d349c4ca77c67b932e4",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "18a6e4a0acba647d425167c9ef8c13488e082d63f5973200a90488d1c01cde8e"
+    },
+    {
+      "start": "2026-11-26T14:41:43.997Z",
+      "executionId": "adfd8d07692e4f85a19ca7bb5a4af783",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "566f597662f3ff975502206b8f2eab278232c5c9c2204a6cf11b503247646474"
+    },
+    {
+      "start": "2026-11-26T14:41:51.656Z",
+      "executionId": "0539150b54ee448b8fdbe0d7b08e62f8",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "8b4f72fe6914c58da46347dd384e6b117cea11a9af6757f4340b06b4a60b3f74"
+    },
+    {
+      "start": "2026-11-26T14:41:51.689Z",
+      "executionId": "426f24ca4e004fc78491a3d729eab9f1",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "42294aeefc63b0c735e4898ac0a2a4b185629bfb2cf26ba6c6725bead21980ad"
+    },
+    {
+      "start": "2026-11-26T14:41:59.118Z",
+      "executionId": "bf3e3939e7b44c908d08a4b939cb794d",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "c66b6fe2271fa5a9a5ba2d76d15c62ac57b953ec3af1a7ed3a2671be48a6e948"
+    },
+    {
+      "start": "2026-11-26T14:41:59.166Z",
+      "executionId": "33435b04b87e4a158cb7f8535a008d14",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "94874c1f7ef4ef5c73256067c3a576c17a6001247f755d38cade3d760037a602"
+    },
+    {
+      "start": "2026-11-26T14:42:07.210Z",
+      "executionId": "7ce62f82b5c74b14858e956595b4daef",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "6fbef1a81974bc448538642d86ee085630f950437f737b2a0aa77ccab4db48d2"
+    },
+    {
+      "start": "2026-11-26T14:42:07.232Z",
+      "executionId": "415e0f91f0a344b98cb1c86976ea6e33",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "38ebb1bf9c0620aa3f87dd96cea09cc7f735229efbf86daab053d295a9625da2"
+    },
+    {
+      "start": "2026-11-26T14:42:14.142Z",
+      "executionId": "d13df8a9ae694f868cf504d689e31d3f",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "fc0a7681d1e040fcdc5d0b61fe01474cb3b5053696a452fc17cb0d8798bd9064"
+    },
+    {
+      "start": "2026-11-26T14:42:14.149Z",
+      "executionId": "17ba17c6acbc4666a69ce8d18a09d48a",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "9b2046108c678a88ecc6c6c774fb8eba4313b08118239155ee8eadb3aed00d21"
+    },
+    {
+      "start": "2026-11-26T14:42:20.462Z",
+      "executionId": "c4f610ecf8d74807aa354056c3a6247c",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "ea59b6d9d9b82ddaee90a715f2b07056359f31683f98d2f7eb1a9ece6c6e994e"
+    },
+    {
+      "start": "2026-11-26T14:43:04.093Z",
+      "executionId": "ef4733217bfa4ddcb92fc9c289e17970",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "4d2c361ee58d9aa6cad5d79737113643ac4d567e8eea336eae1f3ca1fdc095be"
+    },
+    {
+      "start": "2026-11-26T14:43:04.106Z",
+      "executionId": "09a0e7c80632472e9cf6d33161976f26",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "8a371465b844c7a487fe612c0bf28cb4b9a91bfa5e2f6005ae36545255a55afc"
+    },
+    {
+      "start": "2026-11-26T14:43:11.232Z",
+      "executionId": "0d30900d77d140489aaf1c428c38ced2",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "52b91fab046bf46c63c170c45486b1d4c563a8356d0c727d757bdeae0e0abff6"
+    },
+    {
+      "start": "2026-11-26T14:43:11.244Z",
+      "executionId": "6a12e17f9a4d4785beaa083d7ecb527e",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "c6f23301bf12acb92dee6df85f271e9730b2cd69f75c05977f602f71900126d5"
+    },
+    {
+      "start": "2026-11-26T14:43:41.686Z",
+      "executionId": "bf8f92e9ca6c4ac4a2ca7532a3440609",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "9ebf320842706af0b1642b83ba2428d82b721f0702647567c0a696005d47275f"
+    },
+    {
+      "start": "2026-11-26T14:43:41.709Z",
+      "executionId": "50742452f010433eb89ccd9142949055",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "4c4f623ce574cf788eb93dc26cad3fe13193c6c5b5ff46a999b46cde604488cc"
+    },
+    {
+      "start": "2026-11-26T14:43:49.447Z",
+      "executionId": "f7f6151e4c4248ab8cd76605650c2f51",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "b3ae53b63ce79e6eddd56cdc4a98796a221cd7015276571327f29e42427898f2"
+    },
+    {
+      "start": "2026-11-26T14:43:49.748Z",
+      "executionId": "262df1c3dc444cf9a320a8174715737c",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "ecc4e0bbdbf6a3398395360d3175f38efe5ff671fb56a580df44b64188b902a8"
+    },
+    {
+      "start": "2026-11-26T14:43:57.912Z",
+      "executionId": "43bcc137924f438392d69b55b531b80c",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "0528f8c59960840886b08a29f8dce9fbccfaac09e9847fb6140c35ef2fd46730"
+    },
+    {
+      "start": "2026-11-26T14:43:57.958Z",
+      "executionId": "f58ab7f00a44442dba7c1878a553de61",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "2dba4b95b5b90cff87d3ed6a14d47e80522fc68652168d0749c3f1f3336cf9e9"
+    },
+    {
+      "start": "2026-11-26T14:44:05.651Z",
+      "executionId": "3ac214a956ab4d1fb778a6d136aa524a",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "4bd41c976a9bbb83bacfc9e5c04a5e53e8707a1030a0327737487f0b5e82555f"
+    },
+    {
+      "start": "2026-11-26T14:44:05.666Z",
+      "executionId": "11f30abf0ba646d9a486d1ed4cd735b0",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "76c46262464b2cf1a6893f8c7345b58e024f9b745f9a43c4e84cfb50cae6b53e"
+    },
+    {
+      "start": "2026-11-26T14:44:13.384Z",
+      "executionId": "9e74dc09bdd2459f81e82bd2cee113a1",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "f3832fa78adb8b9452f5087f23ab074c0b7e964a146b9c79afbdded21eb42c8b"
+    },
+    {
+      "start": "2026-11-26T14:44:13.434Z",
+      "executionId": "11551e051b1f475a920bf2b60a4848a7",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "672b78ddbd2995d43c151fda3ce428a499c23d289a19ffcd2bfb7d22df5a313c"
+    },
+    {
+      "start": "2026-11-26T14:44:21.062Z",
+      "executionId": "3afa1a7f03564a03998df11ff0b33c8d",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "65e06e62a21d61a5ec2c502f29a77aadb7fba0a229fa58041c0a853cc7eccf14"
+    },
+    {
+      "start": "2026-11-26T14:44:21.098Z",
+      "executionId": "9f34f6abcebd45088ff0433f33ba413e",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "98f9604eb7cf0e089d8d6d2ffcb9c708dcc8088e6c6eaa4bab49bd410ca1353d"
+    },
+    {
+      "start": "2026-11-26T14:44:27.840Z",
+      "executionId": "b1ece6a7b0c7472c925eab9904d39ff8",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "866d5d14654c4d26bd72f1b36cabf539cc4fcfc649eb2a134f474537ab62155e"
+    },
+    {
+      "start": "2026-11-26T14:45:21.339Z",
+      "executionId": "85a6c175403040548f91c7ccc13d91dd",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "b30e294cf79ef387c348c245bc7f3f8dc79456313c1fe533ab7962e99d7e83d5"
+    },
+    {
+      "start": "2026-11-26T14:45:21.380Z",
+      "executionId": "e0b17792fa394b6489265f10c8d58457",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "91d7ee8670dca505e88ec8a282dcf81a3419c489c753ac7de65006fb0983afc9"
+    },
+    {
+      "start": "2026-11-26T14:45:28.724Z",
+      "executionId": "ff271ce5aa874432ad4c4fa02dd52a23",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "62cde2b68d61930db527ab455c6b9f4faab6e3dd1e5a48fab68319b694fa176a"
+    },
+    {
+      "start": "2026-11-26T14:45:28.742Z",
+      "executionId": "91c980da3fa849c19ec6492d63164410",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "52aef1e20ff9450c7b633e6d52a67743cbf81473db0088f2830c1a8e3d20dbb0"
+    },
+    {
+      "start": "2026-11-26T14:45:36.235Z",
+      "executionId": "7acee15a50d74b18acce74e7f88aae58",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "0b2b2a777701231702717832ece57c091b08513e4d30ace47ffc2480d3b4816d"
+    },
+    {
+      "start": "2026-11-26T14:45:36.245Z",
+      "executionId": "8ee55fd45ca141ce8b4ae2c4287bc373",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "ea70adf2dfa9becf7a3ed103d7876703b7478eb1f85054c696a6847800eefe96"
+    },
+    {
+      "start": "2026-11-26T14:45:44.451Z",
+      "executionId": "5b673b21b8e34bd3b1ca964e7e17d733",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "416c4296e5b93d5de2b4532eb0b578e7d7b2f0ec6f5543d3eefe951da46d502e"
+    },
+    {
+      "start": "2026-11-26T14:45:44.459Z",
+      "executionId": "32de60713f5447e3806e655dc18e67e0",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "4263becf5268a756ccf974d7244e8f5d6626d7c6622ff13f4a90bc7448b3418f"
+    },
+    {
+      "start": "2026-11-26T14:45:51.503Z",
+      "executionId": "7754db38a41e4ba481a506106fed36b6",
+      "credits": 3,
+      "operation": "read",
+      "country": "GT",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "ba837b0a09bdb3e484adaa137ae9fb83478be4afdcfb83d0d906932f14b13765"
+    },
+    {
+      "start": "2026-11-26T14:45:51.607Z",
+      "executionId": "7e956da18f174748b4e2bae28686dd47",
+      "credits": 3,
+      "operation": "read",
+      "country": "HN",
+      "tenant": "tya",
+      "project": "f3-qa-20261124",
+      "period": "f3-qa-20261124-2026-11",
+      "status": "success",
+      "fullInspectSha256": "c4a762f138f09eff78deb891a573d86a148eca8bd66f0b32eb69202542c1f76e"
+    }
+  ],
+  "datastore": {
+    "storeBefore": [
+      {
+        "key": "757bfe4bd75b",
+        "recordType": "sentinel",
+        "absent": true,
+        "fullRecordSha256": "287027fe1e4133bb8e77b3f311917410384c2480cc83b136059716173f334b77"
+      },
+      {
+        "key": "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98",
+        "recordType": "head",
+        "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+        "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+        "writeExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+        "writeHttpStatus": 200,
+        "status": "committed",
+        "afterValue": "CXOrbia QA Escenario A",
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario"
+        },
+        "fullRecordSha256": "bc83027cc616c4030d543f8e681212023da3e968807fb6b2018e41668bd50992"
+      },
+      {
+        "key": "event:hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "recordType": "event",
+        "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+        "writeExecutionId": "38a52ab7a9734150967758131b629410",
+        "writeHttpStatus": 200,
+        "status": "committed",
+        "baseEventId": null,
+        "beforeValue": "CXOrbia QA Escenario A",
+        "afterValue": "CXOrbia QA Escenario B",
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario"
+        },
+        "fullRecordSha256": "5afdb9ec1eec538b0bc84232eeee12633e1d72756ab52f163988f80905d0d158"
+      },
+      {
+        "key": "event:hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+        "recordType": "event",
+        "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+        "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+        "writeExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+        "writeHttpStatus": 200,
+        "status": "committed",
+        "baseEventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "beforeValue": "CXOrbia QA Escenario B",
+        "afterValue": "CXOrbia QA Escenario A",
+        "scope": {
+          "tenantId": "tya",
+          "projectId": "f3-qa-20261124",
+          "periodId": "f3-qa-20261124-2026-11",
+          "countryCode": "GT",
+          "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+          "hrRowId": "CXR_B14_QA_GT_20261119!2",
+          "fieldKey": "escenario"
+        },
+        "fullRecordSha256": "e058f605375cc6ec9e4d4bd7bf87c8fb57391d58c3072e9bb682c8dfd10e799b"
+      }
+    ],
+    "storeAfter": [
+      {
+        "key": "757bfe4bd75b",
+        "recordType": "sentinel",
+        "absent": true,
+        "fullRecordSha256": "287027fe1e4133bb8e77b3f311917410384c2480cc83b136059716173f334b77"
+      }
+    ]
+  },
+  "independentAudit": {
+    "nativeDecision": "PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING",
+    "window": {
+      "from": "2026-11-26T14:40:29.000Z",
+      "to": "2026-11-26T14:48:12.794Z",
+      "observedAt": "2026-11-26T14:48:24.545Z"
+    },
+    "physicalPatchRequests": 2,
+    "patches": [
+      {
+        "id": "38a52ab7a9734150967758131b629410",
+        "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "action": "change",
+        "ok": true,
+        "startedAt": "2026-11-26T14:42:36.453Z",
+        "patchFinishedAt": "2026-11-26T14:42:46.477Z",
+        "patch": {
+          "rawModuleStatuses": [
+            200
+          ],
+          "rawModuleErrors": [],
+          "actualL2": []
+        },
+        "get": {
+          "rawModuleStatuses": [
+            200
+          ],
+          "rawModuleErrors": [],
+          "actualL2": [
+            "CXOrbia QA Escenario B"
+          ]
+        }
+      },
+      {
+        "id": "f1296c2602554d2ba4d6db4375a64a27",
+        "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+        "action": "restore",
+        "ok": true,
+        "startedAt": "2026-11-26T14:44:44.945Z",
+        "patchFinishedAt": "2026-11-26T14:44:57.590Z",
+        "patch": {
+          "rawModuleStatuses": [
+            200
+          ],
+          "rawModuleErrors": [],
+          "actualL2": []
+        },
+        "get": {
+          "rawModuleStatuses": [
+            200
+          ],
+          "rawModuleErrors": [],
+          "actualL2": [
+            "CXOrbia QA Escenario A"
+          ]
+        }
+      }
+    ],
+    "independentReads": {
+      "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59": [
+        {
+          "id": "712e7b2011b1489083b78bd84e6ad037",
+          "writeExecutionId": "38a52ab7a9734150967758131b629410",
+          "startedAt": "2026-11-26T14:42:53.257Z",
+          "graphRead": {
+            "rawModuleStatuses": [
+              200
+            ],
+            "rawModuleErrors": [],
+            "actualL2": [
+              "CXOrbia QA Escenario B"
+            ]
+          }
+        }
+      ],
+      "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2": [
+        {
+          "id": "91a10464b3274aadaf6e0da1b377fc6e",
+          "writeExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+          "startedAt": "2026-11-26T14:45:04.385Z",
+          "graphRead": {
+            "rawModuleStatuses": [],
+            "rawModuleErrors": [],
+            "actualL2": [
+              "CXOrbia QA Escenario A"
+            ]
+          }
+        }
+      ]
+    },
+    "credits": {
+      "writer_inspect_event": 40,
+      "writer_real_patch_and_verification": 46,
+      "reader_fixture": 120
+    },
+    "windowCreditsTotal": 206,
+    "readExecutions": 40,
+    "writerExecutions": 6,
+    "windowDefects": [],
+    "replayAndRejectedPhysicalPatches": 0,
+    "ownedCleanupKeys": [
+      "event:hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+      "event:hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+      "412e4d0b0f1a7c5b9f32c8b9084ac2d2e305d838a949f774e962d061a6911b98"
+    ],
+    "remoteCleanupVerified": true,
+    "b14Closed": false,
+    "fullF3Closed": false,
+    "production": false,
+    "inputSha256": [
+      "ca48bd114a888b482c27b2d697973eedf8a06370e1da859659b57bed339d2fbe",
+      "72bfff69077ee75bba77a22b910f4d8d74d6cb6793b865ec08443548e9d41d53",
+      "9276e4b72e67a33ac74dc3342fb6c7ca9223a770f0adaec3f46294b5f96a694a",
+      "7aab8ea8fcf1f5edafe94b207ce675430162fb795531bc91b8b0c5247a82ac3a"
+    ]
+  },
+  "rawSha256": "ca48bd114a888b482c27b2d697973eedf8a06370e1da859659b57bed339d2fbe",
+  "production": false,
+  "nativeResult": {
+    "commit": "8163516958ee25d4362a8416b2279e4663816a9e",
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json",
+    "sha256": "7aab8ea8fcf1f5edafe94b207ce675430162fb795531bc91b8b0c5247a82ac3a",
+    "nativePublicPath": "docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_PUBLIC_READBACK.json",
+    "publicReadbackSha256": "72bfff69077ee75bba77a22b910f4d8d74d6cb6793b865ec08443548e9d41d53",
+    "sourceAndRuntime": {
+      "observed": {
+        "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+        "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+        "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+        "runtimeDigest": "sha256:5fa6ff90745230ca31b33f529be385570182cd527684745d3dfb86cc1834b2d8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48"
+      },
+      "complete": true
+    },
+    "producer": {
+      "schemaVersion": "cxorbia.i3.f3.qa-endpoint.v1",
+      "decision": "PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING",
+      "jobName": "i3-b14-qa-provider-proof",
+      "jobConclusion": "success"
+    },
+    "target": {
+      "tenantId": "tya",
+      "projectId": "f3-qa-20261124",
+      "periodId": "f3-qa-20261124-2026-11",
+      "countryCode": "GT",
+      "fieldKey": "escenario",
+      "cell": "L2",
+      "visitId": "hr_excel_45c62e0543d229c8ca625f3cf857",
+      "hrRowId": "CXR_B14_QA_GT_20261119!2",
+      "worksheetName": "CXR_B14_QA_GT_20261119",
+      "worksheetFingerprint": "39232058b01b707637ccc718756aaae38992939eebc47d37ab5addeffc7a236d"
+    },
+    "preCleanupSeal": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/pre-cleanup.json#1795704365536663",
+      "sha256": "26290d1bd37a2160e11742ea3777bb01fbe8b2d2ca0461bbdf8bc81e19a33fa4"
+    },
+    "restoredFieldValueCount": 8,
+    "baselineRevision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+    "restoredRevision": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+    "events": [
+      {
+        "action": "CHANGE",
+        "eventId": "hfe-0228eb42dcf54227e9a48a570f8fb029a0e2281acde1017b591a7792fba87b59",
+        "eventDigest": "f6a7e982e309d45cdd1161f437e6f4ba2caab5062fad6d211be61d795764df86",
+        "providerExecutionId": "38a52ab7a9734150967758131b629410",
+        "sourceRevisionBefore": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+        "sourceRevisionAfter": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+        "applicationAck": true,
+        "independentReadback": true
+      },
+      {
+        "action": "RESTORE",
+        "eventId": "hfe-38d60e16294cddf53bb283f366073607eb9f4e052985d72b1a916aeb9cba02e2",
+        "eventDigest": "df2b1618d6df55acbd68bb1d2e5a6854a4e8d46f78803bc1f985cbd67d6bad0d",
+        "providerExecutionId": "f1296c2602554d2ba4d6db4375a64a27",
+        "sourceRevisionBefore": "d2051c34f9e0dff8f403c6b08af4c81c6e24aa9d98626c764e07822b6259c8f2",
+        "sourceRevisionAfter": "05a800767beadcb27eee47f3f01ac1d023da33ccca95dc89efa18a9064ee0bdb",
+        "applicationAck": true,
+        "independentReadback": true
+      }
+    ],
+    "observedCases": [
+      "explicit_reconcile_initial",
+      "client_response_body_loss_same_key_replay_journal_unchanged",
+      "GT_escenario_write",
+      "same_key_changed_payload_rejected",
+      "stale_base_rejected",
+      "GT_escenario_restore",
+      "old_committed_receipt_replay_does_not_rollback",
+      "explicit_reconcile_restored"
+    ],
+    "unproven": [
+      "HN",
+      "other_fields",
+      "shopper_UI_and_availability",
+      "provider_response_loss",
+      "concurrent_external_edit",
+      "external_origin_echo",
+      "historical_period",
+      "private_notes",
+      "ordinary_credentials_and_missing_shopper_upsert"
+    ],
+    "firebaseCleanup": {
+      "firestore": true,
+      "auth": true,
+      "remoteMake": false
+    },
+    "requiredRecovery": false
+  },
+  "decision": "PASS_F3_BOUNDED_GT_ESCENARIO_L2_NATIVE_AND_INDEPENDENT_MAKE_WINDOW_RESTORED_CLEANED",
+  "scope": "GT escenario L2 for this fixture and native run only",
+  "b14Closed": false,
+  "fullF3Closed": false,
+  "backupBeforeMakeCleanup": {
+    "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/d94a48b7-d506-4a87-ac1c-8fb7eabde91c/make-owned-before.json#1795704920120386",
+    "sha256": "9c84b6bdf1144dd15e1541dad41c0ae4e67f35e58dd0c537e086517f13edcc5b",
+    "nativeStartGeneration": "1795704069979393"
+  },
+  "independentCleanupReadAt": "2026-11-26T14:56:23.927Z",
+  "makeBudget": {
+    "organizationId": 4090072,
+    "availableBefore": 1001,
+    "availableAfter": 795,
+    "assessedAt": "2026-11-26T14:49:41.451Z",
+    "permittedRunBudget": 250,
+    "additionalRestorationReserve": 100,
+    "purchaseEnabled": false,
+    "chargedCredits": 206,
+    "differenceReconciled": true
+  },
+  "businessProcessAcceptance": {
+    "originalTaskId": "B14",
+    "originalTaskSet": "HRAndVisitLifecycle",
+    "frozenAcceptanceBindingSha256": "2daa6002b4b1c49a7ff199b4d4c633440dfafb5ff5ff1282c1a0bf4d15adf486",
+    "authority": "docs/checkpoints/ADDENDUM_CXORBIA_I3_CIERRE_POR_PROCESOS_20261125.md",
+    "processMap": "docs/checkpoints/CXORBIA_I3_B_PROCESS_EVIDENCE_MAP_20261125.json",
+    "processMapSha256": "e821aaef3ff822ad2a6d18527e12f7a75f592b07a319b85a6463ff69eb3f85ba",
+    "ownerDomains": [
+      "canonical-hr-state-adapters",
+      "persistence-command-ack-boundary"
+    ],
+    "scopedStatus": "PARTIALLY_ACCREDITED_GT_ESCENARIO_L2_ONLY",
+    "demonstrated": [
+      "authenticated platform command A to B on a single known fixture cell",
+      "remote ACK and independent Graph read of both B and restored A",
+      "client response-body loss with same-key replay and unchanged journal",
+      "same-key altered content and stale base rejected with zero physical PATCHes",
+      "later restoration event survives replay of original event",
+      "complete immutable evidence, owned-only cleanup and unchanged sentinel"
+    ],
+    "residual": [
+      "other fields and HN",
+      "external Excel-origin event and echo",
+      "concurrent external edit/atomicity",
+      "provider response loss",
+      "historical period",
+      "shopper role, assignment visibility and ordinary authentication",
+      "private notes"
+    ],
+    "wholeOriginalTaskComplete": false,
+    "newDomainMatches": 0,
+    "phaseAComplete": false,
+    "i4Authorized": false
+  }
+}

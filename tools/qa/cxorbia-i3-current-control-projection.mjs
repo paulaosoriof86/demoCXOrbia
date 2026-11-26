@@ -242,9 +242,44 @@ export function synchronizeModuleServingAliases(matrix,{sourceSha,sourceTree,mat
  return {changed,archive};
 }
 
+export function readBoundedF3CellProof(controls,readBytes){
+ const {descriptor:d,pointer:p,matrix:m,ledger:l}=controls,proof=d.currentF3BoundedCellEvidence;
+ if(!proof){
+  must(![p,m,l,...(m.modules||[])].some(x=>x.currentF3BoundedCellEvidence),'MAPPING_FAILURE:F3_BOUNDED_CELL_EVIDENCE_BINDING');
+  return null;
+ }
+ const idx=d.currentFunctionalEvidenceIndex?.results?.find(entry=>entry.key===proof.typedResultKey);
+ const counterpart=p.currentFunctionalEvidenceIndex?.results?.find(entry=>entry.key===proof.typedResultKey);
+ must(proof.taskId==='B14'&&proof.terminalTaskPass===false&&proof.fullB14===false&&proof.fullF3===false&&proof.production===false&&
+  /^[a-f0-9]{40}$/.test(proof.gitBlob)&&/^[a-f0-9]{64}$/.test(proof.sha256)&&
+  /^docs\/checkpoints\/CXORBIA_I3_[A-Za-z0-9_-]+\.json$/.test(proof.path)&&
+  [p,m,l].every(control=>same(control.currentF3BoundedCellEvidence,proof))&&
+  idx?.provider==='GOOGLE_CLOUD_SHELL'&&idx.kind==='F3_ENDPOINT'&&same(idx,counterpart)&&idx.path===proof.typedResultPath&&idx.gitBlob===proof.typedResultBlob,
+  'MAPPING_FAILURE:F3_BOUNDED_CELL_EVIDENCE_BINDING');
+ const owners=['canonical-hr-state-adapters','persistence-command-ack-boundary'];
+ for(const domain of owners){
+  const mod=m.modules.find(module=>module.domain===domain);
+  must(mod&&same(mod.currentF3BoundedCellEvidence,proof)&&Array.isArray(mod.currentResidualClauses)&&mod.currentResidualClauses.length>0,'MAPPING_FAILURE:F3_BOUNDED_CELL_MODULE_BINDING');
+ }
+ if(readBytes){
+  const bytes=readBytes(proof.path);
+  must(gitBlob(bytes)===proof.gitBlob&&sha256(bytes)===proof.sha256,'SOURCE_FAILURE:F3_BOUNDED_CELL_RECEIPT_BYTES');
+  const seal=JSON.parse(bytes), native=seal.nativeResult, audit=seal.independentAudit, process=seal.businessProcessAcceptance;
+  const id=native?.sourceAndRuntime?.observed;
+  must(id&&['sourceSha','sourceTree','runtimeRevision','hostingVersion'].every(key=>id[key]===proof[key])&&
+   String(seal.nativeResultGeneration)===proof.nativeResultGeneration&&'GOOGLE_CLOUD_SHELL/'+seal.nativeStartGeneration===proof.typedResultKey&&
+   native.path===proof.typedResultPath&&process?.originalTaskId===proof.taskId&&process.frozenAcceptanceBindingSha256===proof.acceptanceBindingSha256&&
+   same(process.ownerDomains,owners)&&process.wholeOriginalTaskComplete===false&&seal.b14Closed===false&&seal.fullF3Closed===false&&seal.production===false&&
+   Array.isArray(audit?.windowDefects)&&audit.windowDefects.length===0&&audit.physicalPatchRequests===2&&audit.replayAndRejectedPhysicalPatches===0&&
+   audit.remoteCleanupVerified===true&&native.baselineRevision===native.restoredRevision,'MAPPING_FAILURE:F3_BOUNDED_CELL_RECEIPT_SCOPE');
+ }
+ return proof;
+}
+
 export function projectMaterialization(input,{receipt,receiptPath,now=receipt.observedAt,ledgerPath,matrixPath,finding}){
  const out=Object.fromEntries(['descriptor','pointer','ledger','matrix'].map(k=>[k,clone(input[k])])),{descriptor:d,pointer:p,ledger:l,matrix:m}=out;
  const r=receipt.materialization,blob=gitBlob(jsonBytes(receipt));
+ const f3Cell=readBoundedF3CellProof(input);
  const nextAction=receipt.hrPeriodWindow?NEXT.replace('Complete the authorized previous/current/next HR reading window without discarding confirmed history; prove', 'The previous/current/next HR reading window, retained history and explicit older-period read are verified. Prove'):NEXT;
  must(r.sourceSha===d.productSourceSha&&r.sourceTree===d.productSourceTree,'SOURCE_FAILURE:RESULT_IS_NOT_CURRENT_PRODUCT');
  if(d.postDeployRunSeal?.receiptPath===receiptPath){must(same(executionIdentity(d.currentMaterialization),executionIdentity(r)),'SOURCE_FAILURE:OUT_OF_ORDER_MATERIALIZATION');must(d.postDeployRunSeal.receiptBlob===blob,'SOURCE_FAILURE:REPLAY_RECEIPT_CHANGED');return {noop:true,...out};}
@@ -270,7 +305,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   for(const k of Object.keys(o).filter(k=>k.startsWith('currentSuccessor'))){old[k]=o[k];delete o[k];}
   for(const k of REGISTRY.materialization)if(Object.hasOwn(o,k)||['currentMaterialization','currentDevMaterialization'].includes(k))o[k]=clone(r);
   for(const k of REGISTRY.execution)o[k]=clone(execution);
-  Object.assign(o,{updatedAt:now,status:HOLD,state:'HOLD',activeBlocker:'CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD',activeBlockers:['F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP','UNCOVERED_FUNCTIONAL_CONTRACT_CLAUSES','CURRENT_SOURCE_C3_GATE20_GATE21','E08_MAILBOX_CONFIGURATION_AND_EXTERNAL_ACK_UNPROVEN'],currentMaterializationIsPredecessorOnly:false,lastServedSource:r.sourceSha,currentServingAuthority:clone(serving),postDeployRunSeal:clone(seal),currentRuntimeBinding:clone(binding),i3Q2HostingReleaseC3Pending:clone(preC3),exactNextAction:nextAction,nextExactAction:nextAction,currentExecutionReceiptSemantics:'LAST_TYPED_EXECUTION_IS_INDEPENDENT_OF_LAST_DEPLOYMENT_AND_LAST_HR_OBSERVATION',lastExecutionReceiptSemantics:'LAST_TYPED_EXECUTION_IS_INDEPENDENT_OF_LAST_DEPLOYMENT_AND_LAST_HR_OBSERVATION',activeAuthoritySemantics:`Current product ${r.sourceSha}; DEV run ${r.runId}, runtime ${r.runtimeRevision}, Hosting ${r.hostingVersion}. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.`,nextPlannedBlock:{taskIds:[...(receipt.hrPeriodWindow?[]:['HR_PERIOD_WINDOW']),'F3','A08','D08','FINANCE_RESIDUAL','E08','G20','G21'],completedTaskIds:receipt.hrPeriodWindow?['HR_PERIOD_WINDOW']:[],exactPending:nextAction,sourceSha:d.productSourceSha,production:false}});
+  Object.assign(o,{updatedAt:now,status:HOLD,state:'HOLD',activeBlocker:'CURRENT_SOURCE_FUNCTIONAL_CLOSURE_AND_E08_ENVIRONMENT_HOLD',activeBlockers:[f3Cell?'F3_UNCOVERED_FIELDS_ROLES_AND_EXTERNAL_EVENTS':'F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP','UNCOVERED_FUNCTIONAL_CONTRACT_CLAUSES','CURRENT_SOURCE_C3_GATE20_GATE21','E08_MAILBOX_CONFIGURATION_AND_EXTERNAL_ACK_UNPROVEN'],currentMaterializationIsPredecessorOnly:false,lastServedSource:r.sourceSha,currentServingAuthority:clone(serving),postDeployRunSeal:clone(seal),currentRuntimeBinding:clone(binding),i3Q2HostingReleaseC3Pending:clone(preC3),exactNextAction:nextAction,nextExactAction:nextAction,currentExecutionReceiptSemantics:'LAST_TYPED_EXECUTION_IS_INDEPENDENT_OF_LAST_DEPLOYMENT_AND_LAST_HR_OBSERVATION',lastExecutionReceiptSemantics:'LAST_TYPED_EXECUTION_IS_INDEPENDENT_OF_LAST_DEPLOYMENT_AND_LAST_HR_OBSERVATION',activeAuthoritySemantics:`Current product ${r.sourceSha}; DEV run ${r.runId}, runtime ${r.runtimeRevision}, Hosting ${r.hostingVersion}. Six existing MATCH and prior C3 are preserved; this deployment is not domain certification.`,nextPlannedBlock:{taskIds:[...(receipt.hrPeriodWindow?[]:['HR_PERIOD_WINDOW']),'F3','A08','D08','FINANCE_RESIDUAL','E08','G20','G21'],completedTaskIds:receipt.hrPeriodWindow?['HR_PERIOD_WINDOW']:[],exactPending:nextAction,sourceSha:d.productSourceSha,production:false}});
   if(receipt.hrPeriodWindow)o.currentHrPeriodWindow={...clone(receipt.hrPeriodWindow),receiptPath,receiptBlob:blob,scope:'READ_WINDOW_AND_HISTORY_ONLY_NO_DOMAIN_PROMOTION'};
   // A fresh paired HR read is its own fact; do not relabel an old F2 config-write receipt.
   if(o.currentF2OperationalExcel){old.currentF2OperationalExcel=o.currentF2OperationalExcel;delete o.currentF2OperationalExcel;}
@@ -289,7 +324,13 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   if(mod.classification==='SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION'){(archived.modulePublicationStages||={})[mod.domain]=mod.classification;mod.classification='DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E';}
   Object.assign(mod,{lastServedSource:r.sourceSha,currentMaterializationRunId:r.runId,servedHostingVersion:r.hostingVersion,servedRuntimeRevision:r.runtimeRevision,currentServingAuthority:clone(serving),currentDevStage:'EXACT_CURRENT_SOURCE_DEV_VERIFIED_FUNCTIONAL_RESIDUAL_UNCHANGED'});
   if(mod.currentEvidenceDimensions)Object.assign(mod.currentEvidenceDimensions,{source:`CURRENT_PRODUCT_${r.sourceSha}_OWNER_PROOFS_PRESERVED`,dev:`EXACT_RUN_${r.runId}_${r.runtimeRevision}_${r.hostingVersion}`,newMatchPromotion:false});
-  if(['canonical-hr-state-adapters','persistence-command-ack-boundary'].includes(mod.domain)){oldResidual(mod,archived);mod.currentResidualClauses=['Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.',(receipt.hrPeriodWindow?'Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.':'Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.')];if(mod.domain==='persistence-command-ack-boundary')mod.currentResidualClauses.push('Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses.');mod.actionRequired=mod.currentResidualClauses.join(' ');}
+  const hrScope=['canonical-hr-state-adapters','persistence-command-ack-boundary'].includes(mod.domain);
+  if(hrScope&&f3Cell){
+   must(same(mod.currentF3BoundedCellEvidence,f3Cell)&&Array.isArray(mod.currentResidualClauses)&&mod.currentResidualClauses.length>0,
+    'MAPPING_FAILURE:F3_BOUNDED_CELL_MODULE_BINDING');
+   oldResidual(mod,archived);
+   mod.actionRequired=residualAction(mod);
+  }else if(hrScope){oldResidual(mod,archived);mod.currentResidualClauses=['Original Excel project binding, current DEV publication and isolated QA fixture transport are already proved. Preserve those receipts.',(receipt.hrPeriodWindow?'Preserve the verified reading window, confirmed history and explicit historical read. Complete authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.':'Complete the authorized reading window and authenticated durable HR; run the existing isolated F3 application fixture for remote ACK, independent readback, lost-response replay, per-field event order, conflict/echo, restoration and cleanup. Credit only uncovered clauses.')];if(mod.domain==='persistence-command-ack-boundary')mod.currentResidualClauses.push('Preserve accepted D08/B7/B3/C04/C05 durable evidence and complete uncovered D08/C09/C10 role, session and provider clauses.');mod.actionRequired=mod.currentResidualClauses.join(' ');}
   else if(residualAction(mod)!==null){oldResidual(mod,archived);mod.actionRequired=residualAction(mod);}
   if(mod.domain==='client-portal-reportkit'){
    oldResidual(mod,archived);
@@ -311,7 +352,7 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
  for(const o of [d,l,m])o.continuityHandoff=clone(p.continuityHandoff);
  Object.assign(p.activePhaseAClosureLock20261110,{sourceSha:d.productSourceSha,devRuntime:r.runtimeRevision,devHosting:r.hostingVersion});
  for(const o of [d,l,m])if(o.activePhaseAClosureLock20261110)o.activePhaseAClosureLock20261110=clone(p.activePhaseAClosureLock20261110);
- Object.assign(l.currentTruth,{currentMaterializationRunId:r.runId,currentMaterializationSourceSha:r.sourceSha,currentRuntimeRevision:r.runtimeRevision,currentHostingVersion:r.hostingVersion,sourceMaterialized:true,materializationScope:'RUNTIME_AND_HOSTING',moduleMatch:count,currentHostingSourceSha:r.sourceSha,latestDevMaterializationAttempt:clone(r),currentMaterialization:clone(r),currentMaterializationIsPredecessor:false,latestHostingReadbackRunId:r.runId,latestHostingReadbackReceiptPath:receiptPath,latestHostingReadbackReceiptBlob:blob,currentOperationalHrRevision:r.hrRevision,newExternalHrFinding:'F3_EXISTING_ISOLATED_FIXTURE_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP_PENDING'});
+ Object.assign(l.currentTruth,{currentMaterializationRunId:r.runId,currentMaterializationSourceSha:r.sourceSha,currentRuntimeRevision:r.runtimeRevision,currentHostingVersion:r.hostingVersion,sourceMaterialized:true,materializationScope:'RUNTIME_AND_HOSTING',moduleMatch:count,currentHostingSourceSha:r.sourceSha,latestDevMaterializationAttempt:clone(r),currentMaterialization:clone(r),currentMaterializationIsPredecessor:false,latestHostingReadbackRunId:r.runId,latestHostingReadbackReceiptPath:receiptPath,latestHostingReadbackReceiptBlob:blob,currentOperationalHrRevision:r.hrRevision,newExternalHrFinding:f3Cell?'F3_BOUNDED_CELL_ACCEPTED_UNCOVERED_FIELDS_ROLES_AND_EXTERNAL_EVENTS':'F3_EXISTING_ISOLATED_FIXTURE_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP_PENDING'});
  Object.assign(l.governance,{currentMaterialization:clone(r),postDeployRunSeal:clone(seal)});
  if(l.currentClosureState){l.currentClosureState.i3Technical='HOLD_ONLY_UNCOVERED_FUNCTIONAL_CLAUSES_CURRENT_DEV_EXACT';l.currentClosureState.d08Progress=d.d08AcademyProgressResidual?.status||l.currentClosureState.d08Progress;}
  if(finding){l.findings[finding.id]=clone(finding.value);}

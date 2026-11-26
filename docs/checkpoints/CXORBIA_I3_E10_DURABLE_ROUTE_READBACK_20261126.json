@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.durable-command-route-readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+  "producer": "fb7f80287f81691338fd868fc36881fc84781e0e",
+  "control": "ad41f22624f88321f6d636925796e347998cb77c",
+  "scope": "OFFLINE_SOURCE_DISPATCH_INVENTORY_AND_EXISTING_SNAPSHOT_CONTRACT_PROBE",
+  "route": {
+    "source": "/v1/cxorbia/commands",
+    "run": {
+      "serviceId": "cxorbia-live-hr-dev",
+      "region": "us-central1"
+    }
+  },
+  "pins": {
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs": "c0868192d611007635b36f806d2150c36222e953",
+    "backend/runtime/cxorbia-academy-command-provider-v1.mjs": "353fbacd8fd24d1a3ae54249869211c13194aba9",
+    "backend/runtime/cxorbia-commercial-command-provider-v1.mjs": "1fb37bb68bf0a7faeb8ed58e916d6346d8acb31f",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "d9d82a6ce33187dc5ecf3a1320940cf57b293646",
+    "backend/runtime/cxorbia-project-command-provider-v1.mjs": "cecf7b01c9be7d3bd9b4af339dc46ac25fe87af2",
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+    "app/modules/importador.js": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+    "app/core/importador.js": "b689b1b2d8095fa82f00eaf75571bb0bf5c924fa",
+    "app/modules/operacion-extra.js": "5675754961d29e2784e04553bc08f651b51ba2b6",
+    "backend/contracts/hr-import-control-phase-a-v1.json": "98bc11c0a28c17379451564d40fb7a9e5160a4e6",
+    "backend/adapters/hr-import-control-adapter.preview.mjs": "203d827167ef89724b925a85f7a211d9189d0e5b",
+    "backend/contracts/cxdata-firestore-phase-a-v1.json": "6abab39bf31b7e554dc689ebd74eb9e677150207",
+    "firestore.rules": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+    "firebase.json": "ff7c31ad86776101fb07163cc7b666aef51a4a94"
+  },
+  "hostedDispatcherKinds": {
+    "academy": [
+      "academy.course.create",
+      "academy.course.update",
+      "academy.course.state",
+      "academy.category.create",
+      "academy.progress.lesson.complete"
+    ],
+    "commercial": [
+      "client.create",
+      "client.update",
+      "crm.account.create",
+      "crm.account.update",
+      "crm.contact.create",
+      "crm.contact.update",
+      "crm.opportunity.create",
+      "crm.opportunity.update",
+      "crm.column.create",
+      "crm.column.update",
+      "crm.column.delete"
+    ],
+    "finance": [
+      "finance.reconcile.visit",
+      "finance.historical.reconcile",
+      "finance.payment.batch",
+      "finance.movement.create",
+      "finance.movement.metadata.update",
+      "finance.account.create",
+      "finance.account.apply",
+      "finance.budget.save",
+      "finance.budget.delete"
+    ],
+    "operational": [
+      "application.create",
+      "application.status.update",
+      "application.delete",
+      "reservation.create",
+      "reservation.status.update",
+      "reservation.delete",
+      "visit.assign",
+      "visit.reassign",
+      "visit.hr.fields.update",
+      "visit.state.update",
+      "visit.reschedule",
+      "visit.cancel",
+      "visit.questionnaire.submit",
+      "visit.checkin.evidence",
+      "resource.read.receipt",
+      "visit.sync.confirm",
+      "support.ticket.create",
+      "support.ticket.update",
+      "client.nps.submit",
+      "client.note.create",
+      "client.meeting.request"
+    ],
+    "project": [
+      "project.create",
+      "project.update",
+      "period.create",
+      "period.state.update"
+    ],
+    "shopper": [
+      "shopper.create",
+      "shopper.update",
+      "shopper.credential.reset",
+      "shopper.identity.adjudicate",
+      "shopper.identity.review.resolve",
+      "shopper.delete"
+    ]
+  },
+  "commandInventoryCount": 56,
+  "importCommandsRegistered": [],
+  "possibleReconciliation": {
+    "commandType": "hr.snapshot.reconcile",
+    "source": "independently read canonical snapshot",
+    "customRowsAccepted": false,
+    "observedError": "HR_RECONCILIATION_COMMAND_INVALID",
+    "observedProviderWrites": 0,
+    "observedProviderAck": false,
+    "dependenciesCalled": []
+  },
+  "officialE10": {
+    "acceptanceBinding": "b74b83a1ebd1afeca4c420e64d476e811bf8d90d982abe4a1060a557b4bffa4f",
+    "ownerPaths": [
+      "app/modules/importador.js",
+      "firestore.rules"
+    ],
+    "routeRoles": [
+      {
+        "role": "admin",
+        "route": "importador"
+      }
+    ],
+    "originalContract": {
+      "id": "E10",
+      "stage": "I3",
+      "module": "Importador y mapeos",
+      "owner_files": "administrabilidad.js:42–54; marca.js:4 en adelante; backend-ai.js:28–32; matriz de alcance | firestore.rules:canAccessProject/canReadProject; storage.rules; server.mjs:166–289; permissions.js",
+      "depends": "G03,A08",
+      "action": "Validar permisos, mapeo, dry-run, errores por fila e idempotencia con fixtures. No usar importador como arreglo de identidad, dinero o HR existente.",
+      "acceptance": "Replay de fixture no duplica, source/mapping trazables y 0 datos reales reimportados.",
+      "blocks_go": "Sí"
+    },
+    "servedButton": "hrCommit → CX.importador.commit → CX.data._visitas.push",
+    "mappingPatchScope": "CX.importador.autoMap"
+  },
+  "otherNamedSurfaces": {
+    "hrImportControl": {
+      "status": "draft_safe_not_connected",
+      "contractPath": "hrImportRuns",
+      "implementation": "saveImportRun/saveSanitizedRow return pendingImplementation"
+    },
+    "hrImportsRules": "Operator read and Admin write permissions for historical, sanitized control records. A rule does not implement a row import into visits.",
+    "rutasHrImport": "Button resolves to a demo toast."
+  },
+  "durableE10OwnerIdentified": false,
+  "retainedUiProof": "docs/checkpoints/CXORBIA_I3_D08_E10_COMPONENT_READBACK_20261125.json",
+  "liveAttempt": false,
+  "remoteWrites": 0,
+  "realRowsImported": 0,
+  "newDomainMatches": 0,
+  "production": false,
+  "next": "Recover an approved row-import command owner and its binding or adjudicate the missing implementation under the original E10 contract before connecting any writer. The existing explicit reconciliation only accepts a revision with empty payload."
+}

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "cxorbia.i3.d08.native-qa-auth.v1",
+  "authentication": "FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY",
+  "project": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "country": "GT",
+  "requestBinding": "CURRENT_SEALED_D08_UI_WITH_RECOVERY",
+  "labels": ["admin", "shopper", "cliente", "other"],
+  "emailDomain": "cxorbia.invalid",
+  "production": false
+}

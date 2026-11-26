@@ -37,7 +37,9 @@ node --input-type=module -e 'import fs from "node:fs";for(const [p,v] of [["fire
 CXORBIA_I3_QA_SCOPE=D08_ACADEMY_UI_SELF_TEST node "$runner" > "$dir/self-test.json"
 uuid=$(python3 -c 'import uuid; print(uuid.uuid4())')
 prefix="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-qa/$uuid"
-jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg control "$producer" --arg transport "$CXORBIA_TRANSPORT_SHA" --arg job "$CXORBIA_GOOGLE_QA_JOB" --arg branch "$CXORBIA_GOOGLE_QA_BRANCH" '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:$branch,job:$job,attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport}' > "$dir/start.json"
+config_path=docs/checkpoints/CXORBIA_I3_D08_NATIVE_QA_AUTH_20261126.json
+config_sha=$(git show "$CXORBIA_TRANSPORT_SHA:$config_path" | sha256sum | cut -d' ' -f1)
+jq -n --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg control "$producer" --arg transport "$CXORBIA_TRANSPORT_SHA" --arg job "$CXORBIA_GOOGLE_QA_JOB" --arg branch "$CXORBIA_GOOGLE_QA_BRANCH" --arg auth "$config_sha" '{schemaVersion:"cxorbia.i3.google-qa-start.v1",provider:"GOOGLE_CLOUD_SHELL",project:"cxorbia-backend-dev",repository:"paulaosoriof86/demoCXOrbia",branch:$branch,job:$job,attempt:1,production:false,sourceSha:$source,sourceTree:$tree,controlSha:$control,transportSha:$transport,passwordConfigSha256:$auth}' > "$dir/start.json"
 export CXORBIA_GOOGLE_QA_START
 CXORBIA_GOOGLE_QA_START=$(put "$dir/start.json" "$prefix/start.json")
 printf 'START %s\n' "$CXORBIA_GOOGLE_QA_START"

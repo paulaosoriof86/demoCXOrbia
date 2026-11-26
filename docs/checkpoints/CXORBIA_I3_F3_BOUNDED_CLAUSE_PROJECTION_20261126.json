@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.bounded-clause-projection.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "baseControl": "d79fd6af106ba299a33594f9f8c1fcae61bcb5a8",
+  "taxonomy": "MAPPING_FAILURE",
+  "scope": "QA and control only",
+  "cause": "The paired materialization control projected a generic F3 retest over the two HR owner residuals. The current authority view also omitted the scoped Make and cleanup receipt.",
+  "ownerProof": {
+    "tools/qa/cxorbia-i3-current-control-projection.mjs": {
+      "predecessorBlob": "ec000b2fad4b9d13713723aca427ad66dde68b5e",
+      "correctedBlob": "f3c55515f088662e448519ae781e4edb3838ab81"
+    },
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs": {
+      "predecessorBlob": "45342b208a47c478d34aef820a47bebf990db1cc",
+      "correctedBlob": "0cadf85992a50c867d3302077384d1abab4f04b2"
+    },
+    "tools/qa/cxorbia-i3-google-materialization.test.mjs": {
+      "predecessorBlob": "ec9edc7358273aa30825de24f1b79a4823cb784b",
+      "correctedBlob": "f6c57c9ac696449ff63d46d603cbca90c60c7e0f"
+    }
+  },
+  "functionalProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_MAKE_WINDOW_AND_CLEANUP_20261126.json",
+    "gitBlob": "a9cdf665dd477a820727a882de630b0a5f856be1",
+    "sha256": "191cded9d6cfacffc9c550225a665a2e4e7c362d533f923e0b064d171616d524",
+    "typedResultKey": "GOOGLE_CLOUD_SHELL/1795704069979393",
+    "typedResultPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json",
+    "typedResultBlob": "cd0c4409be8c2582dc45df26d7919f00ed0634cb",
+    "taskId": "B14",
+    "acceptanceBindingSha256": "2daa6002b4b1c49a7ff199b4d4c633440dfafb5ff5ff1282c1a0bf4d15adf486",
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "nativeResultGeneration": "1795704378174692",
+    "scope": "GT escenario L2 synthetic original Excel fixture on the specified paired DEV source",
+    "terminalTaskPass": false,
+    "fullB14": false,
+    "fullF3": false,
+    "production": false
+  },
+  "currentScopeReadback": {
+    "decision": "PASS_FINAL_CONTROL_PACKAGE_BOUND_F3_HISTORICAL_SCOPE_AND_D08_CURRENT_MATERIALIZATION",
+    "source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "run": "5670f782-19af-47aa-bdda-47cf94c689f2",
+    "acceptedF3Source": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "acceptedF3Result": "GOOGLE_CLOUD_SHELL/1795704069979393",
+    "currentD08Request": "docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json",
+    "matches": 6,
+    "i4Authorized": false,
+    "productionChanges": 0
+  },
+  "verification": {
+    "command": "node --test --test-reporter=tap tools/qa/cxorbia-i3-{google-materialization,google-f3-consumer,scoped-clause-projection,d08-recovery-summary,d08-result-normalizer,google-qa-execution,hr-shared-live-observation}.test.mjs",
+    "pass": 216,
+    "fail": 0,
+    "skipped": 0,
+    "tapSha256": "d8fa7cf0a2691fbac5e54c11ad62e0a1e15e3e9f778d1a14bdd016204d9ffb4b"
+  },
+  "d08Preparation": {
+    "path": "docs/checkpoints/CXORBIA_I3_D08_NATIVE_PASSWORD_PREPARATION_20261126.json",
+    "blob": "9c21bf774023c2a3ca76e9df24bfb002d9432c41",
+    "newRequest": false,
+    "liveLaunch": false
+  },
+  "e10SourceReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_DURABLE_ROUTE_READBACK_20261126.json",
+    "blob": "8cb22fbeea13bda01be231d778a3688af221e964",
+    "reproductionByteIdentical": true,
+    "writerLocated": false,
+    "remoteWrites": 0
+  },
+  "newDomainMatches": 0,
+  "completeB14": false,
+  "completeF3": false,
+  "phaseAComplete": false,
+  "i4Authorized": false,
+  "production": false
+}

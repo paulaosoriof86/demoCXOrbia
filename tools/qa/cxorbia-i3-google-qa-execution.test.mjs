@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {readGoogleQaExecution} from './cxorbia-i3-google-qa-execution.mjs';
+import {academyHrObserver,verifyAcademyHrObservation} from './cxorbia-i3-google-qa-execution.mjs';
 
 const bucket='cxorbia-backend-dev_cloudbuild',id='5573055a-facf-48a5-8e80-2d9698b4c21b';
 const name='cxorbia-i3-qa/'+id+'/start.json',generation='1795603001000000';
@@ -163,4 +164,100 @@ test('Academy requires its own marker, exact ZIP generation and current served t
  assert.equal(readGoogleAcademyResult(resultUri,expected,read,archive).transport.jobConclusion,'failure');
  assert.throws(()=>readGoogleAcademyResult(resultUri,{...expected,runtimeDigest:'incorrect'},read,archive),/RESULT_IDENTITY/);
  b.archiveUri=b.archiveUri.replace(id,'not-the-marker');assert.throws(()=>readGoogleAcademyResult(resultUri,expected,read,archive),/ARCHIVE_BINDING/);
+});
+
+import {academyPasswordConfig, academyPasswordClaimProof, createAcademyPasswordActors} from './cxorbia-i3-google-qa-execution.mjs';
+const authConfigBytes=fs.readFileSync(new URL('../../'+academyPasswordConfig,import.meta.url),'utf8');
+const authRequest={schemaVersion:'cxorbia.i3.d08-ui-qa-request.v1',authorization:'PAULA_AUTHORIZED_D08_DEV_ONLY',executionMode:'UI_WITH_RECOVERY',production:false,hrIndependent:true,tenantId:'tya',projectId:'cinepolis',country:'GT'};
+function passwordExec(configBytes=authConfigBytes, jobName=academyJob){
+  return readGoogleQaExecution(env,jobName,source,tree,reader({...start,job:jobName,passwordConfigSha256:digest(configBytes)}));
+}
+test('independent HR observer requires the real registered native D08 execution, current pair and exact QA observer',()=>{
+  const observerGitBlob='e'.repeat(40),receiptBlob='f'.repeat(40);
+  const seal={sourceSha:source,receiptBlob,runId:id,mode:'CURRENT_SOURCE_SERVING'};
+  const hrAcceptance={mode:'MANUAL_FRESH_TWO_SHARED_PRESENTATIONS',sourceSha:source,pairedRunId:id,
+    maxManualReads:1,maxSharedChecks:2,observerPath:academyHrObserver,observerGitBlob};
+  const request={...authRequest,sourceSha:source,pairedRunId:id,pairedReceiptGitBlob:receiptBlob,hrAcceptance};
+  const exec=passwordExec(),read=(cmd,args)=>{
+    assert.equal(cmd,'git');
+    assert.deepEqual(args,args[0]==='rev-parse'?['rev-parse',control+':'+academyHrObserver]:['hash-object',academyHrObserver]);
+    return observerGitBlob+'\n';
+  };
+  assert.doesNotThrow(()=>verifyAcademyHrObservation(exec,request,seal,read));
+  assert.throws(()=>verifyAcademyHrObservation({...exec},request,seal,read),/NATIVE_AUTHORITY/);
+  for(const bad of [{sourceSha:'d'.repeat(40)},{pairedRunId:'wrong'},{maxManualReads:2},{maxSharedChecks:3},{mode:'OTHER'},{observerPath:'other'},{observerGitBlob:control}]){
+    assert.throws(()=>verifyAcademyHrObservation(exec,{...request,hrAcceptance:{...hrAcceptance,...bad}},seal,read),/SCOPE|BLOB/);
+  }
+  for(const bad of [{sourceSha:'d'.repeat(40)},{runId:'wrong'},{mode:'PREDECESSOR_RUNTIME_SERVING'},{receiptBlob:source}]){
+    assert.throws(()=>verifyAcademyHrObservation(exec,request,{...seal,...bad},read),/SCOPE/);
+  }
+  assert.throws(()=>verifyAcademyHrObservation(exec,request,seal,(_cmd,args)=>args[0]==='rev-parse'?observerGitBlob:tree),/BLOB/);
+});
+function configReader(bytes){
+  return (cmd,args)=>{assert.equal(cmd,'git');assert.deepEqual(args,['show',control+':'+academyPasswordConfig]);return bytes;};
+}
+test('native D08 password credentials belong only to the four exact generated UIDs and are erased after use',()=>{
+  const actors=createAcademyPasswordActors(passwordExec(),authRequest,configReader(authConfigBytes));
+  const prefix='qa_d08_'+generation+'_1_';
+  const creds=['admin','shopper','cliente','other'].map(label=>actors.forUid(prefix+label));
+  assert.equal(new Set(creds.map(c=>c.password)).size,4);
+  for (const [i,label] of ['admin','shopper','cliente','other'].entries()){
+    assert.equal(creds[i].email,prefix+label+'@cxorbia.invalid');
+    assert.match(creds[i].password,/^Qa!1[A-Za-z0-9_-]{43}$/);
+  }
+  for(const uid of ['admin','qa_d08_12345678_1_admin',prefix+'fifth'])
+    assert.throws(()=>actors.forUid(uid),/UNOWNED_UID/);
+  assert.equal(JSON.stringify(actors).includes('Qa!1'),false);
+  actors.clear();
+  assert.ok(creds.every(c=>c.password===''));assert.throws(()=>actors.forUid(prefix+'admin'));
+});
+test('native D08 rejects mutated config bytes, unlocked request, alternate deployment and spoofed native start',()=>{
+  const make=(ex,cfg,req=authRequest)=>createAcademyPasswordActors(ex,req,configReader(cfg));
+  assert.throws(()=>make({...passwordExec()},authConfigBytes),/NATIVE_AUTHORITY/);
+  assert.throws(()=>make(passwordExec(authConfigBytes,'i3-finance-focal-reproof'),authConfigBytes),/NATIVE_AUTHORITY/);
+  assert.throws(()=>make(passwordExec(),authConfigBytes+' '),/CONFIG_DIGEST/);
+  for(const [k,v] of [['labels',['admin']],['emailDomain','example.com'],['projectId','foreign'],['project','prod'],['production',true]]){
+    const bytes=JSON.stringify({...JSON.parse(authConfigBytes),[k]:v});
+    assert.throws(()=>make(passwordExec(bytes),bytes),/CONFIG_SCOPE/);
+  }
+  for(const [k,v] of [['executionMode','RECOVERY_ONLY'],['authorization','OTHER'],['projectId','other'],['country','HN'],['production',true],['hrIndependent',false]])
+    assert.throws(()=>make(passwordExec(),authConfigBytes,{...authRequest,[k]:v}),/REQUEST_SCOPE/);
+});
+test('claims are checked independently in every password session without persisting the token or JWT',async()=>{
+  const uid='qa_d08_'+generation+'_1_shopper',expectedClaims={role:'shopper',projectIds:['cinepolis'],qaPurpose:'D08',shopperId:uid};
+  const identity={uid,expectedClaims},page=(actual)=>({evaluate:async(fn,keys)=>{
+    assert.deepEqual(keys,Object.keys(expectedClaims));
+    const previous=globalThis.window;
+    try{
+      globalThis.window={firebase:{auth:()=>({currentUser:{uid:actual.uid,getIdTokenResult:async()=>({token:'private-jwt',signInProvider:actual.provider,claims:{...actual.claims,sub:actual.subject}})}})}};
+      return await fn(keys);
+    }finally{if(previous===undefined)delete globalThis.window;else globalThis.window=previous;}
+  }});
+  const good={uid,subject:uid,provider:'password',claims:expectedClaims};
+  const proof=await academyPasswordClaimProof(page(good),identity);
+  assert.deepEqual(Object.keys(proof).sort(),['claimsSha256','signInProvider','uid']);assert.match(proof.claimsSha256,/^[a-f0-9]{64}$/);
+  for(const bad of [{uid:'foreign'},{subject:'foreign'},{provider:'custom'},{claims:{...expectedClaims,role:'admin'}},{claims:{...expectedClaims,projectIds:['other']}}])
+    await assert.rejects(academyPasswordClaimProof(page({...good,...bad}),identity),/AUTH_FAILURE:D08_PASSWORD_SESSION_CLAIMS/);
+});
+
+test('each signed-in D08 browser uses its own Firebase password actor, with no custom token or IAM method',async()=>{
+  const actors=createAcademyPasswordActors(passwordExec(),authRequest,configReader(authConfigBytes));
+  const calls=[],methods={setPersistence:async mode=>calls.push(mode),signInWithEmailAndPassword:async(email,password)=>{
+    const uid=email.split('@')[0];
+    assert.equal(actors.forUid(uid).password,password);calls.push(email);
+  }};
+  const auth=Object.assign(()=>methods,{Auth:{Persistence:{LOCAL:'local'}}});
+  const fake={evaluate:async(fn,arg)=>{
+    const previous=globalThis.firebase;
+    try{globalThis.firebase={auth};await fn(arg);}
+    finally{if(previous===undefined)delete globalThis.firebase;else globalThis.firebase=previous;}
+  }};
+  const labels=['admin','shopper','cliente','other'];
+  for(const label of labels){
+    const uid='qa_d08_'+generation+'_1_'+label;
+    await actors.signIn(fake,uid);await actors.signIn(fake,uid);
+  }
+  assert.equal(calls.filter(x=>x==='local').length,8);
+  assert.equal(new Set(calls.filter(x=>x!=='local')).size,4);
+  await assert.rejects(actors.signIn(fake,'other'),/UNOWNED_UID/);actors.clear();
 });

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {readBoundedF3CellProof} from './cxorbia-i3-current-control-projection.mjs';
 import {hasTerminalAcceptance} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {execFileSync} from 'node:child_process';
 import {validateShockContinuity} from './cxorbia-i3-shock-continuity-guard.mjs';
@@ -58,6 +59,7 @@ if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_
 const moduleTruthPath=String(d.moduleTruthPath||'');
 if(!moduleTruthPath)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_POINTER_EMPTY');
 const mt=readJson(moduleTruthPath);
+const boundedF3=readBoundedF3CellProof({descriptor:d,pointer:p,matrix:mt,ledger:l},file=>fs.readFileSync(file));
 // A shallow checkout is an environment failure, not proof of release drift.
 for(const [label,sha] of Object.entries({SOURCE:d.currentC3PreterminalAudit?.sourceSha,CONTROL:d.currentC3PreterminalAudit?.controlHeadAtAudit})){
   if(/^[a-f0-9]{40}$/.test(String(sha||''))){
@@ -361,6 +363,7 @@ if(process.argv.includes('--current')){
     lastAutomation:pick(d.currentAutomationReceipt,['path','gitBlob','executionProvider','runId','runAttempt','outcome']),
     latestFunctionalResults:[...latestByKind.values()],
     incorporationQueue:p.currentResultIncorporationQueue||[],
+    boundedF3CellEvidence:boundedF3,
     academyRequest:d.currentD08UiQaRequest||null,
     completedTaskIds:p.nextPlannedBlock?.completedTaskIds||[],
     matchedDomains:modules.filter(x=>x.classification==='MATCH').map(x=>x.domain),

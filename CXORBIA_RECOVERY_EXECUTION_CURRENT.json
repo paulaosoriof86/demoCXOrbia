@@ -388,8 +388,8 @@
         "total": 21,
         "differentDenominator": true,
         "evidence": {
-          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V429.json",
-          "gitBlob": "01dde155618e19e022dc650f512062017e7e86af",
+          "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V430.json",
+          "gitBlob": "7776875df5b5c7fd187a6ae8f6e1bf0354c851fd",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -2745,8 +2745,8 @@
     "humanPass": false
   },
   "moduleTruthAuthority": {
-    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V429.json",
-    "gitBlob": "01dde155618e19e022dc650f512062017e7e86af"
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V430.json",
+    "gitBlob": "7776875df5b5c7fd187a6ae8f6e1bf0354c851fd"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4812,8 +4812,8 @@
   },
   "activeShockModuleTruth": {
     "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V429.json",
-    "matrixBlob": "01dde155618e19e022dc650f512062017e7e86af",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V430.json",
+    "matrixBlob": "7776875df5b5c7fd187a6ae8f6e1bf0354c851fd",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -6775,12 +6775,12 @@
   "currentCanonicalControl": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
-      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V429.json",
-      "gitBlob": "01dde155618e19e022dc650f512062017e7e86af"
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V430.json",
+      "gitBlob": "7776875df5b5c7fd187a6ae8f6e1bf0354c851fd"
     },
     "ledger": {
-      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V756_2026-11-26.json",
-      "gitBlob": "d4974aaf68cc51981a151ff56ed3937ba8b4b8ca"
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V757_2026-11-26.json",
+      "gitBlob": "c2ca831d0c2cc54d3f0418d367ba5cf39ea3d8b4"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7661,8 +7661,8 @@
     },
     "production": false
   },
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V756_2026-11-26.json",
-  "findingsLedgerExpectedGitBlob": "d4974aaf68cc51981a151ff56ed3937ba8b4b8ca",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V757_2026-11-26.json",
+  "findingsLedgerExpectedGitBlob": "c2ca831d0c2cc54d3f0418d367ba5cf39ea3d8b4",
   "nextFindingId": "VRM-380",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -8682,7 +8682,7 @@
     "sameArtifactAdminShopper": "PENDING",
     "production": false
   },
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V429.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V430.json",
   "vrm301DevHostingAdminReadback20261104": {
     "receiptPath": "docs/checkpoints/CXORBIA_I3_VRM301_DEV_HOSTING_RUN41801457655_ADMIN_READBACK_20261104.json",
     "receiptGitBlob": "b8138b76db5159956aa500fe30f2be0f99fc8fce",
@@ -11257,7 +11257,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "01dde155618e19e022dc650f512062017e7e86af",
+  "moduleTruthExpectedGitBlob": "7776875df5b5c7fd187a6ae8f6e1bf0354c851fd",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -21002,7 +21002,7 @@
     }
   },
   "activeBlockers": [
-    "F3_APPLICATION_ACK_REPLAY_CONFLICT_ECHO_CLEANUP",
+    "F3_UNCOVERED_FIELDS_ROLES_AND_EXTERNAL_EVENTS",
     "UNCOVERED_FUNCTIONAL_CONTRACT_CLAUSES",
     "CURRENT_SOURCE_C3_GATE20_GATE21",
     "E08_MAILBOX_CONFIGURATION_AND_EXTERNAL_ACK_UNPROVEN"
@@ -29251,5 +29251,25 @@
       "imageBuildId": "d980c8f4-c1ea-460b-8e27-0aacdf087e37",
       "digest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8"
     }
+  },
+  "currentF3BoundedCellEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_MAKE_WINDOW_AND_CLEANUP_20261126.json",
+    "gitBlob": "a9cdf665dd477a820727a882de630b0a5f856be1",
+    "sha256": "191cded9d6cfacffc9c550225a665a2e4e7c362d533f923e0b064d171616d524",
+    "typedResultKey": "GOOGLE_CLOUD_SHELL/1795704069979393",
+    "typedResultPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_F3_1795704378174692_TYPED_RESULT.json",
+    "typedResultBlob": "cd0c4409be8c2582dc45df26d7919f00ed0634cb",
+    "taskId": "B14",
+    "acceptanceBindingSha256": "2daa6002b4b1c49a7ff199b4d4c633440dfafb5ff5ff1282c1a0bf4d15adf486",
+    "sourceSha": "d727f3be67a4430f08216dbb37cccba790f934f5",
+    "sourceTree": "e8bf021e54e84cb52a925824ffc02527f5073164",
+    "runtimeRevision": "cxorbia-live-hr-dev-00393-p54",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/607182bc22875d48",
+    "nativeResultGeneration": "1795704378174692",
+    "scope": "GT escenario L2 synthetic original Excel fixture on the specified paired DEV source",
+    "terminalTaskPass": false,
+    "fullB14": false,
+    "fullF3": false,
+    "production": false
   }
 }

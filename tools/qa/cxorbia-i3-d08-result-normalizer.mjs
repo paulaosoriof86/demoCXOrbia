@@ -70,6 +70,12 @@ export function normalizeD08Result({ resultText, transport, request, baseContrac
   need(transport.jobName === 'i3-run2382-academy-b7-isolated-dev-qa' && transport.jobConclusion === 'success', 'PRODUCER_JOB');
   need(transport.resultRef && (!transport.resultSha256 || transport.resultSha256 === rawHash), 'RESULT_HASH');
   need(request?.schemaVersion === 'cxorbia.i3.d08-ui-qa-request.v1' && request.authorization === 'PAULA_AUTHORIZED_D08_DEV_ONLY' && request.production === false && request.hrIndependent === true, 'REQUEST_AUTHORITY');
+  const password=raw.authentication==='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY';
+  if(password || transport.passwordConfigSha256 || raw.externalExecution?.passwordConfigSha256){
+    need(password && google && raw.ordinaryPasswordAuthenticationProven===false &&
+      HASH.test(transport.passwordConfigSha256||'') && raw.externalExecution.passwordConfigSha256===transport.passwordConfigSha256,
+      'PASSWORD_TRANSPORT');
+  }
   const identityKeys = ['sourceSha', 'sourceTree', 'runtimeRevision', 'runtimeDigest', 'hostingVersion'];
   need(SHA.test(raw.sourceSha) && SHA.test(raw.sourceTree) && identityKeys.every(k => raw[k] && raw[k] === request[k]), 'REQUEST_IDENTITY');
   need(raw.tenantId && raw.projectId && raw.tenantId === request.tenantId && raw.projectId === request.projectId, 'REQUEST_SCOPE');
@@ -113,6 +119,11 @@ export function normalizeD08Result({ resultText, transport, request, baseContrac
     const s = one(raw.sessionDiagnostics, x => x.label === label, 'SESSION_' + label), a = s.observed;
     need(s.stage === 'READY' && s.initialStorageEmpty === true && s.role === actor.role && a?.authenticated === true && a.role === actor.role &&
       a.namespace === actor.namespace && a.tenantId === raw.tenantId && a.projectId === raw.projectId && a.boundaryActorId, 'AUTH_' + label);
+    if(password){
+      need(actor.authIdentity.email===actor.uid+'@cxorbia.invalid' && s.passwordProof?.uid===actor.uid &&
+        s.passwordProof.signInProvider==='password' && s.passwordProof.claimsSha256===hash(actor.expectedClaims),
+        'PASSWORD_SESSION_' + label);
+    }
     if (actor.role === 'shopper') need(a.shopperReady === true && a.shopperCountry === String(request.country).trim().toUpperCase() && a.ownVisits === 0, 'SHOPPER_AUTH_' + label);
     return s;
   }
