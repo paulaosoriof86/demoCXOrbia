@@ -836,6 +836,15 @@
       "nativeStatus": "FAILURE",
       "hrRevision": null,
       "production": false
+    },
+    "strictHrMakeCreditWindow": {
+      "pairedExecution": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+      "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_MAKE_CREDIT_WINDOW_20261126.json",
+      "gitBlob": "bb2afa145eb4fd04b665184b76d7bcf64d60eaa4",
+      "sha256": "bbb9871d0c0ae16f49d91515a76ecc8c93812d943bf6cd613e99932fea85798a",
+      "readerCreditsObservedInWindow": 222,
+      "writerExecutionsInWindow": 0,
+      "f3SeparateCredits": 206
     }
   },
   "lastChromeConnection": {

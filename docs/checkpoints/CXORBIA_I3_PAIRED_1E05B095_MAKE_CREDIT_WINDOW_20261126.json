@@ -1,0 +1,863 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-dev.make-window-cost.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "scope": "Observed Make credits and scoped operational reads in the failed paired DEV execution window.",
+  "google": {
+    "project": "cxorbia-backend-dev",
+    "id": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+    "status": "FAILURE",
+    "startedAt": "2026-11-26T14:58:40.002770844Z",
+    "finishedAt": "2026-11-26T15:12:25.879443Z",
+    "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+    "stepId": "vrm154-156-dev-materialization"
+  },
+  "readback": {
+    "organizationId": 4090072,
+    "teamId": 1975919,
+    "zone": "eu2.make.com",
+    "executionSource": "scenario_execution_list + scenario_execution_get",
+    "observedAt": "2026-11-26T15:31:49.764Z",
+    "organizationSource": "organization_get.unusedCenticredits",
+    "inventory": "The first and last 25 names of the team directory overlap at 17 IDs and identify 33 distinct scenarios. All 33 histories were read within the UTC window.",
+    "scenarioCounts": [
+      {
+        "scenarioId": 5510559,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5828312,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5830276,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5834176,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5837393,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5843689,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 5844641,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 7213974,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8029478,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8052232,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8062238,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8073619,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8146654,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8301039,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8767963,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 8769925,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 9281674,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 9283887,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 9377547,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10195631,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10195759,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10195867,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10196061,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10196136,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10196338,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10198707,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10198752,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10199316,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10199340,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10200465,
+        "executions": 74,
+        "credits": 222
+      },
+      {
+        "scenarioId": 10221181,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10221359,
+        "executions": 0,
+        "credits": 0
+      },
+      {
+        "scenarioId": 10228826,
+        "executions": 0,
+        "credits": 0
+      }
+    ],
+    "readerPages": [
+      {
+        "rows": 25,
+        "first": "2026-11-26T15:03:06.469Z",
+        "last": "2026-11-26T15:05:10.712Z",
+        "hasMore": true
+      },
+      {
+        "rows": 9,
+        "first": "2026-11-26T15:02:36.755Z",
+        "last": "2026-11-26T15:03:06.215Z",
+        "hasMore": false
+      },
+      {
+        "rows": 25,
+        "first": "2026-11-26T15:06:22.622Z",
+        "last": "2026-11-26T15:12:07.633Z",
+        "hasMore": true
+      },
+      {
+        "rows": 15,
+        "first": "2026-11-26T15:05:36.298Z",
+        "last": "2026-11-26T15:06:22.383Z",
+        "hasMore": false
+      }
+    ],
+    "readerDetailsRead": 74,
+    "readerDetailsUnattributed": 0
+  },
+  "cost": {
+    "unit": "Make credit",
+    "scope": "All listed runs started during this window. Google Cloud charges are outside this measurement.",
+    "runs": 74,
+    "observedTotal": 222,
+    "readerScenario": 10200465,
+    "physicalWriteScenarioExecutions": 0,
+    "predecessorF3CostSeparate": 206,
+    "previousBalance": {
+      "creditAmount": 795,
+      "at": "2026-11-26T14:49:41.451Z",
+      "source": "docs/checkpoints/CXORBIA_I3_F3_1795704069979393_BOUNDED_MAKE_WINDOW_AND_CLEANUP_20261126.json"
+    },
+    "latestBalance": {
+      "creditAmount": 573,
+      "at": "2026-11-26T15:26:49.858Z",
+      "unusedCenticredits": "57300",
+      "autoPurchaseActivated": false
+    },
+    "balanceDecrease": 222,
+    "differenceFromSum": 0
+  },
+  "bindings": [
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "GT",
+      "period": "cinepolis-2026-10",
+      "operation": "read",
+      "bindingFingerprint": "1e1057e06108e0cbe981826c9e4f68229c171a656e02a39b4f6ddfda3b80d106",
+      "executions": 18,
+      "credits": 54
+    },
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "GT",
+      "period": "cinepolis-2026-11",
+      "operation": "inventory",
+      "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+      "executions": 1,
+      "credits": 3
+    },
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "GT",
+      "period": "cinepolis-2026-11",
+      "operation": "read",
+      "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+      "executions": 18,
+      "credits": 54
+    },
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "HN",
+      "period": "cinepolis-2026-10",
+      "operation": "read",
+      "bindingFingerprint": "c922ad0869d85f70ac84d1832f97cbf56a092e529757d1595c43b42592a937d9",
+      "executions": 18,
+      "credits": 54
+    },
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "HN",
+      "period": "cinepolis-2026-11",
+      "operation": "inventory",
+      "bindingFingerprint": "55ac434389337a2575bdc5e8bfb54aaaa9081353799717033f15ba71ba400b09",
+      "executions": 1,
+      "credits": 3
+    },
+    {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "country": "HN",
+      "period": "cinepolis-2026-11",
+      "operation": "read",
+      "bindingFingerprint": "55ac434389337a2575bdc5e8bfb54aaaa9081353799717033f15ba71ba400b09",
+      "executions": 18,
+      "credits": 54
+    }
+  ],
+  "mappingEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_GT_NOV_HEADER_DRIFT_20261126.json",
+    "sha256": "08a5fdeb0fac8c9a41e96f534af9f08ae0b928bb5630168c01938e6d6e5a30c7",
+    "matchingExecutionIds": [
+      {
+        "executionId": "e3812ce8275648ce802333c4a7d236aa",
+        "startedAt": "2026-11-26T15:04:47.104Z",
+        "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+        "logAt": "2026-11-26T15:04:53.953642Z"
+      },
+      {
+        "executionId": "3380d623fc69466cba6b040cbb308a7d",
+        "startedAt": "2026-11-26T15:04:47.099Z",
+        "bindingFingerprint": "c922ad0869d85f70ac84d1832f97cbf56a092e529757d1595c43b42592a937d9",
+        "logAt": "2026-11-26T15:04:53.953642Z"
+      },
+      {
+        "executionId": "6223c6337e6a456ab3f9671dff87133b",
+        "startedAt": "2026-11-26T15:04:47.096Z",
+        "bindingFingerprint": "1e1057e06108e0cbe981826c9e4f68229c171a656e02a39b4f6ddfda3b80d106",
+        "logAt": "2026-11-26T15:04:53.953642Z"
+      },
+      {
+        "executionId": "851805789b734f63b128a8c84c2831a5",
+        "startedAt": "2026-11-26T15:04:47.054Z",
+        "bindingFingerprint": "55ac434389337a2575bdc5e8bfb54aaaa9081353799717033f15ba71ba400b09",
+        "logAt": "2026-11-26T15:04:53.953642Z"
+      }
+    ]
+  },
+  "attribution": {
+    "basis": "Execution start time, scenario metering, scope returned by the reader and organization balance.",
+    "exclusiveGoogleJobCostProven": false,
+    "reason": "The reader outputs contain tenant/project/period/binding and no originating Google job identifier. Concurrent callers of the same binding cannot be separated by this receipt.",
+    "rowsIncluded": false
+  },
+  "runs": [
+    {
+      "id": "6756bb36a52343ca841ce2a5000a5b3c",
+      "startedAt": "2026-11-26T15:02:36.755Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 1
+    },
+    {
+      "id": "26558ce1ddad41809963d0e2e5363064",
+      "startedAt": "2026-11-26T15:02:44.652Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 4
+    },
+    {
+      "id": "840ce925034c4e948016e5ad4a709b35",
+      "startedAt": "2026-11-26T15:02:53.436Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "96b21c10a2ce4e7e81837ec20d581643",
+      "startedAt": "2026-11-26T15:02:53.442Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "630a8dd51bea4f258d6bd03e31cf26cb",
+      "startedAt": "2026-11-26T15:02:53.454Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "f4eea4a2d5764193a292b0b393b94b16",
+      "startedAt": "2026-11-26T15:02:53.475Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "7e6c1a69ee7b435480d0f7299f068337",
+      "startedAt": "2026-11-26T15:03:06.200Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "635c613cb5064e538959066756068955",
+      "startedAt": "2026-11-26T15:03:06.205Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "7a357c4e18ad4b8486fedac42b29f4f6",
+      "startedAt": "2026-11-26T15:03:06.215Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "485030ed6db545d88416a3308bb6273a",
+      "startedAt": "2026-11-26T15:03:06.469Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "c4058b5932dc4f2b811971c47c0d8b9e",
+      "startedAt": "2026-11-26T15:03:16.543Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "dc278aee0a8e44d1867b2c89e692b506",
+      "startedAt": "2026-11-26T15:03:16.554Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "01043ea1632646a7923e6841f62560a0",
+      "startedAt": "2026-11-26T15:03:16.563Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "1fa9d09375014bbe9fd86eda2f0779b1",
+      "startedAt": "2026-11-26T15:03:16.815Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "002c879f28ea4b5589d08d1ae1cf8eb4",
+      "startedAt": "2026-11-26T15:03:25.839Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "e69d189a744a46bd94624275cc4946d1",
+      "startedAt": "2026-11-26T15:03:25.843Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "a8c98332f3ec4325bf008ab6f3afed75",
+      "startedAt": "2026-11-26T15:03:25.843Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "9f5ecc4851ed4ad4bc0bb0b2c96c63a6",
+      "startedAt": "2026-11-26T15:03:26.346Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "15eb97ead237405d9dccba920d576348",
+      "startedAt": "2026-11-26T15:03:37.702Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "e4b9a6ff3c694404be22f43913ff1cd3",
+      "startedAt": "2026-11-26T15:03:37.756Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "c3d8c046713a4540bad0146fdbe50ea8",
+      "startedAt": "2026-11-26T15:03:37.757Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "71680510944145c8a7e74b17a580ee4e",
+      "startedAt": "2026-11-26T15:03:37.927Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "851805789b734f63b128a8c84c2831a5",
+      "startedAt": "2026-11-26T15:04:47.054Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "6223c6337e6a456ab3f9671dff87133b",
+      "startedAt": "2026-11-26T15:04:47.096Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "3380d623fc69466cba6b040cbb308a7d",
+      "startedAt": "2026-11-26T15:04:47.099Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "e3812ce8275648ce802333c4a7d236aa",
+      "startedAt": "2026-11-26T15:04:47.104Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "f29b5e761eb94c91aabe6756fa2d2b6e",
+      "startedAt": "2026-11-26T15:05:00.490Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "111492397217457786bb08e9c69a70a2",
+      "startedAt": "2026-11-26T15:05:00.511Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "ea635cbceb2e45c1b2113aaae80b71fb",
+      "startedAt": "2026-11-26T15:05:00.744Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "a210efbdb4b54737986a1e6cb5965390",
+      "startedAt": "2026-11-26T15:05:00.831Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "b5d87bc08d7543209d4554593d0f3c48",
+      "startedAt": "2026-11-26T15:05:10.481Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "992e24b86fcf433697847a78a238f4ff",
+      "startedAt": "2026-11-26T15:05:10.494Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "b68c20a10bd243319cd84d543779843c",
+      "startedAt": "2026-11-26T15:05:10.506Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "a976b32ac644456ca148f802e59917d6",
+      "startedAt": "2026-11-26T15:05:10.712Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "0a1b0f19fd0a401595945fea8bd26bfe",
+      "startedAt": "2026-11-26T15:05:36.298Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "550509b134294c2cb820b978743f4186",
+      "startedAt": "2026-11-26T15:05:36.312Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "45c722c201294c2082622d25eb6ae682",
+      "startedAt": "2026-11-26T15:05:36.331Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "e63f0e7fda54491b9d01b42f075e1531",
+      "startedAt": "2026-11-26T15:05:36.546Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "6496ab245d6244d1830dfd1be225a0a8",
+      "startedAt": "2026-11-26T15:05:45.646Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "2cd04dff32a44302ae1dc01287147df6",
+      "startedAt": "2026-11-26T15:05:45.663Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "cb86503a37934d008e2aad4af0662543",
+      "startedAt": "2026-11-26T15:05:45.675Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "7730c789b56d44ba8dc6585c5cbee92d",
+      "startedAt": "2026-11-26T15:05:45.854Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "d51b204a4a4748358127d785e49c8fb1",
+      "startedAt": "2026-11-26T15:06:13.268Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "7a59a41923bf4e6486d8ed06a37bc006",
+      "startedAt": "2026-11-26T15:06:13.275Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "6a2a621ef24e4aa38f528733c1fec0bc",
+      "startedAt": "2026-11-26T15:06:13.288Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "1a64afae71144223bf3f0948abe772c3",
+      "startedAt": "2026-11-26T15:06:13.557Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "65a70dcc12d74aa1ad743f19e9ec15ea",
+      "startedAt": "2026-11-26T15:06:22.353Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "4862310752044af49e4e8f0868fe0e90",
+      "startedAt": "2026-11-26T15:06:22.377Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "236b5497d62643aca79e7c3555e43ba9",
+      "startedAt": "2026-11-26T15:06:22.383Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "150c259828bd4f0f97312066792055bf",
+      "startedAt": "2026-11-26T15:06:22.622Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "12f1d78f72574b51b02ac414aba497fa",
+      "startedAt": "2026-11-26T15:07:05.412Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "b22640fd55914ff3840bfe72c5abd942",
+      "startedAt": "2026-11-26T15:07:05.413Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "d52d84d3697440d09db0247bfcc95181",
+      "startedAt": "2026-11-26T15:07:05.428Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "8b8a58e3c6ba42ba8cc9b377d6851b27",
+      "startedAt": "2026-11-26T15:07:05.643Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "50cf70665586463c852d8267729406fa",
+      "startedAt": "2026-11-26T15:07:14.760Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "9815ff04fe544266ae078bb75754091d",
+      "startedAt": "2026-11-26T15:07:14.773Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "b334e71024c942a197fc58f7aa2a4eb3",
+      "startedAt": "2026-11-26T15:07:14.963Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "26df16c9cd3046b1b6f703e5703d321b",
+      "startedAt": "2026-11-26T15:07:15.349Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "72a841ef8f49461291058f7e1afec607",
+      "startedAt": "2026-11-26T15:09:28.075Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "bec2ff317d1d47e3bb0ecc8d40890648",
+      "startedAt": "2026-11-26T15:09:28.089Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "85194d0b84cd45149bddb152cf3713d3",
+      "startedAt": "2026-11-26T15:09:28.090Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "2d8d910304d64b829db476ed3e90dab5",
+      "startedAt": "2026-11-26T15:09:28.331Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "8bdcf57f6d194a9793f6c5dd87b0638d",
+      "startedAt": "2026-11-26T15:09:37.928Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "4adaf1b643544f18ade61afb6530c9f7",
+      "startedAt": "2026-11-26T15:09:37.936Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "8e0f172d29d9458ab4431a9462e7dadf",
+      "startedAt": "2026-11-26T15:09:37.953Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "2468266b6f3b49c0a9a2dd6d9c8cf356",
+      "startedAt": "2026-11-26T15:09:38.213Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "e442f8fcf87d4f799701d61f26bcffb5",
+      "startedAt": "2026-11-26T15:11:58.810Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "2dc857677a4d4755903cc4d70ec22fac",
+      "startedAt": "2026-11-26T15:11:58.828Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "51e0495243d1414f9ffae7e9691a0e1b",
+      "startedAt": "2026-11-26T15:11:58.853Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "ce1dc06dff6541b696ee1f19c1e433bc",
+      "startedAt": "2026-11-26T15:11:59.039Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    },
+    {
+      "id": "a92a8146281546158c17a9e943a8468f",
+      "startedAt": "2026-11-26T15:12:07.371Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 2
+    },
+    {
+      "id": "8d659bf8e38b4d379b03c4bc778db119",
+      "startedAt": "2026-11-26T15:12:07.378Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 3
+    },
+    {
+      "id": "3043c05c2b10418b845fa5301591f79d",
+      "startedAt": "2026-11-26T15:12:07.404Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 0
+    },
+    {
+      "id": "25c855237b5a469292a494fd98dc77e4",
+      "startedAt": "2026-11-26T15:12:07.633Z",
+      "status": "success",
+      "credits": 3,
+      "binding": 5
+    }
+  ],
+  "auditScenarioLaunches": 0,
+  "auditMutations": 0,
+  "newFunctionalClauses": 0,
+  "production": "DO_NOT_TOUCH"
+}
