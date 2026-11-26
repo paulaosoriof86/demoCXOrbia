@@ -5,6 +5,11 @@ import {readGoogleFinanceResult,readGoogleF3Result} from './cxorbia-i3-google-qa
 import {publicA08ProvenanceDiagnostic,A08_PROVENANCE_TARGETS,A08_GT_CURRENT_PROVIDER_MODE,validA08GtPasswordScope,publicA08GtPasswordProof} from './cxorbia-i3-a08-exact-password-proof.mjs';
 import {publicA08ClauseRefs} from './cxorbia-i3-scoped-clause-projection.mjs';
 
+const boundedMode='BOUNDED_GT_ESCENARIO_L2';
+const boundedDecision='PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING';
+const boundedCases=['explicit_reconcile_initial','client_response_body_loss_same_key_replay_journal_unchanged',
+  'GT_escenario_write','same_key_changed_payload_rejected','stale_base_rejected',
+  'GT_escenario_restore','old_committed_receipt_replay_does_not_rollback','explicit_reconcile_restored'];
 const HASH=/^[a-f0-9]{64}$/, SHA=/^[a-f0-9]{40}$/;
 const hash=text=>crypto.createHash('sha256').update(text).digest('hex');
 const need=(ok,code)=>{if(!ok)throw Error('MAPPING_FAILURE:TYPED_SUMMARY_'+code);};
@@ -35,7 +40,7 @@ export const TYPED_SUMMARY_SCHEMAS=Object.freeze({
   },
   'cxorbia.i3.f3.qa-endpoint.v1':{
     kind:'F3_ENDPOINT',job:'i3-b14-qa-provider-proof',artifactPrefix:'cxorbia-i3-b14-qa-provider',entry:'receipt.json',requiresRun:true,
-    decisions:['PENDING','HOLD_F3_ISOLATED_ENDPOINT','HOLD_F3_QA_CLEANUP_UNVERIFIED','PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING']
+    decisions:['PENDING','HOLD_F3_ISOLATED_ENDPOINT','HOLD_F3_QA_CLEANUP_UNVERIFIED','PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING',boundedDecision]
   },
   'cxorbia.i3.a08.password3-api-storage.residual.readonly.v1':{
     kind:'A08_RESIDUAL',job:'i3-keeper-role-e2e-readonly',artifactPrefix:'cxorbia-i3-two-keepers-role-e2e-readonly',entry:'result.json',requiresRun:false,
@@ -175,6 +180,75 @@ function f3ClientResponseLoss(value,transport){
   }
   return out;
 }
+function f3BoundedTarget(raw,fixture,executionScope){
+  const scope=raw.boundedScope,gt=fixture?.countries?.GT;
+  need(executionScope?.mode===boundedMode&&executionScope.executionBudgetCredits===250&&executionScope.restorationReserveCredits===100&&executionScope.allocationCredits===350&&raw.executionMode===boundedMode&&gt&&scope&&
+    fixture.tenantId==='tya'&&fixture.projectId==='f3-qa-20261124'&&fixture.periodId==='f3-qa-20261124-2026-11'&&
+    scope.countryCode==='GT'&&scope.fieldKey==='escenario'&&scope.cell==='L2'&&scope.expectedPhysicalPatches===2&&
+    ['visitId','worksheetName','worksheetFingerprint','hrRowId'].every(k=>scope[k]===gt[k]&&gt[k])&&
+    scope.worksheetName==='CXR_B14_QA_GT_20261119'&&scope.hrRowId===scope.worksheetName+'!2'&&gt.headerValues?.[11]==='Tipo de Compra'&&
+    !raw.shopperRoleProof,'F3_BOUNDED_CELL');
+  return {tenantId:fixture.tenantId,projectId:fixture.projectId,periodId:fixture.periodId,countryCode:'GT',
+    fieldKey:'escenario',cell:'L2',visitId:gt.visitId,hrRowId:gt.hrRowId,worksheetName:gt.worksheetName,worksheetFingerprint:gt.worksheetFingerprint};
+}
+export function validateF3BoundedSuccess(raw,transport,fixture,executionScope){
+  const target=f3BoundedTarget(raw,fixture,executionScope),owner='f3-qa-'+transport.runId+'-'+transport.runAttempt;
+  need(raw.decision===boundedDecision&&raw.state==='HOLD'&&raw.qaOwner===owner&&raw.syntheticOnly===true&&
+    raw.productionWrites===0&&raw.operationalHrWrites===0&&raw.b14Closed===false&&raw.newModuleMatches===0&&
+    raw.authentication==='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY'&&raw.ordinaryPasswordAuthenticationProven===false&&
+    raw.applicationAckProven===true&&raw.remoteValuesRestored===true&&raw.cleanup?.firestore===true&&raw.cleanup.auth===true&&
+    raw.cleanup.remoteMake===false&&!raw.recoveryRequired&&!(raw.cleanupErrors||[]).length,'F3_BOUNDED_SAFETY');
+  const stages=raw.cases?.map(c=>c.name)||[];
+  need(stages.length===boundedCases.length&&boundedCases.every(name=>stages.filter(x=>x===name).length===1),'F3_BOUNDED_CASES');
+  const scopeKeys=['countryCode','fieldKey','visitId','hrRowId','tenantId','projectId','periodId'];
+  const values=['CXOrbia QA Escenario A','CXOrbia QA Escenario B','CXOrbia QA Escenario A'];
+  const rows=raw.events,caseFor=name=>raw.cases.find(c=>c.name===name);
+  need(Array.isArray(rows)&&rows.length===2,'F3_BOUNDED_EVENTS');
+  const events=rows.map((r,i)=>{
+    const event=r.event||{},delivery=r.delivery||{},c=caseFor(i?'GT_escenario_restore':'GT_escenario_write');
+    const headKey=hash(JSON.stringify([target.tenantId,target.projectId,target.periodId,target.countryCode,target.visitId,target.fieldKey]));
+    const key=owner+'-field-'+(i+1),eventId='hfe-'+hash(JSON.stringify([headKey,key]));
+    need(r.eventId===eventId&&event.eventId===eventId&&r.remoteEventKey==='event:'+eventId&&r.remoteHeadKey===headKey&&
+      event.idempotencyKey===key&&scopeKeys.every(k=>event[k]===target[k])&&event.actorUid===owner+'-admin'&&event.origin==='platform'&&
+      event.before===values[i]&&event.after===values[i+1]&&r.countryCode===target.countryCode&&r.fieldKey===target.fieldKey&&
+      f3Hash(r.eventDigest)&&event.eventDigest===r.eventDigest&&delivery.eventId===eventId&&delivery.eventDigest===r.eventDigest&&
+      delivery.status==='committed'&&delivery.providerAck===true&&delivery.writeAckVerified===true&&delivery.readbackVerified===true&&
+      f3Hash(r.providerExecutionId,/^[a-f0-9]{32}$/)&&delivery.providerExecutionId===r.providerExecutionId&&
+      f3Hash(r.sourceRevisionBefore)&&f3Hash(r.sourceRevisionAfter)&&
+      c.eventId===eventId&&c.ackVerified===true&&c.independentSourceReadback===true&&c.nonRecoveryAttempts===1,'F3_BOUNDED_EVENT_PROOF');
+    return {action:i?'RESTORE':'CHANGE',eventId,eventDigest:r.eventDigest,providerExecutionId:r.providerExecutionId,
+      sourceRevisionBefore:r.sourceRevisionBefore,sourceRevisionAfter:r.sourceRevisionAfter,applicationAck:true,independentReadback:true};
+  });
+  need(events[0].providerExecutionId!==events[1].providerExecutionId&&events[0].eventDigest!==events[1].eventDigest,'F3_BOUNDED_DISTINCT_WRITES');
+  const loss=f3ClientResponseLoss(raw.clientResponseLoss,transport),rest=raw.remoteRestoreReadback,original=raw.remoteBaseline;
+  need(loss?.decision==='PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING'&&
+    loss.eventId===events[0].eventId&&loss.eventDigest===events[0].eventDigest&&loss.providerExecutionId===events[0].providerExecutionId&&
+    loss.independentSourceRevisionBeforeReplay===events[0].sourceRevisionAfter,'F3_BOUNDED_REPLAY');
+  need(original?.rows?.length===2&&original.rows.some(r=>r.countryCode==='GT'&&r.visitId===target.visitId&&r.hrRowId===target.hrRowId&&
+    r.periodId===target.periodId&&r.worksheetFingerprint===target.worksheetFingerprint&&r.values?.escenario===values[0])&&
+    f3Hash(original.revision)&&rest?.decision==='PASS_F3_EXACT_REMOTE_BASELINE_READBACK'&&f3Hash(rest.sourceRevision)&&
+    rest.visits===2&&rest.fields===8&&f3Time(rest.readAt),'F3_BOUNDED_RESTORATION');
+  const calls=raw.remoteCommandAttempts||[],originalKey=owner+'-field-1';
+  const sameKeyConflict=calls.some(a=>a.command?.idempotencyKey===originalKey&&a.command.payload?.patch?.escenario!==values[1]&&
+    a.response?.ok===false&&a.response.code==='OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
+  const stale=calls.some(a=>a.command?.idempotencyKey===owner+'-stale-base'&&a.response?.ok===false&&
+    ['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(a.response.code));
+  const last=calls.at(-1);
+  need(sameKeyConflict&&stale&&last?.command?.idempotencyKey===originalKey&&last.response?.idempotentReplay===true&&
+    last.response.hrFieldEventIds?.length===1&&last.response.hrFieldEventIds[0]===events[0].eventId&&
+    caseFor('old_committed_receipt_replay_does_not_rollback').currentEventId===events[1].eventId,'F3_BOUNDED_NEGATIVE_REPLAY');
+  const pre=raw.makePreflight;
+  need(pre?.controlSha===transport.controlSha&&pre.organizationId===4090072&&pre.scenarioId===10199316&&pre.dataStoreId===213856&&
+    pre.writerExecutionInProgress===false&&pre.keys?.length===1&&pre.keys[0]==='757bfe4bd75b'&&pre.availableCredits>=350&&
+    f3Time(pre.checkedAt)&&f3Hash(pre.sha256)&&raw.preCleanupSeal?.uri&&f3Hash(raw.preCleanupSeal.sha256),'F3_BOUNDED_PRECONDITIONS');
+  return {target,events,baselineRevision:original.revision,restoredRevision:rest.sourceRevision,restoredFieldValueCount:rest.fields,
+    observedCases:boundedCases,expectedLegitimatePatches:2,observedPhysicalPatches:null,replayPhysicalPatches:null,creditConsumption:null,
+    completeIndependentMakeWindowRequired:true,remoteMakeCleanupPending:true,capacityReadAt:pre.checkedAt,creditsBefore:pre.availableCredits,
+    preCleanupSeal:{uri:raw.preCleanupSeal.uri,sha256:raw.preCleanupSeal.sha256},
+    unproven:['HN','other_fields','shopper_UI_and_availability','provider_response_loss','concurrent_external_edit','external_origin_echo',
+      'historical_period','private_notes','ordinary_credentials_and_missing_shopper_upsert']};
+}
+
 function f3ShopperRole(value){
   if(value===undefined)return null;
   need(value?.schemaVersion==='cxorbia.f3.scoped-shopper-role-qa.v1','F3_SHOPPER_ROLE_SCHEMA');
@@ -275,6 +349,19 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
       clientResponseLoss:f3ClientResponseLoss(raw.clientResponseLoss,t),shopperRoleProof:f3ShopperRole(raw.shopperRoleProof),
       unproven:['application_client_response_loss_live_fault_injection','application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture'].filter(x=>raw.unproven?.includes(x))
     };
+    if(expectedIdentity.f3ExecutionScope||raw.executionMode===boundedMode||raw.decision===boundedDecision){
+      need(google&&expectedIdentity.f3ExecutionScope?.mode===boundedMode&&raw.executionMode===boundedMode&&
+        raw.decision!=='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING'&&!raw.shopperRoleProof,'F3_BOUNDED_MODE_MISMATCH');
+      const target=f3BoundedTarget(raw,expectedIdentity.f3Fixture,expectedIdentity.f3ExecutionScope);
+      if(raw.decision===boundedDecision){
+        need(t.jobConclusion==='success'&&t.evidenceEntries?.length===1&&t.evidenceEntries[0]==='receipt.json','F3_BOUNDED_NATIVE_OUTCOME');
+        observations.boundedCell=validateF3BoundedSuccess(raw,t,expectedIdentity.f3Fixture,expectedIdentity.f3ExecutionScope);
+      }else{
+        observations.boundedCell={target,expectedLegitimatePatches:2,observedPhysicalPatches:null,creditConsumption:null,
+          observedCaseNames:(raw.cases||[]).map(c=>c.name).filter(n=>boundedCases.includes(n)),completeIndependentMakeWindowRequired:true};
+        observations.applicationAckProven=false;
+      }
+    }
   }else if(spec.kind==='A08_RESIDUAL'){
     need(raw.gate==='HOLD'&&raw.fullA08Certified===false&&raw.newDomainMatches===0,'A08_CREDIT_BOUNDARY');
     need(raw.safety?.production===false,'A08_DEV_SCOPE');

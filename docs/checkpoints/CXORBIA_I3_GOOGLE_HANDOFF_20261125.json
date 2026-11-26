@@ -670,6 +670,13 @@
       "scope": "Offline Chromium with simulated roles. No new authenticated Academia or E10 provider receipt. On-demand Excel provider and served watcher inspected read-only. Preserve Admin and Finance evidence.",
       "newDomainMatches": 0,
       "state": "HOLD"
+    },
+    "boundedF3Implementation": {
+      "path": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_QA_IMPLEMENTATION_20261125.json",
+      "sha256": "a434faf5c167627a26e7fce172cf1d144963eb720ba1a13bade871e19a68765b",
+      "mode": "BOUNDED_GT_ESCENARIO_L2",
+      "nativeExecutionStarted": false,
+      "production": false
     }
   },
   "lastChromeConnection": {
@@ -684,7 +691,7 @@
     "academy": "Use the current source-bound request docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_5670F782_REQUEST_20261125.json and capture the first protected context in the existing Chromium runner. Preserve the recorded Admin actions, prior exact cleanup, D06/B4 and bank/editor proof.",
     "deployment": "E10 is paired and verified in DEV. Reuse the published source and digest.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
-    "f3": "Apply the user correction in docs/checkpoints/CXORBIA_I3_WORK_ORDER_HR_DELTA_20261125.md. Do not buy credits or dispatch the historical full1184 F3 run. Prepare and verify the bounded same-runner single-cell mode, then execute its authenticated change/ACK/lost-response replay/restore/cleanup within a planned350-credit allocation using current capacity. Preserve scoped evidence and complete only uncovered clauses. Correct the reproduced cold durable-read/inventory coupling in its exact owner; centralize shared external refresh without weakening freshness, binding or write guards. Preserve one candidate and current DEV pair until the controlled successor is approved and served.",
+    "f3": "Read current Make capacity and only sentinel/empty writer window, bind the readback to the published QA commit. On its own native checkout run only the bounded job against DEV 5670f782. Audit the complete writer/reader window after native restoration and before deleting exactly owned Make keys. Keep E2E and I4 on HOLD.",
     "googleExecution": {
       "servedProducer": "123be4dd3294bdcad0fea7c158e3bd2f4294ed69",
       "financeTransportFilesFromValidatedControl": [

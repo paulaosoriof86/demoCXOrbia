@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.f3.bounded-qa-implementation.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlParent": "221a687e6ddc50922c611518952370a8f6053389",
+  "observedAt": "2026-11-26T02:52:34.270204+00:00",
+  "servedSource": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "pairedRun": "5670f782-19af-47aa-bdda-47cf94c689f2",
+  "changeScope": "QA_CONFIG_RUNNER_TRANSPORT_CONSUMER_ONLY",
+  "config": "docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json",
+  "configSha256": "9debcf79a1e9c2b0b8f4db3de512a5c57680290cae3869b0d6b9cb298749306a",
+  "mode": {
+    "mode": "BOUNDED_GT_ESCENARIO_L2",
+    "planPath": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+    "planSha256": "51af93760769751d5002611b2118542375fadd200a70d5ec1c84bc45ff83a38e",
+    "executionBudgetCredits": 250,
+    "restorationReserveCredits": 100,
+    "allocationCredits": 350
+  },
+  "changedSha256": {
+    "docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json": "9debcf79a1e9c2b0b8f4db3de512a5c57680290cae3869b0d6b9cb298749306a",
+    "tools/qa/cxorbia-i3-automatic-result-consumer.mjs": "70ce2b80c413eb76c07f67daf8bc3988cdd6ad8a2092ebcda0202591c2cf8221",
+    "tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs": "4f8d46482d57dbf71dda8984bbbe04a60322472bb1ea532c540fcf70cbb0f3f5",
+    "tools/qa/cxorbia-i3-f3-endpoint-runner.test.mjs": "389133bea61b50f35dc501b5a76c695464c90cac3461a299ac084595f509a7c3",
+    "tools/qa/cxorbia-i3-finance-google-transport.sh": "46354a6580ee38f462dd7cc063c503383d02fd87bb10c8309f2a1dca29f48497",
+    "tools/qa/cxorbia-i3-google-f3-consumer.test.mjs": "987e2f05b30bc70c9f81fa7aab63f43ceff46874cc0f087e7ff2aac415bb690a",
+    "tools/qa/cxorbia-i3-google-qa-execution.mjs": "c0903250bd40c458a8fb355b6fa29b5b1aeebbb85ee2d5409d5cfabfab1cda70",
+    "tools/qa/cxorbia-i3-typed-result-summary.mjs": "091086be79037b089124d2f06bf02ffd46d55f0a14d4e447c47e3aa95c8a00aa"
+  },
+  "tests": {
+    "command": "node --test tools/qa/cxorbia-i3-{f3-endpoint-runner,f3-cleanup-ownership,google-f3-consumer,google-qa-execution,typed-result-summary,automatic-result-consumer}.test.mjs",
+    "pass": 267,
+    "fail": 0,
+    "skip": 0,
+    "transcriptSha256": "e5c408ac5a718ec2c13e56e804e89076f87aec445687958cc87d10268027ebee"
+  },
+  "sourceBuilds": 0,
+  "nativeExecutionStarted": false,
+  "newProviderReceipt": null,
+  "production": false,
+  "actualPhysicalPatches": null,
+  "creditsAttributedToThisQARelease": 0,
+  "oldRecoveryReplayed": false,
+  "nextAction": "Read current Make capacity and only sentinel/empty writer window, bind the readback to the published QA commit. On its own native checkout run only the bounded job against DEV 5670f782. Audit the complete writer/reader window after native restoration and before deleting exactly owned Make keys. Keep E2E and I4 on HOLD."
+}

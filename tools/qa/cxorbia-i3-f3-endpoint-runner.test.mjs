@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {EventEmitter} from 'node:events';
 import {createServer,request as httpRequest} from 'node:http';
 import fs from 'node:fs';
-import {F3_QA,assertF3EndpointScope,f3FixtureDocuments,f3FieldCommand,assertF3RemoteAck,f3OwnedCleanupPath,f3ProbeWriterMcpMetadataOnly,f3RequireWriterMetadataBeforeFixtures,f3DropEndpointResponse,f3AssertLostResponseJournal,f3AssertLostResponseReplay,f3RequireRemoteRestoredBeforeCleanup} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
+import {F3_QA,F3_BOUNDED_MODE,resolveF3BoundedScope,assertF3BoundedChange,assertF3BoundedRestoreOwner,runF3BoundedSequence,assertF3EndpointScope,f3FixtureDocuments,f3FieldCommand,assertF3RemoteAck,f3OwnedCleanupPath,f3ProbeWriterMcpMetadataOnly,f3RequireWriterMetadataBeforeFixtures,f3DropEndpointResponse,f3AssertLostResponseJournal,f3AssertLostResponseReplay,f3RequireRemoteRestoredBeforeCleanup} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
 import {validateProjectPayload} from '../../backend/runtime/cxorbia-project-command-provider-v1.mjs';
 const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
 function fixture(){
@@ -118,6 +118,18 @@ function eventTransport({httpStatus=200,finish=true,error=false}={}){
   const requestImpl=(url,options)=>{calls.push({url,options});return request;};
   return {requestImpl,calls};
 }
+test('bounded restore admits a settled owned original and refuses foreign or unsettled delivery',()=>{
+  const valid=fixture();
+  assert.doesNotThrow(()=>assertF3BoundedRestoreOwner(valid));
+  for(const change of [
+    h=>h.proof.head.data.pendingEventId='pending',h=>h.proof.head.data.leaseOwner='other',
+    h=>h.proof.event.data.actorUid+='-other',h=>h.proof.delivery.data.providerAck=false,
+    h=>h.proof.delivery.data.eventDigest='f'.repeat(64),h=>h.proof.visit.data.hrManaged.escenario='other'
+  ]){
+    const h=fixture();change(h);
+    assert.throws(()=>assertF3BoundedRestoreOwner(h),/RESTORE_OWNER_UNSETTLED/);
+  }
+});
 test('real helper closes response before consuming body; headers/status are not semantic ACK',async()=>{
   const h=fixture(),wire=eventTransport(),proof=await f3DropEndpointResponse({...h,token:'LOCAL_DUMMY_NOT_A_SECRET',requestImpl:wire.requestImpl});
   assert.equal(proof.bodyBytesConsumed,0);assert.equal(proof.semanticAckObserved,false);assert.equal(proof.clientConnectionDestroyed,true);
@@ -211,3 +223,99 @@ test('loopback only: client loses first real HTTP body, independent committed st
 });
 
 }
+
+const configPath='docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json';
+const jsonFile=p=>JSON.parse(fs.readFileSync(p));
+test('bounded admission binds the published single synthetic cell and 250+100; full historical mode stays distinct',()=>{
+  const config=jsonFile(configPath),manifest=jsonFile(config.remoteManifestPath);
+  const scope=resolveF3BoundedScope(config,manifest);
+  assert.equal(scope.mode,F3_BOUNDED_MODE);assert.equal(scope.scope.cell,'L2');assert.equal(scope.scope.countryCode,'GT');
+  assert.equal(scope.scope.fieldKey,'escenario');assert.equal(scope.scope.expectedPhysicalPatches,2);
+  assert.deepEqual(scope.budget,{executionBudgetCredits:250,restorationReserveCredits:100,allocationCredits:350});
+  delete config.executionScope;assert.equal(resolveF3BoundedScope(config,manifest),null);
+});
+for(const [label,mutate] of [
+  ['unknown mode',c=>c.executionScope.mode='FULL'],['missing mode',c=>delete c.executionScope.mode],
+  ['unpinned plan',c=>c.executionScope.planSha256='a'.repeat(64)],['no restoration reserve',c=>c.executionScope.restorationReserveCredits=0],
+  ['unrelated worksheet',(_c,m)=>m.countries.GT.worksheetName=m.countries.HN.worksheetName],
+  ['other visit',(_c,m)=>m.countries.GT.visitId=m.countries.HN.visitId],['other column',(_c,m)=>m.countries.GT.headerValues[11]='wrong']
+])test('bounded admission rejects '+label+' before opening a provider',()=>{
+  const config=jsonFile(configPath),manifest=jsonFile(config.remoteManifestPath);mutate(config,manifest);
+  assert.throws(()=>resolveF3BoundedScope(config,manifest),/F3_BOUNDED/);
+});
+
+function scopedSteps(failAt){
+  const calls=[],first={command:{id:'original'}},restored={command:{id:'restore'}};
+  const invoke=(label,value)=>{calls.push(label);if(label===failAt)throw Error('proof failed at '+label);return value;};
+  return {calls,steps:{
+    change:async()=>invoke('change',first),attemptedChange:()=>first.command,
+    negatives:async observed=>{assert.equal(observed,first);invoke('negatives');},
+    recordFailure:error=>invoke('record:'+error.message),
+    verifyRestoreOwner:async c=>{assert.equal(c,first.command);invoke('verifyOwner');},
+    restore:async()=>invoke('restore',restored),
+    replayOld:async(a,b)=>{assert.equal(a,first);assert.equal(b,restored);invoke('oldReplay');},
+    verifyBaseline:async()=>invoke('verifyAllEight')
+  }};
+}
+test('bounded cycle submits one original change and its single restoration',async()=>{
+  const h=scopedSteps();await runF3BoundedSequence(h.steps);
+  assert.deepEqual(h.calls,['change','negatives','verifyOwner','restore','oldReplay','verifyAllEight']);
+});
+for(const stage of ['change','negatives'])test('original '+stage+' failure preserves failure and still restores settled owned change',async()=>{
+  const h=scopedSteps(stage);await assert.rejects(runF3BoundedSequence(h.steps),new RegExp(stage));
+  assert.equal(h.calls.filter(x=>x==='restore').length,1);assert.equal(h.calls.at(-1),'verifyAllEight');
+  assert.equal(h.calls.includes('oldReplay'),false);
+});
+test('unknown outcome without an owned settled journal issues no recovery write',async()=>{
+  const h=scopedSteps('verifyOwner');await assert.rejects(runF3BoundedSequence(h.steps),/verifyOwner/);
+  assert.equal(h.calls.includes('restore'),false);
+});
+test('uncertain restoration is preserved; no second restoration key is issued',async()=>{
+  const h=scopedSteps('restore');await assert.rejects(runF3BoundedSequence(h.steps),/restore/);
+  assert.equal(h.calls.filter(x=>x==='restore').length,1);assert.equal(h.calls.includes('verifyAllEight'),false);
+  assert.throws(()=>f3RequireRemoteRestoredBeforeCleanup({remoteCommandAttempts:[{}],remoteValuesRestored:false}),/RESTORE_REQUIRED/);
+});
+test('old replay failure is held even if independent final baseline check succeeds',async()=>{
+  const h=scopedSteps('oldReplay');await assert.rejects(runF3BoundedSequence(h.steps),/oldReplay/);
+  assert.equal(h.calls.at(-1),'verifyAllEight');
+});
+test('bounded change and recovery recheck exact row, owner, field and values',()=>{
+  const owner='f3-qa-12345678-1',item={tenantId:F3_QA.tenantId,projectId:F3_QA.projectId,periodId:F3_QA.periodId,country:'GT',visitId:F3_QA.visits.GT,hrRowId:'CXR_B14_QA_GT_20261119!2',escenario:'CXOrbia QA Escenario A'};
+  const command=f3FieldCommand({owner,serial:1,visit:item,revision:'a'.repeat(64),version:1,fieldKey:'escenario',value:'CXOrbia QA Escenario B'});
+  assert.doesNotThrow(()=>assertF3BoundedChange({command,owner,restore:false}));
+  const restored=f3FieldCommand({owner,serial:2,visit:{...item,escenario:'CXOrbia QA Escenario B'},revision:'b'.repeat(64),version:2,fieldKey:'escenario',value:'CXOrbia QA Escenario A'});
+  assert.doesNotThrow(()=>assertF3BoundedChange({command:restored,owner,restore:true}));
+  for(const mutation of [c=>c.payload.hrRowId='CXR_B14_QA_GT_20261119!3',c=>c.payload.countryCode='HN',c=>c.idempotencyKey+='-retry',c=>c.payload.patch.agendada='2026-11-29',c=>c.payload.baseFieldValues.escenario='changed']){
+    const copy=structuredClone(command);mutation(copy);assert.throws(()=>assertF3BoundedChange({command:copy,owner,restore:false}),/CHANGE_SCOPE/);
+  }
+  assert.throws(()=>assertF3BoundedRestoreOwner({command,owner,proof:{}}),/OWNER_UNSETTLED/);
+});
+
+test('actual native endpoint sets mode, real scope and reserve before Firebase or fixture setup',async()=>{
+  const {runInNewContext}=await import('node:vm');
+  const {tmpdir}=await import('node:os');
+  const path=await import('node:path');
+  const runtime=fs.readFileSync(new URL('./cxorbia-i3-b14-isolated-provider-writer-qa.mjs',import.meta.url),'utf8');
+  const body=runtime.slice(runtime.indexOf('async function runF3EndpointProbe(){'),runtime.indexOf('// Read-only recovery mode for the exact failed RUN2768.'));
+  const dir=fs.mkdtempSync(path.join(tmpdir(),'cxorbia-f3-budget-proof-'));
+  try{
+    const config=jsonFile(configPath),out=path.join(dir,'raw.json');
+    const env={CXORBIA_F3_QA_CONFIG:configPath,CXORBIA_F3_QA_REMOTE_MANIFEST:config.remoteManifestPath,
+      CXORBIA_F3_QA_AUTH_MODE:'FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY',CXORBIA_B14_QA_RECEIPT:out,CXORBIA_F3_MAKE_PREFLIGHT:'fresh-capacity.json'};
+    let calls=0;
+    // Execute the real endpoint up to the first provider boundary. Inject only verified-start and Make-read doubles.
+    const globals={fs,path,process:{env},F3_QA,resolveF3BoundedScope,readGoogleQaExecution:()=>({controlSha:'a'.repeat(40)}),f3Job:'job',
+      F3_SYNTHETIC_PASSWORD_AUTH:env.CXORBIA_F3_QA_AUTH_MODE,isVerifiedGoogleQaExecution:()=>true,
+      assertF3EndpointScope:()=>({runId:'12345678',runAttempt:'1',owner:'f3-qa-12345678-1'}),
+      f3Need:(x,code)=>{if(!x)throw Error(code);},f3Digest:x=>sha(JSON.stringify(x)),f3Code:e=>e.message,
+      readF3MakePreflight:file=>{calls++;assert.equal(file,'fresh-capacity.json');throw Error('ENVIRONMENT_FAILURE:F3_PREFLIGHT_OBSERVATION_REQUIRED');}};
+    const run=runInNewContext('('+body.trim().replaceAll('import.meta.url','"file:///qa-probe.mjs"')+')',globals);
+    await assert.rejects(run(),/F3_PREFLIGHT_OBSERVATION_REQUIRED/);
+    assert.equal(calls,1);
+    const result=jsonFile(out);
+    assert.equal(result.executionMode,F3_BOUNDED_MODE);assert.equal(result.boundedScope.cell,'L2');
+    assert.equal(result.plannedBudget.restorationReserveCredits,100);
+    assert.equal(result.decision,'HOLD_F3_ISOLATED_ENDPOINT');assert.deepEqual(result.events,[]);
+    assert.equal(result.runtimeBefore,undefined);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

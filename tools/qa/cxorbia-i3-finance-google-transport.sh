@@ -53,8 +53,16 @@ need(receipt.executionProvider==='GOOGLE_CLOUD_BUILD'&&receipt.executionBinding.
 need(pins.every(k=>config[k]===materialization[k]&&config[k]===receipt.materialization[k])&&descriptor.productSourceSha===config.sourceSha&&descriptor.productTreeAuthority===config.sourceTree,'MATERIALIZATION_PINS');
 need(execFileSync('git',['rev-parse',config.sourceSha+'^{tree}'],{encoding:'utf8'}).trim()===config.sourceTree,'SOURCE_TREE');
 need(config.remoteManifestPath==='docs/checkpoints/CXORBIA_I3_F3_REMOTE_FIXTURE_20261124.json'&&createHash('sha256').update(fs.readFileSync(config.remoteManifestPath)).digest('hex')===config.remoteManifestSha256,'FIXTURE_HASH');
-for(const [p,v] of [['firebase-admin','13.4.0'],['@modelcontextprotocol/sdk','1.26.0'],['playwright','1.56.1']])need(read('node_modules/'+p+'/package.json').version===v,'DEPENDENCY_VERSION');
-const{chromium}=await import('playwright');const browser=await chromium.launch({headless:true});await browser.close();
+const packages=[['firebase-admin','13.4.0'],['@modelcontextprotocol/sdk','1.26.0']];
+if(config.executionScope){
+  need(config.executionScope.mode==='BOUNDED_GT_ESCENARIO_L2','UNKNOWN_MODE');
+  const {readF3MakePreflight}=await import('./tools/qa/cxorbia-i3-google-qa-execution.mjs');
+  readF3MakePreflight(process.env.CXORBIA_F3_MAKE_PREFLIGHT,process.env.CXORBIA_TRANSPORT_SHA);
+}else{
+  packages.push(['playwright','1.56.1']);
+}
+for(const [p,v] of packages)need(read('node_modules/'+p+'/package.json').version===v,'DEPENDENCY_VERSION');
+if(!config.executionScope){const{chromium}=await import('playwright');const browser=await chromium.launch({headless:true});await browser.close();}
 F3PREFLIGHT
   export CXORBIA_F3_QA_SOURCE_SHA CXORBIA_F3_QA_SOURCE_TREE CXORBIA_F3_QA_RUNTIME_REVISION CXORBIA_F3_QA_RUNTIME_DIGEST CXORBIA_F3_QA_HOSTING_VERSION CXORBIA_F3_QA_REMOTE_MANIFEST
   read -r CXORBIA_F3_QA_SOURCE_SHA CXORBIA_F3_QA_SOURCE_TREE CXORBIA_F3_QA_RUNTIME_REVISION CXORBIA_F3_QA_RUNTIME_DIGEST CXORBIA_F3_QA_HOSTING_VERSION CXORBIA_F3_QA_REMOTE_MANIFEST < <(jq -er '[.sourceSha,.sourceTree,.runtimeRevision,.runtimeDigest,.hostingVersion,.remoteManifestPath]|@tsv' "$CXORBIA_F3_QA_CONFIG")
@@ -69,7 +77,17 @@ F3PREFLIGHT
   node tools/qa/cxorbia-i3-b14-isolated-provider-writer-qa.mjs --f3-endpoint > "$f3_dir/job.log" 2>&1 || f3_status=$?
   printf '%s\n' "$f3_status" > "$f3_dir/worker-exit-code"
   if [[ "$f3_status" == 0 ]]; then
+    if jq -e '.executionScope.mode=="BOUNDED_GT_ESCENARIO_L2"' "$CXORBIA_F3_QA_CONFIG" >/dev/null; then
+      node --input-type=module <<'F3BOUNDED' || f3_status=$?
+import fs from 'node:fs';
+import {validateF3BoundedSuccess} from './tools/qa/cxorbia-i3-typed-result-summary.mjs';
+const read=p=>JSON.parse(fs.readFileSync(p));
+const config=read(process.env.CXORBIA_F3_QA_CONFIG),raw=read(process.env.CXORBIA_B14_QA_RECEIPT);
+validateF3BoundedSuccess(raw,raw.externalExecution,read(config.remoteManifestPath),config.executionScope);
+F3BOUNDED
+    else
     jq -e '.decision=="PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING" and .applicationAckProven==true and .remoteValuesRestored==true and .cleanup.firestore==true and .cleanup.auth==true and .productionWrites==0 and .operationalHrWrites==0 and .b14Closed==false and .shopperRoleProof.decision=="PASS_F3_QA_SHOPPER_ROLE_SCOPED" and .shopperRoleProof.cleanup.complete==true' "$CXORBIA_B14_QA_RECEIPT" > /dev/null || f3_status=$?
+    fi
   fi
   test -s "$CXORBIA_B14_QA_RECEIPT"
   python3 - "$f3_dir/evidence" "$f3_dir/evidence.zip" <<'F3ARCHIVE'

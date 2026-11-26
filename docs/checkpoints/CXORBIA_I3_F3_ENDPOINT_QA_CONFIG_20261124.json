@@ -12,5 +12,13 @@
   "canonicalMaterializationRunId": "5670f782-19af-47aa-bdda-47cf94c689f2",
   "canonicalMaterializationProvider": "GOOGLE_CLOUD_BUILD",
   "canonicalMaterializationReceiptPath": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_5670f782-19af-47aa-bdda-47cf94c689f2_AUTOMATIC_DEV_RECEIPT.json",
-  "canonicalMaterializationReceiptSha256": "ceafac6ef9ceaf01e3473c71301614027a0a8057a5cdcdaf59e8463000de9ca4"
+  "canonicalMaterializationReceiptSha256": "ceafac6ef9ceaf01e3473c71301614027a0a8057a5cdcdaf59e8463000de9ca4",
+  "executionScope": {
+    "mode": "BOUNDED_GT_ESCENARIO_L2",
+    "planPath": "docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json",
+    "planSha256": "51af93760769751d5002611b2118542375fadd200a70d5ec1c84bc45ff83a38e",
+    "executionBudgetCredits": 250,
+    "restorationReserveCredits": 100,
+    "allocationCredits": 350
+  }
 }

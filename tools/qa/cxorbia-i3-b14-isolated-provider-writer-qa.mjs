@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {request as httpsRequest} from 'node:https';
 import {isMakeGraphWriterHintCompatible} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
-import {readGoogleQaExecution,isVerifiedGoogleQaExecution,f3Job} from './cxorbia-i3-google-qa-execution.mjs';
+import {readF3MakePreflight,readGoogleQaExecution,isVerifiedGoogleQaExecution,f3Job} from './cxorbia-i3-google-qa-execution.mjs';
 import {f3SyntheticCredentials,F3_SYNTHETIC_PASSWORD_AUTH} from './cxorbia-i3-f3-shopper-role-qa.mjs';
 
 // P0 B14 provider precondition only. NEVER a project HR binding, a deployment,
@@ -362,11 +363,100 @@ export function f3AssertLostResponseReplay({command,owner,transport,before,after
     remoteReplayWriteCountProven:false,remoteExecutionAuditRequired:true};
 }
 
+export const F3_BOUNDED_MODE='BOUNDED_GT_ESCENARIO_L2';
+const boundedPlanPath='docs/checkpoints/CXORBIA_I3_F3_BOUNDED_PROBE_PLAN_20261125.json';
+const boundedPlanSha='51af93760769751d5002611b2118542375fadd200a70d5ec1c84bc45ff83a38e';
+const valueA='CXOrbia QA Escenario A',valueB='CXOrbia QA Escenario B';
+
+export function resolveF3BoundedScope(config,manifest,read=fs.readFileSync){
+  // The historical full package has no executionScope. A malformed new mode must never select it.
+  if(!Object.hasOwn(config,'executionScope'))return null;
+  const policy=config.executionScope;
+  f3Need(policy?.mode===F3_BOUNDED_MODE&&policy.planPath===boundedPlanPath&&policy.planSha256===boundedPlanSha&&
+    policy.executionBudgetCredits===250&&policy.restorationReserveCredits===100&&policy.allocationCredits===350,
+    'SOURCE_FAILURE:F3_BOUNDED_POLICY');
+  const bytes=read(policy.planPath,'utf8');
+  f3Need(sha(bytes)===policy.planSha256,'SOURCE_FAILURE:F3_BOUNDED_PLAN_HASH');
+  const plan=JSON.parse(bytes),s=plan.scope,gt=manifest.countries?.GT;
+  f3Need(s.tenantId===manifest.tenantId&&s.projectId===manifest.projectId&&s.periodId===manifest.periodId&&
+    s.visitId===gt?.visitId&&s.worksheetName===gt.worksheetName&&s.countryCode==='GT'&&s.fieldKey==='escenario'&&
+    s.cell==='L2'&&gt.hrRowId===gt.worksheetName+'!2'&&gt.headerValues[11]==='Tipo de Compra'&&
+    s.fixtureManifestPath===config.remoteManifestPath&&s.expectedPhysicalPatches===2&&f3Same(s.values,[valueA,valueB,valueA])&&
+    ['sourceSha','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>plan.servedProduct[k]===config[k]),
+    'MAPPING_FAILURE:F3_BOUNDED_CELL_BINDING');
+  return {mode:policy.mode,scope:{countryCode:s.countryCode,fieldKey:s.fieldKey,cell:s.cell,visitId:s.visitId,
+    worksheetName:s.worksheetName,worksheetFingerprint:gt.worksheetFingerprint,hrRowId:gt.hrRowId,expectedPhysicalPatches:s.expectedPhysicalPatches},
+    budget:{executionBudgetCredits:250,restorationReserveCredits:100,allocationCredits:350},uncovered:plan.boundaries.uncovered};
+}
+export function assertF3BoundedChange({command,owner,restore}){
+  const change=restore?[valueB,valueA]:[valueA,valueB],p=command?.payload;
+  f3Need(command?.commandType==='visit.hr.fields.update'&&command.tenantId===F3_QA.tenantId&&command.projectId===F3_QA.projectId&&
+    command.periodId===F3_QA.periodId&&command.entityId===F3_QA.visits.GT&&p?.visitId===F3_QA.visits.GT&&
+    p.countryCode==='GT'&&p.hrRowId==='CXR_B14_QA_GT_20261119!2'&&
+    command.idempotencyKey===owner+'-field-'+(restore?2:1)&&f3Same(p.baseFieldValues,{escenario:change[0]})&&
+    f3Same(p.patch,{escenario:change[1]}),'MAPPING_FAILURE:F3_BOUNDED_CHANGE_SCOPE');
+}
+
+// B remains eligible for restoration after an error only with a settled, owned A→B journal.
+export function assertF3BoundedRestoreOwner({command,owner,proof}){
+  assertF3BoundedChange({command,owner,restore:false});
+  const e=proof.event?.data,d=proof.delivery?.data,h=proof.head?.data,v=proof.visit?.data;
+  const headKey=f3Digest([command.tenantId,command.projectId,command.periodId,'GT',command.entityId,'escenario']);
+  const eventId='hfe-'+f3Digest([headKey,command.idempotencyKey]);
+  f3Need(e?.eventId===eventId&&e.actorUid===owner+'-admin'&&e.idempotencyKey===command.idempotencyKey&&
+    e.tenantId===command.tenantId&&e.projectId===command.projectId&&e.periodId===command.periodId&&
+    e.countryCode==='GT'&&e.visitId===command.entityId&&e.hrRowId===command.payload.hrRowId&&e.fieldKey==='escenario'&&e.before===valueA&&e.after===valueB&&
+    e.eventDigest===f3Digest(Object.fromEntries(Object.entries(e).filter(([key])=>key!=='eventDigest')))&&
+    d?.eventId===eventId&&d.eventDigest===e.eventDigest&&d.status==='committed'&&d.providerAck===true&&d.readbackVerified===true&&
+    h?.latestEventId===eventId&&!h.pendingEventId&&!h.leaseOwner&&!h.leaseUntil&&h.confirmedValue===valueB&&
+    v?.hrManaged?.escenario===valueB&&!v.hrPendingFields?.escenario&&v.hrSyncStatus==='synced',
+    'PERSISTENCE_FAILURE:F3_BOUNDED_RESTORE_OWNER_UNSETTLED');
+}
+
+export async function runF3BoundedSequence(steps){
+  let first,restored,failure;
+  try{
+    first=await steps.change();
+    await steps.negatives(first);
+  }catch(error){failure=error;}
+  // Preserve the original failure while performing the mandatory restoration when safe.
+  const command=first?.command||steps.attemptedChange();
+  if(!command)throw failure||Error('PERSISTENCE_FAILURE:F3_BOUNDED_FIRST_COMMAND_MISSING');
+  if(failure)steps.recordFailure(failure);
+  await steps.verifyRestoreOwner(command);
+  restored=await steps.restore();
+  try{
+    if(!failure)await steps.replayOld(first,restored);
+  }finally{
+    await steps.verifyBaseline();
+  }
+  if(failure)throw failure;
+}
+
+function sealF3CleanupSnapshot(google,outPath){
+  f3Need(isVerifiedGoogleQaExecution(google)&&google.job===f3Job,'SOURCE_FAILURE:F3_BOUNDED_NATIVE_START');
+  const target=google.startUri.replace(/\/start\.json#\d+$/,'/pre-cleanup.json');
+  f3Need(target!==google.startUri,'SOURCE_FAILURE:F3_BOUNDED_SEAL_PATH');
+  const call=args=>execFileSync('gcloud',['storage',...args],{timeout:120000,maxBuffer:16*1024*1024});
+  const bytes=fs.readFileSync(outPath);
+  call(['cp','--if-generation-match=0',outPath,target]);
+  const generation=call(['objects','describe',target,'--raw','--format=value(generation)']).toString().trim();
+  f3Need(/^[1-9]\d{7,19}$/.test(generation),'PERSISTENCE_FAILURE:F3_BOUNDED_EVIDENCE_GENERATION');
+  const uri=target+'#'+generation;
+  f3Need(call(['cat',uri]).equals(bytes),'PERSISTENCE_FAILURE:F3_BOUNDED_EVIDENCE_READBACK');
+  return {uri,sha256:createHash('sha256').update(bytes).digest('hex')};
+}
+
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const google=readGoogleQaExecution(env,f3Job,env.CXORBIA_F3_QA_SOURCE_SHA,env.CXORBIA_F3_QA_SOURCE_TREE);
+  const configPath='docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json';
+  f3Need(env.CXORBIA_F3_QA_CONFIG===configPath,'SOURCE_FAILURE:F3_QA_CONFIG_PATH');
+  const config=JSON.parse(fs.readFileSync(configPath,'utf8'));
+  const bounded=resolveF3BoundedScope(config,manifest);
   const passwordQa=env.CXORBIA_F3_QA_AUTH_MODE===F3_SYNTHETIC_PASSWORD_AUTH;
   f3Need(!env.CXORBIA_F3_QA_AUTH_MODE||passwordQa&&isVerifiedGoogleQaExecution(google),'AUTH_FAILURE:F3_QA_AUTH_MODE');
+  if(bounded)f3Need(passwordQa&&isVerifiedGoogleQaExecution(google),'AUTH_FAILURE:F3_BOUNDED_NATIVE_PASSWORD_ONLY');
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest,google),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
   fs.mkdirSync(path.dirname(outPath),{recursive:true});
   const receipt={schemaVersion:'cxorbia.i3.f3.qa-endpoint.v1',state:'HOLD',decision:'PENDING',runId,runAttempt,qaOwner:owner,
@@ -381,6 +471,13 @@ async function runF3EndpointProbe(){
     unproven:['application_client_response_loss_live_fault_injection','application_client_response_loss_remote_write_count','provider_response_loss_live_fault_injection','external_human_concurrent_edit_atomicity','historical_period_live_fixture','T&A_private_notes_live_fixture']};
   const save=()=>fs.writeFileSync(outPath,JSON.stringify(receipt,null,2)+'\n');save();
   try{
+  let verifyMakeAdmission;
+  if(bounded){
+    receipt.executionMode=bounded.mode;receipt.boundedScope=bounded.scope;receipt.plannedBudget=bounded.budget;
+    receipt.unproven=[...new Set([...receipt.unproven,...bounded.uncovered])];
+    verifyMakeAdmission=()=>readF3MakePreflight(env.CXORBIA_F3_MAKE_PREFLIGHT,google.controlSha);
+    receipt.makePreflight=verifyMakeAdmission();save();
+  }
   const requireHere=createRequire(import.meta.url),requireAdmin=createRequire(requireHere.resolve('firebase-admin/app')),{GoogleAuth}=requireAdmin('google-auth-library');
   const appSdk=await import('firebase-admin/app'),{getAuth}=await import('firebase-admin/auth'),{getFirestore}=await import('firebase-admin/firestore');
   const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']});
@@ -401,7 +498,7 @@ async function runF3EndpointProbe(){
   let token='',authCreated=false,baselineReady=false,baselineLock=null,lockPath='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
   const written=new Map(),commands=[],reconcilePaths=new Set(),projectPath='tenants/tya/projects/'+F3_QA.projectId;
   let shopperRoleQa=null;
-  const profiles=f3FixtureDocuments(manifest,owner),recordCase=(name,details={})=>{receipt.cases.push({name,...details});save();};
+  const profiles=f3FixtureDocuments(manifest,owner).filter(rec=>!bounded||!rec.path.includes('/shoppers/')),recordCase=(name,details={})=>{receipt.cases.push({name,...details});save();};
   const httpJson=async(url,options={})=>{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(180000),...options});const text=await r.text();let body;try{body=JSON.parse(text);}catch{throw Error('PROVIDER_FAILURE:F3_QA_NON_JSON_'+r.status);}return {status:r.status,body};};
   const cloudGet=async url=>(await cloudClient.request({method:'GET',url,timeout:30000,retry:false,maxRedirects:0})).data;
   const runtimeRead=async()=>{
@@ -522,6 +619,13 @@ async function runF3EndpointProbe(){
     const live=await readLive(),visit=live.rows.find(x=>(x.id||x.visitId)===F3_QA.visits[country]),durable=await db.doc(projectPath+'/visits/'+F3_QA.visits[country]).get();
     f3Need(durable.exists,'PERSISTENCE_FAILURE:F3_QA_DURABLE_VISIT');
     const command=f3FieldCommand({owner,serial:++serial,visit,revision:live.revision,version:durable.data().version,fieldKey,value});
+    if(bounded){
+      assertF3BoundedChange({command,owner,restore:value===valueA});
+      if(value===valueB){
+        const currentAdmission=verifyMakeAdmission();
+        f3Need(currentAdmission.sha256===receipt.makePreflight.sha256,'SOURCE_FAILURE:F3_BOUNDED_ADMISSION_CHANGED');
+      }
+    }
     const response=loseClientResponse?await postWithLostClientResponse(command):await postWithBoundedRecovery(command);f3Need(response.status===200,'PERSISTENCE_FAILURE:F3_QA_ENDPOINT_NOT_COMMITTED');const eventId=assertF3RemoteAck(response.body);
     const eventSnap=await db.doc(projectPath+'/hrFieldEvents/'+eventId).get(),deliverySnap=await db.doc(projectPath+'/hrFieldDeliveries/'+eventId).get(),event=eventSnap.data(),delivery=deliverySnap.data();
     f3Need(eventSnap.exists&&event.origin==='platform'&&event.actorUid===adminUid&&event.fieldKey===fieldKey&&event.countryCode===country&&event.periodId===F3_QA.periodId&&f3Same(event.after,value),'PERSISTENCE_FAILURE:F3_QA_EVENT_READBACK');
@@ -558,32 +662,84 @@ async function runF3EndpointProbe(){
     receipt.initialSourceRevision=baseline.revision;
     receipt.remoteBaseline={revision:baseline.revision,rows:baseline.rows.map(row=>({visitId:row.id||row.visitId,countryCode:row.country||row.pais,periodId:row.periodId,hrRowId:row.hrRowId,worksheetFingerprint:row.excelWorksheetFingerprint,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]??null]))})),readAt:new Date().toISOString()};save();
     await reconcile('initial');
-    // Uses the same four existing QA profiles; does not claim automatic upsert.
-    const {createF3ShopperRoleQa}=await import('./cxorbia-i3-f3-shopper-role-qa.mjs');
-    shopperRoleQa=await createF3ShopperRoleQa({auth,db,qa:F3_QA,owner,outDir:path.dirname(outPath),authentication:receipt.authentication,rememberDocument:rec=>written.set(rec.path,f3Digest(rec.data)),publish:value=>{receipt.shopperRoleProof=value;save();}});
-    try{await shopperRoleQa.prepare();await shopperRoleQa.capture('before',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
-    let first;
-    for(const country of F3_QA.countries){
-      const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
-      for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write',{loseClientResponse:country==='GT'&&fieldKey==='escenario'});if(!first)first=row;}
+    if(bounded){
+      const writeId=owner+'-field-1',restoreId=owner+'-field-2';
+      await runF3BoundedSequence({
+        change:()=>executeField('GT','escenario',valueB,'GT_escenario_write',{loseClientResponse:true}),
+        attemptedChange:()=>receipt.remoteCommandAttempts?.find(a=>a.command?.idempotencyKey===writeId)?.command,
+        recordFailure:error=>{receipt.boundedCaseFailure=f3Code(error);save();},
+        verifyRestoreOwner:async command=>assertF3BoundedRestoreOwner({command,owner,proof:await readLostResponseJournal(command)}),
+        negatives:async first=>{
+          const before=await readLostResponseJournal(first.command);
+          const altered=structuredClone(first.command);
+          altered.payload.patch.escenario=valueA;
+          const different=await send(altered);
+          f3Need(different.body?.ok===false&&different.body.code==='OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD'&&
+            f3Same(before,await readLostResponseJournal(first.command)),'PERSISTENCE_FAILURE:F3_QA_IDEMPOTENCY_CONFLICT');
+          recordCase('same_key_changed_payload_rejected',{code:different.body.code,eventId:first.eventId,unchangedJournal:true});
+          const stale=structuredClone(altered);
+          stale.idempotencyKey=owner+'-stale-base';
+          stale.expectedVersion=before.visit.data.version;
+          // At B, submitting B again can be a no-op and would not exercise the stale-base check.
+          // Request A using the captured original A base. B is the current observed value.
+          await remember(stale);
+          const rejected=await send(stale);
+          f3Need(rejected.body?.ok===false&&['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(rejected.body.code)&&
+            f3Same(before,await readLostResponseJournal(first.command)),'PERSISTENCE_FAILURE:F3_QA_STALE_BASE_ACCEPTED');
+          for(const p of commandPaths(stale))f3Need(!(await db.doc(p).get()).exists,'PERSISTENCE_FAILURE:F3_BOUNDED_REJECT_CREATED_RECEIPT');
+          recordCase('stale_base_rejected',{code:rejected.body.code,unchangedJournal:true,idempotencyKey:stale.idempotencyKey});
+        },
+        restore:async()=>{
+          const restored=await executeField('GT','escenario',valueA,'GT_escenario_restore');
+          f3Need(restored.command.idempotencyKey===restoreId,'PERSISTENCE_FAILURE:F3_BOUNDED_RESTORE_KEY');
+          await reconcile('restored');
+          return restored;
+        },
+        replayOld:async(first,restored)=>{
+          const before=await readLostResponseJournal(restored.command);
+          const old=await send(first.command);
+          f3Need(old.status===200&&assertF3RemoteAck(old.body)===first.eventId&&old.body.idempotentReplay===true&&old.body.providerWrites===0&&
+            old.body.idempotencyKey===writeId&&before.head.data?.latestEventId===restored.eventId&&before.head.data.confirmedValue===valueA&&
+            before.event.data?.before===valueB&&before.event.data.after===valueA&&before.event.data.baseEventId===first.eventId&&
+            f3Same(before,await readLostResponseJournal(restored.command)),'PERSISTENCE_FAILURE:F3_QA_OLD_EVENT_ROLLBACK');
+          recordCase('old_committed_receipt_replay_does_not_rollback',{historicalAck:true,eventId:first.eventId,currentEventId:restored.eventId,unchangedJournal:true});
+        },
+        verifyBaseline:async()=>{
+          receipt.remoteRestoreReadback=f3VerifyRestoredBaseline(receipt.remoteBaseline,await readLive());
+          receipt.remoteValuesRestored=true;save();
+        }
+      });
+      receipt.runtimeAfter=await runtimeRead();
+      receipt.applicationAckProven=true;
+      receipt.decision='PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING';
+    }else{
+      // Uses the same four existing QA profiles; does not claim automatic upsert.
+      const {createF3ShopperRoleQa}=await import('./cxorbia-i3-f3-shopper-role-qa.mjs');
+      shopperRoleQa=await createF3ShopperRoleQa({auth,db,qa:F3_QA,owner,outDir:path.dirname(outPath),authentication:receipt.authentication,rememberDocument:rec=>written.set(rec.path,f3Digest(rec.data)),publish:value=>{receipt.shopperRoleProof=value;save();}});
+      try{await shopperRoleQa.prepare();await shopperRoleQa.capture('before',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
+      let first;
+      for(const country of F3_QA.countries){
+        const vals={escenario:'CXOrbia QA Escenario B',tipoCombo:'CXOrbia QA Combo B',agendada:'2026-11-29',shopperId:'qa_f3_20261124_'+country.toLowerCase()+'_a'};
+        for(const fieldKey of F3_QA.fields){const row=await executeField(country,fieldKey,vals[fieldKey],country+'_'+fieldKey+'_write',{loseClientResponse:country==='GT'&&fieldKey==='escenario'});if(!first)first=row;}
+      }
+      // A UI failure is recorded without interrupting remote restoration.
+      try{await shopperRoleQa.capture('assigned',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
+      // This additional ordinary replay is separate from the first command's
+      // real client response-body loss. Make-to-backend loss remains unproven.
+      const replay=await send(first.command);assertF3RemoteAck(replay.body);
+      const attemptsAfter=(await db.doc(projectPath+'/hrFieldDeliveries/'+first.eventId).collection('attempts').get()).size;
+      f3Need(attemptsAfter===first.attempts&&replay.body.idempotentReplay===true,'PERSISTENCE_FAILURE:F3_QA_REPLAY_WROTE');recordCase('exact_replay_no_write',{eventId:first.eventId});
+      const tampered=structuredClone(first.command);tampered.payload.patch.escenario='CXOrbia QA Escenario C';const bad=await send(tampered);
+      f3Need(bad.body.ok===false&&bad.body.code==='OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD','PERSISTENCE_FAILURE:F3_QA_IDEMPOTENCY_CONFLICT');recordCase('same_key_changed_payload_rejected');
+      const newer=await executeField('GT','escenario','CXOrbia QA Escenario C','GT_escenario_ordered_successor');
+      const stale=structuredClone(first.command);stale.idempotencyKey=owner+'-stale-base';stale.expectedVersion=(await db.doc(projectPath+'/visits/'+F3_QA.visits.GT).get()).data().version;
+      await remember(stale);const blocked=await send(stale);f3Need(blocked.body.ok===false&&['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(blocked.body.code),'PERSISTENCE_FAILURE:F3_QA_STALE_BASE_ACCEPTED');recordCase('stale_base_rejected');
+      const oldReplay=await send(first.command);assertF3RemoteAck(oldReplay.body);const current=await readLive();f3Need(current.rows.find(x=>(x.id||x.visitId)===F3_QA.visits.GT).escenario==='CXOrbia QA Escenario C','PERSISTENCE_FAILURE:F3_QA_OLD_EVENT_ROLLBACK');recordCase('old_committed_receipt_replay_does_not_rollback',{historicalAck:true,currentEventId:newer.eventId});
+      for(const country of F3_QA.countries){for(const [fieldKey,value]of [['shopperId',null],['agendada',null],['tipoCombo','CXOrbia QA Combo A'],['escenario','CXOrbia QA Escenario A']])await executeField(country,fieldKey,value,country+'_'+fieldKey+'_restore');}
+      await reconcile('restored');receipt.remoteRestoreReadback=f3VerifyRestoredBaseline(receipt.remoteBaseline,await readLive());
+      receipt.runtimeAfter=await runtimeRead();receipt.applicationAckProven=true;receipt.remoteValuesRestored=true;
+      receipt.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING';
     }
-    // A UI failure is recorded without interrupting remote restoration.
-    try{await shopperRoleQa.capture('assigned',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
-    // This additional ordinary replay is separate from the first command's
-    // real client response-body loss. Make-to-backend loss remains unproven.
-    const replay=await send(first.command);assertF3RemoteAck(replay.body);
-    const attemptsAfter=(await db.doc(projectPath+'/hrFieldDeliveries/'+first.eventId).collection('attempts').get()).size;
-    f3Need(attemptsAfter===first.attempts&&replay.body.idempotentReplay===true,'PERSISTENCE_FAILURE:F3_QA_REPLAY_WROTE');recordCase('exact_replay_no_write',{eventId:first.eventId});
-    const tampered=structuredClone(first.command);tampered.payload.patch.escenario='CXOrbia QA Escenario C';const bad=await send(tampered);
-    f3Need(bad.body.ok===false&&bad.body.code==='OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD','PERSISTENCE_FAILURE:F3_QA_IDEMPOTENCY_CONFLICT');recordCase('same_key_changed_payload_rejected');
-    const newer=await executeField('GT','escenario','CXOrbia QA Escenario C','GT_escenario_ordered_successor');
-    const stale=structuredClone(first.command);stale.idempotencyKey=owner+'-stale-base';stale.expectedVersion=(await db.doc(projectPath+'/visits/'+F3_QA.visits.GT).get()).data().version;
-    await remember(stale);const blocked=await send(stale);f3Need(blocked.body.ok===false&&['OPS_HR_FIELD_BASE_CONFLICT','OPS_HR_FIELD_SOURCE_REVISION_CONFLICT'].includes(blocked.body.code),'PERSISTENCE_FAILURE:F3_QA_STALE_BASE_ACCEPTED');recordCase('stale_base_rejected');
-    const oldReplay=await send(first.command);assertF3RemoteAck(oldReplay.body);const current=await readLive();f3Need(current.rows.find(x=>(x.id||x.visitId)===F3_QA.visits.GT).escenario==='CXOrbia QA Escenario C','PERSISTENCE_FAILURE:F3_QA_OLD_EVENT_ROLLBACK');recordCase('old_committed_receipt_replay_does_not_rollback',{historicalAck:true,currentEventId:newer.eventId});
-    for(const country of F3_QA.countries){for(const [fieldKey,value]of [['shopperId',null],['agendada',null],['tipoCombo','CXOrbia QA Combo A'],['escenario','CXOrbia QA Escenario A']])await executeField(country,fieldKey,value,country+'_'+fieldKey+'_restore');}
-    await reconcile('restored');receipt.remoteRestoreReadback=f3VerifyRestoredBaseline(receipt.remoteBaseline,await readLive());
-    receipt.runtimeAfter=await runtimeRead();receipt.applicationAckProven=true;receipt.remoteValuesRestored=true;
-    receipt.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING';
   }catch(error){receipt.failure=f3Code(error);receipt.decision='HOLD_F3_ISOLATED_ENDPOINT';throw error;
   }finally{
     const cleanupErrors=[],snapshots=[];
@@ -620,11 +776,64 @@ async function runF3EndpointProbe(){
         receipt.cleanupLockPreflight={path:lockPath,current:f3SafeEvidence(lockBefore),digest:f3Digest(lockBefore),receipts:f3SafeEvidence(lockReceipts),readAt:new Date().toISOString()};save();
         receipt.cleanupLockPreflight.decision=f3AssertCleanupLock({current:lockBefore,baseline:baselineLock,owner,reconcilePaths:[...reconcilePaths],receipts:lockReceipts});save();
         await enumerate(db.doc(projectPath));for(const p of commands)await enumerate(db.doc(p));
+        if(bounded){
+          const exact=new Set([projectPath,...commands]);
+          for(const v of Object.values(F3_QA.visits))exact.add(projectPath+'/visits/'+v);
+          for(const observation of receipt.reconciliations||[]){
+            for(const group of ['stages','intents','effects']){
+              for(const child of observation.durable?.[group]||[])exact.add(child.path);
+            }
+          }
+          const head=f3Digest(['tya',F3_QA.projectId,F3_QA.periodId,'GT',F3_QA.visits.GT,'escenario']);
+          for(const entry of receipt.events){
+            const event=entry.event;
+            const serial=[1,2].find(i=>event.idempotencyKey===owner+'-field-'+i);
+            f3Need(serial&&entry.eventId==='hfe-'+f3Digest([head,event.idempotencyKey])&&event.actorUid===adminUid&&
+              event.visitId===F3_QA.visits.GT&&event.countryCode==='GT'&&event.fieldKey==='escenario'&&
+              event.hrRowId===bounded.scope.hrRowId&&entry.remoteHeadKey===head,'PERSISTENCE_FAILURE:F3_BOUNDED_CLEANUP_FOREIGN_EVENT');
+            exact.add(projectPath+'/hrFieldEvents/'+entry.eventId);
+            exact.add(projectPath+'/hrFieldHeads/'+head);
+            const deliveryPath=projectPath+'/hrFieldDeliveries/'+entry.eventId;
+            exact.add(deliveryPath);
+            for(const attempt of entry.attempts){
+              f3Need(attempt.eventId===entry.eventId&&/^[a-zA-Z0-9-]+-(intent|effect)$/.test(attempt.id),
+                'PERSISTENCE_FAILURE:F3_BOUNDED_CLEANUP_FOREIGN_ATTEMPT');
+              exact.add(deliveryPath+'/attempts/'+attempt.id);
+            }
+          }
+          f3Need(snapshots.every(row=>exact.has(row.path)),'PERSISTENCE_FAILURE:F3_BOUNDED_UNEXPECTED_DOCUMENT');
+          for(const [p,digest] of written){
+            if(p===projectPath)continue;
+            const snap=await db.doc(p).get();
+            if(snap.exists){
+              f3Need(snap.data().qaOwner===owner&&f3Digest(snap.data())===digest,'PERSISTENCE_FAILURE:F3_QA_DOCUMENT_OWNER_OR_DRIFT');
+              snapshots.push({path:p,data:snap.data()});
+            }
+          }
+        }
         receipt.cleanupDocumentPlan=snapshots.map(row=>({path:row.path,digest:f3Digest(row.data)}));save();
-        for(const row of snapshots.sort((a,b)=>b.path.split('/').length-a.path.split('/').length))await remove(row);
-        for(const [p]of written){if(p===projectPath)continue;const snap=await db.doc(p).get();if(snap.exists){f3Need(snap.data().qaOwner===owner&&f3Digest(snap.data())===written.get(p),'PERSISTENCE_FAILURE:F3_QA_DOCUMENT_OWNER_OR_DRIFT');await remove({path:p,data:snap.data()});}}
-        for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10),p='tenants/tya/shopperIdentityCrosswalk/'+id,snap=await db.doc(p).get();if(snap.exists){const row=snap.data();f3Need(row.projectId===F3_QA.projectId&&row.tenantId==='tya'&&receipt.events.some(e=>e.eventId===row.originEventId),'PERSISTENCE_FAILURE:F3_QA_ALIAS_OWNER');commands.push(p);await remove({path:p,data:row});}}
-        await db.runTransaction(async tx=>{const ref=db.doc(lockPath),snap=await tx.get(ref),current=snap.exists?snap.data():null;f3Need(f3Same(current,lockBefore),'PERSISTENCE_FAILURE:F3_QA_LOCK_CLEANUP_DRIFT');if(f3Same(current,baselineLock))return;if(baselineLock)tx.set(ref,baselineLock);else tx.delete(ref);});
+        if(bounded){
+          receipt.preCleanupSeal=sealF3CleanupSnapshot(google,outPath);save();
+          await db.runTransaction(async tx=>{
+            const lockRef=db.doc(lockPath),expected=snapshots.map(row=>db.doc(row.path));
+            const [currentLock,...current]=await tx.getAll(lockRef,...expected);
+            f3Need(f3Same(currentLock.data()??null,lockBefore),'PERSISTENCE_FAILURE:F3_QA_LOCK_CLEANUP_DRIFT');
+            for(let i=0;i<current.length;i++)f3Need(current[i].exists&&f3Same(current[i].data(),snapshots[i].data),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_DRIFT');
+            for(const ref of expected)tx.delete(ref);
+            if(!f3Same(lockBefore,baselineLock)){
+              if(baselineLock)tx.set(lockRef,baselineLock);else tx.delete(lockRef);
+            }
+          },{maxAttempts:1});
+          if(snapshots.length){
+            const after=await db.getAll(...snapshots.map(row=>db.doc(row.path)));
+            f3Need(after.every(snap=>!snap.exists),'PERSISTENCE_FAILURE:F3_QA_CLEANUP_READBACK');
+          }
+        }else{
+          for(const row of snapshots.sort((a,b)=>b.path.split('/').length-a.path.split('/').length))await remove(row);
+          for(const [p]of written){if(p===projectPath)continue;const snap=await db.doc(p).get();if(snap.exists){f3Need(snap.data().qaOwner===owner&&f3Digest(snap.data())===written.get(p),'PERSISTENCE_FAILURE:F3_QA_DOCUMENT_OWNER_OR_DRIFT');await remove({path:p,data:snap.data()});}}
+          for(const country of F3_QA.countries)for(const letter of ['A','B']){const id='shopper_'+country.toLowerCase()+'_'+sha(('CXOrbia QA '+country+' F3 '+letter).toLowerCase()).slice(0,10),p='tenants/tya/shopperIdentityCrosswalk/'+id,snap=await db.doc(p).get();if(snap.exists){const row=snap.data();f3Need(row.projectId===F3_QA.projectId&&row.tenantId==='tya'&&receipt.events.some(e=>e.eventId===row.originEventId),'PERSISTENCE_FAILURE:F3_QA_ALIAS_OWNER');commands.push(p);await remove({path:p,data:row});}}
+          await db.runTransaction(async tx=>{const ref=db.doc(lockPath),snap=await tx.get(ref),current=snap.exists?snap.data():null;f3Need(f3Same(current,lockBefore),'PERSISTENCE_FAILURE:F3_QA_LOCK_CLEANUP_DRIFT');if(f3Same(current,baselineLock))return;if(baselineLock)tx.set(ref,baselineLock);else tx.delete(ref);});
+        }
         f3Need(f3Same((await db.doc(lockPath).get()).data()??null,baselineLock),'PERSISTENCE_FAILURE:F3_QA_LOCK_RESTORE');
         f3Need(!(await db.doc(projectPath).get()).exists&&(await db.doc(projectPath).listCollections()).length===0,'PERSISTENCE_FAILURE:F3_QA_SUBTREE_CLEANUP');receipt.cleanup.firestore=true;
       }catch(error){cleanupErrors.push(f3Code(error));}

@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {readGoogleQaExecution,f3Job,f3ConfigPath,f3FixturePath} from './cxorbia-i3-google-qa-execution.mjs';
+import {readGoogleQaExecution,readF3MakePreflight,f3Job,f3ConfigPath,f3FixturePath} from './cxorbia-i3-google-qa-execution.mjs';
 import {summarizeGoogleF3Result,summarizeTypedResult} from './cxorbia-i3-typed-result-summary.mjs';
 import {assertF3EndpointScope} from './cxorbia-i3-b14-isolated-provider-writer-qa.mjs';
 import {consumeGoogleF3Result} from './cxorbia-i3-automatic-result-consumer.mjs';
@@ -64,12 +67,12 @@ for(const [name,alter] of [
  ['role PASS without captures',f=>{f.raw.shopperRoleProof={decision:'PASS_F3_QA_SHOPPER_ROLE_SCOPED'};f.refresh();}]
 ])test('native F3 rejects '+name,()=>{const f=nativeFixture();alter(f);assert.throws(f.summarize);});
 
-function consumerFixture(){
- const native=nativeFixture(),d=JSON.parse(at(DESCRIPTOR)),p=JSON.parse(at(POINTER));
+function consumerFixture(native=nativeFixture()){
+ const d=JSON.parse(at(DESCRIPTOR)),p=JSON.parse(at(POINTER));
  const paths=[DESCRIPTOR,POINTER,d.moduleTruthPath,d.findingsLedgerPath,d.currentCumulativeTaskEvidenceMap.path,
   'docs/checkpoints/CXORBIA_I3_NOVEMBER_ADVANCE_METADATA_SCOPE_20261124.json',d.currentAutomationReceipt.path,
   f3ConfigPath,f3FixturePath,native.config.canonicalMaterializationReceiptPath,...d.currentFunctionalEvidenceIndex.results.map(x=>x.path)];
- const blobs=new Map(),tree=new Map();for(const file of paths){const bytes=at(file),hash=gitBlob(bytes);blobs.set(hash,bytes);tree.set(file,hash);}
+ const blobs=new Map(),tree=new Map();for(const file of paths){const bytes=file===f3ConfigPath&&native.config.executionScope?JSON.stringify(native.config):at(file),hash=gitBlob(bytes);blobs.set(hash,bytes);tree.set(file,hash);}
  const treeSha=sha1(JSON.stringify([...tree])),trees=new Map([[treeSha,tree]]),commits=new Map([[producer,{sha:producer,tree:{sha:treeSha},parents:[]}]]);
  const f={...native,head:producer,mutations:[],patches:0,race:false};
  f.api=async(route,body,method)=>{
@@ -105,4 +108,91 @@ test('F3 changed replay and interleaved writer cannot advance the ref',async()=>
  const f=consumerFixture();await f.run();const before=f.mutations.length;f.raw.failure='AUTH_FAILURE:DIFFERENT';f.refresh();
  await assert.rejects(f.run(),/GOOGLE_F3_REPLAY_CHANGED/);assert.equal(f.mutations.length,before);
  const raced=consumerFixture();raced.race=true;await assert.rejects(raced.run(),/CAS_HEAD_CHANGED/);assert.equal(raced.patches,0);
+});
+
+function boundedFixture(){
+ const f=nativeFixture(),r=f.raw,gt=f.manifest.countries.GT,now='2026-11-26T00:05:00.000Z';
+ const mode='BOUNDED_GT_ESCENARIO_L2',first='CXOrbia QA Escenario A',second='CXOrbia QA Escenario B';
+ const revisionA=sha256('fixture:A'),revisionB=sha256('fixture:B');
+ f.config.executionScope={mode,executionBudgetCredits:250,restorationReserveCredits:100,allocationCredits:350};
+ Object.assign(f.expected,{f3ExecutionScope:f.config.executionScope,f3Fixture:f.manifest});
+ delete r.failure;
+ Object.assign(r,{executionMode:mode,decision:'PASS_F3_BOUNDED_GT_L2_ENDPOINT_REMOTE_AUDIT_PENDING',
+   boundedScope:{countryCode:'GT',fieldKey:'escenario',cell:'L2',expectedPhysicalPatches:2,...Object.fromEntries(['visitId','hrRowId','worksheetName','worksheetFingerprint'].map(k=>[k,gt[k]]))},
+   authentication:'FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY',ordinaryPasswordAuthenticationProven:false,applicationAckProven:true,remoteValuesRestored:true,
+   cleanup:{firestore:true,auth:true,remoteMake:false},makePreflight:{controlSha:producer,organizationId:4090072,scenarioId:10199316,dataStoreId:213856,
+     writerExecutionInProgress:false,keys:['757bfe4bd75b'],availableCredits:1040,checkedAt:now,sha256:sha256('observation')},
+   remoteBaseline:{revision:revisionA,rows:Object.entries(f.manifest.countries).map(([countryCode,c])=>({countryCode,visitId:c.visitId,periodId:f.manifest.periodId,
+     hrRowId:c.hrRowId,worksheetFingerprint:c.worksheetFingerprint,values:{escenario:first}}))},
+   remoteRestoreReadback:{decision:'PASS_F3_EXACT_REMOTE_BASELINE_READBACK',sourceRevision:revisionA,visits:2,fields:8,readAt:now},
+   runtimeBefore:{revision:f.config.runtimeRevision,digest:f.config.runtimeDigest,hostingVersion:f.config.hostingVersion,readAt:now}});
+ r.runtimeAfter={...r.runtimeBefore};
+ const head=canonicalSha256(['tya',f.manifest.projectId,f.manifest.periodId,'GT',gt.visitId,'escenario']);
+ r.events=[second,first].map((after,i)=>{
+   const baseRevision=i?revisionB:revisionA,idempotencyKey=r.qaOwner+'-field-'+(i+1),eventId='hfe-'+canonicalSha256([head,idempotencyKey]);
+   const event={eventId,idempotencyKey,tenantId:'tya',projectId:f.manifest.projectId,periodId:f.manifest.periodId,countryCode:'GT',fieldKey:'escenario',visitId:gt.visitId,
+     hrRowId:gt.hrRowId,actorUid:r.qaOwner+'-admin',origin:'platform',before:i?second:first,after,baseRevision};
+   event.eventDigest=canonicalSha256(event);
+   const providerExecutionId=String(i+1).repeat(32);
+   return {event,eventId,eventDigest:event.eventDigest,remoteEventKey:'event:'+eventId,remoteHeadKey:head,countryCode:'GT',fieldKey:'escenario',
+     providerExecutionId,sourceRevisionBefore:baseRevision,sourceRevisionAfter:i?revisionA:revisionB,
+     delivery:{eventId,eventDigest:event.eventDigest,status:'committed',providerAck:true,writeAckVerified:true,readbackVerified:true,providerExecutionId}};
+ });
+ const [change,restore]=r.events,k=change.event.idempotencyKey;
+ const caseEvent=(name,e)=>({name,eventId:e.eventId,ackVerified:true,independentSourceReadback:true,nonRecoveryAttempts:1});
+ r.cases=[{name:'explicit_reconcile_initial'},{name:'client_response_body_loss_same_key_replay_journal_unchanged'},caseEvent('GT_escenario_write',change),
+   {name:'same_key_changed_payload_rejected'},{name:'stale_base_rejected'},caseEvent('GT_escenario_restore',restore),
+   {name:'old_committed_receipt_replay_does_not_rollback',currentEventId:restore.eventId},{name:'explicit_reconcile_restored'}];
+ r.remoteCommandAttempts=[{command:{idempotencyKey:k,payload:{patch:{escenario:'different'}}},response:{ok:false,code:'OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD'}},
+   {command:{idempotencyKey:r.qaOwner+'-stale-base'},response:{ok:false,code:'OPS_HR_FIELD_BASE_CONFLICT'}},
+   {command:{idempotencyKey:k},response:{idempotentReplay:true,hrFieldEventIds:[change.eventId]}}];
+ r.clientResponseLoss={decision:'PASS_CLIENT_RESPONSE_LOSS_JOURNAL_REPLAY_REMOTE_WRITE_AUDIT_PENDING',eventId:change.eventId,eventDigest:change.eventDigest,
+   providerExecutionId:change.providerExecutionId,proofDigest:sha256('proof'),declaredOriginalRemoteWriteRequests:1,newJournalAttempts:0,newLocalCommandWrites:0,
+   remoteReplayWrites:null,remoteReplayWriteCountProven:false,remoteExecutionAuditRequired:true,independentSourceRevisionBeforeReplay:revisionB,independentSourceRevisionAfterReplay:revisionB,
+   independentReadbackAt:now,replayStartedAt:now,replayFinishedAt:now,transport:{faultBoundary:'APPLICATION_HTTP_RESPONSE_BODY_TO_QA_CLIENT',requestBodyFinished:true,
+     responseHeadersObserved:true,semanticAckObserved:false,clientConnectionDestroyed:true,bodyBytesConsumed:0,httpStatus:200,commandDigest:sha256('command'),idempotencyKey:k,startedAt:now,cutAt:now},
+   remoteAudit:{scenarioId:10199316,eventId:change.eventId,eventDigest:change.eventDigest,initialProviderExecutionId:change.providerExecutionId,idempotencyKey:k,requestStartedAt:now,
+     replayStartedAt:now,replayFinishedAt:now,requiredObservedThroughUtc:new Date(Date.parse(now)+90000).toISOString()}};
+ const sealedGen='1795651480000000',sealUri=prefix+'/pre-cleanup.json#'+sealedGen;
+ f.sealText=JSON.stringify({...r,cleanup:{firestore:false,auth:false},cleanupDocumentPlan:[{path:'fixture-doc',digest:sha256('fixture')}]});
+ r.preCleanupSeal={uri:sealUri,sha256:sha256(f.sealText)};
+ const read=f.read;
+ f.read=(cmd,args)=>args.includes(sealUri)?(args[1]==='cat'?f.sealText:JSON.stringify({bucket,name:'cxorbia-i3-qa/'+id+'/pre-cleanup.json',generation:sealedGen})):read(cmd,args);
+ const refresh=f.refresh;f.refresh=()=>{refresh();f.bundle.exitCode=0;};f.refresh();
+ return f;
+}
+
+test('bounded native receipt-only result commits once, readbacks and replays without promotion',async()=>{
+ const f=consumerFixture(boundedFixture()),result=await f.run();
+ assert.equal(result.decision,'CONSUMED_GOOGLE_F3_SCOPED_RESULT');
+ const typed=JSON.parse(f.bytes(result.receiptPath)),cell=typed.observations.boundedCell;
+ assert.equal(typed.state,'HOLD');assert.equal(typed.fullDomain,false);assert.equal(typed.newDomainMatches,0);assert.deepEqual(typed.ownerSpecificReceipts,[]);
+ assert.equal(typed.phaseAComplete,false);assert.equal(cell.target.cell,'L2');assert.deepEqual(cell.events.map(e=>e.action),['CHANGE','RESTORE']);
+ assert.equal(cell.observedPhysicalPatches,null);assert.equal(cell.creditConsumption,null);assert.equal(typed.observations.shopperRoleProof,null);
+ const before=f.mutations.length;assert.equal((await f.run()).decision,'NOOP_ALREADY_CONSUMED');assert.equal(before,f.mutations.length);
+});
+for(const [name,change] of [
+ ['unbound config',f=>delete f.expected.f3ExecutionScope],['wrong field',f=>f.raw.boundedScope.fieldKey='tipoCombo'],
+ ['missing restore case',f=>f.raw.cases.pop()],['stale rejection missing',f=>f.raw.remoteCommandAttempts.splice(1,1)],
+ ['another country',f=>f.raw.boundedScope.countryCode='HN'],['extra Shopper scope',f=>f.raw.shopperRoleProof={}],
+ ['missing seal',f=>delete f.raw.preCleanupSeal],['changed sealed bytes',f=>f.sealText+=' '],
+ ['physical audit asserted by client',f=>f.raw.clientResponseLoss.remoteReplayWriteCountProven=true],
+ ['full producer decision',f=>f.raw.decision='PASS_F3_ISOLATED_ENDPOINT_CHAIN_REMOTE_CLEANUP_PENDING']
+])test('bounded F3 rejects '+name,()=>{const f=boundedFixture();change(f);f.refresh();assert.throws(f.summarize);});
+test('bounded FAIL remains consumable without a claimed mutation or cleanup',()=>{
+ const f=boundedFixture();Object.assign(f.raw,{decision:'HOLD_F3_ISOLATED_ENDPOINT',events:[],cases:[],applicationAckProven:false,
+   remoteValuesRestored:false,failure:'PROVIDER_FAILURE:F3_QA_WRITER_METADATA_CONTRACT',cleanup:{firestore:false,auth:false}});
+ delete f.raw.preCleanupSeal;delete f.raw.clientResponseLoss;f.refresh();f.bundle.exitCode=1;
+ const typed=f.summarize();assert.equal(typed.state,'HOLD');assert.deepEqual(typed.observations.boundedCell.observedCaseNames,[]);
+});
+test('bounded dispatch rejects stale, underfunded, occupied or mismatched independent preflight',()=>{
+ const d=fs.mkdtempSync(path.join(os.tmpdir(),'f3-capacity-test-')),p=path.join(d,'readback.json');
+ const row=boundedFixture().raw.makePreflight;delete row.sha256;const now=Date.parse(row.checkedAt);
+ try{
+   for(const change of [{checkedAt:new Date(now-600001).toISOString()},{checkedAt:new Date(now+1000).toISOString()},{controlSha:'b'.repeat(40)},
+     {keys:[]},{keys:['757bfe4bd75b','foreign']},{availableCredits:349},{writerExecutionInProgress:true},{organizationId:1},{scenarioId:999},{dataStoreId:0}]){
+     fs.writeFileSync(p,JSON.stringify({...row,...change}));assert.throws(()=>readF3MakePreflight(p,producer,now),/F3_MAKE_PREFLIGHT/);
+   }
+   fs.writeFileSync(p,JSON.stringify(row));assert.equal(readF3MakePreflight(p,producer,now).sha256,sha256(JSON.stringify(row)));
+ }finally{fs.rmSync(d,{recursive:true,force:true});}
 });

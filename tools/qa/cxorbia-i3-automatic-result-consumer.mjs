@@ -594,6 +594,10 @@ export async function consumeGoogleF3Result({api,uri,expected,readNative,readArc
  const lineage=await api(`${root}/compare/${expected.controlSha}...${head}`);
  must(['ahead','identical'].includes(lineage.status)&&lineage.merge_base_commit?.sha===expected.controlSha,'SOURCE_FAILURE:GOOGLE_F3_PRODUCER_LINEAGE');
  const expectedIdentity={...Object.fromEntries(pins.map(k=>[k,config[k]])),controlSha:expected.controlSha,transportSha:expected.transportSha,remoteFixtureDigest:canonicalSha256(JSON.parse(fixtureBytes))};
+ if(config.executionScope){
+  expectedIdentity.f3ExecutionScope=config.executionScope;
+  expectedIdentity.f3Fixture=JSON.parse(fixtureBytes);
+ }
  const result=summarizeGoogleF3Result({uri,expectedIdentity},readNative,readArchive),proof=result.provenance;
  const key=typedResultKey(proof),receiptPath=`docs/checkpoints/CXORBIA_I3_GOOGLE_F3_${proof.resultGeneration}_TYPED_RESULT.json`,bytes=jsonBytes(result);
  const entry={key,path:receiptPath,gitBlob:gitBlob(bytes),sha256:sha256(bytes),provider:'GOOGLE_CLOUD_SHELL',kind:'F3_ENDPOINT',

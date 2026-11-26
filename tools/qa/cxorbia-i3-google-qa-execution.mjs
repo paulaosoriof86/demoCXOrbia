@@ -133,6 +133,21 @@ for i in z.infolist():
 function need(condition,code){
   if(!condition)throw Error('SOURCE_FAILURE:'+code);
 }
+// This read-only observation authorizes no provider operation. The immutable
+// configuration chooses the mode; the coordinator supplies current Make facts.
+export function readF3MakePreflight(file,controlSha,now=Date.now()){
+  need(typeof file==='string'&&file.length>0,'F3_MAKE_PREFLIGHT_FILE_REQUIRED');
+  const bytes=fs.readFileSync(file);
+  need(bytes.length<=4096,'F3_MAKE_PREFLIGHT_SIZE');
+  const p=JSON.parse(bytes);
+  const age=now-Date.parse(p.checkedAt);
+  need(sha.test(controlSha)&&p.controlSha===controlSha&&Number.isFinite(age)&&age>=0&&age<=600000,'F3_MAKE_PREFLIGHT_FRESH_CONTROL');
+  need(p.organizationId===4090072&&p.scenarioId===10199316&&p.dataStoreId===213856&&
+    p.writerExecutionInProgress===false&&Array.isArray(p.keys)&&p.keys.length===1&&p.keys[0]==='757bfe4bd75b','F3_MAKE_PREFLIGHT_SCOPE');
+  need(Number.isFinite(p.availableCredits)&&p.availableCredits>=350,'F3_MAKE_PREFLIGHT_CAPACITY');
+  return {controlSha,checkedAt:p.checkedAt,organizationId:p.organizationId,scenarioId:p.scenarioId,dataStoreId:p.dataStoreId,
+    availableCredits:p.availableCredits,writerExecutionInProgress:false,keys:p.keys,sha256:hash(bytes)};
+}
 function readObject(uri,kind,read){
   const match=objectUri.exec(uri);
   need(match&&match[2]===kind,'GOOGLE_QA_OBJECT_URI');
@@ -259,6 +274,23 @@ export function readGoogleF3Result(uri,expected,read=readCommand,readArchive=rea
   }
   if(raw.shopperRoleProof?.decision==='PASS_F3_QA_SHOPPER_ROLE_SCOPED'){
     need(['before','assigned'].every(p=>['GT','HN'].every(c=>archive.names.includes('f3-role-'+p+'-'+c+'.png'))),'GOOGLE_F3_ROLE_CAPTURE_MISSING');
+  }
+  if(raw.preCleanupSeal){
+    const seal=raw.preCleanupSeal;
+    const name='cxorbia-i3-qa/'+result.id+'/pre-cleanup.json';
+    const base='gs://'+bucket+'/'+name+'#';
+    need(typeof seal.uri==='string'&&seal.uri.startsWith(base)&&/^[1-9][0-9]{7,19}$/.test(seal.uri.slice(base.length))&&
+      /^[a-f0-9]{64}$/.test(seal.sha256),'GOOGLE_F3_PRECLEANUP_URI');
+    const meta=JSON.parse(read('gcloud',['storage','objects','describe',seal.uri,'--raw','--format=json']));
+    need(meta.bucket===bucket&&meta.name===name&&String(meta.generation)===seal.uri.slice(base.length)&&
+      BigInt(meta.generation)>BigInt(start.startGeneration)&&BigInt(meta.generation)<BigInt(result.generation),'GOOGLE_F3_PRECLEANUP_GENERATION');
+    const bytes=read('gcloud',['storage','cat',seal.uri]);
+    need(Buffer.byteLength(bytes)<=2*1024*1024&&hash(bytes)===seal.sha256,'GOOGLE_F3_PRECLEANUP_HASH');
+    const prior=JSON.parse(bytes);
+    need(['runId','runAttempt','qaOwner','sourceSha','controlSha','executionMode'].every(k=>prior[k]===raw[k])&&
+      prior.cleanup?.firestore===false&&prior.cleanup?.auth===false&&Array.isArray(prior.cleanupDocumentPlan)&&
+      prior.cleanupDocumentPlan.length>0&&JSON.stringify(prior.events)===JSON.stringify(raw.events)&&
+      JSON.stringify(prior.remoteRestoreReadback)===JSON.stringify(raw.remoteRestoreReadback),'GOOGLE_F3_PRECLEANUP_BINDING');
   }
   const transport={...start,jobName:f3Job,jobConclusion:bundle.exitCode===0?'success':'failure',controlHead:start.controlSha,
     entry:'receipt.json',resultUri:uri,resultGeneration:result.generation,bundleSha256:result.sha256,resultSha256:bundle.resultSha256,
