@@ -23,6 +23,7 @@ if [[ "${CXORBIA_GOOGLE_QA_JOB:-}" == i3-b14-qa-provider-proof ]]; then
   export GOOGLE_CLOUD_PROJECT=cxorbia-backend-dev GCLOUD_PROJECT=cxorbia-backend-dev GOOGLE_CLOUD_QUOTA_PROJECT=cxorbia-backend-dev
   export CXORBIA_F3_QA_CONFIG=docs/checkpoints/CXORBIA_I3_F3_ENDPOINT_QA_CONFIG_20261124.json
   export CXORBIA_F3_QA_BASE_URL=https://cxorbia-backend-dev.web.app
+  export CXORBIA_F3_QA_AUTH_MODE=FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY
   [[ "${CXORBIA_F3_QA_ENDPOINT_GATE:-}" == PAULA_AUTHORIZED_ISOLATED_F3_ENDPOINT_20261124 ]]
   [[ -z "${GITHUB_ACTIONS:-}${GITHUB_RUN_ID:-}${GITHUB_REF:-}${GITHUB_REPOSITORY:-}" ]]
   producer=$(git rev-parse HEAD)

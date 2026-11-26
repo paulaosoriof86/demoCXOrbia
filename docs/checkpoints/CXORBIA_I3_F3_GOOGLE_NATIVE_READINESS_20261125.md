@@ -30,3 +30,13 @@ Run the existing `i3-b14-qa-provider-proof` job via `cxorbia-i3-finance-google-t
 For a successful endpoint chain, independently inspect all Make executions in the response-loss/replay interval, verify the exact owned datastore keys, restore the baseline and read cleanup absence. Only those observations can settle remote physical write count and cleanup. HR durable recovery, provider-response loss, human concurrent editing, external-origin echo and the remaining business clauses retain their existing residuals; they are not credited by this transport change.
 
 No production mutation, new candidate, workflow, product build, real-data import or broader gate reopening is included.
+
+## Same-attempt preparation: remove the temporary-signing dependency
+
+At approximately 18:27 Guatemala, native `testIamPermissions` returned HTTP 200 with an empty permission list for `signBlob`. A negative sign-in against the existing Firebase password provider then returned `INVALID_LOGIN_CREDENTIALS` for a new random nonexistent QA email; no account or fixture was created. This confirms the previous signing-window blocker without treating the forwarded renewal request as authorization.
+
+The native F3 branch now uses `FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY`: the same three new disposable Auth principals, same UID/claims/memberships, and random passwords held only in memory. It uses Firebase's existing password sign-in and verifies the resulting token and exact claims. It creates no IAM grant, changes no existing user's credential and does not enable any authentication provider. A denied Auth administration operation remains a real blocker; public registration is not a fallback.
+
+The original Actions custom-token path stays available. Native password QA keeps `ordinaryPasswordProven:false` and `ordinaryPasswordAuthenticationProven:false` for operational users. Its scoped evidence cannot close A08. Tests verify that password QA never invokes custom-token signing, rejects credentials for another actor and keeps passwords out of all published state.
+
+Validation of this incremental authentication change: `CXORBIA_I3_F3_PASSWORD_QA_TESTS_20261125.tap`, **221 tests, 221 PASS, zero failure/skip**. It includes the previous 219 checks and two behavioral checks of isolated credential generation, provider selection, zero custom-token signing and credential exclusion from published evidence.

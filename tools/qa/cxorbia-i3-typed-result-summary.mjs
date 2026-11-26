@@ -183,14 +183,14 @@ function f3ShopperRole(value){
     countries:(Array.isArray(p.countries)?p.countries:[]).slice(0,4).map(c=>({country:enumValue(c.country,['GT','HN']),sourceRevision:f3Hash(c.sourceRevision),
       ...counts(c,['available','own','foreignVisitCount','duplicateVisitCount']),...booleans(c,['exactAvailableKeyset','exactOwnKeyset','passed','reloadVerified']),failureCode:safeTypedFailureCode(c.failure)}))}));
   const out={decision:enumValue(value.decision,['PENDING','HOLD_F3_QA_SHOPPER_ROLE','PASS_F3_QA_SHOPPER_ROLE_SCOPED']),
-    authentication:enumValue(value.authentication,['FIREBASE_CUSTOM_TOKEN_QA_ONLY']),...booleans(value,['sameFixture','prepared','automaticUpsertProven','ordinaryPasswordProven','availabilityRemovalProven']),
+    authentication:enumValue(value.authentication,['FIREBASE_CUSTOM_TOKEN_QA_ONLY','FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY']),...booleans(value,['sameFixture','prepared','automaticUpsertProven','ordinaryPasswordProven','availabilityRemovalProven']),
     actorCount:length(value.actors),blockedOperationalRequests:count(value.blockedOperationalRequests),failureCount:length(value.failures),
     failureCodes:[...new Set((Array.isArray(value.failures)?value.failures:[]).map(safeTypedFailureCode).filter(Boolean))],phases,
     positiveAvailabilityTransitions:(Array.isArray(value.positiveAvailabilityTransitions)?value.positiveAvailabilityTransitions:[]).filter(c=>['GT','HN'].includes(c)),
     limitations:limitations.filter(x=>value.limitations?.includes(x)),cleanup:{...booleans(value.cleanup,['complete','preservedForRecovery']),
       authDeletedCount:length(value.cleanup?.authDeleted),authAbsentCount:length(value.cleanup?.authAbsent)}};
   if(out.decision==='PASS_F3_QA_SHOPPER_ROLE_SCOPED'){
-    need(out.sameFixture===true&&out.prepared===true&&out.automaticUpsertProven===false&&out.ordinaryPasswordProven===false&&out.authentication==='FIREBASE_CUSTOM_TOKEN_QA_ONLY'&&
+    need(out.sameFixture===true&&out.prepared===true&&out.automaticUpsertProven===false&&out.ordinaryPasswordProven===false&&['FIREBASE_CUSTOM_TOKEN_QA_ONLY','FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY'].includes(out.authentication)&&
       out.actorCount===2&&out.blockedOperationalRequests===0&&out.failureCount===0&&phases.length===2&&
       ['before','assigned'].every(name=>phases.filter(p=>p.phase===name).length===1)&&phases.every(p=>p.sourceRevision&&p.countries.length===2&&
         ['GT','HN'].every(country=>p.countries.filter(c=>c.country===country).length===1)&&p.countries.every(c=>c.passed===true&&c.sourceRevision===p.sourceRevision&&
@@ -265,6 +265,7 @@ function summarizeVerifiedResult({resultText,transport,expectedIdentity={},ident
     need(raw.state==='HOLD'&&raw.syntheticOnly===true&&raw.b14Closed===false&&raw.newModuleMatches===0,'F3_CREDIT_BOUNDARY');
     need(raw.productionWrites===0&&raw.operationalHrWrites===0,'F3_DEV_SCOPE');
     observations={
+      authentication:enumValue(raw.authentication,['FIREBASE_CUSTOM_TOKEN_QA_ONLY','FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY']),
       ...booleans(raw,['applicationAckProven','remoteValuesRestored','recoveryRequired','notesPrivacyProven','ordinaryPasswordAuthenticationProven']),
       caseCount:length(raw.cases),eventCount:length(raw.events),remoteCommandAttemptCount:length(raw.remoteCommandAttempts),
       cleanup:{...booleans(raw.cleanup,['firestore','auth','remoteMake','authPreservedForRecovery']),errorCount:length(raw.cleanupErrors)},

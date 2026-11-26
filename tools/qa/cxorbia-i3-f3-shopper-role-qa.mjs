@@ -1,6 +1,22 @@
 // Optional scoped browser proof inside the existing F3 fixture. No product code.
 // Profiles are already seeded by F3: this does not prove automatic HR upsert or
 // ordinary password login. Browser contexts cannot send operational writes.
+import {randomBytes} from 'node:crypto';
+export const F3_SYNTHETIC_PASSWORD_AUTH='FIREBASE_PASSWORD_SYNTHETIC_QA_ONLY';
+export function f3SyntheticCredentials(uid){
+ if(!/^f3-qa-\d{8,}-\d+-(?:admin|shopper-(?:gt|hn))$/.test(uid))throw Error('AUTH_FAILURE:F3_PASSWORD_ACTOR_SCOPE');
+ return {email:uid+'@cxorbia.invalid',password:'Qa!1'+randomBytes(32).toString('base64url')};
+}
+export async function f3RoleSignIn({page,auth,uid,authentication,credentials}){
+ if(authentication===F3_SYNTHETIC_PASSWORD_AUTH){
+  if(credentials?.email!==uid+'@cxorbia.invalid'||typeof credentials.password!=='string'||credentials.password.length<40)throw Error('AUTH_FAILURE:F3_PASSWORD_ACTOR_CREDENTIALS');
+  await page.evaluate(async login=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);firebase.auth().signInWithEmailAndPassword(login.email,login.password).catch(()=>{});},credentials);
+ }else{
+  if(authentication!=='FIREBASE_CUSTOM_TOKEN_QA_ONLY')throw Error('AUTH_FAILURE:F3_ROLE_AUTH_MODE');
+  let custom=await auth.createCustomToken(uid);
+  await page.evaluate(async jwt=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);firebase.auth().signInWithCustomToken(jwt).catch(()=>{});},custom);custom='';
+ }
+}
 const need=(ok,code)=>{if(!ok)throw Error(code);};
 const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
 const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
@@ -53,9 +69,11 @@ export function f3RoleAuthOwned(user,actor,owner){
  return user?.uid===actor.uid&&((c.qaOwner===owner&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.tenantId==='tya'&&c.shopperId===actor.shopperId&&same(c.projectIds,actor.claims.projectIds))||Object.keys(c).length===0&&user.displayName===actor.displayName);
 }
 
-export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDocument,publish,openBrowser}){
+export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDocument,publish,openBrowser,authentication='FIREBASE_CUSTOM_TOKEN_QA_ONLY'}){
+ need(['FIREBASE_CUSTOM_TOKEN_QA_ONLY',F3_SYNTHETIC_PASSWORD_AUTH].includes(authentication),'AUTH_FAILURE:F3_ROLE_AUTH_MODE');
+ const credentials=new Map();
  const actors=f3RoleActors(owner,qa),createdAuth=[],state={schemaVersion:'cxorbia.f3.scoped-shopper-role-qa.v1',decision:'PENDING',qaOwner:owner,
-  sameFixture:true,automaticUpsertProven:false,ordinaryPasswordProven:false,authentication:'FIREBASE_CUSTOM_TOKEN_QA_ONLY',
+  sameFixture:true,automaticUpsertProven:false,ordinaryPasswordProven:false,authentication,
   actors:actors.map(x=>({uid:x.uid,shopperId:x.shopperId,country:x.country})),phases:[],blockedOperationalRequests:0,failures:[],cleanup:{authDeleted:[],authAbsent:[],complete:false}};
  let browser=null;
  const save=()=>publish(structuredClone(state));
@@ -92,7 +110,8 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
     try{await auth.getUser(actor.uid);throw Error('AUTH_FAILURE:F3_ROLE_AUTH_EXISTS');}catch(e){if(e.code!=='auth/user-not-found')throw e;}
    }
    for(const actor of actors){
-    await auth.createUser({uid:actor.uid,displayName:actor.displayName,disabled:false});createdAuth.push(actor);save();
+    if(authentication===F3_SYNTHETIC_PASSWORD_AUTH)credentials.set(actor.uid,f3SyntheticCredentials(actor.uid));
+    await auth.createUser({uid:actor.uid,displayName:actor.displayName,disabled:false,...(credentials.get(actor.uid)||{})});createdAuth.push(actor);save();
     await auth.setCustomUserClaims(actor.uid,actor.claims);
     need(f3RoleAuthOwned(await auth.getUser(actor.uid),actor,owner),'AUTH_FAILURE:F3_ROLE_AUTH_READBACK');
     rememberDocument({path:actor.path,data:actor.data});await db.doc(actor.path).create(actor.data);
@@ -114,8 +133,7 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
      const page=await context.newPage();const url=qa.baseUrl+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:qa.projectId,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxTechnicalAuthE2E:'YES_PAULA_20260801_REAL_USERS_E2E'});
      await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
      await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length>0,null,{timeout:45000});
-     let custom=await auth.createCustomToken(actor.uid);
-     await page.evaluate(async jwt=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);firebase.auth().signInWithCustomToken(jwt).catch(()=>{});},custom);custom='';
+     await f3RoleSignIn({page,auth,uid:actor.uid,authentication,credentials:credentials.get(actor.uid)});
      await page.waitForFunction(uid=>window.firebase?.auth?.().currentUser?.uid===uid,actor.uid,{timeout:45000});
      await page.reload({waitUntil:'domcontentloaded',timeout:60000});await ready(page,actor,expected);
      const actual=await snapshot(page,actor),comparison=f3RoleCompare(actual,expected,actor,qa);
@@ -148,7 +166,7 @@ export async function createF3ShopperRoleQa({auth,db,qa,owner,outDir,rememberDoc
     let user;try{user=await auth.getUser(actor.uid);}catch(e){if(e.code!=='auth/user-not-found')throw e;}
     if(user){need(f3RoleAuthOwned(user,actor,owner),'AUTH_FAILURE:F3_ROLE_AUTH_CLEANUP_OWNER');await auth.deleteUser(actor.uid);state.cleanup.authDeleted.push(actor.uid);save();}
     try{await auth.getUser(actor.uid);throw Error('AUTH_FAILURE:F3_ROLE_AUTH_CLEANUP_READBACK');}catch(e){if(e.code!=='auth/user-not-found')throw e;}
-    state.cleanup.authAbsent.push(actor.uid);save();
+    credentials.delete(actor.uid);state.cleanup.authAbsent.push(actor.uid);save();
    }
    state.cleanup.complete=true;save();return true;
   }

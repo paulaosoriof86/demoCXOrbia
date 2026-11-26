@@ -6,6 +6,7 @@ import {pathToFileURL} from 'node:url';
 import {request as httpsRequest} from 'node:https';
 import {isMakeGraphWriterHintCompatible} from '../../backend/runtime/cxorbia-make-graph-provider-v1.mjs';
 import {readGoogleQaExecution,isVerifiedGoogleQaExecution,f3Job} from './cxorbia-i3-google-qa-execution.mjs';
+import {f3SyntheticCredentials,F3_SYNTHETIC_PASSWORD_AUTH} from './cxorbia-i3-f3-shopper-role-qa.mjs';
 
 // P0 B14 provider precondition only. NEVER a project HR binding, a deployment,
 // a production write, a canonical module PASS, or a substitute for application ACK.
@@ -364,10 +365,13 @@ export function f3AssertLostResponseReplay({command,owner,transport,before,after
 async function runF3EndpointProbe(){
   const env=process.env,manifest=JSON.parse(fs.readFileSync(env.CXORBIA_F3_QA_REMOTE_MANIFEST||'','utf8'));
   const google=readGoogleQaExecution(env,f3Job,env.CXORBIA_F3_QA_SOURCE_SHA,env.CXORBIA_F3_QA_SOURCE_TREE);
+  const passwordQa=env.CXORBIA_F3_QA_AUTH_MODE===F3_SYNTHETIC_PASSWORD_AUTH;
+  f3Need(!env.CXORBIA_F3_QA_AUTH_MODE||passwordQa&&isVerifiedGoogleQaExecution(google),'AUTH_FAILURE:F3_QA_AUTH_MODE');
   const {runId,runAttempt,owner}=assertF3EndpointScope(env,manifest,google),outPath=path.resolve(env.CXORBIA_B14_QA_RECEIPT||'.tmp/i3-b14-provider-qa/receipt.json');
   fs.mkdirSync(path.dirname(outPath),{recursive:true});
   const receipt={schemaVersion:'cxorbia.i3.f3.qa-endpoint.v1',state:'HOLD',decision:'PENDING',runId,runAttempt,qaOwner:owner,
     ...(google?{controlSha:google.controlSha,externalExecution:google}:{}),startedAt:new Date().toISOString(),
+    authentication:passwordQa?F3_SYNTHETIC_PASSWORD_AUTH:'FIREBASE_CUSTOM_TOKEN_QA_ONLY',
     sourceSha:env.CXORBIA_F3_QA_SOURCE_SHA,sourceTree:env.CXORBIA_F3_QA_SOURCE_TREE,sourceProof:'EXACT_PARENT_CERTIFIED_RUNTIME_PINS_REQUIRED',
     runtimeRevision:env.CXORBIA_F3_QA_RUNTIME_REVISION,runtimeDigest:env.CXORBIA_F3_QA_RUNTIME_DIGEST,hostingVersion:env.CXORBIA_F3_QA_HOSTING_VERSION,
     tenantId:'tya',projectId:F3_QA.projectId,periodId:F3_QA.periodId,baseUrl:F3_QA.baseUrl,remoteFixtureDigest:f3Digest(manifest),
@@ -382,7 +386,7 @@ async function runF3EndpointProbe(){
   const cloud=new GoogleAuth({scopes:['https://www.googleapis.com/auth/cloud-platform']});
   const cloudClient=await cloud.getClient(),principal=String(typeof cloudClient.getServiceAccountEmail==='function'?await cloudClient.getServiceAccountEmail():cloudClient.email||'');
   f3Need(google?google.signer===QA_PRINCIPAL:principal===QA_PRINCIPAL,'AUTH_FAILURE:F3_QA_SERVICE_ACCOUNT');
-  if(google){
+  if(google&&!passwordQa){
     let permissions;
     try{permissions=(await cloudClient.request({method:'POST',url:'https://iam.googleapis.com/v1/projects/-/serviceAccounts/'+encodeURIComponent(google.signer)+':testIamPermissions',
       data:{permissions:['iam.serviceAccounts.signBlob']},timeout:30000,retry:false})).data;}
@@ -390,8 +394,10 @@ async function runF3EndpointProbe(){
     f3Need(permissions.permissions?.includes('iam.serviceAccounts.signBlob'),'AUTH_FAILURE:F3_QA_SIGN_BLOB_PERMISSION');
     receipt.signerPreflight={signer:google.signer,signBlobPermitted:true,readAt:new Date().toISOString()};save();
   }
-  const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject,...(google?{serviceAccountId:google.signer}:{})},owner),auth=getAuth(app),db=getFirestore(app);
+  if(passwordQa){receipt.signerPreflight={required:false,reason:'EXISTING_FIREBASE_PASSWORD_PROVIDER_SYNTHETIC_ACCOUNTS_ONLY',iamGrants:0};save();}
+  const app=appSdk.initializeApp({credential:appSdk.applicationDefault(),projectId:F3_QA.firebaseProject,...(google&&!passwordQa?{serviceAccountId:google.signer}:{})},owner),auth=getAuth(app),db=getFirestore(app);
   const adminUid=owner+'-admin',claims={tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:[F3_QA.projectId],qaOwner:owner};
+  const adminLogin=passwordQa?f3SyntheticCredentials(adminUid):null;
   let token='',authCreated=false,baselineReady=false,baselineLock=null,lockPath='tenants/tya/commandReceipts/hr-scope-'+f3Digest('tya');
   const written=new Map(),commands=[],reconcilePaths=new Set(),projectPath='tenants/tya/projects/'+F3_QA.projectId;
   let shopperRoleQa=null;
@@ -542,17 +548,19 @@ async function runF3EndpointProbe(){
     receipt.scopeLockBaseline={path:lockPath,existed:lock.exists,data:f3SafeEvidence(baselineLock),digest:f3Digest(baselineLock),readAt:new Date().toISOString(),updateTime:lock.updateTime?.toDate?.().toISOString()||null};save();
     f3Need(!baselineLock||baselineLock.status==='committed','PERSISTENCE_FAILURE:F3_QA_RECONCILE_SCOPE_NOT_QUIESCENT');baselineReady=true;
     for(const rec of [...profiles,member]){written.set(rec.path,f3Digest(rec.data));await db.doc(rec.path).create(rec.data);f3Need(f3Same((await db.doc(rec.path).get()).data(),rec.data),'PERSISTENCE_FAILURE:F3_QA_SETUP_READBACK');}
-    authCreated=true;await auth.createUser({uid:adminUid,displayName:'CXOrbia isolated QA operator',disabled:false});await auth.setCustomUserClaims(adminUid,claims);
+    await auth.createUser({uid:adminUid,displayName:'CXOrbia isolated QA operator',disabled:false,...(adminLogin||{})});authCreated=true;await auth.setCustomUserClaims(adminUid,claims);
     const init=await httpJson(F3_QA.baseUrl+'/__/firebase/init.json');f3Need(init.body.projectId===F3_QA.firebaseProject&&!!init.body.apiKey,'AUTH_FAILURE:F3_QA_FIREBASE_CONFIG');
-    let custom=await auth.createCustomToken(adminUid,claims);const exchanged=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});custom='';
-    token=exchanged.body.idToken||'';f3Need(exchanged.status===200&&token,'AUTH_FAILURE:F3_QA_TOKEN_EXCHANGE');const decoded=await auth.verifyIdToken(token,true);f3Need(decoded.uid===adminUid&&decoded.role==='admin'&&decoded.tenantId==='tya'&&f3Same(decoded.projectIds,[F3_QA.projectId]),'AUTH_FAILURE:F3_QA_CLAIMS_READBACK');
+    let exchanged;
+    if(passwordQa){exchanged=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...adminLogin,returnSecureToken:true})});}
+    else{let custom=await auth.createCustomToken(adminUid,claims);exchanged=await httpJson('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(init.body.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});custom='';}
+    token=exchanged.body.idToken||'';f3Need(exchanged.status===200&&token,'AUTH_FAILURE:F3_QA_TOKEN_EXCHANGE');const decoded=await auth.verifyIdToken(token,true);f3Need(decoded.uid===adminUid&&decoded.role==='admin'&&decoded.authNamespace==='staff'&&decoded.qaOwner===owner&&decoded.tenantId==='tya'&&f3Same(decoded.projectIds,[F3_QA.projectId]),'AUTH_FAILURE:F3_QA_CLAIMS_READBACK');
     const baseline=await readLive();for(const row of baseline.rows)f3Need(row.shopperId==null&&row.agendada==null&&row.escenario==='CXOrbia QA Escenario A'&&row.tipoCombo==='CXOrbia QA Combo A','MAPPING_FAILURE:F3_QA_SEED_NOT_BASELINE');
     receipt.initialSourceRevision=baseline.revision;
     receipt.remoteBaseline={revision:baseline.revision,rows:baseline.rows.map(row=>({visitId:row.id||row.visitId,countryCode:row.country||row.pais,periodId:row.periodId,hrRowId:row.hrRowId,worksheetFingerprint:row.excelWorksheetFingerprint,values:Object.fromEntries(F3_QA.fields.map(key=>[key,row[key]??null]))})),readAt:new Date().toISOString()};save();
     await reconcile('initial');
     // Uses the same four existing QA profiles; does not claim automatic upsert.
     const {createF3ShopperRoleQa}=await import('./cxorbia-i3-f3-shopper-role-qa.mjs');
-    shopperRoleQa=await createF3ShopperRoleQa({auth,db,qa:F3_QA,owner,outDir:path.dirname(outPath),rememberDocument:rec=>written.set(rec.path,f3Digest(rec.data)),publish:value=>{receipt.shopperRoleProof=value;save();}});
+    shopperRoleQa=await createF3ShopperRoleQa({auth,db,qa:F3_QA,owner,outDir:path.dirname(outPath),authentication:receipt.authentication,rememberDocument:rec=>written.set(rec.path,f3Digest(rec.data)),publish:value=>{receipt.shopperRoleProof=value;save();}});
     try{await shopperRoleQa.prepare();await shopperRoleQa.capture('before',await readLive());}catch(error){shopperRoleQa.recordFailure(error);}
     let first;
     for(const country of F3_QA.countries){
@@ -628,7 +636,7 @@ async function runF3EndpointProbe(){
     if(cleanupErrors.length){receipt.cleanupErrors=cleanupErrors;receipt.decision='HOLD_F3_QA_CLEANUP_UNVERIFIED';process.exitCode=1;}
     receipt.recoveryRequired=(receipt.remoteCommandAttempts||[]).length>0&&receipt.remoteValuesRestored!==true;
     if(receipt.recoveryRequired)receipt.recoveryScope={qaOwner:owner,adminUid,projectPath,lockPath,commandAttempts:receipt.remoteCommandAttempts.length,rule:'PRESERVE_FIRESTORE_AUTH_MAKE_AND_QA_WORKSHEETS_UNTIL_EXACT_OWNED_RECOVERY_AND_FRESH_BASELINE_READBACK'};
-    token='';receipt.state='HOLD';receipt.finishedAt=new Date().toISOString();save();await appSdk.deleteApp(app);
+    token='';if(adminLogin)adminLogin.password='';receipt.state='HOLD';receipt.finishedAt=new Date().toISOString();save();await appSdk.deleteApp(app);
     console.log('CXORBIA_F3_QA_ENDPOINT_RECEIPT='+JSON.stringify({decision:receipt.decision,applicationAckProven:receipt.applicationAckProven,cases:receipt.cases.length,events:receipt.events.length,cleanup:receipt.cleanup,productionWrites:0,operationalHrWrites:0,b14Closed:false}));
   }
   }catch(error){

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {f3RoleActors,f3RoleExpected,f3RoleCompare,f3RoleMutationRequest,f3RoleAuthOwned,createF3ShopperRoleQa} from './cxorbia-i3-f3-shopper-role-qa.mjs';
+import vm from 'node:vm';
+import {f3RoleActors,f3RoleExpected,f3RoleCompare,f3RoleMutationRequest,f3RoleAuthOwned,createF3ShopperRoleQa,f3SyntheticCredentials,F3_SYNTHETIC_PASSWORD_AUTH,f3RoleSignIn} from './cxorbia-i3-f3-shopper-role-qa.mjs';
 const qa={tenantId:'tya',projectId:'f3-qa-20261124',periodId:'f3-qa-20261124-2026-11',baseUrl:'https://cxorbia-backend-dev.web.app',visits:{GT:'qa-visit-gt',HN:'qa-visit-hn'}};
 const owner='f3-qa-45527777777-1',actors=f3RoleActors(owner,qa);
 function live(assigned=false){return{revision:'a'.repeat(64),rows:actors.map(a=>({id:qa.visits[a.country],tenantId:'tya',projectId:qa.projectId,periodId:qa.periodId,country:a.country,shopperId:assigned?a.shopperId:null,canonicalFacets:{available:!assigned,assigned}}))};}
@@ -47,4 +48,26 @@ test('member or Auth ownership drift blocks deletion',async()=>{
 test('only an exact newly created empty-claims account can recover a failed claims setup',()=>{
  assert.equal(f3RoleAuthOwned({uid:actors[0].uid,displayName:actors[0].displayName,customClaims:{}},actors[0],owner),true);
  assert.equal(f3RoleAuthOwned({uid:actors[0].uid,displayName:'foreign',customClaims:{}},actors[0],owner),false);
+});
+test('synthetic password credentials are unique, fixture-only and absent from published evidence',async()=>{
+ const a=f3SyntheticCredentials(actors[0].uid),b=f3SyntheticCredentials(actors[0].uid);
+ assert.equal(a.email,actors[0].uid+'@cxorbia.invalid');assert.notEqual(a.password,b.password);assert.ok(a.password.length>=40);
+ assert.throws(()=>f3SyntheticCredentials('real-shopper'),/ACTOR_SCOPE/);
+ const p=providers(),q=await createF3ShopperRoleQa({...p.args,authentication:F3_SYNTHETIC_PASSWORD_AUTH});await q.prepare();
+ for(const user of p.users.values()){
+  assert.equal(user.email,user.uid+'@cxorbia.invalid');assert.ok(user.password.length>=40);
+  assert.equal(JSON.stringify(p.published).includes(user.password),false);assert.equal(JSON.stringify(p.published).includes(user.email),false);
+ }
+ assert.equal(q.state.authentication,F3_SYNTHETIC_PASSWORD_AUTH);assert.equal(q.state.ordinaryPasswordProven,false);
+ p.members.clear();assert.equal(await q.cleanupAuth(true),true);
+});
+test('password QA signs in through Firebase password provider and never requests custom-token signing',async()=>{
+ const calls=[],credentials=f3SyntheticCredentials(actors[0].uid),instance={async setPersistence(value){calls.push(['persist',value]);},async signInWithEmailAndPassword(email,password){calls.push(['password',email,password]);},async signInWithCustomToken(){throw Error('UNEXPECTED_CUSTOM_TOKEN');}};
+ const firebase={auth:Object.assign(()=>instance,{Auth:{Persistence:{SESSION:'session'}}})};
+ const page={evaluate:(fn,arg)=>vm.runInNewContext('('+fn.toString()+')(argument)',{firebase,argument:arg})};
+ const auth={async createCustomToken(){throw Error('UNEXPECTED_IAM_SIGNING');}};
+ await f3RoleSignIn({page,auth,uid:actors[0].uid,authentication:F3_SYNTHETIC_PASSWORD_AUTH,credentials});
+ assert.deepEqual(calls,[['persist','session'],['password',credentials.email,credentials.password]]);
+ await assert.rejects(f3RoleSignIn({page,auth,uid:actors[1].uid,authentication:F3_SYNTHETIC_PASSWORD_AUTH,credentials}),/ACTOR_CREDENTIALS/);
+ assert.equal(f3RoleMutationRequest('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword','POST',qa),false);
 });
