@@ -20,6 +20,9 @@ curl() {
   echo "$url" >> "$FOCAL_OUT/calls"
   case "$MODE" in
     mapping) echo '{"message":"MAPPING_FAILURE:fake-private-detail"}' > "$out"; printf 503; return ;;
+    mapping200) echo '{"ok":false,"error":{"code":"MAPPING_FAILURE:fake-private-detail"}}' > "$out"; printf 200; return ;;
+    auth200) echo '{"ok":false,"code":"AUTH_FAILURE:fake-private-detail"}' > "$out"; printf 200; return ;;
+    auth403) echo '{"error":"MAPPING_FAILURE:fake-private-detail"}' > "$out"; printf 403; return ;;
     denied) : > "$out"; printf 403; return ;;
     limited) echo '{}' > "$out"; printf 429; return ;;
     timeout) printf 000; return 28 ;;
@@ -48,6 +51,10 @@ probe() {
   else
     [[ "$rc" != 0 && ! -e "$GITHUB_ENV" ]]
     jq -e --arg c "$expected" --argjson t "$transient" '.classification==$c and .transient==$t and .automaticRetries==0 and .runId=="immutable-run"' "$FOCAL_OUT/strict-hr-failure.json" >/dev/null
+    jq -e '.quarantineSameAttempt==(.classification=="MAPPING_FAILURE" or .classification=="AUTH_FAILURE")' "$FOCAL_OUT/strict-hr-failure.json" >/dev/null
+    if [[ "$MODE" == mapping200 || "$MODE" == auth200 ]]; then
+      jq -e '.bodySha256|test("^[a-f0-9]{64}$")' "$FOCAL_OUT/strict-hr-failure.json" >/dev/null
+    fi
     if grep -Rq fake-private-detail "$FOCAL_OUT"; then exit 1; fi
   fi
   echo "PASS $MODE"
@@ -60,3 +67,6 @@ probe timeout PROVIDER_FAILURE 1 true
 probe empty FUNCTIONAL_DEFECT 1 false
 probe truncated FUNCTIONAL_DEFECT 1 false
 probe invalid-visits FUNCTIONAL_DEFECT 2 false
+probe mapping200 MAPPING_FAILURE 1 false
+probe auth200 AUTH_FAILURE 1 false
+probe auth403 AUTH_FAILURE 1 false

@@ -19,16 +19,22 @@ for format in meta json; do
     "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=$format&vrm154156=$correlation")" || rc=$?
   classification=''
   transient=false
+  marker=''
+  if [[ -s "$response" ]]; then
+    marker="$(jq -er --arg status "$status" '
+      select(type=="object" and ($status!="200" or .ok==false or .error!=null)) |
+      [.message,.code,.error,(.error | objects | .code,.message)] |
+      map(strings | capture("^(?<kind>MAPPING_FAILURE|AUTH_FAILURE|PERSISTENCE_FAILURE|PROVIDER_FAILURE)(:|$)").kind) |
+      first // empty' "$response" 2>/dev/null || true)"
+  fi
   if ((rc != 0)); then
     classification=PROVIDER_FAILURE
     case "$rc" in 6|7|18|28|52|55|56) transient=true ;; esac
-  elif [[ "$status" != 200 ]]; then
-    marker="$(jq -r '[.message,.code,.error] | map(select(type=="string")) | map(capture("^(?<kind>MAPPING_FAILURE|AUTH_FAILURE|PERSISTENCE_FAILURE|PROVIDER_FAILURE)(:|$)") | .kind) | first // empty' "$response" 2>/dev/null || true)"
-    case "$status" in
-      401|403) classification=AUTH_FAILURE ;;
-      *) classification="${marker:-PROVIDER_FAILURE}"
-         if [[ "$classification" == PROVIDER_FAILURE && "$status" =~ ^(408|429|5[0-9]{2})$ ]]; then transient=true; fi ;;
-    esac
+  elif [[ "$status" == 401 || "$status" == 403 ]]; then
+    classification=AUTH_FAILURE
+  elif [[ -n "$marker" || "$status" != 200 ]]; then
+    classification="${marker:-PROVIDER_FAILURE}"
+    if [[ "$classification" == PROVIDER_FAILURE && "$status" =~ ^(408|429|5[0-9]{2})$ ]]; then transient=true; fi
   elif [[ ! -s "$response" ]]; then
     classification=FUNCTIONAL_DEFECT
   elif [[ "$format" == meta ]]; then
@@ -39,10 +45,12 @@ for format in meta json; do
     classification=FUNCTIONAL_DEFECT
   fi
   if [[ -n "$classification" ]]; then
-    jq -n --arg run "$correlation" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" \
+    body_hash=''
+    if [[ -f "$response" ]]; then body_hash="$(sha256sum "$response" | cut -d' ' -f1)"; fi
+    jq -n --arg bodyHash "$body_hash" --arg source "${FOCAL_SOURCE:-}" --arg run "$correlation" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" \
       --arg probe "$format" --arg http "$status" --arg classification "$classification" \
       --argjson curlExit "$rc" --argjson transient "$transient" \
-      '{runId:$run,tenantId:$tenant,projectId:$project,probe:$probe,httpStatus:$http,curlExit:$curlExit,classification:$classification,transient:$transient,automaticRetries:0}' > "$FOCAL_OUT/strict-hr-failure.json"
+      '{runId:$run,tenantId:$tenant,projectId:$project,probe:$probe,httpStatus:$http,curlExit:$curlExit,classification:$classification,transient:$transient,automaticRetries:0,sourceSha:(if ($source|test("^[a-f0-9]{40}$")) then $source else null end),bodySha256:(if $bodyHash=="" then null else $bodyHash end),quarantineSameAttempt:($classification=="MAPPING_FAILURE" or $classification=="AUTH_FAILURE")}' > "$FOCAL_OUT/strict-hr-failure.json"
     exit 1
   fi
   mv "$response" "$FOCAL_OUT/$file"

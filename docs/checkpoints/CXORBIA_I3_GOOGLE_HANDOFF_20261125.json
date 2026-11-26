@@ -893,7 +893,7 @@
     },
     "portDec040ChatHandoffs": {
       "path": "docs/checkpoints/CXORBIA_I3_CHAT_HANDOFFS_20261126.json",
-      "gitBlob": "0c8129be509b839a9a5fa46c63189a58fc9f6577",
+      "gitBlob": "641efa02a4465aede2271996855e7fe816e2768e",
       "decisionId": "PORT-DEC-040"
     },
     "pendingE10NativeSource": {
@@ -918,7 +918,7 @@
     },
     "e10Feea0c34AndE08Finance": {
       "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_AND_E08_SEPTEMBER_20261126.json",
-      "gitBlob": "f9cc9ac8f47bf3a3fba481922fbaa0f2bc3beaa3"
+      "gitBlob": "4935f46dc7c0546a56f63ed002c510924df483a2"
     }
   },
   "lastChromeConnection": {
@@ -965,7 +965,8 @@
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Source feea0c34 preserves original ordinary project listings and registers source, audit and conflict records. Native ACK, password session replay and exact cleanup are verified. Compose exact rules through the existing DEV release controls before exercising the served UI.",
-    "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK."
+    "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",
+    "financeSeptember": "41/44 visit identity references verified, 3 require authoritative per-visit evidence. Amount, allocation and external bank confirmation remain independent. Use the September per-visit receipts before any financial command."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,

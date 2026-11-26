@@ -96,7 +96,7 @@
       },
       "latestNativeSourceAndRulesCompatibility": {
         "path": "docs/checkpoints/CXORBIA_I3_E10_FEEA0C34_AND_E08_SEPTEMBER_20261126.json",
-        "gitBlob": "f9cc9ac8f47bf3a3fba481922fbaa0f2bc3beaa3"
+        "gitBlob": "4935f46dc7c0546a56f63ed002c510924df483a2"
       }
     },
     {
@@ -119,7 +119,16 @@
           "makeCreditsReserved": false
         },
         "failedResult": "Native checkpoint with independent GCS readback before propagating failure. GitHub keeps the existing always-upload artifact. Physical failure publication not exercised.",
-        "rollback": "Revert the QA owner change as a unit without redeploying the runtime."
+        "rollback": "Revert the QA owner change as a unit without redeploying the runtime.",
+        "strictFailureFollowup": {
+          "casesPassed": 11,
+          "explicitMappingAndAuthHttp200": true,
+          "httpAuthStatusPrioritized": true,
+          "sameAttemptAutomaticRetries": 0,
+          "receiptIncludesBodyFingerprintAndSourceWhenAvailable": true,
+          "backendQuarantineAcrossIndependentMaterializations": "not certified",
+          "controlledWrites": 0
+        }
       }
     },
     {

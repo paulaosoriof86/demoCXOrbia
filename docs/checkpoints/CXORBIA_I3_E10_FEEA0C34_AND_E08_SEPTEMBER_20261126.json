@@ -57,7 +57,14 @@
     },
     "served": false,
     "release": "RELEASE_COMPOSITION_FAILURE: runtime/hosting guard excludes rules, paired seal requires unchanged ruleset and the canonical result consumer requires zero rules deploys.",
-    "rulesActuallyDeployed": 0
+    "rulesActuallyDeployed": 0,
+    "rulesChangeRequested": {
+      "oldRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+      "oldSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+      "proposedBlob": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1",
+      "proposedSha256": "751b1074d76704a972926dcf6df8593c30ac19c5baf7a2d87d71f8b6bb52b22d",
+      "reason": "Exact one-ruleset transition in the existing DEV release job. Canonical contract currently requires zero; no deployment while this explicit scope change is pending."
+    }
   },
   "finance": {
     "period": "cinepolis-2026-09",
@@ -81,6 +88,38 @@
       "generation": "1795718584765998",
       "sha256": "2fedc15503239a11303a6808fd230031bf4fd8f2f6a4bdc3d25023e9b6db9298",
       "byteReadbackVerified": true
+    },
+    "subsequentPerVisitReadback": {
+      "outcome": "41 of 44 visits have matching recorded IDs or a verified unique canonical reference; this is identity-only evidence.",
+      "directIdMatches": 32,
+      "differentIdsResolvedAgainstCanonicalProfiles": 9,
+      "periodTotal": 44,
+      "residualMissingAuthorizedAlias": 1,
+      "residualHistoricalToMultipleCurrent": 2,
+      "identityWrites": 0,
+      "financeWrites": 0,
+      "bankWrites": 0,
+      "paymentEligibilityAssertions": 0,
+      "method": "For each differing visit, match the historical reconciliation by the exact visit keys, enumerate every currently authorized independent alias for each ID in the tenant/project, verify unique canonical profile and reread the visit, scoped reconciliations and authority records. Retain multi-current and missing-source cases for visit-specific adjudication.",
+      "intermediateAndFinalNativeEvidence": [
+        {
+          "name": "september-five-identity-links.json",
+          "generation": "1795719147909167",
+          "sha256": "f741e59c611a5ffb17bf74e8d3b8091be25030a17fe6b446e46cc57f6ca4d106"
+        },
+        {
+          "name": "september-canonical-profiles.json",
+          "generation": "1795719198992569",
+          "sha256": "f60b964d904f0299ec3f7b39c5142b235b21ad1e6f95529a6d8e00648dedb7b1"
+        },
+        {
+          "name": "september-all-identities.json",
+          "generation": "1795719252460558",
+          "sha256": "cd739b111715bcfec2ee7014c4b50e1c5564acc0a80479d9142ccc48b5acbdbe"
+        }
+      ],
+      "gcsPrefix": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/2f54ef2415ac49b2b08d7e4881bb4e30/",
+      "allObjectsIndependentlyRevalidated": true
     }
   },
   "e08": {
