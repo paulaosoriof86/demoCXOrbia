@@ -1,0 +1,542 @@
+{
+  "schemaVersion": "cxorbia.i3.mapping-failure.original-hr-header-drift.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "MAPPING_FAILURE",
+  "scope": "Strict read of the original GT November 2026 worksheet in project cinepolis",
+  "source": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "predecessor": "d727f3be67a4430f08216dbb37cccba790f934f5",
+  "pairedExecution": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+  "runtime": "cxorbia-live-hr-dev-00394-hdd",
+  "predecessorRun": "5670f782-19af-47aa-bdda-47cf94c689f2",
+  "readProviderScenario": 10200465,
+  "logObservedAt": "2026-11-26T15:04:53.953642Z",
+  "logError": "MAPPING_FAILURE:B14_HEADER_AMBIGUOUS_OR_MISSING",
+  "owners": {
+    "backend/runtime/cxorbia-make-graph-provider-v1.mjs": "7f638cc27347fdea658446ab88fc45c2a764372f",
+    "backend/contracts/tya-hr-column-map-r20-v1.json": "5aa5382054a7d125ccd060914619e3920dd56bcd"
+  },
+  "observations": [
+    {
+      "id": "e3812ce8275648ce802333c4a7d236aa",
+      "startedAt": "2026-11-26T15:04:47.104Z",
+      "credits": 3,
+      "status": "success",
+      "scope": [
+        "tya",
+        "cinepolis",
+        "GT",
+        "cinepolis-2026-11"
+      ],
+      "range": "A1:AI140",
+      "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+      "bothReturnSameHeader": true,
+      "sameArray": true,
+      "hashPair": [
+        "08bc7dc00ac2461bd024c3760e210ec242ccc44627195a845ad12bedcd92e43f",
+        "08bc7dc00ac2461bd024c3760e210ec242ccc44627195a845ad12bedcd92e43f"
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "statusPair": [
+        200,
+        200
+      ],
+      "modules": [
+        [
+          1,
+          "scenario-service: StartSubscenario",
+          1,
+          0
+        ],
+        [
+          5,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          2,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          3,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          4,
+          "scenario-service: ReturnData",
+          1,
+          0
+        ]
+      ],
+      "worksheetIdSha256": "56ef6c5e49b7d46575a4fb0ea6e0c33771b7af9e07859c57595ca538794e4312",
+      "header": [
+        "|",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN ",
+        "Shopping ",
+        "Franja Horaria",
+        "Formato de Cine",
+        "Tipo de Combo",
+        "Tipo de Compra",
+        "Método de Pago",
+        "Quincena",
+        "Columna1",
+        "Telefono",
+        "Mail",
+        "Disponible a partir de",
+        "Fecha  programada",
+        "Control día s/ franja horaria",
+        "Fecha realizada",
+        "Control Realizada",
+        "Ccuestionario \ncompletado",
+        "Control Cuest completado",
+        "Precio de boleto",
+        "Precio de combo",
+        "N° Encuesta",
+        "Honorarios",
+        "Revisor",
+        "Control GT",
+        "Observaciones\nde revisión",
+        "Fecha  submitido",
+        "Control Submitida",
+        "Obsevaciones a tener en cuenta en informe gerencial",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "headerSha256": "770a16d93a56ab3c9719e02490025b90a4831e5fc058538cf2afaa19c78d3874"
+    },
+    {
+      "id": "ecd6b02ca85c48f39fa8cc266d27f440",
+      "startedAt": "2026-11-25T23:41:56.198Z",
+      "credits": 3,
+      "status": "success",
+      "scope": [
+        "tya",
+        "cinepolis",
+        "GT",
+        "cinepolis-2026-11"
+      ],
+      "range": "A1:AI140",
+      "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+      "bothReturnSameHeader": true,
+      "sameArray": true,
+      "hashPair": [
+        "960da68790e444464aa3926b7aabc4dbbbbb78355b617175ec50169fca184418",
+        "960da68790e444464aa3926b7aabc4dbbbbb78355b617175ec50169fca184418"
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "statusPair": [
+        200,
+        200
+      ],
+      "modules": [
+        [
+          1,
+          "scenario-service: StartSubscenario",
+          1,
+          0
+        ],
+        [
+          5,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          2,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          3,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          4,
+          "scenario-service: ReturnData",
+          1,
+          0
+        ]
+      ],
+      "worksheetIdSha256": "56ef6c5e49b7d46575a4fb0ea6e0c33771b7af9e07859c57595ca538794e4312",
+      "header": [
+        "|",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN ",
+        "Shopping ",
+        "Franja Horaria",
+        "Formato de Cine",
+        "Tipo de Combo",
+        "Tipo de Compra",
+        "Método de Pago",
+        "Quincena",
+        "Shopper Asignado",
+        "Telefono",
+        "Mail",
+        "Disponible a partir de",
+        "Fecha  programada",
+        "Control día s/ franja horaria",
+        "Fecha realizada",
+        "Control Realizada",
+        "Ccuestionario \ncompletado",
+        "Control Cuest completado",
+        "Precio de boleto",
+        "Precio de combo",
+        "N° Encuesta",
+        "Honorarios",
+        "Revisor",
+        "Control GT",
+        "Observaciones\nde revisión",
+        "Fecha  submitido",
+        "Control Submitida",
+        "Obsevaciones a tener en cuenta en informe gerencial",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "headerSha256": "5212857b4f7437a273065d46727898c69c39848d9fba64356276bcf8f9e007cf"
+    },
+    {
+      "id": "3380d623fc69466cba6b040cbb308a7d",
+      "startedAt": "2026-11-26T15:04:47.099Z",
+      "credits": 3,
+      "status": "success",
+      "scope": [
+        "tya",
+        "cinepolis",
+        "HN",
+        "cinepolis-2026-10"
+      ],
+      "range": "A1:AI140",
+      "bindingFingerprint": "c922ad0869d85f70ac84d1832f97cbf56a092e529757d1595c43b42592a937d9",
+      "bothReturnSameHeader": true,
+      "sameArray": true,
+      "hashPair": [
+        "1c7d8d15364a05cd1676448c4d40ef54b486b9b0fe088c72cb9c1dd37381a5a2",
+        "1c7d8d15364a05cd1676448c4d40ef54b486b9b0fe088c72cb9c1dd37381a5a2"
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "statusPair": [
+        200,
+        200
+      ],
+      "modules": [
+        [
+          1,
+          "scenario-service: StartSubscenario",
+          1,
+          0
+        ],
+        [
+          5,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          2,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          3,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          4,
+          "scenario-service: ReturnData",
+          1,
+          0
+        ]
+      ],
+      "worksheetIdSha256": "5ee30bb54db7f85058846ad4fe9434dad221547085b5f0d6b7d2e302ab296f6f",
+      "header": [
+        "País",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN ",
+        "Shopping ",
+        "Franja Horaria",
+        "Formato de Cine",
+        "Tipo de Combo",
+        "Tipo de Compra",
+        "Método de Pago",
+        "Quincena",
+        "Shopper Asignado",
+        "Teléfono",
+        "Mail",
+        "Disponible a partir de",
+        "Fecha  programada",
+        "Control día s/ franja horaria",
+        "Fecha  realizada",
+        "Control Realizada",
+        "Fecha Cuestionario \ncompletado",
+        "Control Cuest completado",
+        "Precio de boleto",
+        "Precio de combo",
+        "N° Encuesta",
+        "Honorarios",
+        "Revisor HN",
+        "Revisor",
+        "Observaciones\nde revisión",
+        "Fecha  submitido",
+        "Control Submitida",
+        "Obsevaciones a tener en cuenta en informe gerencial",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "headerSha256": "8ec0dd05b31b85465f21e15e535c6287cc151cd69d30fc13d824213f374d3368"
+    },
+    {
+      "id": "6223c6337e6a456ab3f9671dff87133b",
+      "startedAt": "2026-11-26T15:04:47.096Z",
+      "credits": 3,
+      "status": "success",
+      "scope": [
+        "tya",
+        "cinepolis",
+        "GT",
+        "cinepolis-2026-10"
+      ],
+      "range": "A1:AI140",
+      "bindingFingerprint": "1e1057e06108e0cbe981826c9e4f68229c171a656e02a39b4f6ddfda3b80d106",
+      "bothReturnSameHeader": true,
+      "sameArray": true,
+      "hashPair": [
+        "d00f1fbbc0b8ed11892c735281057c9ace077c6df25190147cb51757ac833f2b",
+        "d00f1fbbc0b8ed11892c735281057c9ace077c6df25190147cb51757ac833f2b"
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "statusPair": [
+        200,
+        200
+      ],
+      "modules": [
+        [
+          1,
+          "scenario-service: StartSubscenario",
+          1,
+          0
+        ],
+        [
+          5,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          2,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          3,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          4,
+          "scenario-service: ReturnData",
+          1,
+          0
+        ]
+      ],
+      "worksheetIdSha256": "3678bc606cffcda32911fbd7cbc9b72d4f678a37e8bba747e51fa375e8ba32a0",
+      "header": [
+        "|",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN ",
+        "Shopping ",
+        "Franja Horaria",
+        "Formato de Cine",
+        "Tipo de Combo",
+        "Tipo de Compra",
+        "Método de Pago",
+        "Quincena",
+        "Shopper Asignado",
+        "Telefono",
+        "Mail",
+        "Disponible a partir de",
+        "Fecha  programada",
+        "Control día s/ franja horaria",
+        "Fecha realizada",
+        "Control Realizada",
+        "Ccuestionario \ncompletado",
+        "Control Cuest completado",
+        "Precio de boleto",
+        "Precio de combo",
+        "N° Encuesta",
+        "Honorarios",
+        "Revisor",
+        "Control GT",
+        "Observaciones\nde revisión",
+        "Fecha  submitido",
+        "Control Submitida",
+        "Obsevaciones a tener en cuenta en informe gerencial",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "headerSha256": "5212857b4f7437a273065d46727898c69c39848d9fba64356276bcf8f9e007cf"
+    },
+    {
+      "id": "851805789b734f63b128a8c84c2831a5",
+      "startedAt": "2026-11-26T15:04:47.054Z",
+      "credits": 3,
+      "status": "success",
+      "scope": [
+        "tya",
+        "cinepolis",
+        "HN",
+        "cinepolis-2026-11"
+      ],
+      "range": "A1:AI140",
+      "bindingFingerprint": "55ac434389337a2575bdc5e8bfb54aaaa9081353799717033f15ba71ba400b09",
+      "bothReturnSameHeader": true,
+      "sameArray": true,
+      "hashPair": [
+        "1de81bf38cd92a4b6bd489b27d6b47c939b40ac8c8fcc44e93d80cdb5d4bba0f",
+        "1de81bf38cd92a4b6bd489b27d6b47c939b40ac8c8fcc44e93d80cdb5d4bba0f"
+      ],
+      "rowCount": [
+        140,
+        140
+      ],
+      "statusPair": [
+        200,
+        200
+      ],
+      "modules": [
+        [
+          1,
+          "scenario-service: StartSubscenario",
+          1,
+          0
+        ],
+        [
+          5,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          2,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          3,
+          "onedrive: makeApiCall",
+          1,
+          0
+        ],
+        [
+          4,
+          "scenario-service: ReturnData",
+          1,
+          0
+        ]
+      ],
+      "worksheetIdSha256": "4af0b5b23d4033ba3ce94e2141d2b94ca3966785792ee9f3340857a1b4fb6667",
+      "header": [
+        "País",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN ",
+        "Shopping ",
+        "Franja Horaria",
+        "Formato de Cine",
+        "Tipo de Combo",
+        "Tipo de Compra",
+        "Método de Pago",
+        "Quincena",
+        "Shopper Asignado",
+        "Teléfono",
+        "Mail",
+        "Disponible a partir de",
+        "Fecha  programada",
+        "Control día s/ franja horaria",
+        "Fecha  realizada",
+        "Control Realizada",
+        "Fecha Cuestionario \ncompletado",
+        "Control Cuest completado",
+        "Precio de boleto",
+        "Precio de combo",
+        "N° Encuesta",
+        "Honorarios",
+        "Revisor HN",
+        "Revisor",
+        "Observaciones\nde revisión",
+        "Fecha  submitido",
+        "Control Submitida",
+        "Obsevaciones a tener en cuenta en informe gerencial",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "headerSha256": "8ec0dd05b31b85465f21e15e535c6287cc151cd69d30fc13d824213f374d3368"
+    }
+  ],
+  "ownerTruth": {
+    "strictValidatorAndContract": "MATCH_SERVING_PREDECESSOR",
+    "changedInput": "Original worksheet header L4 on the registered GT November range changed between the two native reads. Every other header string is byte-identical.",
+    "otherScopes": "HN October, HN November, and GT October each validate with the approved contract.",
+    "sourceConnection": "Same worksheet ID hash, binding fingerprint, period, country and range. Two distinct OneDrive reads per execution report 200 and match byte-for-byte.",
+    "directEffect": "The missing critical Shopper Asignado label prevents establishing assignment semantics for this sheet. A generic column label cannot identify a critical business field."
+  },
+  "proof": {
+    "path": "docs/checkpoints/CXORBIA_I3_GT_NOV_HEADER_DRIFT_REPRO_20261126.mjs",
+    "sha256": "d24a682a14172a1897fa4571c5f48bc9a236a29b7242936736d8575218aa7698",
+    "type": "OFFLINE_WITH_REAL_OBSERVED_HEADER_ROW_ONLY",
+    "before": "Current GT November rejected by both the old and new code",
+    "counterfactual": "Replacing only L4 in a disposable copy restores the accepted variant; no workbook update executed"
+  },
+  "operatorScope": {
+    "reviewCreditSpend": 0,
+    "liveTestRunsDispatched": 0,
+    "sourceMutations": 0,
+    "providerMutations": 0,
+    "production": false
+  },
+  "otherSignals": {
+    "mcpTimeoutObserved": true,
+    "timeoutCausality": "Separate provider request timeouts occurred; the successful 200 responses independently reproduce the deterministic mapping failure."
+  },
+  "nextExactAction": "The authoritative workbook owner can recover the verified header on the original GT November L4 (Columna1 to Shopper Asignado). Validate the exact identities and compare the expected prior value immediately before any authorized edit. Re-read the same bound range independently and finish the readback of the previously deployed exact source. Never use a generic label as an implicit mapping."
+}

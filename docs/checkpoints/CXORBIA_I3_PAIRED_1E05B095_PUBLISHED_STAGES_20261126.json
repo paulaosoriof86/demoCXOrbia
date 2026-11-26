@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "cxorbia.i3.partial-paired-dev-stages.v1",
+  "decision": "OBSERVED_RUNTIME_AND_HOSTING",
+  "production": false,
+  "sealed": false,
+  "native": {
+    "controlSha": "d79fd6af106ba299a33594f9f8c1fcae61bcb5a8",
+    "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+    "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+    "requestBlob": "54c1f90198dfc3f6c65910bc9d813c678b2d61bd",
+    "predecessorReceiptBlob": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608",
+    "id": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+    "project": "cxorbia-backend-dev",
+    "stepId": "vrm154-156-dev-materialization",
+    "stepStatus": "FAILURE",
+    "status": "FAILURE",
+    "launchTag": "cxorbia-hr-pair-9117f6ebeb16-243c7e80-a1",
+    "finishedAt": "2026-11-26T15:12:25.879443Z",
+    "startedAt": "2026-11-26T14:58:40.002770844Z",
+    "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com"
+  },
+  "checkpoints": {
+    "start": {
+      "body": {
+        "stage": "start",
+        "executionProvider": "GOOGLE_CLOUD_BUILD",
+        "executionId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+        "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+        "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+        "imageBuildId": "d980c8f4-c1ea-460b-8e27-0aacdf087e37",
+        "digest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+        "predecessorReceipt": "c2a133b11ff8b7a8c6eb20e1086739b461f3d608"
+      },
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/1e05b095-fb3a-4998-9a31-479cb2471eb4/start.json",
+      "generation": "1795705205700942",
+      "sha256": "6d53509d67152202a61f2b69abe511d176de6a1feeeb7405cc6052c04cc22044"
+    },
+    "runtime": {
+      "body": {
+        "stage": "runtime",
+        "executionProvider": "GOOGLE_CLOUD_BUILD",
+        "executionId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+        "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+        "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+        "imageBuildId": "d980c8f4-c1ea-460b-8e27-0aacdf087e37",
+        "digest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+        "revision": "cxorbia-live-hr-dev-00394-hdd",
+        "trafficPercent": 100
+      },
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/1e05b095-fb3a-4998-9a31-479cb2471eb4/runtime.json",
+      "generation": "1795705323150185",
+      "sha256": "09c5e07264d4a28657444e6c9ea14b30f8ee02bf2b4e92a9050dcdbc6683140f"
+    },
+    "hosting": {
+      "body": {
+        "stage": "hosting",
+        "executionProvider": "GOOGLE_CLOUD_BUILD",
+        "executionId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+        "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+        "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+        "imageBuildId": "d980c8f4-c1ea-460b-8e27-0aacdf087e37",
+        "digest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+        "version": "sites/cxorbia-backend-dev/versions/c8326f6325145f69",
+        "release": "sites/cxorbia-backend-dev/channels/live/releases/1795705334899000"
+      },
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/1e05b095-fb3a-4998-9a31-479cb2471eb4/hosting.json",
+      "generation": "1795705352775628",
+      "sha256": "a606ef6152d793321056cf44a8ea7a55f9b32c5b8183233519593272fb4c9cca"
+    }
+  },
+  "identity": {
+    "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+    "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+    "runtimeRevision": "cxorbia-live-hr-dev-00394-hdd",
+    "runtimeDigest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c8326f6325145f69",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795705334899000",
+    "runId": "1e05b095-fb3a-4998-9a31-479cb2471eb4"
+  },
+  "independentReadback": {
+    "at": "2026-11-26T15:17:51.060420+00:00",
+    "trafficPercent": 100,
+    "servingSource": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+    "runtimeDigest": "sha256:243c7e80949624353458020234a2b984cabb2bcd9fe06f4c70245e436aa641e8",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c8326f6325145f69",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1795705334899000"
+  }
+}

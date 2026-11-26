@@ -685,6 +685,19 @@ export async function consumeGoogleMaterialization({api,buildId,location,expecte
   archive=await archiveReader({buildId,location,expected},readNative);
   const result=readJson(path.join(archive.folder,'result.json')),hrWindowFile=path.join(archive.folder,'hr-window-readback.json'),mailboxFile=path.join(archive.folder,'mailbox-environment-readback.json');
   must(result.sourceSha===expected.sourceSha&&result.sourceTree===expected.sourceTree&&treeReader(result.sourceSha)===result.sourceTree,'SOURCE_FAILURE:GOOGLE_PRODUCT_TREE');
+  const partial=producer.descriptor.pendingDevSuccessor.publicationReadback;
+  if(partial){
+    const stageBytes=await producer.readBytes(partial.stageReceipt.path),stage=JSON.parse(stageBytes);
+    const recovery=result.publishedStageRecovery;
+    must(gitBlob(stageBytes)===partial.stageReceipt.gitBlob&&recovery?.mode==='EXISTING_NATIVE_STAGES_READBACK_ONLY'&&
+      recovery.publicationRunId===stage.native.id&&stage.native.status==='FAILURE'&&recovery.publicationRunId!==buildId&&
+      ['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion','hostingRelease'].every(k=>stage.identity[k]===recovery[k]&&recovery[k]===result[k])&&
+      ['builds','runtimeDeploys','hostingDeploys'].every(k=>recovery[k]===0&&result[k]===0)&&recovery.trafficChanges===0&&
+      ['stageReceipt','failureReceipt','verifiedMappingReadback'].every(k=>recovery[k]?.gitBlob===partial[k].gitBlob&&recovery[k].path===partial[k].path),
+      'SOURCE_FAILURE:GOOGLE_PUBLISHED_STAGE_RECOVERY');
+  }else{
+    must(!result.publishedStageRecovery,'SOURCE_FAILURE:GOOGLE_UNBOUND_READBACK_ONLY');
+  }
   const bundle=makeMaterializationReceipt({externalExecution:archive.externalExecution,result,
    hrResult:readJson(path.join(archive.folder,'hr-after/result.json')),hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,
    requireHrWindow:producer.descriptor.pendingDevSuccessor.hrPeriodWindowRequired===true,

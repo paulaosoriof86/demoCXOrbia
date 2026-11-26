@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {createHash} from 'node:crypto';
 import {readBoundedF3CellProof} from './cxorbia-i3-current-control-projection.mjs';
 import {hasTerminalAcceptance} from './cxorbia-i3-terminal-module-domain-coverage.mjs';
 import {execFileSync} from 'node:child_process';
@@ -247,6 +248,66 @@ for(const id of active){
   if(/CXORBIA_PREI4_SOURCE_SHA:\s*\$\{\{\s*github\.sha\s*\}\}/.test(body)||/PRODUCT_SOURCE:\s*\$\{\{\s*github\.sha\s*\}\}/.test(body))fail('RELEASE_COMPOSITION_FAILURE:ACTIVE_JOB_GITHUB_SHA_AS_PRODUCT_AUTHORITY',id);
 }
 
+// A failed HR contract can follow successful runtime and Hosting publication.
+// The previous complete materialization remains a historical certification anchor.
+let stagePublication=null;
+const stagePlan=d.pendingDevSuccessor;
+if(stagePlan?.publicationReadback){
+  const ref=stagePlan.publicationReadback;
+  const requireStage=(ok,key)=>{if(!ok)fail('RELEASE_COMPOSITION_FAILURE:PARTIAL_PAIRED_READBACK',key);};
+  const checked=pin=>{
+    requireStage(/^docs\/checkpoints\/[A-Z0-9_]+\.json$/.test(pin?.path||'')&&
+      /^[0-9a-f]{40}$/.test(pin.gitBlob||'')&&git('rev-parse','HEAD:'+pin.path)===pin.gitBlob&&git('hash-object',pin.path)===pin.gitBlob,'receipt');
+    return readJson(pin.path);
+  };
+  const stage=checked(ref.stageReceipt),failure=checked(ref.failureReceipt);
+  requireStage([p,l,mt].every(x=>JSON.stringify(x.pendingDevSuccessor?.publicationReadback)===JSON.stringify(ref)),'controlAliases');
+  const native=stage.native,stages=stage.checkpoints,identity=stage.identity,request=stagePlan.pairedCloudBuild;
+  requireStage(stage.schemaVersion==='cxorbia.i3.partial-paired-dev-stages.v1'&&stage.decision==='OBSERVED_RUNTIME_AND_HOSTING'&&
+    stage.production===false&&stage.sealed===false&&identity.sourceSha===stagePlan.sourceSha&&identity.sourceTree===stagePlan.sourceTree&&
+    identity.runtimeDigest===request.imageBuild.digest&&native.project==='cxorbia-backend-dev'&&native.status==='FAILURE'&&
+    native.stepId==='vrm154-156-dev-materialization'&&native.stepStatus==='FAILURE'&&native.id===identity.runId&&
+    /^[a-f0-9]{40}$/.test(native.controlSha)&&git('rev-parse',native.controlSha+':'+DESCRIPTOR)===native.requestBlob&&
+    native.serviceAccount===request.serviceAccount&&Number.isFinite(Date.parse(native.finishedAt))&&Date.parse(native.finishedAt)>=Date.parse(native.startedAt)&&
+    request.launchTag===native.launchTag&&native.sourceSha===identity.sourceSha&&native.sourceTree===identity.sourceTree,
+    'nativeIdentity');
+  const live=stage.independentReadback;
+  requireStage(live?.trafficPercent===100&&live.servingSource===identity.sourceSha&&
+    ['runtimeDigest','hostingVersion','hostingRelease'].every(k=>live[k]===identity[k])&&Date.parse(live.at)>=Date.parse(native.finishedAt),'terminalProviderReadback');
+  const original=JSON.parse(execFileSync('git',['show',native.controlSha+':'+DESCRIPTOR],{encoding:'utf8',maxBuffer:16*1024*1024}));
+  requireStage(JSON.stringify(original.pendingDevSuccessor.pairedCloudBuild)===JSON.stringify(request)&&
+    original.postDeployRunSeal.receiptBlob===native.predecessorReceiptBlob,'originalRequest');
+  for(const name of ['start','runtime','hosting']){
+    const record=stages[name];
+    requireStage(record?.body?.stage===name&&record.body.executionId===native.id&&
+      record.body.executionProvider==='GOOGLE_CLOUD_BUILD'&&record.body.sourceSha===identity.sourceSha&&
+      record.body.sourceTree===identity.sourceTree&&record.body.digest===identity.runtimeDigest&&
+      record.body.imageBuildId===request.imageBuild.id&&
+      createHash('sha256').update(JSON.stringify(record.body,null,2)+'\n').digest('hex')===record.sha256&&
+      record.uri==='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/'+native.id+'/'+name+'.json'&&
+      /^[1-9][0-9]+$/.test(String(record.generation))&&/^[a-f0-9]{64}$/.test(record.sha256||''),
+    name);
+  }
+  requireStage(stages.start.body.predecessorReceipt===native.predecessorReceiptBlob&&
+    stages.runtime.body.trafficPercent===100&&stages.runtime.body.revision===identity.runtimeRevision&&
+    stages.hosting.body.version===identity.hostingVersion&&stages.hosting.body.release===identity.hostingRelease&&
+    /^cxorbia-live-hr-dev-[0-9]{5}-[a-z0-9]+$/.test(identity.runtimeRevision)&&
+    /^sites\/cxorbia-backend-dev\/versions\/[0-9a-f]{16}$/.test(identity.hostingVersion)&&
+    /^sites\/cxorbia-backend-dev\/channels\/live\/releases\/[0-9]+$/.test(identity.hostingRelease),'publishedIdentity');
+  requireStage(failure.schemaVersion==='cxorbia.i3.partial-paired-hr-failure.v1'&&failure.classification==='MAPPING_FAILURE'&&
+    failure.httpStatus===503&&failure.hrRevision===null&&failure.originalBuildStatus==='FAILURE'&&
+    failure.runId===native.id&&failure.sourceSha===identity.sourceSha&&failure.sourceTree===identity.sourceTree&&
+    failure.stageReceipt.gitBlob===ref.stageReceipt.gitBlob&&failure.stageReceipt.path===ref.stageReceipt.path&&
+    failure.production===false,'strictReadback');
+  const cause=checked(failure.causalEvidence);
+  requireStage(cause.pairedExecution===native.id&&cause.source===identity.sourceSha&&cause.runtime===identity.runtimeRevision&&
+    cause.classification===failure.classification&&cause.logError===failure.cause,'mappingOwner');
+  stagePublication={...identity,mode:'RUNTIME_AND_HOSTING_OBSERVED_HR_SEAL_PENDING',
+    executionProvider:'GOOGLE_CLOUD_BUILD',nativeStatus:native.status,hrRevision:null,
+    strictHrHttpStatus:failure.httpStatus,classification:failure.classification,sealed:false,
+    stageReceipt:ref.stageReceipt,failureReceipt:ref.failureReceipt,production:false};
+}
+
 // POSTDEPLOY_SEAL_V1: exact post-deploy authority check in existing canonical guard.
 let postDeploySealReadback=null;
 if(fs.existsSync('CXORBIA_I3_ANTI_BUCLE_CIERRE_EXECUTION_LOCK_2026-10-21.json')){
@@ -317,6 +378,7 @@ const result={
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
   proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION',
   continuityReadback,
+  ...(stagePublication?{observedPublication:stagePublication,postDeploySealRole:'HISTORICAL_LAST_COMPLETE'}:{}),
   moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,postDeploySealReadback,
   terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
     moduleTruthReadback.terminalAcceptance&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
@@ -351,12 +413,14 @@ if(process.argv.includes('--current')){
     decision:result.decision,proofScope:result.proofScope,view:'CURRENT_CONTROL_READBACK',
     head,controlTree:git('rev-parse',head+'^{tree}'),controls,iteration:p.iteration,state:p.state,
     productSource:{sha:d.productSourceSha,tree:productTree},
-    serving:{
+    serving:stagePublication||{
       ...pick(d.currentMaterialization,[...identityKeys,'executionProvider','runId','runAttempt','hostingRelease','hrRevision','verifiedServedAssetCount']),
       ...pick(d.postDeployRunSeal,['mode','receiptPath','receiptBlob'])
     },
+    ...(stagePublication?{lastCompletePairedSeal:{...pick(d.currentMaterialization,[...identityKeys,'runId','hrRevision']),...pick(d.postDeployRunSeal,['receiptPath','receiptBlob']),role:'HISTORICAL_LAST_COMPLETE'}}:{}),
     pendingDevSuccessor:pending?{
       ...pick(pending,['state','scope','sourceSha','sourceTree','predecessorProductSourceSha','proofReceiptPath','proofReceiptBlob','devPublished']),
+      ...(stagePublication?{state:'PUBLISHED_PENDING_STRICT_HR_SEAL',devPublished:true,requiresRedeploy:false}:{}),
       imageBuild:pick(pending.pairedCloudBuild?.imageBuild,['id','tag','digest']),
       launchTag:pending.pairedCloudBuild?.launchTag||null
     }:null,

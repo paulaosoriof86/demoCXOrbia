@@ -82,12 +82,64 @@ assert.equal(pending.length,0);assert.equal(pendingExternalTypedResults(read('CX
     subprocess.run(["node", "--input-type=module", "-e", script], check=True)
 
 
+def observe_published_pair(stage, image, out):
+    """Re-read the already published pair before verification, without changing traffic or Hosting."""
+    import hashlib
+    from urllib.request import Request, urlopen
+    orig = stage["native"]
+    identity = stage["identity"]
+    failure = describe(orig["id"])
+    require(failure["status"] == "FAILURE" and failure["projectId"] == project
+            and failure["serviceAccount"] == orig["serviceAccount"]
+            and failure["substitutions"]["_CXORBIA_CONTROL_SHA"] == orig["controlSha"]
+            and len(failure["steps"]) == 1 and failure["steps"][0]["id"] == job_name
+            and failure["steps"][0]["status"] == "FAILURE", "SOURCE_FAILURE:PRIOR_NATIVE_EXECUTION")
+    for name in ("start","runtime","hosting"):
+        pin = stage["checkpoints"][name]
+        expected_uri = "gs://"+project+"_cloudbuild/cxorbia-i3-paired-dev/results/"+orig["id"]+"/"+name+".json"
+        require(pin["uri"] == expected_uri and re.fullmatch(r"[1-9][0-9]+",str(pin["generation"])), "SOURCE_FAILURE:STAGE_URI")
+        raw = subprocess.check_output(["gcloud","storage","cat",expected_uri+"#"+str(pin["generation"])])
+        require(hashlib.sha256(raw).hexdigest() == pin["sha256"] and json.loads(raw) == pin["body"], "SOURCE_FAILURE:PRIOR_NATIVE_STAGE_BYTES")
+    service = json.loads(output("gcloud","run","services","describe","cxorbia-live-hr-dev","--region=us-central1","--project="+project,"--format=json"))
+    traffic = [row for row in service["status"]["traffic"] if row.get("percent",0)>0]
+    rev = identity["runtimeRevision"]
+    require(service["status"]["latestReadyRevisionName"] == rev and sum(v["percent"] for v in traffic)==100
+            and all(v.get("revisionName") == rev for v in traffic), "RELEASE_COMPOSITION_FAILURE:RESUME_RUNTIME_TRAFFIC")
+    revision = json.loads(output("gcloud","run","revisions","describe",rev,"--region=us-central1","--project="+project,"--format=json"))
+    env = {v["name"]:v.get("value") for v in revision["spec"]["containers"][0]["env"]}
+    require(env["CXORBIA_RECOVERY_SOURCE_SHA"] == identity["sourceSha"] and revision["status"]["imageDigest"].split("sha256:")[-1] == image["digest"].split("sha256:")[-1]
+            and image["digest"] == identity["runtimeDigest"], "RELEASE_COMPOSITION_FAILURE:RESUME_RUNTIME_DIGEST")
+    token = output("gcloud","auth","print-access-token")
+    def get(url):
+        with urlopen(Request(url,headers={"Authorization":"Bearer "+token}),timeout=45) as r:
+            return json.load(r)
+    hosting = get("https://firebasehosting.googleapis.com/v1beta1/sites/"+project+"/channels/live")
+    require(hosting["release"]["name"]==identity["hostingRelease"] and hosting["release"]["version"]["name"]==identity["hostingVersion"], "RELEASE_COMPOSITION_FAILURE:RESUME_HOSTING_DRIFT")
+    require(get("https://firebasehosting.googleapis.com/v1beta1/"+identity["hostingVersion"])["status"]=="FINALIZED","RELEASE_COMPOSITION_FAILURE:RESUME_HOSTING_UNFINALIZED")
+    write(out/"runtime.json",service)
+    write(out/"runtime-revision.json",revision)
+    write(out/"hosting-before.json",hosting)
+    write(out/"rules-before.json",get("https://firebaserules.googleapis.com/v1/projects/"+project+"/releases/cloud.firestore"))
+    subprocess.run(["curl","-fsSL","-H","Cache-Control: no-cache","https://tya-plataforma.web.app/","-o",str(out/"production-before.html")],check=True)
+    subprocess.run(["curl","-fsS",service["status"]["url"]+"/health","-o",str(out/"health.json")],check=True)
+    health=read(out/"health.json")
+    require(health.get("ok") is True and health.get("production") is False and health.get("hrWrites") is False, "PROVIDER_FAILURE:RESUME_HEALTH")
+    os.environ.update({"DEV_REVISION":rev,"RUNTIME_DIGEST":image["digest"],"PAIR_ENV_ONLY":"true"})
+    return {"mode":"EXISTING_NATIVE_STAGES_READBACK_ONLY","publicationRunId":orig["id"],"previousNativeStatus":orig["status"],
+            "sourceSha":identity["sourceSha"],"sourceTree":identity["sourceTree"],"runtimeRevision":rev,
+            "runtimeDigest":identity["runtimeDigest"],"hostingVersion":identity["hostingVersion"],"hostingRelease":identity["hostingRelease"],
+            "builds":0,"runtimeDeploys":0,"hostingDeploys":0,"trafficChanges":0}
+
+
 def main():
     require(not os.environ.get("GITHUB_ACTIONS") and not os.environ.get("GITHUB_RUN_ID"), "AMBIGUOUS_EXECUTOR")
     head = output("git", "rev-parse", "HEAD")
     d = read(descriptor_path)
     q = d["pendingDevSuccessor"]
     config = q["pairedCloudBuild"]
+    partial = q.get("publicationReadback")
+    if partial:
+        require(partial.get("verifiedMappingReadback"),"MAPPING_FAILURE:EXACT_ORIGINAL_HEADER_READBACK_PENDING")
     source, tree = d["productSourceSha"], d["productTreeAuthority"]
     require(q["sourceSha"] == source and q["sourceTree"] == tree and q["production"] is False
             and not q["devPublished"] and q["scope"] == "RUNTIME_AND_HOSTING"
@@ -118,6 +170,9 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     def run_step(index):
         script = steps[index]["run"]
+        if index == 14 and resume:
+            require(script.count("--retry 8") == 2, "SOURCE_FAILURE:READBACK_HTTP_RETRY_OWNER")
+            script = script.replace("--retry 8","--retry 0")
         if index in (13,14):
             require(script.count("$GITHUB_RUN_ID") == (1 if index == 13 else 2),"SOURCE_FAILURE:CACHE_BUSTER")
             script = script.replace("$GITHUB_RUN_ID","$CXORBIA_PAIRED_BUILD_ID")
@@ -152,7 +207,38 @@ def main():
         uri="gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/"+build_id+"/"+file.name
         subprocess.run(["gcloud","storage","cp","--if-generation-match=0",str(file),uri],check=True)
     checkpoint("start",{"predecessorReceipt":d["postDeployRunSeal"]["receiptBlob"]})
-    for index in (3,4,7,8,9):
+    # A partial publication binds an existing native pair. Verify its stages and never re-enter its mutation steps.
+    resume = None
+    if partial:
+        repair = partial.get("verifiedMappingReadback")
+        require(repair and re.fullmatch(r"docs/checkpoints/[A-Z0-9_]+[.]json", repair["path"])
+                and output("git","rev-parse","HEAD:"+repair["path"])==repair["gitBlob"],
+                "MAPPING_FAILURE:EXACT_ORIGINAL_HEADER_READBACK_PENDING")
+        from datetime import datetime as NativeTime
+        header = read(repair["path"])
+        fail_pin = partial["failureReceipt"]
+        require(output("git","rev-parse","HEAD:"+fail_pin["path"])==fail_pin["gitBlob"],"SOURCE_FAILURE:RESUME_FAILURE_RECEIPT")
+        failure = read(fail_pin["path"])
+        target = failure["affected"]
+        require(header.get("pairedExecution")==partial.get("failedBuildId") and
+                header.get("sourceSha")==source and
+                all(header.get(k)==target[k] for k in ["tenantId","projectId","countryCode","periodId","cell"]) and
+                header.get("value")==target["expected"] and header.get("bindingFingerprint")==target["bindingFingerprint"] and
+                header.get("independentReadback") is True and header.get("production") is False and
+                header.get("verifiedBy") and header.get("evidenceReference") and header.get("observedAt") and
+                NativeTime.fromisoformat(header["observedAt"].replace("Z","+00:00")) >
+                NativeTime.fromisoformat(failure["observedAt"].replace("Z","+00:00")), "MAPPING_FAILURE:ORIGINAL_HEADER_READBACK_SCOPE")
+        ref = partial["stageReceipt"]
+        require(output("git","rev-parse","HEAD:"+ref["path"])==ref["gitBlob"],"SOURCE_FAILURE:RESUME_RECEIPT")
+        stage = read(ref["path"])
+        require(stage["identity"]["sourceSha"]==source and stage["identity"]["sourceTree"]==tree
+                and stage["native"]["id"]!=build_id and stage["identity"]["runtimeDigest"]==image["digest"],
+                "SOURCE_FAILURE:RESUME_SOURCE")
+        resume = observe_published_pair(stage,image,out)
+        resume["stageReceipt"] = ref
+        resume["failureReceipt"] = partial["failureReceipt"]
+        resume["verifiedMappingReadback"] = repair
+    for index in ((3,4,8) if resume else (3,4,7,8,9)):
         run_step(index)
     require("modules/cliente-extra.js" in environment["PAIR_ASSET_FILES"].split(),"PDF_OWNER_NOT_IN_SERVED_INVENTORY")
     source_dir = Path(environment["SOURCE_DIR"])
@@ -165,18 +251,26 @@ def main():
     digest_uri = "gcr.io/"+project+"/cxorbia-live-hr-dev@"+image["digest"]
     (out/"image-uri.txt").write_text(digest_uri+"\n")
     write(out/"build.json",{"sourceSha":source,"sourceTree":tree,"imageTag":digest_uri,
-                           "requestedTag":image["tag"],"builds":1,"production":False,"imageBuildId":image["id"]})
+                           "requestedTag":image["tag"],"builds":0 if resume else 1,"production":False,"imageBuildId":image["id"]})
     write(out/"build-resume.json",image)
-    run_step(12)
+    if not resume:
+        run_step(12)
     require(environment["RUNTIME_DIGEST"] == image["digest"],"RELEASE_COMPOSITION_FAILURE:RUNTIME_BUILD_MISMATCH")
-    checkpoint("runtime",{"revision":environment["DEV_REVISION"],"trafficPercent":100})
+    if not resume:
+        checkpoint("runtime",{"revision":environment["DEV_REVISION"],"trafficPercent":100})
     run_step(13)
-    checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
+    if resume:
+        require(environment["HOSTING_VERSION_NAME"]==resume["hostingVersion"] and environment["HOSTING_RELEASE_NAME"]==resume["hostingRelease"],
+                "RELEASE_COMPOSITION_FAILURE:RESUME_ASSET_INVENTORY_DRIFT")
+    else:
+        checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
     for index in (14,15):
         run_step(index)
     identity={"executionProvider":"GOOGLE_CLOUD_BUILD","runId":build_id,"runAttempt":1}
     result=read(out/"result.json")
     result.update(identity)
+    if resume:
+        result.update({"builds":0,"hostingDeploys":0,"runtimeDeploys":0,"publishedStageRecovery":resume})
     write(out/"result.json",result)
     run_step(16)
     hr=read(out/"hr-after/result.json")

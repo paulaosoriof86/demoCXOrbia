@@ -1,0 +1,93 @@
+{
+  "classification": "MAPPING_FAILURE",
+  "httpStatus": 503,
+  "cause": "MAPPING_FAILURE:B14_HEADER_AMBIGUOUS_OR_MISSING",
+  "observedAt": "2026-11-26T15:04:53.953642Z",
+  "originalGet": "format=meta",
+  "graphStatus": 200,
+  "affected": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "countryCode": "GT",
+    "periodId": "cinepolis-2026-11",
+    "cell": "L4",
+    "bindingFingerprint": "301e39865dc9235e9a9f632818a305f81ded76aef8aec847bf8bb9a1bcbb4fda",
+    "observed": "Columna1",
+    "expected": "Shopper Asignado"
+  },
+  "causalEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_GT_NOV_HEADER_DRIFT_20261126.json",
+    "gitBlob": "0b59f0da060b55caa3cbfb9f1c49b0c5a64eeca8"
+  },
+  "offlineReproduction": {
+    "path": "docs/checkpoints/CXORBIA_I3_GT_NOV_HEADER_DRIFT_REPRO_20261126.mjs",
+    "gitBlob": "e808c36009890d35cd8ea7a5be0f271a8f7da538"
+  },
+  "sourceModified": false,
+  "workbookModified": false,
+  "sourceAccess": {
+    "microsoftGetDriveItem": {
+      "httpStatus": 403,
+      "error": "accessDenied",
+      "requestId": "4713cb2c-8589-42db-96bd-a2071f231213"
+    },
+    "originalWorkbookBrowser": "SIGN_IN_REQUIRED",
+    "headerEditAuthorization": "PENDING_EXACT_AUTHORIZATION",
+    "providerWriteExecuted": false
+  },
+  "continuation": {
+    "mode": "EXISTING_NATIVE_STAGES_READBACK_ONLY",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "vrm154-156-dev-materialization",
+    "worker": "tools/qa/cxorbia-i3-paired-google.py",
+    "consumer": "tools/qa/cxorbia-i3-automatic-result-consumer.mjs",
+    "mappingConfirmed": false,
+    "bindAfterRepair": {
+      "requestField": "pendingDevSuccessor.publicationReadback.verifiedMappingReadback",
+      "receiptPin": [
+        "path",
+        "gitBlob"
+      ],
+      "exactScope": [
+        "pairedExecution",
+        "sourceSha",
+        "tenantId",
+        "projectId",
+        "countryCode",
+        "periodId",
+        "cell",
+        "bindingFingerprint",
+        "value"
+      ],
+      "supportingReadback": [
+        "independentReadback",
+        "verifiedBy",
+        "evidenceReference",
+        "observedAt",
+        "production"
+      ],
+      "source": "Authorized editor, independent Graph response or existing provider readback for the registered original cell."
+    },
+    "sequence": [
+      "Read both original immutable publication stages and compare actual traffic, digest and Hosting release.",
+      "Verify served asset bytes against source.",
+      "Run the original strict HR read and paired receipt verification.",
+      "Consume the separate successful native verification on its own ID and retain the original failed run."
+    ],
+    "verificationBuilds": 0,
+    "verificationRuntimeDeploys": 0,
+    "verificationHostingDeploys": 0,
+    "production": false
+  },
+  "stageReceipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_PAIRED_1E05B095_PUBLISHED_STAGES_20261126.json",
+    "gitBlob": "da2f9609f623064f5113da63207ad0bbaee12705"
+  },
+  "sourceSha": "9117f6ebeb165093805d1c2b69c54e534e317cf4",
+  "sourceTree": "24cd3f94d531235166ab28919822fe079d9a2d19",
+  "runId": "1e05b095-fb3a-4998-9a31-479cb2471eb4",
+  "production": false,
+  "originalBuildStatus": "FAILURE",
+  "hrRevision": null,
+  "schemaVersion": "cxorbia.i3.partial-paired-hr-failure.v1"
+}
