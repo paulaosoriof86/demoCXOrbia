@@ -204,5 +204,37 @@
   ],
   "newDomainMatches": 0,
   "deployments": 0,
-  "production": false
+  "production": false,
+  "visitRevisionSourceCorrection": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceFinding": "The confirmation provider takes an explicitly requested revision in preference to the durable resource revision. Shopper controls also interpret a confirmation timestamp without checking the current guide identity or version. Specific visit attachment fields can diverge from the selected visit.",
+    "owners": [
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "app/modules/misvisitas.js"
+    ],
+    "correction": "The provider compares the requested revision with the durable resource inside the transaction, validates attachment visit keys, and requires the original actor on replay. Shopper controls check the selected guide ID and revision before recognizing a prior confirmation.",
+    "patch": {
+      "path": "docs/checkpoints/CXORBIA_I3_D07_VISIT_DOCUMENT_REVISION_20261126.patch",
+      "gitBlob": "3c34d679a18be6610e3bd14fee5ca4ce62a3d63b",
+      "sha256": "042ac110a9734a8abe0905fbd159db13d5d2c64d96e7577b52f336f9c995bc29",
+      "gitApplyCheckPassedFor": [
+        "72874c08560addf5d0bc4a23573d65ce86481c95",
+        "feea0c340bb0054ac067e9497748702e22599bf2"
+      ]
+    },
+    "technicalEvidence": {
+      "pass": 103,
+      "fail": 0,
+      "skipped": 0,
+      "logSha256": "c94aeaebd149d0f481160e4a50c64741d2c6e4889e73463c4543321c8ff3d7c3",
+      "tests": [
+        "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+        "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs"
+      ]
+    },
+    "served": false,
+    "releaseDecision": "Retain on the existing continuation stream as a tested compatible delta. Confirm exact paired successor composition; verify normal Shopper acknowledgment bound to the chosen document revision and visit after materialization. No existing source or deployment pin is changed by this record."
+  }
 }

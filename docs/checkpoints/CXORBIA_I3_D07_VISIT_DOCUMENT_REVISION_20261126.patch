@@ -1,0 +1,181 @@
+diff --git a/app/modules/misvisitas.js b/app/modules/misvisitas.js
+index 003843ecc..f8ff9ea2d 100644
+--- a/app/modules/misvisitas.js
++++ b/app/modules/misvisitas.js
+@@ -126,11 +126,22 @@ CX.module('misvisitas',({data,ui})=>{
+       durable:null,carry:{eligibilityGranted:false},
+       explicitlyNotRequired:decision?.explicitlyNotRequired===true};
+   };
++  const guideScope=v=>({projectId:data.currentProjectId,periodId:periodIdOf(v)||data.currentPeriodId,resourceType:'project_resource'});
++  function currentGuide(v){
++    const visitKeys=[v.id,v.visitId,v.hrRowId].filter(Boolean).map(String);
++    return (CX.backendResources?.list?.(guideScope(v))||[]).find(r=>
++      [r.visitaId,r.visitId,r.assignedVisitId].filter(Boolean).every(id=>visitKeys.includes(String(id)))&&
++      /instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
++  }
++  function confirmedGuide(v,doc=currentGuide(v)){
++    return Boolean(v.instructiveReadAt&&doc&&String(v.instructiveResourceId||'')===String(doc.id||doc.resourceId)&&
++      String(v.instructiveResourceRevision||'')===String(doc.contentRevision||doc.version||doc.updatedAt||'source-current'));
++  }
+   const routeState=v=>{
+     const f=facets(v),c=contract(v),certState=certificationState();
+     const checks=[
+       {key:'asignada',label:'Asignada',done:!!f.assigned},
+-      {key:'instructivo',label:'Instructivo y documentos',done:!!v.instructiveReadAt},
++      {key:'instructivo',label:'Instructivo y documentos',done:confirmedGuide(v)},
+       {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.explicitlyNotRequired?'No requerida':''},
+       {key:'agendada',label:pendingSchedule(v)?'Fecha registrada · pendiente HR':'Visita agendada',done:!!f.scheduled},
+       {key:'realizada',label:'Visita realizada',done:!!f.realized},
+@@ -140,7 +151,7 @@ CX.module('misvisitas',({data,ui})=>{
+       {key:'liquidada',label:'Liquidada',done:!!(f.liquidationConfirmed||f.paymentConfirmed||financePaymentForVisit(v))}
+     ];
+     const firstPending=checks.findIndex(x=>!x.done);
+-    return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:!!v.instructiveReadAt&&certState.done};
++    return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:confirmedGuide(v)&&certState.done};
+   };
+   const flowSteps=v=>routeState(v).checks;
+   const geoOn=!!(CX.addons&&CX.addons.on('geo_checkin','shopper'));
+@@ -161,7 +172,7 @@ CX.module('misvisitas',({data,ui})=>{
+     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
+     let actions='';
+     if(cancelAwaitingHr(v)){actions='<span class="bdg bdg-a">Cancelación autorizada · pendiente HR</span>';}
+-    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?(route.certState.explicitlyNotRequired?'✓ Certificación no requerida':'✓ Certificación vigente'):'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
++    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${confirmedGuide(v)?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${confirmedGuide(v)?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?(route.certState.explicitlyNotRequired?'✓ Certificación no requerida':'✓ Certificación vigente'):'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
+     else if(kind==='agendada'){const ready=canCompleteVisit(v),date=scheduledDateOf(v);actions=`<button class="btn ${ready?'btn-green':'btn-soft'} btn-sm" data-done="${v.id}" ${ready?'':'aria-disabled="true" title="Se habilita el día de la visita"'}>${ready?'✅ Marcar realizada':'🕒 Disponible el '+(date||'día de la visita')}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}" ${pendingReschedule(v)||pendingCancel(v)?'disabled aria-disabled="true"':''}>🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}" ${pendingCancel(v)||pendingReschedule(v)?'disabled aria-disabled="true"':''}>✕ Solicitar cancelación</button>${geoBtn(v)}`;}
+     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
+     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
+@@ -223,22 +234,21 @@ CX.module('misvisitas',({data,ui})=>{
+   const bindActive=()=>{
+     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
+       const v=find(b.dataset.doc);if(!v)return;
+-      const resourceScope={projectId:data.currentProjectId,periodId:data.currentPeriodId,resourceType:'project_resource'};
+-      let resources=CX.backendResources?.list?.(resourceScope)||[];
+-      let doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
++      const resourceScope=guideScope(v);
++      let doc=currentGuide(v);
+       if(!doc&&typeof CX.backendResources?.load==='function'){
+-        try{await CX.backendResources.load(resourceScope);resources=CX.backendResources?.list?.(resourceScope)||[];doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;}catch(_){/* fail closed below */}
++        try{await CX.backendResources.load(resourceScope);doc=currentGuide(v);}catch(_){/* fail closed below */}
+       }
+       if(!doc){ui.toast('No hay un instructivo publicado para esta visita.','warn',3600);CX.router.nav('documentos');return;}
+       const body=String(doc.body||'').trim();
+       ui.modal('📄 '+safe(doc.n||doc.name||'Instructivo'),`
+         <div style="font-size:14px;color:var(--t2);margin-bottom:10px">Recurso del proyecto · revisión ${safe(doc.contentRevision||doc.version||doc.updatedAt||'vigente')}</div>
+         <div class="card card-p" style="max-height:45vh;overflow:auto;white-space:pre-wrap;font-size:14px;line-height:1.65">${body?safe(body.slice(0,12000)):'Abre el recurso completo para revisar su contenido.'}</div>
+-        <div class="between" style="margin-top:12px;gap:8px"><button class="btn btn-ghost btn-sm" id="docOpenFull">Abrir en Recursos</button><button class="btn btn-pr btn-sm" id="docReadAck">${v.instructiveReadAt?'✓ Lectura ya confirmada':'Confirmo que lo he leído'}</button></div>
++        <div class="between" style="margin-top:12px;gap:8px"><button class="btn btn-ghost btn-sm" id="docOpenFull">Abrir en Recursos</button><button class="btn btn-pr btn-sm" id="docReadAck">${confirmedGuide(v,doc)?'✓ Lectura ya confirmada':'Confirmo que lo he leído'}</button></div>
+       `,{premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:(ov,close)=>{
+         ov.querySelector('#docOpenFull').addEventListener('click',()=>{close();CX.router.nav('documentos');});
+         ov.querySelector('#docReadAck').addEventListener('click',async e=>{
+-          if(v.instructiveReadAt){close();return;}
++          if(confirmedGuide(v,doc)){close();return;}
+           const btn=e.currentTarget;btn.disabled=true;btn.textContent='Confirmando…';
+           try{
+             if(typeof data.recordResourceReadReceipt!=='function')throw new Error('RESOURCE_READ_RECEIPT_UNAVAILABLE');
+@@ -251,7 +261,7 @@ CX.module('misvisitas',({data,ui})=>{
+         });
+       },dismissOnBackdrop:false});
+     }));
+-    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.cert);if(!v)return;if(!v.instructiveReadAt){ui.toast('Primero confirma la lectura del instructivo.','warn',3200);return;}CX.router.nav('cert');}));
++    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.cert);if(!v)return;if(!confirmedGuide(v)){ui.toast('Primero confirma la lectura del instructivo.','warn',3200);return;}CX.router.nav('cert');}));
+     host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
+     host.querySelectorAll('[data-geo]').forEach(b=>b.addEventListener('click',()=>{
+       const v=find(b.dataset.geo);if(!v)return;
+diff --git a/backend/runtime/cxorbia-operational-command-provider-v1.mjs b/backend/runtime/cxorbia-operational-command-provider-v1.mjs
+index 95e1c5a57..53d04ccd7 100644
+--- a/backend/runtime/cxorbia-operational-command-provider-v1.mjs
++++ b/backend/runtime/cxorbia-operational-command-provider-v1.mjs
+@@ -769,6 +769,7 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
+     const syncContext=command.commandType==='visit.sync.confirm'?await syncReflectionContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
+     if(prior.exists){
+       const p=prior.data()||{};
++      if(command.commandType==='resource.read.receipt'&&p.actorUid!==actor.uid)throw new Error('OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
+       if((clientContext||arr(p.hrFieldEventIds).length)&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
+       if(p.commandDigest!==digest)throw new Error('OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
+       if(p.status==='committed'){
+@@ -1111,7 +1112,10 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
+       const resource=resSnap.data()||{};if(resource.status!=='active'||str(resource.projectId)!==command.projectId)throw new Error('OPS_RESOURCE_SCOPE_MISMATCH');
+       if(resource.periodId&&str(resource.periodId)!==command.periodId)throw new Error('OPS_RESOURCE_PERIOD_MISMATCH');
+       const roles=arr(resource.visibleRoles).map(str);if(resource.targetAll!==true&&!roles.includes('shopper'))throw new Error('OPS_RESOURCE_SHOPPER_VISIBILITY_DENIED');
+-      const revision=str(payload.resourceRevision||resource.contentRevision||resource.version||resource.updatedAt||'source-current');
++      const revision=str(resource.contentRevision||resource.version||resource.updatedAt||'source-current');
++      if(str(payload.resourceRevision)&&str(payload.resourceRevision)!==revision)throw new Error('OPS_RESOURCE_REVISION_CONFLICT');
++      const visitKeys=[resolved.logicalVisitId,resolved.durableVisitId,v.id,v.visitId,v.hrRowId].filter(Boolean).map(str);
++      if([resource.visitaId,resource.visitId,resource.assignedVisitId].filter(Boolean).some(id=>!visitKeys.includes(str(id))))throw new Error('OPS_RESOURCE_VISIT_SCOPE_MISMATCH');
+       const receiptKey=sha([command.tenantId,command.projectId,command.periodId,actor.shopperId,visitId,resourceId,revision]).slice(0,36),readAt=str(payload.readAt)||now();
+       const rr=r.resourceReadReceipts.doc('read-'+receiptKey);
+       tx.set(rr,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,shopperId:actor.shopperId,visitId,hrRowId:str(v.hrRowId)||null,
+diff --git a/backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs b/backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs
+index 894284e44..b4add5545 100644
+--- a/backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs
++++ b/backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs
+@@ -1,6 +1,7 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import fs from 'node:fs';
++import vm from 'node:vm';
+ const read=p=>fs.readFileSync(p,'utf8');
+ 
+ test('B1 Mi Dia emits distinct state-aware action intents',()=>{const s=read('app/modules/midia.js');assert.match(s,/data-visit-action="schedule"/);assert.match(s,/data-visit-action="instructive"/);assert.match(s,/data-visit-action="reschedule"/);assert.match(s,/CX_PENDING_SHOPPER_VISIT_ACTION/);assert.doesNotMatch(s,/data-cgo="misvisitas">📅 Agendar[\s\S]{0,250}data-cgo="misvisitas">📄 Instructivo/);});
+@@ -54,3 +55,23 @@ test('B1/B3 instructive and reschedule dialogs use the recovered scoped premium
+   assert.match(s,/premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:/);
+   assert.match(s,/Recurso del proyecto/);
+ });
++
++
++test('D07 Shopper recognizes only the currently published guide for this visit and revision',()=>{
++  const source=read('app/modules/misvisitas.js');
++  const start=source.indexOf('  const guideScope='),end=source.indexOf('  const routeState=',start);
++  assert.ok(start>=0&&end>start);
++  const catalog=[],scope={currentProjectId:'project-a',currentPeriodId:'period-a'};
++  const probe=vm.runInNewContext(source.slice(start,end)+';confirmedGuide',{
++    data:scope,periodIdOf:v=>v.periodId,CX:{backendResources:{list:s=>{
++      assert.equal(s.projectId,scope.currentProjectId);assert.equal(s.periodId,'period-a');return catalog;
++    }}}
++  });
++  const v={id:'v1',periodId:'period-a',instructiveReadAt:'recorded',instructiveResourceId:'r',instructiveResourceRevision:'2'};
++  const doc={id:'r',n:'Instructivo',version:2,visitId:'v1'};
++  catalog.push({...doc,visitId:'v2'});assert.equal(probe(v),false);
++  catalog.push(doc);assert.equal(probe(v),true);
++  assert.equal(probe({...v,instructiveResourceRevision:'1'}),false);
++  assert.equal(probe({...v,instructiveResourceId:'another-guide'}),false);
++  assert.equal(probe({...v,instructiveReadAt:null}),false);
++});
+diff --git a/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs b/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs
+index fe17d397b..75c84b77d 100644
+--- a/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs
++++ b/backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs
+@@ -577,3 +577,33 @@ test('F3 / existing causal intent is not relabelled or replaced by reconciliatio
+   await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'revision-next'});
+   assert.deepEqual(db.get(path).hrPendingFields.shopperId,intent);
+ });
++
++test('D07 binds a confirmed resource read to the durable visit and current published revision',async()=>{
++  const f=requestCycleFixture(),resourceId='guide-qa',path='tenants/tenant-a/resources/'+resourceId;
++  const base={id:resourceId,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',status:'active',visibleRoles:['shopper'],version:2};
++  const read=(key,revision)=>({...f.command('resource.read.receipt',1,key,{
++    resourceId,resourceRevision:revision,humanConfirmed:true
++  }),entityType:'resourceReadReceipt',entityId:resourceId});
++  f.db.seed(path,base);
++  const original=f.snapshot();
++  const stale=await f.service.execute('shopper-token',read('d07-stale','1'));
++  assert.equal(stale.providerAck,false);assert.equal(stale.code,'OPS_RESOURCE_REVISION_CONFLICT');
++  assert.equal(f.snapshot(),original);
++  for(const key of ['visitaId','visitId','assignedVisitId']){
++    f.db.seed(path,{...base,[key]:'different-visit'});
++    const before=f.snapshot();
++    const foreign=await f.service.execute('shopper-token',read('d07-foreign-'+key,'2'));
++    assert.equal(foreign.providerAck,false);assert.equal(foreign.code,'OPS_RESOURCE_VISIT_SCOPE_MISMATCH');
++    assert.equal(f.snapshot(),before);
++  }
++  f.db.seed(path,{...base,visitId:f.initial.id});
++  const command=read('d07-exact','2'),ack=await f.service.execute('shopper-token',command);
++  assert.equal(ack.providerAck,true,JSON.stringify(ack));
++  const stored=f.db.get(visitPath(f.initial.id));
++  assert.equal(stored.instructiveResourceId,resourceId);assert.equal(stored.instructiveResourceRevision,'2');
++  const result=f.snapshot(),replay=await f.service.execute('shopper-token',command);
++  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal(f.snapshot(),result);
++  const otherActor=await f.service.execute('admin-token',command);
++  assert.equal(otherActor.providerAck,false);assert.equal(otherActor.code,'OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
++  assert.equal(f.snapshot(),result);
++});
