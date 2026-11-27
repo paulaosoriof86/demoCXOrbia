@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {E10} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -7,10 +9,18 @@ import {makeMaterializationReceipt,projectMaterialization,bindControlPaths,valid
 import {validateZipListing,selectPairedArtifact,runJournal,commitFiles,requiredPairedAssets,validateConsumedJournal,pendingRuns,projectCurrentAutomationReceipt} from './cxorbia-i3-automatic-result-consumer.mjs';
 import {validateCurrentAuthorityAliases,validResumedBuild} from './cxorbia-i3-current-authority-alias-guard.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));
+// This suite synthesizes a GitHub Actions run with zero rules transitions.
+ // Bind its four control inputs to the last audited pre-E10 snapshot. The
+ // native one-transition E10 contract is exercised separately.
+const frozen='085f8532cbb509494afbf4bf2d9a97d2d63a316e';
+const frozenFiles=new Map();
+const read=p=>{
+ if(!frozenFiles.has(p))frozenFiles.set(p,execFileSync('git',['show',frozen+':'+p],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}));
+ return JSON.parse(frozenFiles.get(p));
+};
 function inputs(){
  const descriptor=read(DESCRIPTOR),controls={descriptor,pointer:read(POINTER),ledger:read(descriptor.findingsLedgerPath),matrix:read(descriptor.moduleTruthPath)};
- // These cases exercise the legacy Actions lineage. Keep the live alias shape,
+ // These cases exercise the legacy Actions lineage. Keep its audited alias shape,
  // but anchor its predecessor to an immutable Actions receipt; a later Google
  // UUID is covered separately and must never become Number(uuid) in this fixture.
  const receiptPath='docs/checkpoints/CXORBIA_I3_RUN45488581923_ATTEMPT1_AUTOMATIC_DEV_RECEIPT.json';
@@ -268,4 +278,11 @@ test('the current attempt pending projection requires the original journal bindi
 test('a new current run publishes its effective pending set immediately',()=>{
  const f=automationFixture();f.current={...f.current,runId:49,path:'old-journal.json'};f.journalExists=false;
  const out=projectCurrentAutomationReceipt(f);assert.equal(out.changed,true);assert.equal(out.receipt.runId,50);assert.deepEqual(out.receipt.pendingTypedResults,[]);
+});
+
+test('an ordinary Actions receipt cannot certify the exact E10 source with zero rules transitions',()=>{
+ const f=fixture();
+ f.controls.descriptor.productSourceSha=E10.source;f.controls.descriptor.productSourceTree=E10.tree;
+ for(const record of [f.result,f.hrResult])Object.assign(record,{sourceSha:E10.source,sourceTree:E10.tree});
+ assert.throws(()=>makeMaterializationReceipt(f),/UNEXPECTED_WRITE/);
 });

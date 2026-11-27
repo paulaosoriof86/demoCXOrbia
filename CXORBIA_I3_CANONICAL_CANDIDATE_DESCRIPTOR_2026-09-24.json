@@ -225,7 +225,7 @@
   "productTreeAuthority": "86adc4486fca8bda3a9f997f756142f8379912ef",
   "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V764_2026-11-26.json",
-  "findingsLedgerExpectedGitBlob": "c4a449375d450fbd247eb0f8366ba157bc423937",
+  "findingsLedgerExpectedGitBlob": "d7b7160743f796a7bafa38e484bc66d0444f96e5",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "exactNextAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3041,7 +3041,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2a5e0b57a139937d8d31c1ef0393ba8d34ed3a6e",
+  "moduleTruthExpectedGitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -15525,7 +15525,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "exactPending": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
     "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
     "production": false
   },
@@ -17284,7 +17284,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "nextExactAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -17766,7 +17766,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-27T05:07:08.493032Z",
+  "updatedAt": "2026-11-27T05:13:09.707Z",
   "previousCurrentMaterializationBeforeRun2248": {
     "builds": 1,
     "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
@@ -18790,11 +18790,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V437.json",
-      "gitBlob": "2a5e0b57a139937d8d31c1ef0393ba8d34ed3a6e"
+      "gitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V764_2026-11-26.json",
-      "gitBlob": "c4a449375d450fbd247eb0f8366ba157bc423937"
+      "gitBlob": "d7b7160743f796a7bafa38e484bc66d0444f96e5"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -36457,7 +36457,7 @@
         "productionChanged": false
       }
     },
-    "immediateAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "immediateAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -36608,7 +36608,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "immediateAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -37979,7 +37979,15 @@
         "path": "docs/checkpoints/CXORBIA_I3_HR_READER_COST_20261126.json",
         "gitBlob": "a5904f867e156fe37e49aba26b821fbf1ddf8dbd",
         "sha256": "36c33628689dec88561f5cb79588663c24f500b853bed1a6de13eb44a3f94a19"
-      }
+      },
+      "fundingReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_READER_FUNDED_HOLD_20261126.json",
+        "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
+        "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
+      },
+      "unusedCenticredits": "199400",
+      "sharedPoolReserveEnforced": false,
+      "purchaseRequested": false
     }
   }
 }

@@ -1027,10 +1027,18 @@
           "path": "docs/checkpoints/CXORBIA_I3_HR_READER_COST_20261126.json",
           "gitBlob": "a5904f867e156fe37e49aba26b821fbf1ddf8dbd",
           "sha256": "36c33628689dec88561f5cb79588663c24f500b853bed1a6de13eb44a3f94a19"
-        }
+        },
+        "fundingReadback": {
+          "path": "docs/checkpoints/CXORBIA_I3_HR_READER_FUNDED_HOLD_20261126.json",
+          "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
+          "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
+        },
+        "unusedCenticredits": "199400",
+        "sharedPoolReserveEnforced": false,
+        "purchaseRequested": false
       },
       "serving": "72874c08560addf5d0bc4a23573d65ce86481c95",
-      "nextAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+      "nextAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
       "emulatorEvidence": {
         "environment": "Google Cloud Shell, official Firestore emulator v1.19.8, localhost only",
         "actualMakeProvider": false,
@@ -1045,6 +1053,11 @@
         "makeCredits": 0,
         "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d5ca6a76-3f50-484d-83f5-d494ac5377d1/firestore-budget-emulator.json#1795755955514390",
         "sha256": "afe469808eee2e01194e0c2ae49eadb9b16ee1921d212152668eb9ef88bfb820"
+      },
+      "fundedReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_READER_FUNDED_HOLD_20261126.json",
+        "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
+        "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
       }
     }
   },

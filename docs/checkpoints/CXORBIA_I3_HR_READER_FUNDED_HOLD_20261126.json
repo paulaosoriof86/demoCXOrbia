@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-reader-funded-hold.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "source": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+  "observedAt": "2026-11-27T05:13:09.707Z",
+  "make": {
+    "observedAt": "2026-11-27T05:13:09.707Z",
+    "organization": 4090072,
+    "plan": "Core",
+    "unusedCenticredits": "199400",
+    "consumedCenticredits": "1600600",
+    "automaticPurchasing": false,
+    "paused": false
+  },
+  "reader": {
+    "id": 10200465,
+    "active": false,
+    "status": "inactive",
+    "survivedFunding": true
+  },
+  "activeScenarioInventory": {
+    "team": 1975919,
+    "activeCount": 8,
+    "additionalPages": false,
+    "scheduledCount": 5,
+    "onDemandCount": 3,
+    "otherOnDemandConsumers": [
+      10196136,
+      10199316,
+      10221181
+    ]
+  },
+  "creditAllowance": 60,
+  "restorationReserve": 100,
+  "availableCredits": 1994,
+  "organizationAllocationEnforced": false,
+  "economicRequest": null,
+  "purchaseByWork": false,
+  "makeScenarioRunsByWork": 0,
+  "newRuntimeDeploys": 0,
+  "newHostingReleases": 0,
+  "rulesTransitions": 0,
+  "checks": {
+    "source": 334,
+    "controlsAndRules": 114,
+    "strictClassifications": 11,
+    "pairCompensation": 4,
+    "independentA08DocumentsQuestionnaire": 330,
+    "newFunctionalDomainPass": false
+  },
+  "testFixtureCorrection": "The zero-rules GitHub Actions fixture used the live source, which now requires one Firestore transition through Google. Pin its audited pre-E10 inputs. Assert a zero-rules receipt cannot certify the E10 source.",
+  "production": false
+}
