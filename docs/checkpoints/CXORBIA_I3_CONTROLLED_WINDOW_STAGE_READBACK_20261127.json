@@ -121,5 +121,24 @@
   "externalRequirement": "Verify enforceable bounds for both on-demand callers, or demonstrate upstream cursors/replay and an independently armed 15-minute reactivation. The existing Make management interface accepts a scenario ID for activation and deactivation. It provides no scheduled reactivation argument.",
   "I3": "HOLD",
   "I4": "NO_AUTHORIZATION",
-  "production": "DO_NOT_TOUCH"
+  "production": "DO_NOT_TOUCH",
+  "finalMakeReadback": {
+    "observedAt": "2026-11-27T07:33:38.379Z",
+    "organizationId": 4090072,
+    "unusedCenticredits": "198500",
+    "active": true,
+    "autoPurchases": false,
+    "since": "2026-11-27T06:56:00Z",
+    "hrReaderExecutions": 0,
+    "qaWriterExecutions": 0,
+    "sharedFinanceMonitor": {
+      "id": 10196338,
+      "startedAt": "2026-11-27T07:33:17.343Z",
+      "status": "success",
+      "credits": 3
+    },
+    "publicationCreditsUsed": 0,
+    "recoveryCreditsUsed": 0,
+    "reservationOpened": false
+  }
 }
