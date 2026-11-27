@@ -1,3 +1,4 @@
+import {E10,validateRulesSeal} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
@@ -520,6 +521,11 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
 const e=process.env,o=e.FOCAL_OUT,hash=b=>createHash('sha256').update(b).digest('hex'),r=JSON.parse(fs.readFileSync(o+'/result.json'));
 r.servedSha256={};for(const p of e.PAIR_ASSET_FILES.split(/\s+/)){const b=fs.readFileSync(o+'/remote-'+p.replaceAll('/','_'));if(!b.equals(fs.readFileSync(e.SOURCE_DIR+'/app/'+p)))throw Error('SERVED_BYTES:'+p);r.servedSha256[p]=hash(b);}
 Object.assign(r,{verifiedServedAssetCount:Object.keys(r.servedSha256).length,sourceHostedExact:true,runtimeTrafficExact:true,productionUnchanged:true,productionIndexSha256:hash(fs.readFileSync(o+'/production-after.html')),firestoreRuleset:JSON.parse(fs.readFileSync(o+'/rules-after.json')).rulesetName,firestoreRulesDeploys:0,hrWrites:0});
+if (r.sourceSha === E10.source) {
+  r.firestoreRulesTransition = JSON.parse(fs.readFileSync(o+'/e10-rules-readback.json'));
+  r.firestoreRulesDeploys = r.firestoreRulesTransition.releaseTransitions;
+  if (!validateRulesSeal(r,e.CXORBIA_PAIRED_BUILD_ID)) throw Error('RELEASE_COMPOSITION_FAILURE:E10_RULES_SEAL');
+}
 fs.writeFileSync(o+'/result.json',JSON.stringify(r,null,2)+'\n');
  }
  else if(process.env.CXORBIA_I3_QA_SCOPE==='B14_BINDING_REPAIR_DEV')await runB14BindingRepair(process.argv.slice(2));

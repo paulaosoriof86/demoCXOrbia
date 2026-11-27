@@ -928,6 +928,16 @@
       "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
       "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
       "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
+    },
+    "cumulativeE10D07CommercialHr": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_FF9AC83E_SOURCE_20261126.json",
+      "gitBlob": "18a118e7716262cc5c2be20485a10e6a2ac5f526",
+      "sha256": "d6dbeac8d36fbad36760a729abc9df61bbffc0f6bb87f38a81167e70ffdbe73d"
+    },
+    "e10ExactNativeImage": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_21B51607_20261126.json",
+      "gitBlob": "69f295bc6c46594656c1216220987b31653010c7",
+      "sha256": "0964442d1041f07c61c9c3414773c29febb40d64daf895f460541f284832ff3b"
     }
   },
   "lastChromeConnection": {
@@ -940,7 +950,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "25 scoped obligations consumed; retire this native request. Honor remaining original process clauses.",
-    "deployment": "Already served and sealed by 6050930a. Read the current guard before taking further action.",
+    "deployment": "Image 21b51607 is built and registry verified. Keep the served pair 72874c08 until a fresh budget admission covers the two strict probes, three independent GETs and recovery. Use the same image and the one-time E10 rules contract.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -975,7 +985,7 @@
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Use the one-time exact Firestore DEV transition in confirmed.e10FocalRulesAuthority only inside the existing paired job. Before the first mutation require verified funding for its strict HR reads, recovery and the full unit. Continue source integration, access proofs and artifact preparation independently.",
     "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",
-    "financeSeptember": "41/44 visit identity references verified, 3 require authoritative per-visit evidence. Amount, allocation and external bank confirmation remain independent. Use the September per-visit receipts before any financial command."
+    "financeSeptember": "Preserve 41 exact/canonical September references and two additional per-visit historical corroborations. One discrepancy remains. Both Q7,300 advances have no demonstrated application."
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,

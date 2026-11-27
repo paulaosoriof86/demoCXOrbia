@@ -1,0 +1,33 @@
+{
+  "sourceSha": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+  "sourceTree": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
+  "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "allowedProductFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/backend-corte4-empty-shell-guard.js",
+    "app/core/data-source.js",
+    "app/core/importador.js",
+    "app/core/router.js",
+    "app/modules/importador.js",
+    "app/modules/misvisitas.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-visit-import.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "firestore.rules"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs"
+  ],
+  "production": false,
+  "rulesAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+    "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
+    "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
+  }
+}

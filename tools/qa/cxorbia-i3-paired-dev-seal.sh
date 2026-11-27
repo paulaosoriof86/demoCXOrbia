@@ -100,7 +100,11 @@ verify)
 set -Eeuo pipefail
 TOKEN="$(gcloud auth print-access-token)"
 curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-after.json"
-test "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-after.json")"
+if [[ "$FOCAL_SOURCE" == ff9ac83ea7bbe4ad19e8faf7951ef8256be92671 ]]; then
+  node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs --i3-paired verify
+else
+  test "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-after.json")"
+fi
 curl -fsSL -H 'Cache-Control: no-cache' https://tya-plataforma.web.app/ -o "$FOCAL_OUT/production-after.html"
 cmp -s "$FOCAL_OUT/production-before.html" "$FOCAL_OUT/production-after.html"
 CXORBIA_I3_QA_SCOPE=PAIRED_DEV_RECEIPT node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs

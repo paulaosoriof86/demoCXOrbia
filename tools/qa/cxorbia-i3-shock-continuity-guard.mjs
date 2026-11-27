@@ -1,3 +1,4 @@
+import {E10,exactPendingRules} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -39,7 +40,7 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
       pending.sourceSha!==d.productSourceSha||pending.sourceSha!==m.productSource?.sha||
       pending.sourceTree!==d.productTreeAuthority||gitRead(['rev-parse',pending.sourceSha+'^{tree}']).trim()!==pending.sourceTree||
       !gitAncestor(pending.predecessorProductSourceSha,pending.sourceSha)||pending.predecessorProductSourceSha===pending.sourceSha||
-      pending.devPublished!==false||pending.production!==false||pending.rulesDeploys!==0||pending.storageRulesDeploys!==0||
+      pending.devPublished!==false||pending.production!==false||!exactPendingRules(pending,gitBlob,gitRead)||pending.storageRulesDeploys!==0||
       m.productSource?.authorityState!==(pending.scope==='HOSTING_ONLY'
         ?'SOURCE_ONLY_PROVEN_PENDING_HOSTING_ONLY_DEV':'SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV'))return {present:true,pass:false};
     const hosting=d.currentHostingOnlyDevMaterialization,seal=d.postDeployRunSeal||{};
@@ -85,7 +86,7 @@ export function validatePendingDevSuccessor({descriptor:d,pointer:p,matrix:m,git
     if(JSON.stringify(scoped.allowedProductFiles)!==JSON.stringify(proof.allowedProductFiles))return {present:true,pass:false};
     const allowed=[...(proof.allowedProductFiles||[]),...(proof.allowedTestFiles||[])];
     if(!proof.allowedProductFiles?.length||new Set(allowed).size!==allowed.length||
-      allowed.some(file=>/(?:^|\/)(?:firestore|storage)\.rules$|^firebase\.json$|^\.firebaserc$/.test(file)))return {present:true,pass:false};
+      allowed.some(file=>!(pending.sourceSha===E10.source&&file==='firestore.rules')&&/(?:^|\/)(?:firestore|storage)\.rules$|^firebase\.json$|^\.firebaserc$/.test(file)))return {present:true,pass:false};
     const changed=gitRead(['diff','--name-only',pending.predecessorProductSourceSha,pending.sourceSha,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source']).split('\n').filter(Boolean);
     if(!changed.length||changed.some(file=>!allowed.includes(file))||proof.allowedProductFiles.some(file=>!changed.includes(file)))return {present:true,pass:false};
     // Hosting-only may change browser assets, never a backend/runtime or Firebase authority.

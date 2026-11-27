@@ -1,3 +1,4 @@
+import {E10} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 /** Read-only predecessor identity guard for the existing paired DEV lane. */
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
@@ -176,7 +177,21 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       const proof=validateResumedBuildRuntime(descriptor,JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/build-resume.json','utf8')),JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/runtime-revision.json','utf8')));
       fs.writeFileSync(process.env.FOCAL_OUT+'/resumed-runtime-readback.json',JSON.stringify(proof,null,2)+'\n');console.log(JSON.stringify(proof));
     }
-    if(descriptor.currentMailboxEnvironmentHold?.state==='HOLD_MAIL_UNCONFIGURED'){
+    if(process.env.FOCAL_SOURCE===E10.source){
+      const revision=JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/runtime-revision.json','utf8'));
+      const rows=revision.spec.containers[0].env;
+      const get=name=>{const entries=rows.filter(v=>v.name===name);assert.equal(entries.length,1);return entries[0];};
+      assert.equal(get('CXORBIA_E10_PAIRED_RUN').value,process.env.CXORBIA_PAIRED_BUILD_ID);
+      assert.equal(get('CXORBIA_RECOVERY_SOURCE_SHA').value,E10.source);
+      const key=get('CXORBIA_MAILBOX_CREDENTIAL_KEY_B64');
+      assert.equal(key.value,undefined);
+      assert.deepEqual(key.valueFrom.secretKeyRef,{name:'cxorbia-dev-user-mailbox-credential-key',key:'1'});
+      assert.equal(get('CXORBIA_USER_MAILBOX_SEND_ENABLED').value,'false');
+      const proof={sourceSha:E10.source,sourceTree:E10.tree,runId:process.env.CXORBIA_PAIRED_BUILD_ID,
+        runtimeRevision:revision.metadata.name,keyVersion:'1',secret:key.valueFrom.secretKeyRef.name,keyMounted:true,
+        sendEnabled:false,smtpSends:0,credentialReads:0,externalAck:false,production:false};
+      fs.writeFileSync(process.env.FOCAL_OUT+'/e08-key-binding.json',JSON.stringify(proof,null,2)+'\n');
+    }else if(descriptor.currentMailboxEnvironmentHold?.state==='HOLD_MAIL_UNCONFIGURED'){
       const proof=validateMailboxDisabledReadback(descriptor,JSON.parse(fs.readFileSync(process.env.FOCAL_OUT+'/runtime-revision.json','utf8')));
       fs.writeFileSync(process.env.FOCAL_OUT+'/mailbox-disabled-runtime-readback.json',JSON.stringify(proof,null,2)+'\n');console.log(JSON.stringify(proof));
     }

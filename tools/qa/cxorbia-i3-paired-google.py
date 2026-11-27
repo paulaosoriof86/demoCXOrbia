@@ -131,6 +131,54 @@ def observe_published_pair(stage, image, out):
             "builds":0,"runtimeDeploys":0,"hostingDeploys":0,"trafficChanges":0}
 
 
+def restore_e10_pair(prior, image, build_id, checkpoint):
+    from urllib.parse import urlencode
+    from urllib.request import Request, urlopen
+
+    service = "cxorbia-live-hr-dev"
+    region = "--region=us-central1"
+    scope = "--project=" + project
+    channel = "https://firebasehosting.googleapis.com/v1beta1/sites/" + project + "/channels/live"
+    token = output("gcloud","auth","print-access-token")
+    def hosting(url, body=None):
+        data = None if body is None else json.dumps(body).encode()
+        req = Request(url, data=data, headers={"Authorization":"Bearer "+token,"Content-Type":"application/json"})
+        with urlopen(req, timeout=45) as response:
+            return json.load(response)
+    def traffic():
+        return json.loads(output("gcloud","run","services","describe",service,region,scope,"--format=json"))["status"]["traffic"]
+    def revision(name):
+        return json.loads(output("gcloud","run","revisions","describe",name,region,scope,"--format=json"))
+    def identity(item):
+        values = {v["name"]:v.get("value") for v in item["spec"]["containers"][0]["env"]}
+        return values.get("CXORBIA_RECOVERY_SOURCE_SHA"), item["status"]["imageDigest"].split("@")[-1]
+
+    require(prior["runtimeRevision"]=="cxorbia-live-hr-dev-00395-lnc" and
+            prior["hostingVersion"]=="sites/cxorbia-backend-dev/versions/e9a216661b686246" and
+            identity(revision(prior["runtimeRevision"]))==(prior["sourceSha"],prior["runtimeDigest"]),
+            "RELEASE_COMPOSITION_FAILURE:E10_ROLLBACK_TARGET")
+    release = hosting(channel)["release"]
+    if release["version"]["name"] != prior["hostingVersion"]:
+        require(release.get("message")=="CXORBIA_E10_"+build_id, "RELEASE_COMPOSITION_FAILURE:FOREIGN_HOSTING")
+        hosting(channel+"/releases?"+urlencode({"versionName":prior["hostingVersion"]}),
+                {"message":"CXORBIA_E10_ROLLBACK_"+build_id})
+    require(hosting(channel)["release"]["version"]["name"]==prior["hostingVersion"],"E10_HOSTING_ROLLBACK_READBACK")
+    rows = [row for row in traffic() if row.get("percent",0)>0]
+    require(len(rows)==1 and rows[0].get("percent")==100, "RELEASE_COMPOSITION_FAILURE:E10_FOREIGN_TRAFFIC")
+    name = rows[0]["revisionName"]
+    if name != prior["runtimeRevision"]:
+        current = revision(name)
+        require(identity(current)==(image["productSource"],image["digest"]) and
+                any(v.get("name")=="CXORBIA_E10_PAIRED_RUN" and v.get("value")==build_id
+                    for v in current["spec"]["containers"][0]["env"]), "RELEASE_COMPOSITION_FAILURE:FOREIGN_RUNTIME")
+        output("gcloud","run","services","update-traffic",service,region,scope,
+               "--to-revisions="+prior["runtimeRevision"]+"=100","--quiet")
+    require(any(row.get("revisionName")==prior["runtimeRevision"] and row.get("percent")==100 for row in traffic()),
+            "E10_RUNTIME_ROLLBACK_READBACK")
+    checkpoint("e10-pair-restored",{"hostingVersion":prior["hostingVersion"],"runtimeRevision":prior["runtimeRevision"],
+                                    "runtimeDigest":prior["runtimeDigest"]})
+
+
 def main():
     require(not os.environ.get("GITHUB_ACTIONS") and not os.environ.get("GITHUB_RUN_ID"), "AMBIGUOUS_EXECUTOR")
     head = output("git", "rev-parse", "HEAD")
@@ -250,46 +298,61 @@ def main():
     write(out/"build.json",{"sourceSha":source,"sourceTree":tree,"imageTag":digest_uri,
                            "requestedTag":image["tag"],"builds":0 if resume else 1,"production":False,"imageBuildId":image["id"]})
     write(out/"build-resume.json",image)
-    if not resume:
-        run_step(12)
-    require(environment["RUNTIME_DIGEST"] == image["digest"],"RELEASE_COMPOSITION_FAILURE:RUNTIME_BUILD_MISMATCH")
-    if not resume:
-        checkpoint("runtime",{"revision":environment["DEV_REVISION"],"trafficPercent":100})
-    run_step(13)
-    if resume:
-        require(environment["HOSTING_VERSION_NAME"]==resume["hostingVersion"] and environment["HOSTING_RELEASE_NAME"]==resume["hostingRelease"],
-                "RELEASE_COMPOSITION_FAILURE:RESUME_ASSET_INVENTORY_DRIFT")
-    else:
-        checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
+    focal_rules = source == "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671"
+    def rules(action):
+        subprocess.run(["node","tools/release/cxorbia-corte6-firestore-rules-deploy.mjs","--i3-paired",action],check=True)
     try:
-        run_step(14)
-    except subprocess.CalledProcessError:
-        failure = out / "strict-hr-failure.json"
-        if failure.is_file():
-            evidence = read(failure)
-            require(evidence["runId"] == build_id, "SOURCE_FAILURE:STRICT_HR_FAILURE_ID")
-            checkpoint("strict-hr-probe-failure", {"probeEvidence": evidence})
-            uri = "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/" + build_id + "/strict-hr-probe-failure.json"
-            require(json.loads(output("gcloud", "storage", "cat", uri)) == read(out / "strict-hr-probe-failure.json"),
-                    "PERSISTENCE_FAILURE:STRICT_HR_FAILURE_READBACK")
+        if focal_rules:
+            rules("apply")
+        if not resume:
+            run_step(12)
+        require(environment["RUNTIME_DIGEST"] == image["digest"],"RELEASE_COMPOSITION_FAILURE:RUNTIME_BUILD_MISMATCH")
+        if not resume:
+            checkpoint("runtime",{"revision":environment["DEV_REVISION"],"trafficPercent":100})
+        run_step(13)
+        if resume:
+            require(environment["HOSTING_VERSION_NAME"]==resume["hostingVersion"] and environment["HOSTING_RELEASE_NAME"]==resume["hostingRelease"],
+                    "RELEASE_COMPOSITION_FAILURE:RESUME_ASSET_INVENTORY_DRIFT")
+        else:
+            checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
+        try:
+            run_step(14)
+        except subprocess.CalledProcessError:
+            failure = out / "strict-hr-failure.json"
+            if failure.is_file():
+                evidence = read(failure)
+                require(evidence["runId"] == build_id, "SOURCE_FAILURE:STRICT_HR_FAILURE_ID")
+                checkpoint("strict-hr-probe-failure", {"probeEvidence": evidence})
+                uri = "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/" + build_id + "/strict-hr-probe-failure.json"
+                require(json.loads(output("gcloud", "storage", "cat", uri)) == read(out / "strict-hr-probe-failure.json"),
+                        "PERSISTENCE_FAILURE:STRICT_HR_FAILURE_READBACK")
+            raise
+        run_step(15)
+        identity={"executionProvider":"GOOGLE_CLOUD_BUILD","runId":build_id,"runAttempt":1}
+        result=read(out/"result.json")
+        result.update(identity)
+        if resume:
+            result.update({"builds":0,"hostingDeploys":0,"runtimeDeploys":0,"publishedStageRecovery":resume})
+        write(out/"result.json",result)
+        run_step(16)
+        hr=read(out/"hr-after/result.json")
+        require(all(hr.get(k)==v for k,v in identity.items()),"SOURCE_FAILURE:GOOGLE_HR_IDENTITY")
+        files=["result.json","hr-after/result.json","build-resume.json"]
+        if (out/"mailbox-environment-readback.json").is_file():
+            files.append("mailbox-environment-readback.json")
+        if focal_rules:
+            files.extend(["e10-rules-readback.json","e08-key-binding.json"])
+        with zipfile.ZipFile("/workspace/paired-evidence.zip","w",zipfile.ZIP_DEFLATED) as archive:
+            for name in files:
+                archive.write(out/name,name)
+        print("CXORBIA_PAIRED_DEV_VERIFIED",build_id,source,image["digest"],flush=True)
+    except Exception:
+        # Never restore weaker predecessor rules while successor UIs or traffic remain active.
+        if focal_rules and (out/"e10-rules-created.json").is_file():
+            restore_e10_pair(d["currentMaterialization"], image, build_id, checkpoint)
+            rules("rollback")
         raise
-    run_step(15)
-    identity={"executionProvider":"GOOGLE_CLOUD_BUILD","runId":build_id,"runAttempt":1}
-    result=read(out/"result.json")
-    result.update(identity)
-    if resume:
-        result.update({"builds":0,"hostingDeploys":0,"runtimeDeploys":0,"publishedStageRecovery":resume})
-    write(out/"result.json",result)
-    run_step(16)
-    hr=read(out/"hr-after/result.json")
-    require(all(hr.get(k)==v for k,v in identity.items()),"SOURCE_FAILURE:GOOGLE_HR_IDENTITY")
-    files=["result.json","hr-after/result.json","build-resume.json"]
-    if (out/"mailbox-environment-readback.json").is_file():
-        files.append("mailbox-environment-readback.json")
-    with zipfile.ZipFile("/workspace/paired-evidence.zip","w",zipfile.ZIP_DEFLATED) as archive:
-        for name in files:
-            archive.write(out/name,name)
-    print("CXORBIA_PAIRED_DEV_VERIFIED",build_id,source,image["digest"],flush=True)
+
 
 
 if __name__ == "__main__":

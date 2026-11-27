@@ -1,3 +1,4 @@
+import {E10,validateRulesSeal} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import {execFileSync} from 'node:child_process';
 import {createHash,randomBytes} from 'node:crypto';
 import fs from 'node:fs';
@@ -126,6 +127,21 @@ for i in z.infolist():
  if i.filename.endswith('.json') and not i.is_dir():
   dst=root/i.filename;dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(z.read(i))
 `,zip,out],{stdio:['ignore','pipe','pipe'],timeout:45000});
+  if(expected.sourceSha===E10.source){
+    const result=JSON.parse(fs.readFileSync(path.join(out,'result.json'),'utf8'));
+    const proof=fs.readFileSync(path.join(out,'e10-rules-readback.json'));
+    const uri='gs://'+bucket+'/cxorbia-i3-paired-dev/results/'+buildId+'/e10-rules-readback.json';
+    const meta=JSON.parse(String(read('gcloud',['storage','objects','describe',uri,'--raw','--format=json'])));
+    need(/^[1-9]\d+$/.test(String(meta.generation)) && Date.parse(meta.timeCreated)>=started &&
+      Date.parse(meta.timeCreated)<=ended+60000 && Number(meta.size)===proof.length &&
+      hash(read('gcloud',['storage','cat',uri+'#'+meta.generation]))===hash(proof),'E10_NATIVE_RULES_READBACK');
+    need(JSON.stringify(JSON.parse(proof))===JSON.stringify(result.firestoreRulesTransition) &&
+      validateRulesSeal(result,buildId),'E10_NATIVE_RULES_SEAL');
+    const key=JSON.parse(fs.readFileSync(path.join(out,'e08-key-binding.json'),'utf8'));
+    need(key.keyMounted===true && key.keyVersion==='1' && key.secret==='cxorbia-dev-user-mailbox-credential-key' &&
+      key.sendEnabled===false && key.externalAck===false && key.runId===buildId && key.sourceSha===E10.source &&
+      key.sourceTree===E10.tree && key.runtimeRevision===result.runtimeRevision,'E08_EXACT_SECRET_BINDING');
+  }
   const externalExecution=deepFreeze({executionProvider:'GOOGLE_CLOUD_BUILD',runId:buildId,runAttempt:1,runNumber:null,project,...projectNumberBinding,location,resourceName:resource,serviceAccount:build.serviceAccount,stepId:step.id,jobConclusion:'success',workflow:structuredClone(expected.workflow),nativeStepSha256:hash(JSON.stringify(executableStep(step))),producerControlHead:expected.controlSha,sourceSha:expected.sourceSha,sourceTree:expected.sourceTree,request:structuredClone(expected.request),predecessorReceiptPath:expected.predecessorReceiptPath,predecessorReceiptBlob:expected.predecessorReceiptBlob,predecessorExecution:structuredClone(expected.predecessorExecution),startedAt:build.startTime,completedAt:build.finishTime,buildMetadataSha256:hash(buildBytes),nativeLogsSha256:hash(logs),sourceObject:{...source.pin,uri:source.uri},evidenceObject:{...archive.pin,uri:archive.uri},artifactManifest:{uri:manifestUri,sha256:hash(manifestBytes)},artifactDigest:'sha256:'+archive.pin.sha256,nativeBuildVerified:true,scope:'I3_PAIRED_DEV',production:false});
   verifiedPairedExecutions.add(externalExecution);
   return {folder:out,digest:externalExecution.artifactDigest,externalExecution,cleanup:()=>fs.rmSync(folder,{recursive:true,force:true})};

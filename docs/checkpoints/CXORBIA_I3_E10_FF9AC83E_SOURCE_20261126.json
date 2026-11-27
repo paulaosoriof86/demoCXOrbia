@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-source-proof.v1",
+  "sourceSha": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+  "sourceTree": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
+  "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "productParent": "feea0c340bb0054ac067e9497748702e22599bf2",
+  "sourceTestsPass": 109,
+  "sourceTestsFail": 0,
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_E10_FF9AC83E_SCOPE_20261126.json",
+  "scopeReceiptBlob": "ba726bfbc8c3fe07d4679d674ea219eabeb28bed",
+  "allowedProductFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/backend-corte4-empty-shell-guard.js",
+    "app/core/data-source.js",
+    "app/core/importador.js",
+    "app/core/router.js",
+    "app/modules/importador.js",
+    "app/modules/misvisitas.js",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-visit-import.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/server.mjs",
+    "firestore.rules"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs"
+  ],
+  "production": false,
+  "findings": [
+    {
+      "priority": "P0_PROVEN",
+      "id": "E10",
+      "cause": "Operational import provider, rules and authenticated frontend require paired composition."
+    },
+    {
+      "priority": "P0_PROVEN",
+      "id": "D07",
+      "cause": "Shopper confirmation requires the assigned visit and the current document revision."
+    },
+    {
+      "priority": "P0_PROVEN",
+      "id": "HR_LAST_CONFIRMED_BADGE",
+      "cause": "Commercial last-confirmed badge was hidden by technical-only topbar paths."
+    }
+  ],
+  "sourceTests": [
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+    "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs"
+  ],
+  "sourceTestTapSha256": "b7ff81e8bec6a8ea16500211d848fe730aac1f93c12bfbde2ff01f81a625072d",
+  "previousD07Tests": 103,
+  "originalD07Correction": {
+    "path": "docs/checkpoints/CXORBIA_I3_D07_VISIT_DOCUMENT_REVISION_20261126.patch",
+    "gitBlob": "3c34d679a18be6610e3bd14fee5ca4ce62a3d63b",
+    "sha256": "042ac110a9734a8abe0905fbd159db13d5d2c64d96e7577b52f336f9c995bc29"
+  },
+  "nativeChrome": {
+    "executable": "Chrome 1194, Google Cloud Shell",
+    "proof": {
+      "path": "tools/qa/cxorbia-i3-commercial-hr-badge-proof.py",
+      "gitBlob": "aa058b3addaa3614c92a821f4b9682cf51b669de",
+      "sha256": "5d23fc84f729de183dfcb66184a4cbc066cb75142cd3e03907bbb0a1e9f887e7"
+    },
+    "pass": 63,
+    "fail": 0,
+    "roles": [
+      "admin",
+      "shopper",
+      "cliente"
+    ],
+    "fixture": "Candidate topbar, styles and actual data source with synthetic protected authority",
+    "served": false
+  },
+  "exactImage": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_21B51607_20261126.json",
+    "gitBlob": "69f295bc6c46594656c1216220987b31653010c7",
+    "sha256": "0964442d1041f07c61c9c3414773c29febb40d64daf895f460541f284832ff3b"
+  },
+  "preservedE10Native": "2f54ef2415ac49b2b08d7e4881bb4e30",
+  "servedFrontendAcknowledgements": 0,
+  "newDomainMatches": 0,
+  "physicalStatus": "HOLD: zero Make credits",
+  "futureReadBudget": {
+    "releaseStrictGet": 2,
+    "independentGet": 3,
+    "maximumObservedCreditsPerFreshScopeRead": 12,
+    "proposedReadAllowance": 60,
+    "untouchedRestorationReserve": 100,
+    "totalProposedAvailable": 160,
+    "physicalF3Included": false,
+    "E10InternalCommandReadsMake": false,
+    "lastComparablePairedReaderCost": 18,
+    "lastComparableWholeWindow": 22
+  }
+}

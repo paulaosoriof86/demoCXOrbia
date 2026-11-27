@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.google-native-product-image.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_EXACT_IMAGE_BUILD_AND_REGISTRY_READBACK",
+  "sourceSha": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+  "sourceTree": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
+  "project": "cxorbia-backend-dev",
+  "location": "global",
+  "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+  "sourceObject": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "source/1795746852.553998-60ea444946544eb0a03fe30708b96d0f.tgz",
+    "generation": "1795746852694773",
+    "sha256": "7e6d2b26eaef2fdfd610a353e9c37317c49e6be3d40abc3c11ddd15ced5f89a5",
+    "size": 5978681
+  },
+  "imageBuild": {
+    "id": "21b51607-60f4-4e0a-ad69-3be4c2ce1c66",
+    "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-ff9ac83ea7bb-google-1795746847795995",
+    "digest": "sha256:460c6b80c6a4d2be6a34643960c37be38f7c545ca47602f4839ae062556dfe96"
+  },
+  "independentRegistryDigest": "sha256:460c6b80c6a4d2be6a34643960c37be38f7c545ca47602f4839ae062556dfe96",
+  "nativeDescribeFileSha256": "55b4bfd1a409d8ae2370e2d64b21aad706df65c4faeb4db1be945af73d8bdbd1",
+  "registryReadbackSha256": "6adb27b2cc2ee5b0add255e0f2232495e69188d470528504cdd89313a685d8ca",
+  "nativeBuildStatus": "SUCCESS",
+  "nativeStepStatus": "SUCCESS",
+  "startedAt": "2026-11-27T02:34:13.709387165Z",
+  "completedAt": "2026-11-27T02:35:10.353448Z",
+  "configBlob": "e9ec8e7c9b4fabe4d1f26d68bea284d56f2bde57",
+  "originalConfig": "backend/runtime/hr-live-service/cloudbuild.yaml",
+  "trafficChanged": false,
+  "hostingChanged": false,
+  "devPublished": false,
+  "certifiedArtifact": false,
+  "production": false,
+  "stagedSourceObject": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "cxorbia-i3-paired-dev/sources/ff9ac83ea7bbe4ad19e8faf7951ef8256be92671/7e6d2b26eaef2fdfd610a353e9c37317c49e6be3d40abc3c11ddd15ced5f89a5.tgz",
+    "generation": "1795746847795995",
+    "sha256": "7e6d2b26eaef2fdfd610a353e9c37317c49e6be3d40abc3c11ddd15ced5f89a5",
+    "size": 5978681
+  },
+  "sourceByteReadback": {
+    "bothGoogleGenerations": true,
+    "independentLocalGitArchiveSha256": "7e6d2b26eaef2fdfd610a353e9c37317c49e6be3d40abc3c11ddd15ced5f89a5",
+    "matches": true
+  }
+}

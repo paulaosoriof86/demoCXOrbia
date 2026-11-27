@@ -1,31 +1,18 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import admin from 'firebase-admin';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {execFileSync} from 'node:child_process';
+import {E10, exactPendingRules, validateMakeAdmission} from './cxorbia-i3-e10-rules-contract.mjs';
+const sha = value => crypto.createHash('sha256').update(value).digest('hex');
+const git = (...args) => execFileSync('git', args, {encoding:'utf8',maxBuffer:8*1024*1024});
+const demand = (ok, label) => { if (!ok) throw Error(label); };
 
-const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend-dev';
-const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-const rulesPath = process.env.CXORBIA_RULES_SOURCE || 'firestore.rules';
-const out = process.env.CXORBIA_RULES_DEPLOY_REPORT || 'app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json';
-const execute = process.env.CXORBIA_EXECUTE_FIRESTORE_RULES === 'true';
-const releaseName = `projects/${expectedProject}/releases/cloud.firestore`;
-
-if (!credentialPath || !fs.existsSync(credentialPath)) throw new Error('credential_missing');
-if (!fs.existsSync(rulesPath)) throw new Error('rules_source_missing');
-const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
-if (sa.project_id !== expectedProject) throw new Error(`wrong_project:${sa.project_id || 'missing'}!=${expectedProject}`);
-
-const credential = admin.credential.cert(sa);
-const token = await credential.getAccessToken();
-if (!token?.access_token) throw new Error('oauth_token_unavailable');
-const source = fs.readFileSync(rulesPath, 'utf8');
-const sha = value => crypto.createHash('sha256').update(String(value || ''), 'utf8').digest('hex');
-const sourceSha256 = sha(source);
-
-async function request(method, url, body){
+async function request(token, method, url, body){
   const r = await fetch(url, {
     method,
     headers: {
-      Authorization: `Bearer ${token.access_token}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/json',
       ...(body === undefined ? {} : {'Content-Type':'application/json'})
     },
@@ -42,6 +29,27 @@ function fail(label, response){
   throw new Error(`${label}:${code}:${message}`);
 }
 
+
+async function historicalDeploy(){
+const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend-dev';
+const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const rulesPath = process.env.CXORBIA_RULES_SOURCE || 'firestore.rules';
+const out = process.env.CXORBIA_RULES_DEPLOY_REPORT || 'app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json';
+const execute = process.env.CXORBIA_EXECUTE_FIRESTORE_RULES === 'true';
+const releaseName = `projects/${expectedProject}/releases/cloud.firestore`;
+
+if (!credentialPath || !fs.existsSync(credentialPath)) throw new Error('credential_missing');
+if (!fs.existsSync(rulesPath)) throw new Error('rules_source_missing');
+const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
+if (sa.project_id !== expectedProject) throw new Error(`wrong_project:${sa.project_id || 'missing'}!=${expectedProject}`);
+
+const {default:admin}=await import('firebase-admin');
+const credential = admin.credential.cert(sa);
+const token = await credential.getAccessToken();
+if (!token?.access_token) throw new Error('oauth_token_unavailable');
+const source = fs.readFileSync(rulesPath, 'utf8');
+const sourceSha256 = sha(source);
+
 const iamPermissions = [
   'firebaserules.rulesets.create',
   'firebaserules.rulesets.get',
@@ -52,7 +60,7 @@ const iamPermissions = [
   'serviceusage.services.use',
   'resourcemanager.projects.get'
 ];
-const iam = await request(
+const iam = await request(token.access_token,
   'POST',
   `https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}:testIamPermissions`,
   {permissions:iamPermissions}
@@ -70,13 +78,16 @@ const directRequired = [
 const missingDirect = directRequired.filter(p => !granted.has(p));
 if (missingDirect.length) throw new Error(`direct_rules_api_permissions_missing:${missingDirect.join(',')}`);
 
-const beforeRelease = await request('GET', `https://firebaserules.googleapis.com/v1/${releaseName}`);
+const beforeRelease = await request(token.access_token, 'GET', `https://firebaserules.googleapis.com/v1/${releaseName}`);
 if (!beforeRelease.ok || !beforeRelease.payload?.rulesetName) fail('current_release_unavailable', beforeRelease);
 const beforeRulesetName = String(beforeRelease.payload.rulesetName);
-const beforeRuleset = await request('GET', `https://firebaserules.googleapis.com/v1/${beforeRulesetName}`);
+const beforeRuleset = await request(token.access_token, 'GET', `https://firebaserules.googleapis.com/v1/${beforeRulesetName}`);
 if (!beforeRuleset.ok) fail('current_ruleset_unavailable', beforeRuleset);
 const beforeFile = (beforeRuleset.payload?.source?.files || []).find(f => f?.name === 'firestore.rules') || (beforeRuleset.payload?.source?.files || [])[0] || {};
 const beforeSourceSha256 = sha(beforeFile.content || '');
+if (execute && expectedProject === E10.project && (sourceSha256 === E10.targetHash || beforeSourceSha256 === E10.targetHash)) {
+  throw Error('RELEASE_COMPOSITION_FAILURE:E10_PAIRED_OWNER_REQUIRED');
+}
 const alreadyCurrent = beforeSourceSha256 === sourceSha256;
 
 const report = {
@@ -106,7 +117,7 @@ if (!execute) {
   report.verified = true;
   report.after = {rulesetName:beforeRulesetName,sourceSha256:beforeSourceSha256};
 } else {
-  const created = await request(
+  const created = await request(token.access_token,
     'POST',
     `https://firebaserules.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}/rulesets`,
     {source:{files:[{name:'firestore.rules',content:source}]}}
@@ -116,7 +127,7 @@ if (!execute) {
   report.createdRuleset = true;
   report.providerWrites += 1;
 
-  const patched = await request(
+  const patched = await request(token.access_token,
     'PATCH',
     `https://firebaserules.googleapis.com/v1/${releaseName}`,
     {release:{name:releaseName,rulesetName:newRulesetName},updateMask:'rulesetName'}
@@ -125,9 +136,9 @@ if (!execute) {
   report.releaseUpdated = true;
   report.providerWrites += 1;
 
-  const afterRelease = await request('GET', `https://firebaserules.googleapis.com/v1/${releaseName}`);
+  const afterRelease = await request(token.access_token, 'GET', `https://firebaserules.googleapis.com/v1/${releaseName}`);
   if (!afterRelease.ok || afterRelease.payload?.rulesetName !== newRulesetName) fail('release_readback_mismatch', afterRelease);
-  const afterRuleset = await request('GET', `https://firebaserules.googleapis.com/v1/${newRulesetName}`);
+  const afterRuleset = await request(token.access_token, 'GET', `https://firebaserules.googleapis.com/v1/${newRulesetName}`);
   if (!afterRuleset.ok) fail('new_ruleset_readback_failed', afterRuleset);
   const afterFile = (afterRuleset.payload?.source?.files || []).find(f => f?.name === 'firestore.rules') || (afterRuleset.payload?.source?.files || [])[0] || {};
   const afterSourceSha256 = sha(afterFile.content || '');
@@ -140,3 +151,107 @@ if (!execute) {
 fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
 fs.writeFileSync(out, JSON.stringify(report,null,2)+'\n','utf8');
 console.log(JSON.stringify({projectId:expectedProject,decision:report.decision,execute,alreadyCurrent,createdRuleset:report.createdRuleset,releaseUpdated:report.releaseUpdated,verified:report.verified,providerWrites:report.providerWrites,rulesetsTestPermission:report.iam.rulesetsTestPermission,sourceSha256}));
+
+}
+
+export async function pairedRules(mode, dependencies={}) {
+  const e = dependencies.env || process.env;
+  const readGit = dependencies.git || git;
+  const http = dependencies.request || request;
+  const id = e.CXORBIA_PAIRED_BUILD_ID;
+  demand(['preflight','apply','verify','rollback'].includes(mode) &&
+    e.PROJECT === E10.project && e.FOCAL_SOURCE === E10.source && e.FOCAL_TREE === E10.tree &&
+    /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(id || '') &&
+    !e.GITHUB_ACTIONS && !e.GITHUB_RUN_ID, 'RELEASE_COMPOSITION_FAILURE:E10_NATIVE_SCOPE');
+  const descriptor = JSON.parse(readGit('show','HEAD:CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'));
+  const pending = descriptor.pendingDevSuccessor;
+  demand(pending?.sourceSha === E10.source && exactPendingRules(pending, p=>readGit('rev-parse','HEAD:'+p).trim(), args=>readGit(...args)),
+    'RELEASE_COMPOSITION_FAILURE:E10_DESCRIPTOR');
+  const cloud = dependencies.cloud || ((...args) => execFileSync('gcloud',[...args,'--project='+E10.project,'--quiet'],
+    {encoding:'utf8',timeout:45000,maxBuffer:8*1024*1024}).trim());
+  const build = JSON.parse(cloud('builds','describe',id,'--region=global','--format=json'));
+  const sub = build.substitutions;
+  demand(build.id === id && build.status==='WORKING' && build.projectId===E10.project &&
+    sub?._CXORBIA_SCOPE==='I3_PAIRED_DEV' && sub._CXORBIA_SOURCE_SHA===E10.source &&
+    sub._CXORBIA_SOURCE_TREE===E10.tree && sub._CXORBIA_CONTROL_SHA===readGit('rev-parse','HEAD').trim() &&
+    sub._CXORBIA_PREDECESSOR_BLOB===descriptor.postDeployRunSeal.receiptBlob,
+    'RELEASE_COMPOSITION_FAILURE:E10_NATIVE_IDENTITY');
+  const token = cloud('auth','print-access-token');
+  if(mode==='preflight' || mode==='apply'){
+    const permissions=['firebaserules.rulesets.get','firebaserules.rulesets.create','firebaserules.releases.get',
+      'firebaserules.releases.list','firebaserules.releases.update','run.services.get','run.services.update',
+      'run.revisions.get','firebasehosting.releases.create','firebasehosting.versions.get'];
+    const iam=await http(token,'POST','https://cloudresourcemanager.googleapis.com/v1/projects/'+E10.project+':testIamPermissions',{permissions});
+    demand(iam.ok && permissions.every(p=>iam.payload.permissions?.includes(p)),'AUTH_FAILURE:E10_NATIVE_PUBLISH_OR_ROLLBACK_PERMISSION');
+  }
+  const api = async (method, name, body) => {
+    const response = await http(token,method,'https://firebaserules.googleapis.com/v1/'+name,body);
+    if (!response.ok) fail('E10_RULES_API',response);
+    return response.payload;
+  };
+  const state = async () => {
+    const release = await api('GET',E10.release);
+    demand(/^projects\/cxorbia-backend-dev\/rulesets\/[a-f0-9-]{36}$/.test(release.rulesetName),'E10_FOREIGN_RULESET');
+    const rules = await api('GET',release.rulesetName);
+    demand(rules.source?.files?.length===1 && rules.source.files[0].name==='firestore.rules','E10_RULESET_FILE');
+    const inventory = await api('GET','projects/'+E10.project+'/releases?pageSize=100');
+    const storage = inventory.releases.filter(r=>r.name.startsWith('projects/'+E10.project+'/releases/firebase.storage'));
+    demand(!inventory.nextPageToken && storage.length===1 && storage[0].rulesetName===E10.storage,'E10_STORAGE_DRIFT');
+    return {rulesetName:release.rulesetName,sourceSha256:sha(rules.source.files[0].content)};
+  };
+  const before = {rulesetName:E10.prior,sourceSha256:E10.priorHash};
+  const found = await state();
+  const prefix='gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/';
+  const record = (name,data,global=false) => {
+    const path=e.FOCAL_OUT+'/'+name+'.json';
+    const uri=prefix+(global?'e10-rules-'+E10.authorityBlob:id)+'/'+name+'.json';
+    fs.writeFileSync(path,JSON.stringify(data,null,2)+'\n',{mode:0o600});
+    cloud('storage','cp','--if-generation-match=0',path,uri);
+    demand(cloud('storage','cat',uri)===fs.readFileSync(path,'utf8').trim(),'PERSISTENCE_FAILURE:E10_RULES_JOURNAL');
+  };
+  const patch = async (rulesetName) => {
+    const result=await api('PATCH',E10.release,{release:{name:E10.release,rulesetName},updateMask:'rulesetName'});
+    demand(result.rulesetName===rulesetName,'RELEASE_COMPOSITION_FAILURE:E10_RELEASE_ACK');
+  };
+  if(mode==='preflight' || mode==='apply') {
+    demand(found.rulesetName===before.rulesetName && found.sourceSha256===before.sourceSha256,'E10_PREDECESSOR_DRIFT');
+    const admission=pending.makeAdmission;
+    demand(admission?.path==='docs/checkpoints/CXORBIA_I3_E10_MAKE_ADMISSION.json' &&
+      admission.gitBlob===readGit('rev-parse','HEAD:'+admission.path).trim() &&
+      validateMakeAdmission(JSON.parse(readGit('show','HEAD:'+admission.path))), 'ENVIRONMENT_FAILURE:E10_MAKE_ADMISSION');
+    const predecessor = descriptor.currentMaterialization;
+    demand(predecessor.sourceSha===E10.predecessor && predecessor.runtimeRevision==='cxorbia-live-hr-dev-00395-lnc' &&
+      predecessor.hostingVersion==='sites/cxorbia-backend-dev/versions/e9a216661b686246','E10_PREDECESSOR_PAIR');
+    if(mode==='preflight') return;
+    const source=fs.readFileSync(e.SOURCE_DIR+'/firestore.rules','utf8');
+    demand(sha(source)===E10.targetHash,'E10_PRODUCT_RULES_HASH');
+    record('intent',{runId:id,sourceSha:E10.source,authorityBlob:E10.authorityBlob,before},true);
+    const created=await api('POST','projects/'+E10.project+'/rulesets',{source:{files:[{name:'firestore.rules',content:source}]}});
+    demand(/^projects\/cxorbia-backend-dev\/rulesets\/[a-f0-9-]{36}$/.test(created.name) && created.name!==E10.prior,'E10_CREATED_RULESET');
+    record('e10-rules-created',{runId:id,createdRulesetName:created.name,before});
+    const current=await state();
+    demand(current.rulesetName===before.rulesetName&&current.sourceSha256===before.sourceSha256,'E10_CONCURRENT_RELEASE');
+    await patch(created.name);
+    const applied=await state();
+    demand(applied.rulesetName===created.name && applied.sourceSha256===E10.targetHash,'E10_AFTER_DRIFT');
+    return;
+  }
+  const saved=JSON.parse(cloud('storage','cat',prefix+id+'/e10-rules-created.json'));
+  demand(saved.runId===id && saved.before?.rulesetName===E10.prior,'E10_CREATED_IDENTITY');
+  if(mode==='rollback' && found.rulesetName===before.rulesetName && found.sourceSha256===before.sourceSha256) return;
+  demand(found.rulesetName===saved.createdRulesetName && found.sourceSha256===E10.targetHash,'E10_FOREIGN_TRANSITION');
+  if(mode==='rollback'){
+    await patch(E10.prior);
+    const restored=await state();
+    demand(restored.rulesetName===before.rulesetName && restored.sourceSha256===before.sourceSha256,'E10_ROLLBACK_READBACK');
+    record('e10-rules-rollback',{runId:id,from:found,restored,rollbackTransitions:1});
+    return;
+  }
+  record('e10-rules-readback',{runId:id,authorityBlob:E10.authorityBlob,project:E10.project,release:E10.release,
+    sourceSha:E10.source,sourceTree:E10.tree,before,after:found,storageBefore:E10.storage,storageAfter:E10.storage,
+    createdRulesetName:saved.createdRulesetName,releaseTransitions:1,rollbackTransitions:0,readbackVerified:true,production:false});
+}
+if(process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href===import.meta.url){
+  if(process.argv[2]==='--i3-paired') await pairedRules(process.argv[3]);
+  else await historicalDeploy();
+}

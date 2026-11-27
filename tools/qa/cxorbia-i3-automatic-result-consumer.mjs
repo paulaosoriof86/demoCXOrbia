@@ -700,6 +700,9 @@ export async function consumeGoogleMaterialization({api,buildId,location,expecte
   }else{
     must(!result.publishedStageRecovery,'SOURCE_FAILURE:GOOGLE_UNBOUND_READBACK_ONLY');
   }
+  if(result.firestoreRulesTransition){
+    result.mailboxKeyBinding=readJson(path.join(archive.folder,'e08-key-binding.json'));
+  }
   const bundle=makeMaterializationReceipt({externalExecution:archive.externalExecution,result,
    hrResult:readJson(path.join(archive.folder,'hr-after/result.json')),hrWindow:fs.existsSync(hrWindowFile)?readJson(hrWindowFile):null,
    requireHrWindow:producer.descriptor.pendingDevSuccessor.hrPeriodWindowRequired===true,

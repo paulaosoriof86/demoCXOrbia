@@ -4,6 +4,10 @@ image=${1:?Missing deployment image}
 [[ "$PROJECT" == cxorbia-backend-dev && "$SERVICE" == cxorbia-live-hr-dev && "$REGION" == us-central1 ]]
 settings="$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE"
 extra=()
+if [[ "$FOCAL_SOURCE" == ff9ac83ea7bbe4ad19e8faf7951ef8256be92671 ]]; then
+  [[ "${CXORBIA_PAIRED_BUILD_ID:-}" =~ ^[a-f0-9-]{36}$ ]]
+  settings+=",CXORBIA_E10_PAIRED_RUN=$CXORBIA_PAIRED_BUILD_ID"
+fi
 secret_bindings=()
 if [[ "$ACTIVE_STATUS" == HOLD_I3_B14_P0_SOURCE_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV_6_OF_21 || "$ACTIVE_STATUS" == HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED ]]; then
   if [[ "$ACTIVE_STATUS" == HOLD_I3_F3_DEV_MATERIALIZED_ENV_REQUIRED ]]; then
@@ -54,6 +58,18 @@ try{
   const mounted=found[0]?.valueFrom?.secretKeyRef;
   ensure(!found.length||mounted,'PLAINTEXT_KEY_MIGRATION_REQUIRED');
   const descriptor=process.env.CANDIDATE_DESCRIPTOR?JSON.parse(fs.readFileSync(process.env.CANDIDATE_DESCRIPTOR,'utf8')):{};
+  const {E10}=await import('./tools/release/cxorbia-i3-e10-rules-contract.mjs');
+  if(process.env.FOCAL_SOURCE===E10.source){
+    ensure(process.env.FOCAL_TREE===E10.tree&&descriptor.pendingDevSuccessor?.sourceSha===E10.source,'EXACT_SOURCE_REQUIRED');
+    const name='cxorbia-dev-user-mailbox-credential-key';
+    ensure(!found.length||(mounted.name===name&&mounted.key==='1'),'EXISTING_KEY_DRIFT');
+    const version=json(cli(['secrets','versions','describe','1','--secret='+name]),'SECRET_VERSION_UNAVAILABLE');
+    ensure(version.state==='ENABLED'&&[project,current.metadata?.namespace].some(id=>id&&version.name==='projects/'+id+'/secrets/'+name+'/versions/1'),'SECRET_VERSION_DRIFT');
+    const policy=json(cli(['secrets','get-iam-policy',name]),'SECRET_IAM_READ_FAILED');
+    ensure(policy.bindings?.some(b=>b.role==='roles/secretmanager.secretAccessor'&&!b.condition&&b.members?.includes('serviceAccount:'+serviceAccount)),'SECRET_ACCESSOR_REQUIRED');
+    console.log(name+':1');
+    process.exit(0);
+  }
   const hold=descriptor.currentMailboxEnvironmentHold;
   if(hold?.state==='HOLD_MAIL_UNCONFIGURED'){
     const resume=descriptor.pairedBuildResumeRequest,pending=descriptor.pendingDevSuccessor;

@@ -1,3 +1,4 @@
+import {validateRulesSeal} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import {createHash} from 'node:crypto';
 import {isVerifiedGooglePairedExecution} from './cxorbia-i3-google-qa-execution.mjs';
 
@@ -115,7 +116,7 @@ export function makeMaterializationReceipt({run,job,artifact,externalExecution,r
  }
  must(hrResult?.decision==='PASS_EXCEL_CANONICAL_ID_READONLY'||hrResult?.decision==='PASS_HR_DURABLE_REVISION_READONLY','SOURCE_FAILURE:MISSING_HR_READBACK');
  must(['sourceSha','sourceTree','runtimeRevision','runtimeDigest','hostingVersion'].every(k=>hrResult[k]===result[k])&&executionMatches(hrResult)&&hrResult.revision===result.hrRevision&&hrResult.production===false&&hrResult.fullDomain===false&&['firestoreWrites','authWrites','hrWrites','commandPosts'].every(k=>hrResult[k]===0),'SOURCE_FAILURE:HR_READBACK_IDENTITY_OR_SCOPE');
- must(result.hrWrites===0&&result.firestoreRulesDeploys===0&&result.storageRulesDeploys===0,'RELEASE_COMPOSITION_FAILURE:UNEXPECTED_WRITE');
+ must(result.hrWrites===0&&validateRulesSeal(result,id)&&result.storageRulesDeploys===0,'RELEASE_COMPOSITION_FAILURE:UNEXPECTED_WRITE');
  if(requireHrWindow)must(Boolean(hrWindow),'SOURCE_FAILURE:HR_WINDOW_REQUIRED');
  if(hrWindow){
   must(hrWindow.decision==='PASS_HR_PERIOD_WINDOW_HISTORY_AND_EXPLICIT_READ'&&hrWindow.schemaVersion==='cxorbia.i3.hr-period-window-dev.v1'&&
@@ -312,6 +313,11 @@ export function projectMaterialization(input,{receipt,receiptPath,now=receipt.ob
   o.lastHrObservation={runId:r.runId,...clone(technical),sourceSha:r.sourceSha,sourceTree:r.sourceTree,hrRevision:r.hrRevision,receiptPath,receiptBlob:blob,provider:'excel_online',production:false,kind:'EXACT_PAIRED_READONLY_HR_OBSERVATION'};
   o.lastModuleTruthProof=clone(c3);o.c3PreterminalProof=clone(c3);o.currentC3PreterminalAudit=clone(c3);
   if(o.canonicalFunctionalCandidate){old.canonicalFunctionalCandidateMaterialization=clone(o.canonicalFunctionalCandidate.currentMaterialization);Object.assign(o.canonicalFunctionalCandidate,{state:'RUNTIME_AND_HOSTING_DEV_MATERIALIZED_FUNCTIONAL_C3_PENDING',currentMaterialization:clone(r),nextExactAction:nextAction,exactNextAction:nextAction});}
+  if(r.mailboxKeyBinding && r.firestoreRulesTransition){
+    old.currentMailboxEnvironmentHold=clone(o.currentMailboxEnvironmentHold||null);
+    o.currentMailboxEnvironmentHold={state:'HOLD_MAILBOX_CONFIGURATION_AND_EXTERNAL_ACK',...clone(r.mailboxKeyBinding),
+      receiptPath,receiptBlob:blob,mailDomainClosed:false};
+  }
   if(o.currentMailboxEnvironmentHold&&receipt.mailboxEnvironment){old.currentMailboxEnvironmentHold=clone(o.currentMailboxEnvironmentHold);Object.assign(o.currentMailboxEnvironmentHold,{runtimeRevision:r.runtimeRevision,observedRunId:r.runId,reason:receipt.mailboxEnvironment.secretMetadataOutcome==='PERMISSION_DENIED'?'Mailbox key metadata lookup was denied; key existence is not established. Retain E08 functional HOLD.':'Mailbox environment observation only; authenticated functional E08 proof remains required.',secretMetadataOutcome:receipt.mailboxEnvironment.secretMetadataOutcome,mailboxEnabled:receipt.mailboxEnvironment.mailboxEnabled,sendEnabled:receipt.mailboxEnvironment.sendEnabled,receiptPath,receiptBlob:blob});}
   if(o.d08AcademyProgressResidual?.currentMaterialization)o.d08AcademyProgressResidual.currentMaterialization=clone(r);
  }

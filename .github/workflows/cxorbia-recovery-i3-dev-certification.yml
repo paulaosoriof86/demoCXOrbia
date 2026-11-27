@@ -4560,7 +4560,9 @@ jobs:
       set -Eeuo pipefail
       if [[ "$PAIR_ENV_ONLY" != true ]]; then
       cd "$SOURCE_DIR"
-      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
+      release_options=()
+      if [[ "$FOCAL_SOURCE" == ff9ac83ea7bbe4ad19e8faf7951ef8256be92671 ]]; then release_options+=(--message "CXORBIA_E10_${CXORBIA_PAIRED_BUILD_ID:?}"); fi
+      "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" "${release_options[@]}" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
       cd "$GITHUB_WORKSPACE"
       fi
       TOKEN="$(gcloud auth print-access-token)"
