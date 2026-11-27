@@ -199,7 +199,7 @@ export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,
   demand(sha(raw+'\n')===pin.sha256||sha(raw)===pin.sha256,fail);
   const observed=JSON.parse(raw),now=Date.now();
   demand(observed.organizationId===4090072&&observed.readerScenarioId===10200465&&observed.source===E10.source&&
-    observed.launchTag===launchTag&&observed.independentlyVerified===true&&verifiedAllocation(observed,now)&&
+    observed.launchTag===launchTag&&observed.readerActive===false&&observed.independentlyVerified===true&&verifiedAllocation(observed,now)&&
     observed.protectedCredits>=190&&observed.recoveryReserve>=100&&
     Number.isFinite(observed.observedAtMs)&&observed.observedAtMs<=now&&now-observed.observedAtMs<=600000&&
     Number.isFinite(observed.expiresAtMs)&&observed.expiresAtMs>now,fail);

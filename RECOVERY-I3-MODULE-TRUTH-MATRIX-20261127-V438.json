@@ -65217,5 +65217,10 @@
     "path": "docs/checkpoints/CXORBIA_I3_PAIRED_WINDOW_90_AUTHORITY_20261127.json",
     "gitBlob": "1952c977a1ded192f07b51b69d878202605cc419",
     "sha256": "aec0926639cd0c2f42dc784a4da56b9a464e94a21bd305fb7b16ddaacbaa7b3c"
+  },
+  "currentControlledWindowStageReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_STAGE_READBACK_20261127.json",
+    "gitBlob": "873d4f175ea133698f8428da272104f8ba694086",
+    "sha256": "e3b5b92c134490dd24b82ce2eb6f5b342aaf83b6129355bb8e3e2fcc8c44438b"
   }
 }

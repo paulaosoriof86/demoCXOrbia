@@ -78,5 +78,54 @@ class RollbackTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,"FOREIGN_TRAFFIC"): self.restore()
         self.assertEqual(self.mutations,[])
 
+class ReaderCutoverTest(unittest.TestCase):
+    def setUp(self):
+        self.new="cxorbia-live-hr-dev-00396-fixture"
+        self.rows=[{"revisionName":self.new,"percent":100},{"revisionName":"old-tag","tag":"historical"}]
+        self.tag_env=[]
+        self.proof=dict(runId=run,stage="enabled",project=paired.project,sourceSha=image["productSource"],
+                        digest=image["digest"],scenarioId=10200465,readerActive=True,writerActive=False,
+                        readerPending=0,autoPurchasing=False,independentlyObserved=True,observedAtEpoch=1000,
+                        remainingSharedMargin=3,availableCenticredits=19300,publicationCreditsUsed=0)
+    def routes(self):
+        def cmd(*args):
+            if args[2]=="services": return json.dumps({"status":{"traffic":self.rows}})
+            if args[4]=="old-tag": return json.dumps({"spec":{"containers":[{"env":self.tag_env}]}})
+            if args[4]==old["runtimeRevision"]: return json.dumps({"spec":{"timeoutSeconds":120}})
+            return json.dumps({"spec":{"containers":[{"env":[{"name":"CXORBIA_RECOVERY_SOURCE_SHA","value":image["productSource"]}]}]},
+                               "status":{"imageDigest":"gcr.io/test@"+image["digest"]}})
+        with patch.object(paired,"output",cmd):
+            return paired.check_reader_routes(old,self.new,image)
+    def receipt(self,stage="enabled",opening=True):
+        result=type("result",(),{"returncode":0,"stdout":"123","stderr":""})()
+        with patch("subprocess.run",return_value=result),patch.object(paired,"output",return_value=json.dumps(self.proof)),patch("time.time",return_value=1010):
+            return paired.reader_stage_receipt(stage,run,image,990,opening)
+    def test_exact_image_and_safe_tag_can_drain(self):
+        self.assertEqual(self.routes(),120)
+    def test_predecessor_or_paid_tag_denies_opening(self):
+        self.tag_env=[{"name":"CXORBIA_B14_MAKE_TOOLBOX_TOKEN"}]
+        with self.assertRaisesRegex(RuntimeError,"READER_TAG"):self.routes()
+        self.rows[-1]["revisionName"]=old["runtimeRevision"]
+        with self.assertRaisesRegex(RuntimeError,"READER_TAG"):self.routes()
+    def test_split_traffic_denies_opening(self):
+        self.rows[0]["percent"]=99
+        with self.assertRaisesRegex(RuntimeError,"PREDECESSOR_TRAFFIC"):self.routes()
+    def test_open_and_close_are_generation_bound(self):
+        self.assertTrue(self.receipt()["uri"].endswith("#123"))
+        self.proof.update(stage="closed",readerActive=False,availableCenticredits=10300,publicationCreditsUsed=90)
+        self.assertEqual(self.receipt("closed",False)["publicationCreditsUsed"],90)
+    def test_read_only_compensation_after_provider_debit_anomaly_still_requires_reader_off(self):
+        self.proof.update(stage="closed-on-failure",readerActive=False,availableCenticredits=50,publicationCreditsUsed=91)
+        self.assertEqual(self.receipt("closed-on-failure",False)["publicationCreditsUsed"],91)
+        self.proof["readerActive"]=True
+        with self.assertRaisesRegex(RuntimeError,"STAGE_READBACK"):self.receipt("closed-on-failure",False)
+    def test_wrong_or_stale_make_observation_is_rejected(self):
+        original=dict(self.proof)
+        for k,value in [("runId","other"),("writerActive",True),("readerPending",1),("availableCenticredits",19299),
+                        ("observedAtEpoch",989),("observedAtEpoch",1011),("publicationCreditsUsed",1),("readerActive",False)]:
+            with self.subTest(field=k):
+                self.proof={**original,k:value}
+                with self.assertRaisesRegex(RuntimeError,"STAGE_READBACK"):self.receipt()
+
 if __name__ == "__main__":
     unittest.main()

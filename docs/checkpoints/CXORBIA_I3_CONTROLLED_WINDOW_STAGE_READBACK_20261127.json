@@ -1,0 +1,125 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "ENVIRONMENT_FAILURE",
+  "controlVerified": "8bb5d940df59b8ecc04a01956f908869e1ceff13",
+  "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+  "sourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+  "image": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_ABDA5252_20261127.json",
+    "gitBlob": "2592b7eb7d6c5e4216c243a61af45b8c71f72b4e",
+    "sha256": "8ed71ef2d3f03b72475640021ab68c6c15f5cb85c3aef77fe620ea5ad66608ea",
+    "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "sourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "imageBuildId": "abda5252-5455-44d3-b21d-67d76126e1e3",
+    "digest": "sha256:85d9f551441d6c07182f80393665dc55ea34c384616a08d61bc43ee0a52817aa"
+  },
+  "rulesAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+    "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3"
+  },
+  "economicAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_PAIRED_WINDOW_90_AUTHORITY_20261127.json",
+    "gitBlob": "1952c977a1ded192f07b51b69d878202605cc419",
+    "sha256": "aec0926639cd0c2f42dc784a4da56b9a464e94a21bd305fb7b16ddaacbaa7b3c"
+  },
+  "pairedTag": "cxorbia-e10-pair-7f78a8fac2ea-85d9f551-a1",
+  "job": "vrm154-156-dev-materialization",
+  "pairedExecutions": 0,
+  "googleReadback": {
+    "asOf": "2026-11-27T07:28:05Z",
+    "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "servingRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "servingDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+    "trafficPercent": 100,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+    "ruleset": "25cb3df2-fa16-4804-9124-38d0a8fac057"
+  },
+  "makeReadback": {
+    "observedAt": "2026-11-27T07:29:12.784Z",
+    "unusedCenticredits": "198800",
+    "autoPurchasing": false,
+    "isPaused": false,
+    "readerRuns": 0,
+    "writerRuns": 0,
+    "active": [
+      10199316,
+      10196136,
+      10221181,
+      10198752,
+      10198707,
+      10196338,
+      5843689,
+      5837393
+    ],
+    "activeComplete": true
+  },
+  "makeExecutionWindowFrom": "2026-11-27T06:55:00Z",
+  "nativeCutover": {
+    "predecessorDrainSecondsObserved": 120,
+    "successorMustHaveTrafficPercent": 100,
+    "otherTaggedMakeBindingsAllowed": 0,
+    "strictProbeIds": [
+      "seal-meta",
+      "seal-json",
+      "canonical-before",
+      "canonical-json",
+      "canonical-after"
+    ],
+    "journal": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/{nativeRunId}/",
+    "operatorTransitions": [
+      "Keep Make reader inactive through runtime and Hosting. Wait for native reader-enable-permitted after live successor traffic, tag inspection and the previous request timeout.",
+      "Verify budget, queue and writer state. Only then enable reader 10200465 and publish make-reader-enabled.json in the same journal with generation-match=0.",
+      "After reader-close-required, close the reader, verify zero pending and publish make-reader-closed.json with generation-match=0.",
+      "On reader-close-required-on-failure, close the reader and publish make-reader-closed-on-failure.json. Until closure is observed, keep the protected successor ahead of the unprotected predecessor.",
+      "Restore any separately authorized Insurance pause by its independently armed deadline. Keep E10 protection if records may exist."
+    ],
+    "observerFields": [
+      "runId",
+      "stage",
+      "project",
+      "sourceSha",
+      "digest",
+      "scenarioId",
+      "readerActive",
+      "writerActive",
+      "readerPending",
+      "autoPurchasing",
+      "independentlyObserved",
+      "observedAtEpoch",
+      "remainingSharedMargin",
+      "availableCenticredits",
+      "publicationCreditsUsed"
+    ],
+    "evidenceMode": "OFFLINE_CONTRACT_ONLY"
+  },
+  "tests": {
+    "source": 342,
+    "sourceFocalSubset": 49,
+    "controlRulesConsumerAndAliases": 305,
+    "controlsLogSha256": "ab20e9399e208e71483b6887ecf6275cee667aa8429856171ab79593b2dd534b",
+    "compensationAndStageChecks": 10,
+    "stageLogSha256": "6ebfdfd4b3c00fc8d529c9d9843a65a06a2c956847a10a8789c0a9c804012d92",
+    "pairedSourceChecks": {
+      "finance-regression.log": 87,
+      "gthn-source-tests.log": 110,
+      "vrm256-midia-current-period.log": 2,
+      "vrm257-benefits-payment-label.log": 1,
+      "vrm259-postulations-rail-badge.log": 1
+    },
+    "failures": 0
+  },
+  "physical": {
+    "imageBuilds": 1,
+    "newPairedRelease": 0,
+    "paidProbes": 0,
+    "workMakeCredits": 0,
+    "insuranceSuspensions": 0,
+    "restorationRequired": false,
+    "newDomainClosures": 0
+  },
+  "externalRequirement": "Verify enforceable bounds for both on-demand callers, or demonstrate upstream cursors/replay and an independently armed 15-minute reactivation. The existing Make management interface accepts a scenario ID for activation and deactivation. It provides no scheduled reactivation argument.",
+  "I3": "HOLD",
+  "I4": "NO_AUTHORIZATION",
+  "production": "DO_NOT_TOUCH"
+}

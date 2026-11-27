@@ -157,7 +157,7 @@ test('native preflight checks provider evidence and separately claims the actual
   const {createHash}=await import('node:crypto');
   const launchTag='synthetic-launch',uid='12345',str=stringValue=>({stringValue}),num=n=>({integerValue:String(n)}),now=Date.now();
   const kinds=['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'];
-  const proof={organizationId:4090072,readerScenarioId:10200465,source:E10.source,launchTag,independentlyVerified:true,
+  const proof={organizationId:4090072,readerScenarioId:10200465,source:E10.source,launchTag,readerActive:false,independentlyVerified:true,
     sharedConsumersCanDebit:false,providerEnforced:true,protectedCredits:190,recoveryReserve:100,observedAtMs:now-1000,expiresAtMs:now+60000};
   let bytes=JSON.stringify(proof),patches=0;
   const digest=()=>createHash('sha256').update(bytes).digest('hex');

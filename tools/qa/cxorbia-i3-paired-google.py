@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
+import time
 import zipfile
 
 import yaml
@@ -179,6 +180,61 @@ def restore_e10_pair(prior, image, build_id, checkpoint):
                                     "runtimeDigest":prior["runtimeDigest"]})
 
 
+def check_reader_routes(prior, successor_revision, image):
+    region, target = "--region=us-central1", "--project="+project
+    def revision(name):
+        return json.loads(output("gcloud","run","revisions","describe",name,region,target,"--format=json"))
+    service = json.loads(output("gcloud","run","services","describe","cxorbia-live-hr-dev",region,target,"--format=json"))
+    rows = service["status"]["traffic"]
+    live = [r for r in rows if r.get("percent",0) > 0]
+    require(len(live)==1 and live[0]["revisionName"]==successor_revision and live[0]["percent"]==100,
+            "RELEASE_COMPOSITION_FAILURE:READER_PREDECESSOR_TRAFFIC")
+    current = revision(successor_revision)
+    require(current["status"]["imageDigest"].split("@")[-1]==image["digest"] and
+            any(v.get("name")=="CXORBIA_RECOVERY_SOURCE_SHA" and v.get("value")==image["productSource"]
+                for v in current["spec"]["containers"][0]["env"]), "RELEASE_COMPOSITION_FAILURE:READER_SUCCESSOR")
+    for name in {r["revisionName"] for r in rows if r.get("tag") and r["revisionName"]!=successor_revision}:
+        require(name!=prior["runtimeRevision"] and not any("MAKE_TOOLBOX" in v["name"] for c in
+                revision(name)["spec"]["containers"] for v in c.get("env",[])), "RELEASE_COMPOSITION_FAILURE:READER_TAG")
+    seconds = revision(prior["runtimeRevision"])["spec"]["timeoutSeconds"]
+    require(isinstance(seconds,int) and seconds>0, "RELEASE_COMPOSITION_FAILURE:READER_DRAIN")
+    return seconds
+
+
+def reader_stage_receipt(stage,run_id,image,not_before,opening):
+    # The independent operator uses the existing native journal. Pin the generation before reading its bytes.
+    uri = "gs://"+project+"_cloudbuild/cxorbia-i3-paired-dev/results/"+run_id+"/make-reader-"+stage+".json"
+    until = time.monotonic()+75
+    while True:
+        found=subprocess.run(["gcloud","storage","objects","describe",uri,"--format=value(generation)"],
+                             capture_output=True,text=True,timeout=20)
+        if found.returncode==0: break
+        require(("404" in found.stderr or "not found" in found.stderr.lower() or "matched no objects" in found.stderr.lower())
+                and time.monotonic()<until, "ENVIRONMENT_FAILURE:MAKE_STAGE_RECEIPT_"+stage)
+        time.sleep(3)
+    generation = found.stdout.strip()
+    require(re.fullmatch("[1-9][0-9]*",generation),"PERSISTENCE_FAILURE:MAKE_STAGE_GENERATION")
+    proof=json.loads(output("gcloud","storage","cat",uri+"#"+generation))
+    now=time.time()
+    required=190 if opening else 100
+    compensating=stage=="closed-on-failure" and not opening
+    require(proof.get("runId")==run_id and proof.get("stage")==stage and proof.get("project")==project and
+            proof.get("sourceSha")==image["productSource"] and proof.get("digest")==image["digest"] and
+            proof.get("scenarioId")==10200465 and proof.get("readerActive") is opening and
+            proof.get("writerActive") is False and proof.get("readerPending")==0 and
+            proof.get("autoPurchasing") is False and proof.get("independentlyObserved") is True and
+            not_before<=proof.get("observedAtEpoch",0)<=now and now-proof["observedAtEpoch"]<=90 and
+            type(proof.get("remainingSharedMargin")) is int and proof["remainingSharedMargin"]>=0 and
+            type(proof.get("availableCenticredits")) is int and
+            (compensating or proof["availableCenticredits"]>=100*(required+proof["remainingSharedMargin"])) and
+            type(proof.get("publicationCreditsUsed")) is int and proof["publicationCreditsUsed"]>=0 and
+            (compensating or proof["publicationCreditsUsed"]<=90) and
+            (not opening or proof["publicationCreditsUsed"]==0),
+            "ENVIRONMENT_FAILURE:MAKE_STAGE_READBACK_"+stage)
+    return {"uri":uri+"#"+generation,"observedAtEpoch":proof["observedAtEpoch"],
+            "availableCenticredits":proof["availableCenticredits"],"publicationCreditsUsed":proof["publicationCreditsUsed"]}
+
+
 def main():
     require(not os.environ.get("GITHUB_ACTIONS") and not os.environ.get("GITHUB_RUN_ID"), "AMBIGUOUS_EXECUTOR")
     head = output("git", "rev-parse", "HEAD")
@@ -301,6 +357,7 @@ def main():
     focal_rules = source == "7f78a8fac2ea366860cf41211f8ebc894f7837e6"
     def rules(action):
         subprocess.run(["node","tools/release/cxorbia-corte6-firestore-rules-deploy.mjs","--i3-paired",action],check=True)
+    reader_permitted = False
     runtime_exposure_possible = bool(resume)
     try:
         if focal_rules:
@@ -322,6 +379,17 @@ def main():
                     "RELEASE_COMPOSITION_FAILURE:RESUME_ASSET_INVENTORY_DRIFT")
         else:
             checkpoint("hosting",{"version":environment["HOSTING_VERSION_NAME"],"release":environment["HOSTING_RELEASE_NAME"]})
+        if focal_rules:
+            prior=d["currentMaterialization"]
+            seconds=check_reader_routes(prior,environment["DEV_REVISION"],image)
+            for remaining in range(seconds,0,-30):
+                time.sleep(min(30,remaining))
+            check_reader_routes(prior,environment["DEV_REVISION"],image)
+            after=time.time()
+            # Set before the checkpoint so even a lost upload response triggers closure before compensation.
+            reader_permitted=True
+            checkpoint("reader-enable-permitted",{"runtimeRevision":environment["DEV_REVISION"],"drainedSeconds":seconds})
+            checkpoint("reader-enabled-readback",reader_stage_receipt("enabled",build_id,image,after,True))
         try:
             run_step(14)
         except subprocess.CalledProcessError:
@@ -342,6 +410,11 @@ def main():
             result.update({"builds":0,"hostingDeploys":0,"runtimeDeploys":0,"publishedStageRecovery":resume})
         write(out/"result.json",result)
         run_step(16)
+        if focal_rules:
+            after=time.time()
+            checkpoint("reader-close-required",{"completedStrictSteps":True})
+            checkpoint("reader-closed-readback",reader_stage_receipt("closed",build_id,image,after,False))
+            reader_permitted=False
         hr=read(out/"hr-after/result.json")
         require(all(hr.get(k)==v for k,v in identity.items()),"SOURCE_FAILURE:GOOGLE_HR_IDENTITY")
         files=["result.json","hr-after/result.json","build-resume.json"]
@@ -356,6 +429,10 @@ def main():
     except Exception:
         # Never restore weaker predecessor rules while successor UIs or traffic remain active.
         if focal_rules and (out/"e10-rules-created.json").is_file():
+            if reader_permitted:
+                after=time.time()
+                checkpoint("reader-close-required-on-failure",{"beforePredecessorTraffic":True})
+                checkpoint("reader-closed-on-failure",reader_stage_receipt("closed-on-failure",build_id,image,after,False))
             restore_e10_pair(d["currentMaterialization"], image, build_id, checkpoint)
             if runtime_exposure_possible:
                 checkpoint("e10-rules-retained", {"reason":"POSSIBLE_E10_RUNTIME_EXPOSURE",
