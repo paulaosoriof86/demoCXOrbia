@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 const read=p=>fs.readFileSync(p,'utf8');
 
 test('B1 Mi Dia emits distinct state-aware action intents',()=>{const s=read('app/modules/midia.js');assert.match(s,/data-visit-action="schedule"/);assert.match(s,/data-visit-action="instructive"/);assert.match(s,/data-visit-action="reschedule"/);assert.match(s,/CX_PENDING_SHOPPER_VISIT_ACTION/);assert.doesNotMatch(s,/data-cgo="misvisitas">📅 Agendar[\s\S]{0,250}data-cgo="misvisitas">📄 Instructivo/);});
@@ -53,4 +54,24 @@ test('B1/B3 instructive and reschedule dialogs use the recovered scoped premium 
   assert.match(s,/ui.modal\('🔄 Solicitar reprogramación'/);
   assert.match(s,/premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:/);
   assert.match(s,/Recurso del proyecto/);
+});
+
+
+test('D07 Shopper recognizes only the currently published guide for this visit and revision',()=>{
+  const source=read('app/modules/misvisitas.js');
+  const start=source.indexOf('  const guideScope='),end=source.indexOf('  const routeState=',start);
+  assert.ok(start>=0&&end>start);
+  const catalog=[],scope={currentProjectId:'project-a',currentPeriodId:'period-a'};
+  const probe=vm.runInNewContext(source.slice(start,end)+';confirmedGuide',{
+    data:scope,periodIdOf:v=>v.periodId,CX:{backendResources:{list:s=>{
+      assert.equal(s.projectId,scope.currentProjectId);assert.equal(s.periodId,'period-a');return catalog;
+    }}}
+  });
+  const v={id:'v1',periodId:'period-a',instructiveReadAt:'recorded',instructiveResourceId:'r',instructiveResourceRevision:'2'};
+  const doc={id:'r',n:'Instructivo',version:2,visitId:'v1'};
+  catalog.push({...doc,visitId:'v2'});assert.equal(probe(v),false);
+  catalog.push(doc);assert.equal(probe(v),true);
+  assert.equal(probe({...v,instructiveResourceRevision:'1'}),false);
+  assert.equal(probe({...v,instructiveResourceId:'another-guide'}),false);
+  assert.equal(probe({...v,instructiveReadAt:null}),false);
 });

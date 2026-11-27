@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 mkdir -p "$FOCAL_OUT"
-if [[ "$FOCAL_SOURCE" == ff9ac83ea7bbe4ad19e8faf7951ef8256be92671 ]]; then
-  node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs --i3-paired preflight
-fi
 printf '%s\n' 'PAIR_ASSET_FILES=core/importador.js core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-cumulative-read-model-v2.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js modules/postulaciones.js modules/beneficios.js modules/cert.js modules/academia.js styles/layout.css adapters/tya-c6-unified-human-runtime-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js index-backend-dev.html core/backend-firebase.js adapters/tya-live-source-refresh-watch-v2.js modules/hr-source.js modules/clientes.js modules/historico.js modules/visitas.js modules/cuestionario-shopper.js core/backend-certifications.js core/finanzas-core.js modules/marca.js modules/administrabilidad.js modules/configuracion.js modules/cliente-insights.js adapters/cxorbia-command-adapter-v1.js core/backend-bulletins.js sw.js core/notif.js modules/dashboard.js modules/proyectos.js modules/proyecto-wizard.js core/backend-finance-benefits.js core/hr.js modules/correo.js modules/finanzas.js modules/integraciones.js modules/revision-admin.js core/data-source.js modules/cliente-extra.js core/backend-corte4-empty-shell-guard.js modules/importador.js' >> "$GITHUB_ENV"
 test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
 test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"

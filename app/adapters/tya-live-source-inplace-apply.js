@@ -124,12 +124,7 @@ window.CX = window.CX || {};
     return [];
   }
 
-  function refreshBadge(){
-    try{
-      const db=document.getElementById('tbDataBadge');
-      if(db&&CX.dataSource){const b=CX.dataSource.badge();db.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}
-    }catch(e){}
-  }
+  function refreshBadge(){CX.dataSource?.renderTopbarBadge?.();}
 
   function applyHrFreshness(meta){
     const currentRevision=CX.data?.previewMeta?.sourceRevision||null;

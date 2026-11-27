@@ -36,20 +36,13 @@ window.CX = window.CX || {};
     window.CX_C4_EMPTY_SHELL_STATE={active:false,role:null,projects:(CX.data&&Array.isArray(CX.data.projects))?CX.data.projects.length:null};
   }
 
-  function dataBadge(){
-    try{return CX.dataSource&&CX.dataSource.badge?CX.dataSource.badge():{t:'Conectado',c:'#2196d3'};}
-    catch(e){return {t:'Conectado',c:'#2196d3'};}
-  }
-
   function renderEmptyShell(role){
     const rail=document.getElementById('rail');
     const view=document.getElementById('view');
     const crumb=document.getElementById('crumb');
-    const badge=document.getElementById('tbDataBadge');
     document.body.classList.toggle('role-shopper',role==='shopper');
 
-    const b=dataBadge();
-    if(badge) badge.innerHTML='<span class="d" style="background:'+(b.c||'#2196d3')+'"></span> '+(b.t||'Conectado');
+    CX.dataSource?.renderTopbarBadge?.();
     if(crumb) crumb.innerHTML='Sistema <span class="sep">/</span> <b>Sin datos disponibles</b>';
 
     const userRole=role==='admin'?'Administración':role==='cliente'?'Portal del cliente':role==='shopper'?'Shopper / Evaluador':'Acceso operativo';

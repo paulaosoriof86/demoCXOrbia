@@ -178,6 +178,7 @@ function publishComposition(candidate){
  window.CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE(candidate.baseCandidate,{reason:candidate.reason||'protected_auth_hr_restore_dynamic',suppressEvents:true,dataPatch:candidate.dataPatch,dataSourcePatch:candidate.dataSourcePatch});
  if(candidate.sessionUserPatch&&CX.session?.user)Object.assign(CX.session.user,candidate.sessionUserPatch);
  window.CX_PROTECTED_AUTH_HR_AUTHORITY=Object.assign({},candidate.authority,{role:str(c.role),tenantId:scope.tenantId,projectId:scope.projectId,actorUid:principalUid(),at:new Date().toISOString()});
+ CX.dataSource?.renderTopbarBadge?.();
  window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE={ready:true,completed:true,attempts:bootAttempt,reason:candidate.reason||bootReason,authorized:true,protectedBackendReady:true,runtimeDependenciesReady:true,atomicPublication:true,sourceRevision:str(candidate.authority?.sourceRevision),providerWrites:0,production:false,at:new Date().toISOString()};
  try{CX.router?.buildRail?.(c.role);}catch(_){}
  try{window.dispatchEvent(new CustomEvent('cx:protected-auth-hr-authority-ready',{detail:clone(window.CX_PROTECTED_AUTH_HR_AUTHORITY)}));}catch(_){}

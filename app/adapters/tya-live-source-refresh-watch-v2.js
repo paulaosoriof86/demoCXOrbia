@@ -61,7 +61,8 @@
         || mode==='tya_hr_live_preparing_full_profile_stable_dev'
         || sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay');
   }
-  function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
+  function refreshBadge(){CX.dataSource?.renderTopbarBadge?.();}
+
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
   function finishProtectedCheck(meta,deferred=false){
     if(CX.dataSource){

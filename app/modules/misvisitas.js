@@ -126,11 +126,22 @@ CX.module('misvisitas',({data,ui})=>{
       durable:null,carry:{eligibilityGranted:false},
       explicitlyNotRequired:decision?.explicitlyNotRequired===true};
   };
+  const guideScope=v=>({projectId:data.currentProjectId,periodId:periodIdOf(v)||data.currentPeriodId,resourceType:'project_resource'});
+  function currentGuide(v){
+    const visitKeys=[v.id,v.visitId,v.hrRowId].filter(Boolean).map(String);
+    return (CX.backendResources?.list?.(guideScope(v))||[]).find(r=>
+      [r.visitaId,r.visitId,r.assignedVisitId].filter(Boolean).every(id=>visitKeys.includes(String(id)))&&
+      /instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
+  }
+  function confirmedGuide(v,doc=currentGuide(v)){
+    return Boolean(v.instructiveReadAt&&doc&&String(v.instructiveResourceId||'')===String(doc.id||doc.resourceId)&&
+      String(v.instructiveResourceRevision||'')===String(doc.contentRevision||doc.version||doc.updatedAt||'source-current'));
+  }
   const routeState=v=>{
     const f=facets(v),c=contract(v),certState=certificationState();
     const checks=[
       {key:'asignada',label:'Asignada',done:!!f.assigned},
-      {key:'instructivo',label:'Instructivo y documentos',done:!!v.instructiveReadAt},
+      {key:'instructivo',label:'Instructivo y documentos',done:confirmedGuide(v)},
       {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.explicitlyNotRequired?'No requerida':''},
       {key:'agendada',label:pendingSchedule(v)?'Fecha registrada · pendiente HR':'Visita agendada',done:!!f.scheduled},
       {key:'realizada',label:'Visita realizada',done:!!f.realized},
@@ -140,7 +151,7 @@ CX.module('misvisitas',({data,ui})=>{
       {key:'liquidada',label:'Liquidada',done:!!(f.liquidationConfirmed||f.paymentConfirmed||financePaymentForVisit(v))}
     ];
     const firstPending=checks.findIndex(x=>!x.done);
-    return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:!!v.instructiveReadAt&&certState.done};
+    return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:confirmedGuide(v)&&certState.done};
   };
   const flowSteps=v=>routeState(v).checks;
   const geoOn=!!(CX.addons&&CX.addons.on('geo_checkin','shopper'));
@@ -161,7 +172,7 @@ CX.module('misvisitas',({data,ui})=>{
     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
     let actions='';
     if(cancelAwaitingHr(v)){actions='<span class="bdg bdg-a">Cancelación autorizada · pendiente HR</span>';}
-    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?(route.certState.explicitlyNotRequired?'✓ Certificación no requerida':'✓ Certificación vigente'):'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
+    else if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${confirmedGuide(v)?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${confirmedGuide(v)?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?(route.certState.explicitlyNotRequired?'✓ Certificación no requerida':'✓ Certificación vigente'):'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
     else if(kind==='agendada'){const ready=canCompleteVisit(v),date=scheduledDateOf(v);actions=`<button class="btn ${ready?'btn-green':'btn-soft'} btn-sm" data-done="${v.id}" ${ready?'':'aria-disabled="true" title="Se habilita el día de la visita"'}>${ready?'✅ Marcar realizada':'🕒 Disponible el '+(date||'día de la visita')}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}" ${pendingReschedule(v)||pendingCancel(v)?'disabled aria-disabled="true"':''}>🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}" ${pendingCancel(v)||pendingReschedule(v)?'disabled aria-disabled="true"':''}>✕ Solicitar cancelación</button>${geoBtn(v)}`;}
     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
@@ -223,22 +234,21 @@ CX.module('misvisitas',({data,ui})=>{
   const bindActive=()=>{
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
       const v=find(b.dataset.doc);if(!v)return;
-      const resourceScope={projectId:data.currentProjectId,periodId:data.currentPeriodId,resourceType:'project_resource'};
-      let resources=CX.backendResources?.list?.(resourceScope)||[];
-      let doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
+      const resourceScope=guideScope(v);
+      let doc=currentGuide(v);
       if(!doc&&typeof CX.backendResources?.load==='function'){
-        try{await CX.backendResources.load(resourceScope);resources=CX.backendResources?.list?.(resourceScope)||[];doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;}catch(_){/* fail closed below */}
+        try{await CX.backendResources.load(resourceScope);doc=currentGuide(v);}catch(_){/* fail closed below */}
       }
       if(!doc){ui.toast('No hay un instructivo publicado para esta visita.','warn',3600);CX.router.nav('documentos');return;}
       const body=String(doc.body||'').trim();
       ui.modal('📄 '+safe(doc.n||doc.name||'Instructivo'),`
         <div style="font-size:14px;color:var(--t2);margin-bottom:10px">Recurso del proyecto · revisión ${safe(doc.contentRevision||doc.version||doc.updatedAt||'vigente')}</div>
         <div class="card card-p" style="max-height:45vh;overflow:auto;white-space:pre-wrap;font-size:14px;line-height:1.65">${body?safe(body.slice(0,12000)):'Abre el recurso completo para revisar su contenido.'}</div>
-        <div class="between" style="margin-top:12px;gap:8px"><button class="btn btn-ghost btn-sm" id="docOpenFull">Abrir en Recursos</button><button class="btn btn-pr btn-sm" id="docReadAck">${v.instructiveReadAt?'✓ Lectura ya confirmada':'Confirmo que lo he leído'}</button></div>
+        <div class="between" style="margin-top:12px;gap:8px"><button class="btn btn-ghost btn-sm" id="docOpenFull">Abrir en Recursos</button><button class="btn btn-pr btn-sm" id="docReadAck">${confirmedGuide(v,doc)?'✓ Lectura ya confirmada':'Confirmo que lo he leído'}</button></div>
       `,{premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:(ov,close)=>{
         ov.querySelector('#docOpenFull').addEventListener('click',()=>{close();CX.router.nav('documentos');});
         ov.querySelector('#docReadAck').addEventListener('click',async e=>{
-          if(v.instructiveReadAt){close();return;}
+          if(confirmedGuide(v,doc)){close();return;}
           const btn=e.currentTarget;btn.disabled=true;btn.textContent='Confirmando…';
           try{
             if(typeof data.recordResourceReadReceipt!=='function')throw new Error('RESOURCE_READ_RECEIPT_UNAVAILABLE');
@@ -251,7 +261,7 @@ CX.module('misvisitas',({data,ui})=>{
         });
       },dismissOnBackdrop:false});
     }));
-    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.cert);if(!v)return;if(!v.instructiveReadAt){ui.toast('Primero confirma la lectura del instructivo.','warn',3200);return;}CX.router.nav('cert');}));
+    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.cert);if(!v)return;if(!confirmedGuide(v)){ui.toast('Primero confirma la lectura del instructivo.','warn',3200);return;}CX.router.nav('cert');}));
     host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
     host.querySelectorAll('[data-geo]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.geo);if(!v)return;
