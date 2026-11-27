@@ -1030,7 +1030,7 @@
           "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
           "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
         },
-        "unusedCenticredits": "198500",
+        "unusedCenticredits": "198200",
         "sharedPoolReserveEnforced": false,
         "purchaseRequested": false,
         "coldWindowReadback": {
@@ -1048,10 +1048,15 @@
         },
         "tenantId": "tya",
         "projectId": "cinepolis",
-        "balanceObservedAt": "2026-11-27T07:33:38.379Z"
+        "balanceObservedAt": "2026-11-27T09:13:10.106Z",
+        "insuranceCallerReadback": {
+          "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
+          "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
+          "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
+        }
       },
       "serving": "72874c08560addf5d0bc4a23573d65ce86481c95",
-      "nextAction": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+      "nextAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
       "emulatorEvidence": {
         "receipt": {
           "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/abda5252-5455-44d3-b21d-67d76126e1e3/emulator-preflight#1795763877976264",
@@ -1099,6 +1104,11 @@
       "path": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_STAGE_READBACK_20261127.json",
       "gitBlob": "b655e473ed47e8273b5dde1a7e9eb8a7022f1019",
       "sha256": "8096c4cd5cf2bdf18b165e549f5554eefc58e3abdb0c9d87db269b13084bf563"
+    },
+    "currentInsuranceCallerWindowReadback": {
+      "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
+      "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
+      "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
     }
   },
   "lastChromeConnection": {
@@ -1111,7 +1121,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "25 scoped obligations consumed; retire this native request. Honor remaining original process clauses.",
-    "deployment": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+    "deployment": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -1126,7 +1136,12 @@
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Preserve the exact focal Firestore blob and SHA. Reuse the successor image through the paired DEV job only once controlled-window conditions are met. Served E10 acceptance remains pending.",
     "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",
-    "financeSeptember": "Preserve 41 exact/canonical September references and two additional per-visit historical corroborations. One discrepancy remains. Both Q7,300 advances have no demonstrated application."
+    "financeSeptember": "Preserve 41 exact/canonical September references and two additional per-visit historical corroborations. One discrepancy remains. Both Q7,300 advances have no demonstrated application.",
+    "insuranceAuthorityHandoff": {
+      "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLER_HANDOFF_20261127.md",
+      "gitBlob": "d895dfc50e59414abd3883904eb84e46ddf98a25",
+      "sha256": "ac7c7a757b269fc7af2f8e4c3c2cf883f60b23c08c73fbf9edd6e4a287c0b259"
+    }
   },
   "newDevDeploys": 2,
   "newFinancialMovements": 0,

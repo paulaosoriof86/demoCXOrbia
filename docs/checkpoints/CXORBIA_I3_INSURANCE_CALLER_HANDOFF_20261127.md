@@ -1,0 +1,16 @@
+# Entrega a la autoridad de Gravicentra Insurance
+
+**Objeto.** Identificar el punto que admite solicitudes a los escenarios Make 10196136 (WhatsApp) y 10221181 (buzón piloto). CXOrbia necesita una ventana DEV de 15 minutos con ambos activos siempre que el consumo conjunto admita una cota demostrable. La lectura autorizada cubrió solo código y contratos técnicos en el commit de Insurance `70f5ea6ad1bfae7eec113e6bf9ad38c6a025b271` y metadatos de configuración y ejecución de Make.
+
+| Escenario | Punto inspeccionado | Evidencia que falta en el punto anterior |
+|---|---|---|
+| WhatsApp 10196136 | `tools/gravicentra-i66-make-lead-ingress-scenario.cjs`, función `assertReaderConfigs`. La configuración viva confirma 15 minutos y máximo 100 resultados por ciclo. `functions/make-lead-ingress-bridge.js` procesa la creación de un documento posterior. | Identificar quién puede iniciar cada corrida, incluidos los reintentos y las llamadas directas. Entregar la cota conjunta de ciclos en cualquier intervalo autorizado de 15 minutos y cómo se hace cumplir. |
+| Correo 10221181 | La entrada `messageUid` alimenta el campo `mapper.id` del módulo 2, con máximo un resultado y sin marcar como leído. La propuesta `functions/product-mail-provider-readback.js` está archivada como candidata. `createReader` relee una ejecución existente y `readExistingServerImap` informa que falta el lector. | Identificar quién asigna el UID e inicia la llamada a Make. Entregar la cota de invocaciones de todos los llamadores aplicables, incluidos los reintentos y la intervención manual. |
+
+**Evidencia suficiente para mantener ambos activos.** Un recibo fechado de la autoridad efectiva de admisión con los dos IDs, período de vigencia, máximos comprobables y tratamiento de llamadas simultáneas o repetidas, incluidas las iniciadas por API o interfaz. Si ya existe ese control, basta identificarlo y releerlo. La prueba puede usar identificadores sintéticos y conteos agregados.
+
+**Cálculo auditable.** A las 03:13:10 de Guatemala del 27 de noviembre había 1.982 créditos. CXOrbia debía conservar 90 para cinco probes y 100 para recuperación. Hasta las 03:28:10 no había programaciones ordinarias previstas. Para esos quince minutos, la condición conservadora era `101 × ciclos completos de WhatsApp + llamadas del piloto de correo ≤ 1.792`, con el escritor QA cerrado antes de abrir. Cada reintento facturable se cuenta. Si cambia el horario, se incorpora el máximo de los procesos programados y se relee el saldo.
+
+**Vía de suspensión, solo si resulta indispensable.** Acreditar para cada escenario el último cursor confirmado antes de la pausa, el registro durable de peticiones rechazadas, la cobertura de todo el intervalo y su replay sin duplicados. En WhatsApp hay que cubrir también un intervalo con más de 100 mensajes. Para el correo, la comprobación debe asociar el pedido de UID con el buzón y la carpeta correctos. Puede entregarse un hash del cursor. Adjuntar el identificador de una restauración independiente ya armada, con plazo máximo de 15 minutos desde la pausa, y su comprobación ante pérdida de la sesión.
+
+La eventual corrección pertenece a Insurance. Este handoff queda disponible para su autoridad. CXOrbia conserva la imagen `abda5252` y su autorización DEV. Los escenarios de Insurance permanecieron activos.

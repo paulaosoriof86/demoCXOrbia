@@ -108,7 +108,7 @@
     "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
     "authorityState": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "state": "HOLD_I3_GTHN_PENDING_DEV",
-    "message": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+    "message": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
     "production": false,
     "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_7F78A8FA_SOURCE_20261127.json",
     "sourceProofReceiptBlob": "9f4f82ebd5891771ba3a86c385ac2934273d931e",
@@ -38437,7 +38437,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+  "nextExactAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -49178,8 +49178,8 @@
     "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
     "production": false
   },
-  "updatedAt": "2026-11-27T07:21:12.715081Z",
-  "exactNextAction": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+  "updatedAt": "2026-11-27T09:13:10.106Z",
+  "exactNextAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -52794,7 +52794,7 @@
       "phaseAComplete": false
     }
   },
-  "activeBlocker": "ENVIRONMENT_FAILURE_INSURANCE_UPSTREAM_REPLAY_AND_TIMED_RESTORE_UNVERIFIED",
+  "activeBlocker": "ENVIRONMENT_FAILURE_INSURANCE_CALLER_LIMIT_OR_PRE_ADMISSION_REPLAY_UNVERIFIED",
   "qaConsumerRepair20261115": {
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_QA_CONSUMER_COHERENCE_SCOPE_20261115.json",
     "status": "HOLD_REMOTE_EXECUTION_PENDING",
@@ -64136,7 +64136,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+    "exactPending": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
     "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
     "production": false
   },
@@ -64238,7 +64238,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+    "immediateAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -65193,7 +65193,7 @@
         "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
         "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
       },
-      "unusedCenticredits": "198500",
+      "unusedCenticredits": "198200",
       "sharedPoolReserveEnforced": false,
       "purchaseRequested": false,
       "coldWindowReadback": {
@@ -65211,7 +65211,12 @@
       },
       "tenantId": "tya",
       "projectId": "cinepolis",
-      "balanceObservedAt": "2026-11-27T07:33:38.379Z"
+      "balanceObservedAt": "2026-11-27T09:13:10.106Z",
+      "insuranceCallerReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
+        "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
+        "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
+      }
     }
   },
   "currentControlledPublicationWindow": {
@@ -65223,5 +65228,10 @@
     "path": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_STAGE_READBACK_20261127.json",
     "gitBlob": "b655e473ed47e8273b5dde1a7e9eb8a7022f1019",
     "sha256": "8096c4cd5cf2bdf18b165e549f5554eefc58e3abdb0c9d87db269b13084bf563"
+  },
+  "currentInsuranceCallerWindowReadback": {
+    "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
+    "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
+    "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
   }
 }

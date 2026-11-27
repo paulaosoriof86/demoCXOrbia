@@ -1,0 +1,394 @@
+{
+  "schemaVersion": "cxorbia.i3.insurance-caller-window-readback.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "ENVIRONMENT_FAILURE",
+  "priorControlHeadVerified": "c33dceaf1b35565d54a610bd3221ae954c2ea16d",
+  "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "authorization": {
+    "authority": "Dirección",
+    "scope": "read-only repository consultation for the callers of 10196136 and 10221181 only",
+    "prohibitions": [
+      "customer or message content",
+      "credentials or secret values",
+      "Insurance code, configuration, data, permission or production changes"
+    ],
+    "publicationCredits": 90,
+    "recoveryCredits": 100,
+    "conditionalInsurancePauseMinutesMaximum": 15,
+    "scopeEndsAt": "CXOrbia DEV window dependency decision"
+  },
+  "insuranceSource": {
+    "repository": "paulaosoriof86/orbit360-core",
+    "branch": "recovery/fase-a-clean-20260831",
+    "head": "70f5ea6ad1bfae7eec113e6bf9ad38c6a025b271",
+    "tree": "0140b46ebb010f7f9e377d89e010df6c6b5835a0",
+    "defaultBranchMetadataOnly": {
+      "main": "ae757a24c76de08fe81f2945b6cd655e00686f74"
+    },
+    "technicalFilesConsulted": [
+      {
+        "path": "functions/make-lead-ingress-bridge.js",
+        "blob": "8b519ad21da032ffeeee7f9f9cc3e9c3fe6c1317"
+      },
+      {
+        "path": "tools/gravicentra-i66-make-lead-ingress-scenario.cjs",
+        "blob": "438a3e514a10a3876afb565c18c3ba6d4e75f221"
+      },
+      {
+        "path": "tools/gravicentra-i66-make-lead-ingress-scenario.test.cjs",
+        "blob": "0f252df8d21786d51761f21059897f1e7bdbfb1e"
+      },
+      {
+        "path": "tools/gravicentra-i66-make-lead-ingress.test.cjs",
+        "blob": "1570bdc7ce039a6cb49750fabc409fda6dc4fe8c"
+      },
+      {
+        "path": "tools/gravicentra-i66-make-lead-protected-executor.cjs",
+        "blob": "38c6bae4d3afc17f0eb9322d12b927026c2f1025"
+      },
+      {
+        "path": "tools/gravicentra-i66-make-lead-ingress-config.cjs",
+        "blob": "cc3c46b4d5097da8172711d6ad5daa00c5027155"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_IMAP_RECEIVE_AND_INGRESS_CAUSAL_EVIDENCE_20261123.json",
+        "blob": "e45c6276f07d6e59b740001a1711e134adab510f"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_INGRESS_RUNTIME_AND_PREIMAGE_READBACK_20261124.json",
+        "blob": "890d42d46af9bc472dd40dfffea99fe35ce18744"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_PER_USER_MAILBOX_UID_OBSERVATION_SUCCESSOR_CANDIDATE_20261124.json",
+        "blob": "8a0318156d452ba93310e34b46b505a9de06a57f"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_V20_MAKE_CREDIT_HOLD_SCOPE_WITHDRAWAL_20261124.json",
+        "blob": "328464fc3578aa0ad9369628bc29b47bf3085b30"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_EMAIL_PILOT_SELF_BINDING_OWNER_DECISION_20261124.json",
+        "blob": "17da2d0d297e0b0f010d2da763fd3d3a0f664c54"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_V34_PREVIEW_REPLAY_EXECUTION_20261124.json",
+        "blob": "d347aac0db4b89592b1d6a460fb5eb028b9b1fd3"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_V34_PREVIEW_CLOSED_TRIGGER_PROOF_20261124.json",
+        "blob": "c6a6335db67373d06030a6cbf6413e8ccd804338"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_V23_PREVIEW_SCENARIO_PREPARED_20261124.json",
+        "blob": "8d92fa83cc4e5afd34dc13ac4dc17cd37255e1fd"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_V22_ORIGINAL_SCENARIO_RESTORED_20261124.json",
+        "blob": "bf9800ec918ba321bded9d1f8d07a31a1613122c"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_PROVIDER_RUNTIME_READINESS_20261124.json",
+        "blob": "9d4fa796cee274119a6426b6f5afb62b51c52cb5"
+      },
+      {
+        "path": "artifacts/orbit360-recovery/release-control/I6_6_MAKE_FUNCTION_TRAFFIC_AND_GRANTS_READONLY_45538613653_ATTEMPT1_20261125.json",
+        "blob": "2a9ac313b4ae39d1be8e7d576add4d2dd278a628"
+      }
+    ],
+    "sourceTestExecution": false
+  },
+  "make": {
+    "observedAt": "2026-11-27T09:13:10.106Z",
+    "hypotheticalEndAt": "2026-11-27T09:28:10.106Z",
+    "organizationId": 4090072,
+    "isPaused": false,
+    "autoPurchases": false,
+    "unusedCenticredits": "198200",
+    "readerState": "inactive",
+    "activeListComplete": true,
+    "inventory": [
+      {
+        "id": 10199316,
+        "active": true,
+        "trigger": "on-demand",
+        "nextExec": null,
+        "incomplete": 0
+      },
+      {
+        "id": 10196136,
+        "active": true,
+        "trigger": "on-demand",
+        "nextExec": null,
+        "incomplete": 0
+      },
+      {
+        "id": 10221181,
+        "active": true,
+        "trigger": "on-demand",
+        "nextExec": null,
+        "incomplete": 0
+      },
+      {
+        "id": 10198752,
+        "active": true,
+        "trigger": "scheduled",
+        "nextExec": "2026-11-27T18:03:02.323Z",
+        "incomplete": 0
+      },
+      {
+        "id": 10198707,
+        "active": true,
+        "trigger": "scheduled",
+        "nextExec": "2026-11-27T17:57:16.501Z",
+        "incomplete": 0
+      },
+      {
+        "id": 10196338,
+        "active": true,
+        "trigger": "scheduled",
+        "nextExec": "2026-11-27T09:33:16.096Z",
+        "incomplete": 0
+      },
+      {
+        "id": 5843689,
+        "active": true,
+        "trigger": "scheduled",
+        "nextExec": "2026-11-27T16:00:00.000Z",
+        "incomplete": 0
+      },
+      {
+        "id": 5837393,
+        "active": true,
+        "trigger": "scheduled",
+        "nextExec": "2026-11-27T16:00:00.000Z",
+        "incomplete": 0
+      }
+    ],
+    "historyFrom": "2026-11-27T08:55:00Z",
+    "executionMetadata": [
+      {
+        "id": 10199316,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10196136,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10221181,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10198752,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10198707,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10196338,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 5843689,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 5837393,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      },
+      {
+        "id": 10200465,
+        "recent": 0,
+        "pending": 0,
+        "credits": 0,
+        "more": false
+      }
+    ],
+    "samples": [
+      {
+        "id": 10196136,
+        "at": "2026-11-27T09:05:27.640Z",
+        "counts": {
+          "auto/success/14": 2,
+          "auto/success/4": 1,
+          "auto/success/2": 8,
+          "auto/success/3": 5,
+          "auto/success/10": 1,
+          "auto/success/11": 3,
+          "auto/success/13": 1,
+          "auto/success/1": 4
+        },
+        "latest": "2026-11-25T04:08:22.856Z",
+        "executions": 25,
+        "keys": [
+          "executions",
+          "hasMore"
+        ]
+      },
+      {
+        "id": 10221181,
+        "at": "2026-11-27T09:05:27.640Z",
+        "counts": {
+          "auto/success/1": 11
+        },
+        "latest": "2026-11-25T07:15:18.801Z",
+        "executions": 11,
+        "keys": [
+          "executions"
+        ]
+      },
+      {
+        "id": 10196338,
+        "at": "2026-11-27T09:05:27.641Z",
+        "counts": {
+          "auto/success/3": 25
+        },
+        "latest": "2026-11-27T08:33:17.684Z",
+        "executions": 25,
+        "keys": [
+          "executions",
+          "hasMore"
+        ]
+      }
+    ]
+  },
+  "callerReadback": {
+    "10196136": {
+      "trigger": "on-demand",
+      "disabledRootWriterModule": 3,
+      "listModule": 1,
+      "lookbackMinutes": 15,
+      "resultLimitPerPass": 100,
+      "detailModule": 2,
+      "oneDetailPerPassingBundle": true,
+      "normalPassDebitBound": 101,
+      "fifoCallerJournalVerified": false,
+      "upstreamRecurringFrequencyBoundVerified": false,
+      "bridge": {
+        "file": "functions/make-lead-ingress-bridge.js",
+        "functions": [
+          "assertQueueRetryWindow",
+          "handle",
+          "acknowledge",
+          "getSourcePacket"
+        ],
+        "event": "onDocumentCreatedWithAuthContext",
+        "alreadyCreatedEventMaxAgeMs": 900000,
+        "liveFunctionMaxInstances": 3,
+        "previewFunctionMaxInstances": 2,
+        "scope": "After a Firestore queue document exists. Retries read the provider directly. This does not admit nor cap starts in Make."
+      },
+      "protectedExecutor": "verifyMakeExecution validates evidence of a completed scenario run; it is not an admission counter. The synthetic replay receipt concerns an existing execution and document."
+    },
+    "10221181": {
+      "trigger": "on-demand",
+      "input": "messageUid",
+      "getBy": "module 2 mapper.id bound to input messageUid",
+      "maxResults": 1,
+      "markSeen": false,
+      "normalPassDebit": 1,
+      "receiptCandidate": "I6_6_PER_USER_MAILBOX_UID_OBSERVATION_SUCCESSOR_CANDIDATE_20261124",
+      "serverCandidatePath": "functions/product-mail-provider-readback.js",
+      "candidateBlob": "428a9fca3da6c1e261ce60f06a4d8e44ac869a74",
+      "candidateStatus": "CANDIDATE_NOT_DEPLOYED",
+      "currentTreeHasCandidatePath": false,
+      "createReader": "reads module output of an existing execution twice",
+      "readExistingServerImap": "MAIL_SERVER_READER_NOT_CONFIGURED",
+      "preAdmissionMailboxUidOutboxVerified": false,
+      "externalInvocationBoundVerified": false
+    }
+  },
+  "economicDecision": {
+    "balanceCredits": 1982,
+    "heldForPublicationAndRecovery": 190,
+    "otherConsumersHeadroom": 1792,
+    "scheduledStartsInIllustratedInterval": 0,
+    "scheduledDebitFromDueStarts": 0,
+    "nextFinanceMonitorUtc": "2026-11-27T09:33:16.096Z",
+    "normalFinanceMonitorCredits": 3,
+    "marginIfOneSuchRunOccurs": 1789,
+    "qaWriterStateDuringReadback": "active; would need to close before admitting the publication",
+    "sufficientInequalityAfterClosingWriter": "101*WA_passes + email_passes + scheduledDebit <= availableCredits-190. Count retries and concurrent starts.",
+    "thresholdExample": {
+      "waPasses": 18,
+      "worstCaseDebit": 1818,
+      "exceedsOtherConsumersHeadroomBy": 26
+    },
+    "boundedGlobalInvocationCountForBothReaders": false,
+    "maximumJointDebitCertified": null,
+    "activeWindowGranted": false,
+    "conditionalPauseGrantedInPrinciple": true,
+    "conditionalPauseApplied": false,
+    "pauseFinding": "No verified pre-Make source cursor/replay of refused requests for both scenarios and no independently armed reactivation for this window. A past manual restoration of module configuration is historical."
+  },
+  "publication": {
+    "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "tree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "image": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_ABDA5252_20261127.json",
+      "gitBlob": "2592b7eb7d6c5e4216c243a61af45b8c71f72b4e",
+      "sha256": "8ed71ef2d3f03b72475640021ab68c6c15f5cb85c3aef77fe620ea5ad66608ea",
+      "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+      "sourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+      "imageBuildId": "abda5252-5455-44d3-b21d-67d76126e1e3",
+      "digest": "sha256:85d9f551441d6c07182f80393665dc55ea34c384616a08d61bc43ee0a52817aa"
+    },
+    "lastSealedServedPair": {
+      "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "runId": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+      "runtimeRevision": "cxorbia-live-hr-dev-00395-lnc",
+      "runtimeDigest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e9a216661b686246",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057"
+    },
+    "buildsThisAction": 0,
+    "pairedDispatchesByWork": 0,
+    "newPaidProbes": 0,
+    "makeCreditsByWork": 0,
+    "recoveryCreditsDebited": 0,
+    "reserveLocked": false,
+    "scenariosPaused": [],
+    "restorationsRequired": 0,
+    "productChanges": 0,
+    "firestoreTransitions": 0,
+    "newAcceptanceClaims": 0
+  },
+  "handoff": {
+    "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLER_HANDOFF_20261127.md",
+    "gitBlob": "d895dfc50e59414abd3883904eb84e46ddf98a25",
+    "sha256": "ac7c7a757b269fc7af2f8e4c3c2cf883f60b23c08c73fbf9edd6e4a287c0b259"
+  },
+  "sources": [
+    "https://help.make.com/schedule-a-scenario",
+    "https://help.make.com/how-features-use-credits"
+  ],
+  "production": "DO_NOT_TOUCH",
+  "I4Authorized": false
+}
