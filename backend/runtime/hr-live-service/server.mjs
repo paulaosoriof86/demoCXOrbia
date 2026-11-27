@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import crypto from 'node:crypto';
+import {withReaderIdentity,runAdmittedSnapshot,admitReaderCall,readReaderOutcome} from './hr-read-admission.mjs';
 import fs from 'node:fs';
 import http from 'node:http';
 import os from 'node:os';
@@ -18,7 +19,7 @@ import { isMailboxRuntimePath, maybeHandleMailboxRequest } from './mailbox-runti
 import { academyProgressSnapshot, academyProgressCatalog } from '../cxorbia-academy-command-provider-v1.mjs';
 import { resolveCountryHrPeriodBinding } from '../cxorbia-country-hr-binding-v1.mjs';
 import { readExcelPeriodThroughMake, readExcelWorksheetInventoryThroughMake, withMakeGraphToolboxReader, withMakeGraphToolboxWriter, executeExcelFieldEventThroughMake, resolveExcelFieldWriteTarget } from '../cxorbia-make-graph-provider-v1.mjs';
-import {HR_WRITABLE_VISIT_FIELDS} from '../cxorbia-operational-command-provider-v1.mjs';
+import {HR_WRITABLE_VISIT_FIELDS,operationalCommandReceiptId} from '../cxorbia-operational-command-provider-v1.mjs';
 import {resolveExcelOriginalProjectPlan,readExcelOriginalProjectSnapshot,authorizedHrReviewObservation} from '../cxorbia-excel-operational-snapshot-v1.mjs';
 import {createDurableHrReadModel,createConfirmedHrHistory,hrReadModelKey,readSharedHrProjection,invalidateSharedHrSync} from './hr-read-model.mjs';
 
@@ -81,7 +82,11 @@ function durableHrReadContext(binding){
   const readerFingerprint=crypto.createHash('sha256').update(JSON.stringify({schema:'cxorbia.hr-read-model.v1',
     ownersFingerprint:hrReaderOwnersFingerprint,mappingRef:binding.mappingRef,mapping})).digest('hex');
   durableHrStore||=createDurableHrReadModel({db:ensureAdmin().db,maxAgeMs:HR_READ_MODEL_MAX_AGE_MS});
-  return {store:durableHrStore,key:hrReadModelKey(binding,readerFingerprint)};
+  // Last served reader 72874c08. Only the owner digest is substituted.
+  // Current mapping bytes, local binding, age and content checks still apply.
+  const previousReader=crypto.createHash('sha256').update(JSON.stringify({schema:'cxorbia.hr-read-model.v1',
+    ownersFingerprint:'697bdd6385cc7f1db8e8589957fd306a5d50fc31e2b957683df95a3ff3f2a5c1',mappingRef:binding.mappingRef,mapping})).digest('hex');
+  return {store:durableHrStore,key:hrReadModelKey(binding,readerFingerprint),previousKey:hrReadModelKey(binding,previousReader)};
 }
 async function persistHrReadModel(scope,current){
   // Called only after protected authentication and source observation both pass.
@@ -102,7 +107,8 @@ async function recoverHrReadModel(binding,{durableOnly=false}={}){
       ['runtime_excel_online_original','durable_internal_snapshot'].includes(cache.origin)&&age>=0&&age<=HR_READ_MODEL_MAX_AGE_MS)
     current={...cache,externalReadCurrent:false};
   else{
-    const {store,key}=durableHrReadContext(binding),saved=await store.read(key);
+    const {store,key,previousKey}=durableHrReadContext(binding);
+    const saved=await store.read(key)||(previousKey?await store.read(previousKey):null);
     if(!saved)return null;
     // materialize is the sole revision owner; rehydration must reproduce it.
     const reconstructed=materialize(saved.snapshot,saved.origin,saved.identity,saved.privateReviewNotes);
@@ -328,7 +334,7 @@ async function withOriginalToolboxReader(consume) {
   ]);
   const client = new Client({name:'cxorbia-hr-readback',version:'1.0.0'});
   const transport=new StreamableHTTPClientTransport(url,{requestInit:{redirect:'error',headers:{Authorization:'Bearer '+token}}});
-  return withMakeGraphToolboxReader({client,transport},consume);
+  return withMakeGraphToolboxReader({client,transport},run=>consume(inputs=>admitReaderCall(inputs,()=>run(inputs))));
 }
 async function readOriginalThroughToolbox(binding,columnMap){
   return withOriginalToolboxReader(runScenario=>readExcelPeriodThroughMake({binding,columnMap,runScenario}));
@@ -586,7 +592,7 @@ function configureCommandRuntime(snapshot,current=cache){
 }
 const explicitHrReconciliation=createHrSnapshotReconciler({
   verifyPrincipal:verifiedProtectedPrincipal,
-  readSnapshot:scope=>buildSnapshot({forceFresh:true,scope}),
+  readSnapshot:(scope,principal,requestId)=>authorizedExternalRead(scope,firebaseReader(principal,'hr.snapshot.reconcile',requestId),()=>buildSnapshot({forceFresh:true,scope})),
   ensureAdmin,shopperPolicy,operationalPolicy,
   hrFieldJournalEnabled:snapshot=>F3_HR_FIELDS_ENABLED&&snapshot.source?.providerType==='excel_online'&&
       (snapshot.projectConfig?.operationalSource||snapshot.projectConfig?.routeSource)?.writePolicy==='bidirectional_gated'
@@ -722,6 +728,57 @@ async function refreshSnapshot(binding){
   }
 }
 
+async function authorizedExternalRead(scope,identity,work){
+  const local=await resolveProjectHrReadBinding(scope,{localOnly:true});
+  if(local.proof.providerType!=='excel_online')return work();
+  const {key}=durableHrReadContext(local);
+  const bindingKey=crypto.createHash('sha256').update(JSON.stringify([local.proof.localBindingFingerprint,key.readerFingerprint])).digest('hex');
+  return withReaderIdentity({...scope,...identity},()=>runAdmittedSnapshot({db:ensureAdmin().db,scope,bindingKey,work}));
+}
+
+function firebaseReader(principal,process,requestId){
+  return {actor:'firebase:'+principal.uid,process,runId:'interactive',requestId};
+}
+
+async function protectedOrStrictRead(req,scope,principal,forceFresh,allowDurableRead){
+  const url=new URL(req.url,'http://internal.invalid');
+  const strict=req.headers?.['x-cxorbia-probe'];
+  if(!strict&&(url.searchParams.has('canonical')||url.searchParams.has('vrm154156')))throw Error('AUTH_FAILURE:HR_STRICT_TOKEN_REQUIRED');
+  if(strict){
+    const runId=req.headers['x-cxorbia-run'];
+    if(principal||!['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'].includes(strict)||
+      !/^[A-Za-z0-9_-]{1,100}$/.test(runId||'')||url.searchParams.get('format')!==(strict.endsWith('json')?'json':'meta')||
+      !(strict.startsWith('seal-')?url.searchParams.get('vrm154156')===runId:url.searchParams.get('canonical')?.startsWith(runId+'-')))
+      throw Error('AUTH_FAILURE:HR_STRICT_SCOPE');
+    const audience='https://cxorbia-backend-dev.web.app/qa/hr/'+runId+'/'+strict;
+    const token=String(req.headers['x-cxorbia-run-identity']||'');
+    if(!token||token.length>8192)throw Error('AUTH_FAILURE:HR_STRICT_TOKEN_REQUIRED');
+    const {OAuth2Client}=await import('google-auth-library');
+    let claims;
+    try{claims=(await new OAuth2Client().verifyIdToken({idToken:token,audience})).getPayload();}
+    catch{throw Error('AUTH_FAILURE:HR_STRICT_TOKEN_INVALID');}
+    if(claims?.email_verified!==true||!claims?.sub||!claims.email)throw Error('AUTH_FAILURE:HR_STRICT_IDENTITY');
+    return authorizedExternalRead(scope,{actor:'google:'+claims.sub,process:strict,runId,requestId:runId+'-'+strict},
+      ()=>buildSnapshot({forceFresh:true,scope}));
+  }
+  if(principal&&(forceFresh||scope.hrPeriodId)){
+    return authorizedExternalRead(scope,firebaseReader(principal,scope.hrPeriodId?'period-read':'manual-refresh',req.headers?.['idempotency-key']),()=>{
+      if(forceFresh&&url.searchParams.get('inventory')==='1'){
+        for(const [key,value] of hrInventoryCache)if(value.tenantId===scope.tenantId&&value.projectId===scope.projectId)hrInventoryCache.delete(key);
+      }
+      return buildSnapshot({forceFresh:true,scope});
+    });
+  }
+  if(!principal&&forceFresh)throw Error('AUTH_FAILURE:HR_EXTERNAL_PRINCIPAL_REQUIRED');
+  const binding=await resolveProjectHrReadBinding(scope,{localOnly:true});
+  if(binding.proof.providerType==='excel_online'){
+    const saved=await recoverHrReadModel(binding,{durableOnly:true});
+    if(!saved)throw Error('PERSISTENCE_FAILURE:HR_READ_MODEL_UNAVAILABLE');
+    return saved;
+  }
+  return buildSnapshot({scope,forceFresh,allowDurableRead});
+}
+
 async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={}){
   let binding=await resolveProjectHrReadBinding(scope,{localOnly:allowDurableRead&&!forceFresh});
   // Only presentation can consult a last-confirmed projection. Strict reads
@@ -754,26 +811,30 @@ async function buildSnapshot({forceFresh=false,scope,allowDurableRead=false}={})
 
 async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequested){
   const startedAt=Date.now();
-  const hrStartedAt=Date.now();
   const readModelRequested=protectedRequested&&new URL(req.url||'/', 'http://internal.invalid').searchParams.get('readModel')==='1';
   const allowDurableRead=readModelRequested&&!forceFresh;
-  const hrTask=buildSnapshot({forceFresh,scope,allowDurableRead}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
+  // A protected request must verify its principal BEFORE any potentially
+  // billable inventory/range read. Preserve the existing public probe contract;
+  // its external reads require separate scoped budget admission.
+  const principalStartedAt=Date.now();
+  const principal=protectedRequested?await verifiedProtectedPrincipal(req,scope):null;
+  if(protectedRequested&&!principal?.uid)throw Error('AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_REQUIRED');
+  const principalVerifyMs=Date.now()-principalStartedAt;
+  const hrStartedAt=Date.now();
+  const hrTask=protectedOrStrictRead(req,scope,principal,forceFresh,allowDurableRead).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
   if(!protectedRequested){
     const hr=await hrTask;
     return {current:hr.current,principal:null,timing:{hrWaitMs:hr.hrWaitMs}};
   }
-  /* Verified identity and HR refresh are independent reads: overlap, never bypass either. */
-  const principalStartedAt=Date.now();
-  const principalTask=verifiedProtectedPrincipal(req,scope).then(principal=>({principal,principalVerifyMs:Date.now()-principalStartedAt}));
-  const [hr,identity]=await Promise.all([hrTask,principalTask]);
-  // Neither concurrent task writes. Only the authenticated presentation caller
+  const hr=await hrTask;
+  // Only the authenticated presentation caller
   // may persist a verified external read; commands/anonymous/probes do not opt in.
-  const current=readModelRequested&&identity.principal?.uid&&hr.current.externalReadCurrent===true
+  const current=readModelRequested&&principal.uid&&hr.current.externalReadCurrent===true
     &&hr.current.origin==='runtime_excel_online_original'
     ? {...hr.current,readModelWriteAck:await persistHrReadModel(scope,hr.current)}:hr.current;
   return {
-    current,principal:identity.principal,
-    timing:{hrWaitMs:hr.hrWaitMs,principalVerifyMs:identity.principalVerifyMs,parallelWaitMs:Date.now()-startedAt}
+    current,principal,
+    timing:{hrWaitMs:hr.hrWaitMs,principalVerifyMs,parallelWaitMs:Date.now()-startedAt}
   };
 }
 
@@ -843,7 +904,7 @@ async function sharedPresentation(req,scope,poll){
   }
   const {key}=durableHrReadContext(local);
   const bindingKey=crypto.createHash('sha256').update(JSON.stringify([local.proof.localBindingFingerprint,key.readerFingerprint])).digest('hex');
-  const current=await readSharedHrProjection({db:principal.db,scope,bindingKey,poll,
+  const current=await readSharedHrProjection({db:principal.db,scope,bindingKey,poll,internalOnly:true,
     read:()=>recoverHrReadModel(local,{durableOnly:true}),
     refresh:async()=>{
       const observed=await buildSnapshot({scope,forceFresh:true});
@@ -902,7 +963,7 @@ const server=http.createServer(async(req,res)=>{
       ensureAdmin,
       verifyPrincipal:verifiedProtectedPrincipal,
       sendJson,
-      readCurrentSnapshot:()=>buildSnapshot(),
+      readCurrentSnapshot:async(scope,principal)=>protectedOrStrictRead(req,scope,principal,false,true),
       currentSourceRevision:()=>String(cache?.revision||'')
     });
     return;
@@ -919,8 +980,29 @@ const server=http.createServer(async(req,res)=>{
         const hrCommands=new Set(['visit.assign','visit.reassign','visit.hr.fields.update','visit.state.update',
           'visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create','application.status.update','reservation.create','reservation.status.update','visit.sync.confirm','finance.reconcile.visit','finance.historical.reconcile']);
         const scope=command?.projectId?{tenantId:command.tenantId,projectId:command.projectId,...(hrCommands.has(command?.commandType)&&command.periodId?{hrPeriodId:command.periodId}:{})}:undefined;
-        const current=await buildSnapshot({forceFresh:hrCommands.has(command?.commandType),scope});
-        return configureCommandRuntime(current.snapshot,current);
+        const projectScope=scope||(await resolveProjectHrReadBinding(undefined,{localOnly:true})).scope;
+        const strict=hrCommands.has(command.commandType);
+        const principal=strict?await verifiedProtectedPrincipal(req,projectScope):null;
+        // The provider repeats its digest and actor checks in the transaction.
+        // A replay-only provider cannot create an effect if this receipt changes.
+        let replayOnly=false;
+        if(strict&&command.commandType!=='visit.sync.confirm'&&command.idempotencyKey){
+          const row=(await principal.db.collection('tenants').doc(projectScope.tenantId).collection('commandReceipts')
+            .doc(operationalCommandReceiptId(command)).get()).data();
+          replayOnly=row?.status==='committed'&&row.actorUid===principal.uid&&row.commandType===command.commandType;
+        }
+        const current=strict&&!replayOnly
+          ? await authorizedExternalRead(projectScope,firebaseReader(principal,command.commandType,command.commandType==='visit.sync.confirm'?undefined:command.idempotencyKey),()=>buildSnapshot({forceFresh:true,scope:projectScope}))
+          : await protectedOrStrictRead({url:'/',headers:{}},projectScope,null,false,true);
+        const configured=configureCommandRuntime(current.snapshot,current);
+        configured.replayOnly=replayOnly;
+        if(configured.writeHrField&&principal){
+          configured.writeHrField=(event,options)=>authorizedExternalRead(projectScope,firebaseReader(principal,'field-readback',event.eventId),async()=>{
+            const result=await writeOriginalHrField(event,options);
+            return {revision:current.revision,result};
+          }).then(observed=>observed.result);
+        }
+        return configured;
       },
       hrSnapshotReconcile:async input=>{
         const result=await explicitHrReconciliation(input);
@@ -954,16 +1036,21 @@ const server=http.createServer(async(req,res)=>{
       const bound=await resolveCountryHrPeriodBinding(bindingRequest);
       const contractPath=path.join(ROOT,'backend/contracts/tya-hr-column-map-r20-v1.json');
       const columnMap=JSON.parse(fs.readFileSync(contractPath,'utf8'));
-      const read=await readOriginalThroughToolbox(bound,columnMap);
+      const read=await authorizedExternalRead(requestedScope,firebaseReader(principal,'b14-readback'),async()=>{
+        const observed=await readOriginalThroughToolbox(bound,columnMap);return {...observed,revision:observed.proof.sourceRevision};
+      });
       const after=await resolveCountryHrPeriodBinding(bindingRequest);
       if(after.proof.bindingFingerprint!==bound.proof.bindingFingerprint)throw Error('MAPPING_FAILURE:B14_BINDING_CHANGED_DURING_READ');
       return sendJson(res,200,{ok:true,...read.proof,bindingPurpose:'original_readback',sourceSafe:true,writes:false,hrWrites:false,production:false});
     }
+    if(format==='read-outcome'){
+      const principal=await verifiedProtectedPrincipal(req,requestedScope);
+      const process=url.searchParams.get('process');
+      if(!['manual-refresh','period-read'].includes(process))throw Error('AUTH_FAILURE:HR_RECEIPT_SCOPE');
+      const outcome=await readReaderOutcome(principal.db,requestedScope,'firebase:'+principal.uid,process,'interactive',url.searchParams.get('requestId'));
+      return sendJson(res,200,{ok:true,outcome,production:false});
+    }
     const forceFresh=url.searchParams.get('fresh')==='1';
-    // An explicit refresh may discover a newly created monthly tab. Routine
-    // requests reuse the scoped inventory; no historical worksheet rows are read.
-    if(forceFresh&&url.searchParams.get('inventory')==='1')for(const [key,value]of hrInventoryCache)
-      if(value.tenantId===requestedScope.tenantId&&value.projectId===requestedScope.projectId)hrInventoryCache.delete(key);
     const protectedRequested=url.searchParams.get('protectedState')==='1';
     const requestedPeriodId=url.searchParams.get('hrPeriodId');
     if(requestedPeriodId)requestedScope.hrPeriodId=requestedPeriodId;
@@ -1014,7 +1101,7 @@ const server=http.createServer(async(req,res)=>{
     return sendJson(res,200,{...snapshot,_runtime:{...meta,operationalView:operational}});
   }catch(error){
     console.error(error.stack||error.message||String(error));
-    return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,hrWrites:false,production:false});
+    return sendJson(res,String(error.message||'').startsWith('AUTH_FAILURE:')?403:503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,hrWrites:false,production:false});
   }
 });
 

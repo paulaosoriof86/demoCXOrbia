@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import {withReaderIdentity,runAdmittedSnapshot,admitReaderCall,readerTicketKey} from '../hr-read-admission.mjs';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {createDurableHrReadModel,createConfirmedHrHistory,readSharedHrProjection,invalidateSharedHrSync,hrReadModelKey,HR_READ_MODEL_CHUNK_BYTES} from '../hr-read-model.mjs';
@@ -21,6 +22,7 @@ class Snap{constructor(ref,value){this.ref=ref;this.value=clone(value);this.exis
 class Ref{
   constructor(db,path){this.db=db;this.path=path;}
   collection(name){const path=this.path+'/'+name,db=this.db;return {doc:id=>new Ref(db,path+'/'+id),get:async()=>({docs:[...db.docs].filter(([p])=>p.startsWith(path+'/')&&p.split('/').length===path.split('/').length+1).map(([p,v])=>new Snap(new Ref(db,p),v))})};}
+  async update(data){this.db.apply([['update',this,data]]);}
   async get(){this.db.reads++;return new Snap(this,this.db.docs.get(this.path));}
 }
 class DB{
@@ -288,7 +290,7 @@ test('binding errors fail closed even when a saved revision exists',async()=>{
   const h=sharedProject();await h.observe();h.advance(300001);
   h.setRemote(async()=>{throw Error('MAPPING_FAILURE:HR_SHARED_BINDING_CHANGED');});
   await assert.rejects(h.observe(),/HR_SHARED_BINDING_CHANGED/);
-  await assert.rejects(h.observe(),/SHARED_REFRESH_VALIDATION_FAILED/);
+  await assert.rejects(h.observe(),/MAPPING_FAILURE:HR_SHARED_BINDING_CHANGED/);
   assert.equal(h.calls(),2);
 });
 
@@ -299,7 +301,7 @@ test('the served watcher routes two independent authenticated clients through th
   const watcher=fs.readFileSync(new URL('../../../../app/adapters/tya-live-source-refresh-watch-v2.js',import.meta.url),'utf8');
   const project=sharedProject(),{scope,db}=project.opts,actors=[],requests=[];
   const local={scope,proof:{providerType:'excel_online',localBindingFingerprint:hash('local')}};
-  let resolutions=0,saved=null;
+  let resolutions=0,saved={revision:hash('A'),loadedAt:Date.now()-420000};
   function instance(){
     return new Function('verifiedProtectedPrincipal','resolveProjectHrReadBinding','durableHrReadContext',
       'crypto','readSharedHrProjection','recoverHrReadModel','buildSnapshot','persistHrReadModel',
@@ -336,7 +338,97 @@ test('the served watcher routes two independent authenticated clients through th
     const result=await handler({headers:{Authorization:'Bearer '+uid}},scope,false);
     assert.equal(result.current.revision,hash('A'));assert.equal(result.current.externalReadCurrent,false);
   }
-  assert.equal(project.calls(),1);assert.equal(actors.length,5);assert.equal(resolutions,5);
+  assert.equal(project.calls(),0);assert.equal(actors.length,5);assert.equal(resolutions,5);
   await assert.rejects(one({headers:{Authorization:'Bearer other'}},scope,true),/AUTH_FAILURE/);
-  assert.equal(project.calls(),1);assert.equal(resolutions,5);
+  assert.equal(project.calls(),0);assert.equal(resolutions,5);
+});
+
+function budgetFixture(overrides={}){
+  const scope={tenantId:'qa',projectId:'synthetic'},bindingKey=hash('binding'),db=new DB();
+  const actor='google:fixture',process='seal-meta',runId='native-run';
+  const policy='cxorbiaProviderBudgets/dev_make_hr_reader';
+  const window={...scope,windowId:'w',enabled:true,bindingKey,expiresAt:Date.now()+60000,
+    protectedAllocation:160,spendingLimit:60,recoveryReserve:100,maxCreditsPerCall:3,reserved:0,
+    allocationReceiptSha256:hash('synthetic allocation'),grants:[{actor,process,runId,maxCalls:4}],...overrides};
+  db.docs.set(policy,window);
+  const input={...scope,bindingFingerprint:bindingKey,countryCode:'GT',periodId:'nov',driveId:'drive',itemId:'test',worksheetId:'a',rangeAddress:'A1:B2'};
+  if(!Object.hasOwn(overrides,'grants'))window.grants[0].tickets=[readerTicketKey(input)];
+  let sent=0;
+  const call=(args=input,send=async()=>++sent)=>admitReaderCall(args,send);
+  const submit=(requestId,work=async()=>{await call();return {revision:hash('confirmed')};},who={})=>
+    withReaderIdentity({...scope,actor,process,runId,requestId,...who},()=>runAdmittedSnapshot({db,scope,bindingKey,work}));
+  return {db,policy,call,submit,input,sent:()=>sent,window,scope,bindingKey};
+}
+
+test('five of twenty concurrent four-call envelopes fit the 60-credit ceiling; ordinary identities cannot debit the reserve',async()=>{
+  const b=budgetFixture();
+  const results=await Promise.allSettled(Array.from({length:20},(_,i)=>b.submit(String(i))));
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,5);
+  assert.equal(b.db.docs.get(b.policy).reserved,60);
+  assert.equal(b.sent(),5);
+  await assert.rejects(b.submit('ordinary',undefined,{actor:'firebase:other'}),/WINDOW_CLOSED/);
+  await assert.rejects(b.call(),/ATTEMPT_REQUIRED/);
+  assert.equal(b.window.protectedAllocation-b.db.docs.get(b.policy).reserved,100);
+});
+for(const [name,change] of Object.entries({closed:{enabled:false},expired:{expiresAt:0},
+  unfunded:{protectedAllocation:110},noReserve:{recoveryReserve:99},price:{maxCreditsPerCall:1},
+  excessive:{spendingLimit:61},evidence:{allocationReceiptSha256:'missing'},grants:{grants:[]}})){
+  test('paid dispatch fails closed on '+name,async()=>{
+    const b=budgetFixture(change);
+    await assert.rejects(b.submit('test'),/WINDOW_CLOSED|BUDGET_EXHAUSTED/);
+    assert.equal(b.sent(),0);assert.equal(b.db.docs.get(b.policy).reserved,0);
+  });
+}
+test('duplicate ticket, response loss and new-session replay keep one physical invocation',async()=>{
+  const b=budgetFixture();let attempts=0;
+  await assert.rejects(b.submit('same',async()=>{
+    await b.call(b.input,async()=>{attempts++;throw Error('PROVIDER_FAILURE:UNCERTAIN');});
+  }),/UNCERTAIN/);
+  await assert.rejects(b.submit('same'),/INCOMPLETE/);assert.equal(attempts,1);assert.equal(b.sent(),0);
+  const saved=[...b.db.docs.values()].find(v=>v.state==='FAILED');
+  assert.equal(Object.values(saved.calls)[0],'DISPATCHED');
+  assert.equal(saved.maxCredits,12);
+  await assert.rejects(b.submit('dup',async()=>{await b.call();await b.call();}),/TICKET_UNAVAILABLE/);assert.equal(b.sent(),1);
+});
+test('deterministic mapping failure survives new requests on the same binding',async()=>{
+  const b=budgetFixture();
+  await assert.rejects(b.submit('one',async()=>{await b.call();throw Error('MAPPING_FAILURE:COLUMN_MISSING:private detail');}),/COLUMN_MISSING/);
+  await assert.rejects(b.submit('two'),/^Error: MAPPING_FAILURE:COLUMN_MISSING$/);
+  assert.equal(b.sent(),1);assert.equal(b.db.docs.get(b.policy).reserved,12);
+  assert.equal(JSON.stringify([...b.db.docs.values()]).includes('private detail'),false);
+});
+test('scope drift, cancelled window and reused success ticket cannot redispatch',async()=>{
+  const b=budgetFixture();
+  await b.submit('a');
+  await assert.rejects(b.submit('a'),/ATTEMPT_COMPLETE/);
+  await assert.rejects(b.submit('b',()=>b.call({...b.input,projectId:'other'})),/ATTEMPT_REQUIRED/);
+  await assert.rejects(b.submit('c',async()=>{b.db.docs.get(b.policy).enabled=false;return b.call();}),/WINDOW_CLOSED/);
+  assert.equal(b.sent(),1);
+});
+
+test('a new session reads a typed receipt only for its own actor, project and request without dispatch',async()=>{
+  const {readReaderOutcome}=await import('../hr-read-admission.mjs');
+  const b=budgetFixture();await b.submit('history');
+  const get=(actor='google:fixture',scope=b.scope)=>readReaderOutcome(b.db,scope,actor,'seal-meta','native-run','history');
+  assert.deepEqual(await get(),{state:'COMPLETE',code:null,revision:hash('confirmed'),
+    startedAt:[...b.db.docs.values()].find(x=>x.state==='COMPLETE').startedAt,
+    finishedAt:[...b.db.docs.values()].find(x=>x.state==='COMPLETE').finishedAt,dispatched:1,returned:1,externalReadCurrent:false});
+  await assert.rejects(get('foreign'),/UNAVAILABLE/);
+  await assert.rejects(get('google:fixture',{...b.scope,projectId:'other'}),/UNAVAILABLE/);
+  assert.equal(b.sent(),1);
+});
+test('ordinary refresh, anonymous strict probe, and internal poll cannot enter the external read path without proof',async()=>{
+  const server=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
+  const start=server.indexOf('async function protectedOrStrictRead('),end=server.indexOf('async function buildSnapshot(',start);
+  let writes=0,external=0,internal=0;
+  const run=new Function('authorizedExternalRead','resolveProjectHrReadBinding','recoverHrReadModel','buildSnapshot',
+    server.slice(start,end)+'\nreturn protectedOrStrictRead;')(
+    async()=>{writes++;},async()=>({proof:{providerType:'excel_online'}}),async()=>{internal++;return {externalReadCurrent:false};},async()=>{external++;});
+  const scope={tenantId:'x',projectId:'y'};
+  const req=(url,headers={})=>({url,headers});
+  await assert.rejects(run(req('/?fresh=1'),scope,null,true,false),/PRINCIPAL_REQUIRED/);
+  await assert.rejects(run(req('/?vrm154156=test&format=json'),scope,null,false,false),/STRICT_TOKEN_REQUIRED/);
+  await assert.rejects(run(req('/?canonical=test-1&format=meta',{'x-cxorbia-run':'test','x-cxorbia-probe':'canonical-before'}),scope,null,false,false),/STRICT_TOKEN_REQUIRED/);
+  const last=await run(req('/?sync=due'),scope,{uid:'user'},false,true);
+  assert.equal(last.externalReadCurrent,false);assert.equal(internal,1);assert.equal(writes+external,0);
 });

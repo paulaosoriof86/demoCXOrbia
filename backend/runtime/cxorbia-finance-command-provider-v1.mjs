@@ -240,7 +240,7 @@ function historicalHrAuthority(snapshot){
   };
 }
 
-export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
+export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision='',replayOnly=false}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('FINANCE_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.verifyIdToken||!db?.collection||!db?.runTransaction)throw new Error('FINANCE_PROVIDER_DEPENDENCIES_MISSING');
   const historicalAuthority=historicalHrAuthority(hrSnapshot),authoritativeHrRevision=str(hrRevision);
@@ -259,6 +259,10 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
       const digest=sha(clean(command));
       try{
         return await db.runTransaction(async tx=>{
+          if(replayOnly){
+            const prior=(await tx.get(receipt)).data();
+            if(prior?.status!=='committed'||prior.actorUid!==actor.uid||prior.commandDigest!==digest)throw Error('FINANCE_REPLAY_RECEIPT_REQUIRED');
+          }
           if(reconcile){
             const prior=await tx.get(receipt);
             if(prior.exists){const p=prior.data()||{};if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');if(p.status==='committed')return ack(command,{entityType:'financeReconciliation',entityId:p.entityId||command.entityId,financialMatch:p.financialMatch||null,idempotentReplay:true,providerWrites:0});}

@@ -210,7 +210,7 @@ export async function invalidateSharedHrSync(db,scope,now=Date.now){
   });
 }
 
-export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,poll=false,
+export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,poll=false,internalOnly=false,
   now=Date.now,delay=ms=>new Promise(resolve=>setTimeout(resolve,ms))}){
   if(!HASH.test(bindingKey||''))fail('SHARED_BINDING');
   const ref=syncRef(db,scope),owner=crypto.randomUUID(),interval=300000,leaseMs=120000;
@@ -228,8 +228,22 @@ export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,p
         (sameReader&&state.confirmedEpoch===epoch&&saved?.revision===state.revision&&saved?.loadedAt===state.confirmedAt);
       const age=at-Number(saved?.loadedAt);
       if(sameReader&&saved&&state.confirmedAt>saved.loadedAt)fail('SHARED_POINTER_ROLLBACK');
+      if(internalOnly){
+        if(saved&&afterWrite)return 'saved';
+        if(state.owner&&state.leaseUntil>at)return 'wait';
+        fail('INTERNAL_PROJECTION_UNAVAILABLE');
+      }
       if(saved&&afterWrite&&(!poll||(age>=0&&age<interval)))return 'saved';
       if(state.owner&&state.leaseUntil>at)return 'wait';
+      // I3: deterministic source/auth failures do not become retryable merely
+      // because the 30-second transport backoff expired. The quarantine belongs
+      // to the exact reader/binding, not the tab, worker or ordinary HR epoch.
+      if(state.quarantine?.bindingKey===bindingKey){
+        const code=state.quarantine.code;
+        if(typeof code!=='string'||!/^(AUTH_FAILURE|MAPPING_FAILURE):[A-Z0-9_]+$/.test(code))
+          fail('SHARED_QUARANTINE_INVALID');
+        throw Error(code);
+      }
       if(sameReader&&state.retryAfter>at){
         if(state.failureClass&&state.failureClass!=='PROVIDER_FAILURE')fail('SHARED_REFRESH_VALIDATION_FAILED');
         return 'backoff';
@@ -240,7 +254,7 @@ export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,p
     });
   }
 
-  async function finish(current,failureClass=null){
+  async function finish(current,failureClass=null,deterministicCode=null){
     return db.runTransaction(async tx=>{
       const s=await tx.get(ref),state=s.data();
       if(state?.owner!==owner||state.epoch!==state.leaseEpoch){
@@ -248,7 +262,10 @@ export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,p
         return false;
       }
       const complete={owner:null,leaseUntil:0,retryAfter:current?0:now()+30000,failureClass};
-      if(current)Object.assign(complete,{revision:current.revision,confirmedAt:current.loadedAt,confirmedEpoch:state.epoch});
+      if(deterministicCode)complete.quarantine={bindingKey,code:deterministicCode,recordedAt:now()};
+      // A successful read with a different exact binding can supersede the old
+      // quarantine. A transport failure, epoch invalidation or cold start cannot.
+      if(current)Object.assign(complete,{revision:current.revision,confirmedAt:current.loadedAt,confirmedEpoch:state.epoch,quarantine:null});
       tx.update(ref,complete);return true;
     });
   }
@@ -290,7 +307,9 @@ export async function readSharedHrProjection({db,scope,bindingKey,read,refresh,p
   }catch(error){
     const detail=String(error?.message||error);
     const failureClass=detail.match(/^(AUTH_FAILURE|MAPPING_FAILURE|PERSISTENCE_FAILURE):/)?.[1]||'PROVIDER_FAILURE';
-    const stillOwner=await finish(null,failureClass);
+    // Store only a typed, bounded code: never tokens, provider bodies or raw HR.
+    const deterministicCode=/^(AUTH_FAILURE|MAPPING_FAILURE):[A-Z0-9_]+$/.test(detail)&&detail.length<=180?detail:null;
+    const stillOwner=await finish(null,failureClass,deterministicCode);
     // Only a valid previously confirmed view may survive an upstream outage.
     // Never turn auth/binding/fencing failures into a permitted projection.
     if(stillOwner&&saved&&failureClass==='PROVIDER_FAILURE'){

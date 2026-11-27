@@ -107,6 +107,7 @@
       const token=await user.getIdToken(false);
       if(user.uid!==window.firebase?.auth?.().currentUser?.uid)throw new Error('AUTH_FAILURE:PROTECTED_HR_PRINCIPAL_CHANGED');
       headers.Authorization='Bearer '+token;
+      if(extra.fresh==='1'&&window.crypto?.randomUUID)headers['Idempotency-Key']=window.crypto.randomUUID();
     }
     const query=new URLSearchParams({format,...extra,ts:String(Date.now())});
     const response=await fetch(source+(source.includes('?')?'&':'?')+query,{cache:'no-store',headers});

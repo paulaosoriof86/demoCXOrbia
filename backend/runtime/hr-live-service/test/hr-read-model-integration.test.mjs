@@ -85,13 +85,13 @@ test('restored source is rehashed and binding rechecked before cache publication
 
 test('only explicit readModel=1 presentation requests enable recovery; forced reads and auth remain strict',async()=>{
   const helper=fn(server,'async function resolveHrAndProtectedPrincipal(','\nfunction runtimeMeta('),calls=[];
-  const resolve=new Function('buildSnapshot','verifiedProtectedPrincipal',helper+'\nreturn resolveHrAndProtectedPrincipal;')
-    (async options=>{calls.push(options);return {revision:'same'};},async()=>({uid:'verified'}));
+  const resolve=new Function('protectedOrStrictRead','verifiedProtectedPrincipal',helper+'\nreturn resolveHrAndProtectedPrincipal;')
+    (async (_req,_scope,_principal,forceFresh,allowDurableRead)=>{calls.push({forceFresh,allowDurableRead});return {revision:'same'};},async()=>({uid:'verified'}));
   await resolve({url:'/?format=json&readModel=1'},binding.scope,false,true);
   await resolve({url:'/?format=json&readModel=1'},binding.scope,true,true);
   await resolve({url:'/?format=meta'},binding.scope,false,false);
   assert.deepEqual(calls.map(x=>x.allowDurableRead),[true,false,false]);
-  const denied=new Function('buildSnapshot','verifiedProtectedPrincipal',helper+'\nreturn resolveHrAndProtectedPrincipal;')
+  const denied=new Function('protectedOrStrictRead','verifiedProtectedPrincipal',helper+'\nreturn resolveHrAndProtectedPrincipal;')
     (async()=>({revision:'same'}),async()=>{throw Error('AUTH_DENIED');});
   await assert.rejects(denied({url:'/?readModel=1'},binding.scope,false,true),/AUTH_DENIED/);
 });
@@ -140,8 +140,8 @@ test('existing browser bridge opts into read model, watcher requests shared sync
   assert.match(watcher,/sharedCheck&&authenticatedHumanRuntime\)query.sync='due'/);
   assert.match(watcher,/else Object.assign\(query,\{fresh:'1'/);
   const configure=fn(server,'      configure:async command=>{','      hrSnapshotReconcile:async input=>{');
-  assert.doesNotMatch(configure,/allowDurableRead/);assert.match(configure,/buildSnapshot\(\{forceFresh:hrCommands.has/);
-  assert.match(server,/readSnapshot:scope=>buildSnapshot\(\{forceFresh:true,scope\}\)/);
+  assert.doesNotMatch(configure,/allowDurableRead/);assert.match(configure,/authorizedExternalRead\(projectScope[\s\S]+?buildSnapshot\(\{forceFresh:true/);
+  assert.match(server,/readSnapshot:[^\n]+authorizedExternalRead[^\n]+forceFresh:true/);
 });
 
 
@@ -149,7 +149,7 @@ const deferred=()=>{let resolve,reject;const promise=new Promise((yes,no)=>{reso
 const settle=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
 function protectedResolver({read,verify,persist=async()=>({published:true})}){
   const helper=fn(server,'async function resolveHrAndProtectedPrincipal(','\nfunction runtimeMeta(');
-  return new Function('buildSnapshot','verifiedProtectedPrincipal','persistHrReadModel',helper+'\nreturn resolveHrAndProtectedPrincipal;')(read,verify,persist);
+  return new Function('protectedOrStrictRead','verifiedProtectedPrincipal','persistHrReadModel',helper+'\nreturn resolveHrAndProtectedPrincipal;')((_req,scope,_principal,forceFresh,allowDurableRead)=>read({scope,forceFresh,allowDurableRead}),verify,persist);
 }
 function liveRead(){return {...materialize(snapshot,'runtime_excel_online_original'),externalReadCurrent:true,bindingProof:binding.proof};}
 
@@ -170,15 +170,15 @@ test('durable reader keys reuse source hashes but recompute the selected mapping
   assert.throws(()=>context({...binding,mappingRef:'missing'}),/MAPPING_UNSUPPORTED/);
 });
 
-test('protected presentation reads overlap auth, but no persistence occurs before both succeed',async()=>{
+test('protected presentation verifies auth first and persists only after both succeed',async()=>{
   for(const authFirst of [false,true]){
     const hr=deferred(),auth=deferred(),order=[];let writes=0;
     const resolve=protectedResolver({read:()=>{order.push('read');return hr.promise;},verify:()=>{order.push('auth');return auth.promise;},
       persist:async(scope,current)=>{writes++;assert.deepEqual(scope,binding.scope);assert.equal(current.externalReadCurrent,true);return {published:true};}});
     const pending=resolve({url:'/?readModel=1'},binding.scope,false,true);
-    assert.deepEqual(order,['read','auth']);
+    assert.deepEqual(order,['auth']);
     if(authFirst)auth.resolve({uid:'verified'});else hr.resolve(liveRead());
-    await settle();assert.equal(writes,0);
+    await settle();assert.deepEqual(order,authFirst?['auth','read']:['auth']);assert.equal(writes,0);
     if(authFirst)hr.resolve(liveRead());else auth.resolve({uid:'verified'});
     const result=await pending;assert.equal(writes,1);assert.equal(result.current.readModelWriteAck.published,true);
   }
