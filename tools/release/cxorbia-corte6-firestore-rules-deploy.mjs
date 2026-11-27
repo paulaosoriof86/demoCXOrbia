@@ -154,6 +154,56 @@ console.log(JSON.stringify({projectId:expectedProject,decision:report.decision,e
 
 }
 
+export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,cloud,http,token,apply}){
+  const fail='ENVIRONMENT_FAILURE:MAKE_SHARED_RESERVE_UNVERIFIED';
+  demand(control?.state==='READY'&&control.source===E10.source&&control.readerScenarioId===10200465&&
+    control.launchTag===launchTag&&typeof launchTag==='string'&&launchTag.length>0,fail);
+  // The independent provider readback must be immutable and current. The
+  // Firestore reservation below only controls this runtime's spending.
+  const pin=control.providerAllocation;
+  demand(/^gs:\/\/cxorbia-backend-dev_cloudbuild\/cxorbia-i3-paired-dev\/results\/[A-Za-z0-9_/-]+[.]json#[0-9]+$/.test(pin?.uri||'')&&
+    /^[a-f0-9]{64}$/.test(pin?.sha256||''),fail);
+  const raw=cloud('storage','cat',pin.uri);
+  demand(sha(raw+'\n')===pin.sha256||sha(raw)===pin.sha256,fail);
+  const observed=JSON.parse(raw),now=Date.now();
+  demand(observed.organizationId===4090072&&observed.readerScenarioId===10200465&&observed.source===E10.source&&
+    observed.launchTag===launchTag&&observed.independentlyVerified===true&&observed.sharedConsumersCanDebit===false&&
+    observed.providerEnforced===true&&observed.protectedCredits>=160&&observed.recoveryReserve>=100&&
+    Number.isFinite(observed.observedAtMs)&&observed.observedAtMs<=now&&now-observed.observedAtMs<=600000&&
+    Number.isFinite(observed.expiresAtMs)&&observed.expiresAtMs>now,fail);
+  const url='https://firestore.googleapis.com/v1/projects/'+E10.project+'/databases/(default)/documents/cxorbiaProviderBudgets/dev_make_hr_reader';
+  const get=async()=>{const r=await http(token,'GET',url);demand(r.ok&&r.payload?.updateTime&&r.payload.fields,fail);return r.payload;};
+  const doc=await get(),f=doc.fields;
+  const integer=v=>typeof v?.integerValue==='string'&&/^\d+$/.test(v.integerValue)?Number(v.integerValue):NaN;
+  const plans=f.grants?.arrayValue?.values||[];
+  const actorId=cloud('iam','service-accounts','describe',serviceAccount.split('/').at(-1),'--format=value(uniqueId)');
+  const purposes=['canonical-after','canonical-before','canonical-json','seal-json','seal-meta'];
+  const bound=f.enabled?.booleanValue===true;
+  demand(f.windowId?.stringValue===launchTag&&f.allocationReceiptSha256?.stringValue===pin.sha256&&
+    f.source?.stringValue===E10.source&&f.tenantId?.stringValue===control.tenantId&&f.projectId?.stringValue===control.projectId&&
+    /^[a-f0-9]{64}$/.test(f.bindingKey?.stringValue||'')&&integer(f.spendingLimit)===60&&integer(f.recoveryReserve)===100&&
+    integer(f.protectedAllocation)>=160&&integer(f.protectedAllocation)<=observed.protectedCredits&&integer(f.reserved)===0&&
+    integer(f.expiresAt)>now&&integer(f.expiresAt)<=observed.expiresAtMs&&integer(f.maxCreditsPerCall)>=3&&
+    plans.length===5&&/^[0-9]+$/.test(actorId),fail);
+  let maximum=0;
+  const processes=plans.map(plan=>{
+    const g=plan.mapValue?.fields||{},n=integer(g.maxCalls),tickets=g.tickets?.arrayValue?.values||[];
+    demand(g.actor?.stringValue==='google:'+actorId&&g.runId?.stringValue===(bound?id:launchTag)&&
+      Number.isSafeInteger(n)&&n>0&&tickets.length>=n&&tickets.every(t=>/^[a-f0-9]{64}$/.test(t.stringValue||'')),fail);
+    maximum+=n*integer(f.maxCreditsPerCall);return g.process?.stringValue;
+  }).sort();
+  demand(JSON.stringify(processes)===JSON.stringify(purposes)&&maximum<=60,fail);
+  if(!apply||bound)return;
+  for(const v of plans)v.mapValue.fields.runId={stringValue:id};
+  const q=new URLSearchParams({'currentDocument.updateTime':doc.updateTime});
+  for(const key of ['enabled','grants'])q.append('updateMask.fieldPaths',key);
+  const claimed=await http(token,'PATCH',url+'?'+q,{fields:{enabled:{booleanValue:true},grants:{arrayValue:{values:plans}}}});
+  demand(claimed.ok,fail);
+  const readback=await get();
+  demand(readback.fields.enabled?.booleanValue===true&&readback.fields.grants.arrayValue.values.length===5&&
+    readback.fields.grants.arrayValue.values.every(v=>v.mapValue.fields.runId.stringValue===id),fail);
+}
+
 export async function pairedRules(mode, dependencies={}) {
   const e = dependencies.env || process.env;
   const readGit = dependencies.git || git;
@@ -215,6 +265,11 @@ export async function pairedRules(mode, dependencies={}) {
   };
   if(mode==='preflight' || mode==='apply') {
     demand(found.rulesetName===before.rulesetName && found.sourceSha256===before.sourceSha256,'E10_PREDECESSOR_DRIFT');
+    // Changing the account balance cannot clear an audited shared-pool HOLD.
+    // Admission requires a separately verified provider allocation and native
+    // spend window. Keep the exact authority pinned across the entire run.
+    const costControl=pending.makeEconomicControl;
+    demand(costControl?.state==='READY','ENVIRONMENT_FAILURE:MAKE_SHARED_RESERVE_UNVERIFIED');
     const admission=pending.makeAdmission;
     demand(admission?.path==='docs/checkpoints/CXORBIA_I3_E10_MAKE_ADMISSION.json' &&
       admission.gitBlob===readGit('rev-parse','HEAD:'+admission.path).trim() &&
@@ -222,6 +277,8 @@ export async function pairedRules(mode, dependencies={}) {
     const predecessor = descriptor.currentMaterialization;
     demand(predecessor.sourceSha===E10.predecessor && predecessor.runtimeRevision==='cxorbia-live-hr-dev-00395-lnc' &&
       predecessor.hostingVersion==='sites/cxorbia-backend-dev/versions/e9a216661b686246','E10_PREDECESSOR_PAIR');
+    await (dependencies.bindPaidReaderWindow||bindPaidReaderWindow)({control:costControl,id,
+      launchTag:pending.pairedCloudBuild?.launchTag,serviceAccount:build.serviceAccount,cloud,http,token,apply:mode==='apply'});
     if(mode==='preflight') return;
     const source=fs.readFileSync(e.SOURCE_DIR+'/firestore.rules','utf8');
     demand(sha(source)===E10.targetHash,'E10_PRODUCT_RULES_HASH');
@@ -241,6 +298,18 @@ export async function pairedRules(mode, dependencies={}) {
   if(mode==='rollback' && found.rulesetName===before.rulesetName && found.sourceSha256===before.sourceSha256) return;
   demand(found.rulesetName===saved.createdRulesetName && found.sourceSha256===E10.targetHash,'E10_FOREIGN_TRANSITION');
   if(mode==='rollback'){
+    // The importer creates a protected marker in the same transaction as its
+    // records. Never weaken rules after possible exposure or a nonempty read.
+    const expected='cxorbia-i3-paired-dev/results/'+id+'/runtime-transition-intent.json';
+    const journal=await http(token,'GET','https://storage.googleapis.com/storage/v1/b/cxorbia-backend-dev_cloudbuild/o?'+
+      new URLSearchParams({prefix:expected,fields:'items(name),nextPageToken'}));
+    demand(journal.ok&&!journal.payload.nextPageToken&&!(journal.payload.items||[]).some(item=>item.name===expected),
+      'E10_ROLLBACK_RUNTIME_EXPOSURE');
+    const query=await http(token,'POST','https://firestore.googleapis.com/v1/projects/'+E10.project+
+      '/databases/(default)/documents:runQuery',{structuredQuery:{from:[{collectionId:'hrImportRuns',allDescendants:true}],
+      select:{fields:[{fieldPath:'__name__'}]},limit:1}});
+    demand(query.ok&&Array.isArray(query.payload)&&query.payload.length>0&&query.payload.every(r=>!r.document&&r.readTime),
+      'E10_ROLLBACK_IMPORT_RECORDS_OR_UNKNOWN');
     await patch(E10.prior);
     const restored=await state();
     demand(restored.rulesetName===before.rulesetName && restored.sourceSha256===before.sourceSha256,'E10_ROLLBACK_READBACK');

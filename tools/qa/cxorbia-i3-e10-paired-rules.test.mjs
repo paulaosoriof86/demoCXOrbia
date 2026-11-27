@@ -21,6 +21,7 @@ function fixture(t) {
     unusedCenticredits:'16000',hrReadAllowance:60,restorationReserve:100,f3Debit:0,concurrentWriter:false,observedAt:new Date().toISOString()};
   const pending={sourceSha:E10.source,sourceTree:E10.tree,predecessorProductSourceSha:E10.predecessor,scope:'RUNTIME_AND_HOSTING',
     rulesDeploys:1,storageRulesDeploys:0,rulesAuthority:{path:E10.authorityPath,gitBlob:E10.authorityBlob},
+    makeEconomicControl:{state:'READY',readerScenarioId:10200465,runId:id,source:E10.source},
     makeAdmission:{path:'docs/checkpoints/CXORBIA_I3_E10_MAKE_ADMISSION.json',gitBlob:'c'.repeat(40)}};
   const descriptor={pendingDevSuccessor:pending,postDeployRunSeal:{receiptBlob:'a'.repeat(40)},currentMaterialization:{
     sourceSha:E10.predecessor,runtimeRevision:'cxorbia-live-hr-dev-00395-lnc',hostingVersion:'sites/cxorbia-backend-dev/versions/e9a216661b686246'}};
@@ -45,6 +46,8 @@ function fixture(t) {
     throw Error('Unexpected operation');
   };
   const request=async(_token,method,url,body)=>{
+    if(url.startsWith('https://storage.googleapis.com/storage/'))return {ok:true,payload:backend.exposed?{items:[{name:'cxorbia-i3-paired-dev/results/'+id+'/runtime-transition-intent.json'}]}:{}};
+    if(url.endsWith('/documents:runQuery'))return {ok:true,payload:backend.imported?[{document:{name:'synthetic'}}]:[{readTime:new Date().toISOString()}]};
     let payload;
     if(url.endsWith(':testIamPermissions'))payload={permissions:backend.allow?body.permissions:[]};
     else if(method==='GET' && url.endsWith(E10.release))payload={rulesetName:backend.live};
@@ -56,7 +59,7 @@ function fixture(t) {
     else throw Error('Unexpected rules operation');
     return {ok:true,payload};
   };
-  return {env,observation,pending,backend,git,run:action=>pairedRules(action,{env,cloud,git,request})};
+  return {env,observation,pending,backend,git,run:action=>pairedRules(action,{env,cloud,git,request,bindPaidReaderWindow:async()=>{}})};
 }
 test('one planned release, independent seal, exact rollback and no duplicate forward',async t=>{
   const f=fixture(t);await f.run('preflight');assert.equal(f.backend.objects.size,0);
@@ -72,6 +75,7 @@ test('one planned release, independent seal, exact rollback and no duplicate for
   assert.equal(f.backend.live,E10.prior);assert.equal(f.backend.creates,1);assert.equal(f.backend.patches,2);
 });
 for(const [label,change] of [
+  ['shared reserve unproved',f=>f.pending.makeEconomicControl.state='HOLD'],
   ['zero balance',f=>f.observation.unusedCenticredits='0'],
   ['reserve would be consumed',f=>f.observation.unusedCenticredits='15999'],
   ['expired balance',f=>f.observation.observedAt='2000-01-01T00:00:00Z'],
@@ -95,4 +99,40 @@ test('ordinary successor retains a zero rules budget',()=>{
   assert.equal(exactPendingRules({sourceSha:E10.predecessor,rulesDeploys:1}),false);
   assert.equal(validateRulesSeal({sourceSha:E10.predecessor,firestoreRulesDeploys:0}),true);
   assert.equal(validateMakeAdmission(null),false);
+});
+
+for(const flag of ['exposed','imported'])test('rollback retains target rules on '+flag,async t=>{
+  const f=fixture(t);await f.run('apply');f.backend[flag]=true;
+  await assert.rejects(f.run('rollback'),/E10_ROLLBACK_/);
+  assert.equal(f.backend.live,newName);assert.equal(f.backend.patches,1);
+});
+
+test('native preflight checks provider evidence and separately claims the actual scoped window with compare-and-set',async()=>{
+  const {bindPaidReaderWindow}=await import('../release/cxorbia-corte6-firestore-rules-deploy.mjs');
+  const {createHash}=await import('node:crypto');
+  const launchTag='synthetic-launch',uid='12345',str=stringValue=>({stringValue}),num=n=>({integerValue:String(n)}),now=Date.now();
+  const kinds=['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'];
+  const proof={organizationId:4090072,readerScenarioId:10200465,source:E10.source,launchTag,independentlyVerified:true,
+    sharedConsumersCanDebit:false,providerEnforced:true,protectedCredits:160,recoveryReserve:100,observedAtMs:now-1000,expiresAtMs:now+60000};
+  let bytes=JSON.stringify(proof),patches=0;
+  const digest=()=>createHash('sha256').update(bytes).digest('hex');
+  const control={state:'READY',source:E10.source,readerScenarioId:10200465,launchTag,tenantId:'qa',projectId:'qa-proj',
+    providerAllocation:{uri:'gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/qa/allocation.json#123',sha256:digest()}};
+  const fields={windowId:str(launchTag),allocationReceiptSha256:str(digest()),source:str(E10.source),enabled:{booleanValue:false},
+    tenantId:str('qa'),projectId:str('qa-proj'),bindingKey:str('a'.repeat(64)),spendingLimit:num(60),recoveryReserve:num(100),
+    protectedAllocation:num(160),reserved:num(0),expiresAt:num(now+50000),maxCreditsPerCall:num(3),
+    grants:{arrayValue:{values:kinds.map(kind=>({mapValue:{fields:{runId:str(launchTag),actor:str('google:'+uid),process:str(kind),
+      maxCalls:num(1),tickets:{arrayValue:{values:[str('c'.repeat(64))]}}}}}))}}};
+  const opts={control,id,launchTag,serviceAccount:'projects/test/serviceAccounts/test',token:'synthetic',apply:true,
+    cloud:(group)=>group==='storage'?bytes:uid,http:async(_t,verb,url,body)=>{
+      if(verb==='GET')return {ok:true,payload:{updateTime:'now',fields:structuredClone(fields)}};
+      assert.equal(verb,'PATCH');assert.equal(new URL(url).searchParams.get('currentDocument.updateTime'),'now');
+      Object.assign(fields,body.fields);patches++;return {ok:true,payload:{}};
+    }};
+  await bindPaidReaderWindow({...opts,apply:false});assert.equal(patches,0);
+  await bindPaidReaderWindow(opts);await bindPaidReaderWindow(opts);assert.equal(patches,1);
+  await assert.rejects(bindPaidReaderWindow({...opts,id:'another'}),/SHARED_RESERVE/);
+  bytes=JSON.stringify({...proof,sharedConsumersCanDebit:true});
+  control.providerAllocation.sha256=digest();fields.allocationReceiptSha256=str(digest());
+  await assert.rejects(bindPaidReaderWindow(opts),/SHARED_RESERVE/);assert.equal(patches,1);
 });

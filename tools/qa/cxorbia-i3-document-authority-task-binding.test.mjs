@@ -80,7 +80,8 @@ test('deterministic generator preserves18 historical scopes and25 scoped clauses
  const result=buildFrozenTaskEvidenceBindings({matrix:realMatrix,contracts,cumulativeMap,readImmutable});
  assert.equal(JSON.stringify(realMatrix),before);
  assert.deepEqual(Object.keys(result.matrixPatch.functionalTaskEvidenceMappings),['D01']);
- assert.equal(result.immutableReferencesVerified,22);
+ assert.ok(Object.keys(cumulativeMap.evidence).length>=22);
+ assert.equal(result.immutableReferencesVerified,Object.keys(cumulativeMap.evidence).length);
  assert.equal(result.preservedCumulativeTaskScopes.length,18);
  assert.equal(result.scopedClauseBindings.find(x=>x.taskId==='D08').knownClauseIds.length,25);
  assert.equal(result.scopedClauseBindings[0].completeTaskInventory,false);

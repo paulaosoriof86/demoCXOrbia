@@ -6,6 +6,7 @@ WORKDIR /workspace
 COPY backend/runtime/hr-live-service/package.json ./backend/runtime/hr-live-service/package.json
 RUN cd backend/runtime/hr-live-service && npm install --omit=dev --ignore-scripts
 COPY backend/runtime/hr-live-service/server.mjs ./backend/runtime/hr-live-service/server.mjs
+COPY backend/runtime/hr-live-service/hr-read-admission.mjs ./backend/runtime/hr-live-service/hr-read-admission.mjs
 COPY backend/runtime/hr-live-service/hr-read-model.mjs ./backend/runtime/hr-live-service/hr-read-model.mjs
 COPY backend/runtime/hr-live-service/certification-runtime.mjs ./backend/runtime/hr-live-service/certification-runtime.mjs
 COPY backend/runtime/hr-live-service/dev-visual.mjs ./backend/runtime/hr-live-service/dev-visual.mjs

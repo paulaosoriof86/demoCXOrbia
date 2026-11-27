@@ -3,7 +3,15 @@ set -Eeuo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 test_dir="$(mktemp -d)"
 trap 'rm -rf "$test_dir"' EXIT
-export HOSTING_URL=https://fixture.invalid TENANT_ID=fixture PROJECT_ID=fixture
+mkdir -p "$test_dir/bin"
+cat > "$test_dir/bin/gcloud" <<'SH'
+#!/bin/sh
+test "$1 $2" = 'auth print-identity-token' || exit 2
+node -e 'const c={aud:process.argv[1],sub:"qa",email:"qa@example.invalid",email_verified:true,exp:Math.ceil(Date.now()/1000)+600};console.log("fixture."+Buffer.from(JSON.stringify(c)).toString("base64url")+".fixture")' "${3#--audiences=}"
+SH
+chmod 700 "$test_dir/bin/gcloud"
+export PATH="$test_dir/bin:$PATH"
+export HOSTING_URL=https://cxorbia-backend-dev.web.app TENANT_ID=fixture PROJECT_ID=fixture
 export GITHUB_RUN_ID=immutable-run
 export REV="$(printf '%064d' 1)"
 curl() {

@@ -14,7 +14,8 @@ for format in meta json; do
   esac
   response="$probe_dir/$file"
   rc=0
-  status="$(curl -sS --retry 0 --connect-timeout 10 --max-time 120 \
+  (umask 077; node tools/qa/cxorbia-i3-paired-hr-identity.mjs "$correlation" "seal-$format" > "$probe_dir/headers")
+  status="$(curl -H "@$probe_dir/headers" -sS --retry 0 --connect-timeout 10 --max-time 120 \
     -H 'Cache-Control: no-cache, no-store, max-age=0' -o "$response" -w '%{http_code}' \
     "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=$format&vrm154156=$correlation")" || rc=$?
   classification=''
@@ -100,7 +101,7 @@ verify)
 set -Eeuo pipefail
 TOKEN="$(gcloud auth print-access-token)"
 curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-after.json"
-if [[ "$FOCAL_SOURCE" == ff9ac83ea7bbe4ad19e8faf7951ef8256be92671 ]]; then
+if [[ "$FOCAL_SOURCE" == 5d681a6e3012d8651c39513a3fb2cc867ba2cd08 ]]; then
   node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs --i3-paired verify
 else
   test "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-after.json")"

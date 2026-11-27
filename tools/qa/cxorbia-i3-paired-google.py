@@ -298,13 +298,20 @@ def main():
     write(out/"build.json",{"sourceSha":source,"sourceTree":tree,"imageTag":digest_uri,
                            "requestedTag":image["tag"],"builds":0 if resume else 1,"production":False,"imageBuildId":image["id"]})
     write(out/"build-resume.json",image)
-    focal_rules = source == "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671"
+    focal_rules = source == "5d681a6e3012d8651c39513a3fb2cc867ba2cd08"
     def rules(action):
         subprocess.run(["node","tools/release/cxorbia-corte6-firestore-rules-deploy.mjs","--i3-paired",action],check=True)
+    runtime_exposure_possible = bool(resume)
     try:
         if focal_rules:
+            subprocess.run(["node","tools/qa/cxorbia-i3-paired-hr-identity.mjs","--preflight",build_id],
+                           env={**os.environ,"HOSTING_URL":"https://cxorbia-backend-dev.web.app",
+                                "CXORBIA_PAIRED_BUILD_ID":build_id},check=True,stdout=subprocess.DEVNULL)
             rules("apply")
         if not resume:
+            if focal_rules:
+                checkpoint("runtime-transition-intent", {"imageDigest": image["digest"]})
+                runtime_exposure_possible = True
             run_step(12)
         require(environment["RUNTIME_DIGEST"] == image["digest"],"RELEASE_COMPOSITION_FAILURE:RUNTIME_BUILD_MISMATCH")
         if not resume:
@@ -350,7 +357,11 @@ def main():
         # Never restore weaker predecessor rules while successor UIs or traffic remain active.
         if focal_rules and (out/"e10-rules-created.json").is_file():
             restore_e10_pair(d["currentMaterialization"], image, build_id, checkpoint)
-            rules("rollback")
+            if runtime_exposure_possible:
+                checkpoint("e10-rules-retained", {"reason":"POSSIBLE_E10_RUNTIME_EXPOSURE",
+                    "targetRulesRetained":True,"predecessorPairRestored":True})
+            else:
+                rules("rollback")
         raise
 
 

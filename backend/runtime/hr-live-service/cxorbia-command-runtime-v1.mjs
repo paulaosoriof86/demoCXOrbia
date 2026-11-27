@@ -204,7 +204,7 @@ export function createHrSnapshotReconciler({
         if(priorEffects.unresolvedEffects||priorEffects.unverifiedEffects)return stop('HR_RECONCILIATION_UNCERTAIN_EFFECTS_REQUIRE_READBACK',{...priorEffects,status:'partial',committed:false});
       }
       let current;
-      try{current=await readSnapshot(scope);}
+      try{current=await readSnapshot(scope,principal,command.idempotencyKey);}
       catch(error){
         const failure=error?.hrSourceFailure;
         const sourceReadFailure=failure?.schemaVersion==='cxorbia.hr-source-read-failure.v1'&&failure.readOnly===true&&failure.code===error?.code&&
@@ -479,7 +479,7 @@ export function createProviderForCommand(command,overrides={}){
   }
   if(kind==='finance'){
     if(!financePolicy)return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_NOT_CONFIGURED'};
-    try{return {provider:createFinanceCommandProvider({auth,db,policy:financePolicy,hrSnapshot,hrRevision}),kind};}
+    try{return {provider:createFinanceCommandProvider({auth,db,policy:financePolicy,hrSnapshot,hrRevision,replayOnly:overrides.replayOnly===true}),kind};}
     catch(error){return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(kind==='commercial'){
@@ -493,7 +493,7 @@ export function createProviderForCommand(command,overrides={}){
     catch(error){return {provider:null,kind,error:'ACADEMY_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
-  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy,hrSnapshot,hrRevision,hrFieldJournalEnabled}),kind};}
+  try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy,hrSnapshot,hrRevision,hrFieldJournalEnabled,replayOnly:overrides.replayOnly===true}),kind};}
   catch(error){return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
 }
 

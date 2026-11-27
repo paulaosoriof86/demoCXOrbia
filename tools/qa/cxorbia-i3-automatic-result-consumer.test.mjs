@@ -107,8 +107,9 @@ for(const [name,mutate]of [
  ['finance obsolete request',o=>{o.ledger.findings['VRM-369'].currentExecutionScope={executionState:'REQUESTED_NOT_EXECUTED'};}]
 ])test('request guard rejects '+name,()=>{const {out}=project();mutate(out);assert.equal(validateProjectionRegistry(out).pass,false);});
 test('D08 fulfilled request cannot remain active, but a distinct new request is allowed',()=>{
- const {out}=project(),request=out.pointer.currentD08UiQaRequest;
- assert.ok(request);
+ const {out}=project(),receiptPath='docs/checkpoints/CXORBIA_I3_D08_UI_GOOGLE_PAIRED_6050930A_REQUEST_20261126.json';
+ const request={path:receiptPath,gitBlob:gitBlob(fs.readFileSync(path.join(root,receiptPath)))};
+ for(const o of [out.descriptor,out.pointer])o.currentD08UiQaRequest={...request};
  for(const o of [out.descriptor,out.pointer])o.currentFunctionalEvidenceIndex={results:[{decision:'PASS_D08_TYPED_PARTIAL_INCORPORATION',requestBinding:{path:request.path,gitBlob:request.gitBlob}}]};
  assert.equal(validateProjectionRegistry(out).pass,false);
  for(const o of [out.descriptor,out.pointer])o.currentD08UiQaRequest.gitBlob='9'.repeat(40);

@@ -993,6 +993,59 @@
       "readerActive": false,
       "protectedOrganizationReserve": false,
       "makeCreditsSpentByWork": 0
+    },
+    "hrPaidAdmissionSuccessor": {
+      "source": {
+        "path": "docs/checkpoints/CXORBIA_I3_HR_READER_5D681A6E_SOURCE_20261126.json",
+        "gitBlob": "87bf9a96e2aee24f0c3302b73a25c721bf892ba6",
+        "sha256": "3a14a7d7385594f35ba3f58aee39d727eaf3e06207634381e78346f46b776a84",
+        "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+        "sourceTree": "86adc4486fca8bda3a9f997f756142f8379912ef",
+        "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_5D681A6E_SCOPE_20261126.json",
+        "sourceTestsPass": 334,
+        "sourceTestsFail": 0,
+        "production": false
+      },
+      "image": {
+        "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D5CA6A76_20261126.json",
+        "gitBlob": "fb2db5791dc7522e85e468f3adeb9b80025ec75f",
+        "sha256": "1c620f55b21eae220fa59dbe9341f5c1b93f5b5bf90fed08b4aca136ae0c143c",
+        "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+        "sourceTree": "86adc4486fca8bda3a9f997f756142f8379912ef",
+        "imageBuildId": "d5ca6a76-3f50-484d-83f5-d494ac5377d1",
+        "digest": "sha256:662d8e6f53014b4d891223eb2532d075a9c230e87bcb133507e55693eddcf6e8"
+      },
+      "economicControl": {
+        "state": "HOLD",
+        "readerScenarioId": 10200465,
+        "source": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+        "launchTag": "cxorbia-e10-pair-5d681a6e3012-662d8e6f-a1",
+        "organizationId": 4090072,
+        "plan": "Core",
+        "organizationReserveEnforced": false,
+        "evidence": {
+          "path": "docs/checkpoints/CXORBIA_I3_HR_READER_COST_20261126.json",
+          "gitBlob": "a5904f867e156fe37e49aba26b821fbf1ddf8dbd",
+          "sha256": "36c33628689dec88561f5cb79588663c24f500b853bed1a6de13eb44a3f94a19"
+        }
+      },
+      "serving": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "nextAction": "I3: keep reader 10200465 inactive and preserve the serving 72874c08 pair. Reuse image d5ca6a76 of source 5d681a6e. Establish actual isolation of the 60-credit allowance and 100-credit recovery reserve from the other shared consumers before any funding request or paired mutation. Then use the existing paired job and exact E10 Firestore rules for served E10/D07/HR acceptance. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+      "emulatorEvidence": {
+        "environment": "Google Cloud Shell, official Firestore emulator v1.19.8, localhost only",
+        "actualMakeProvider": false,
+        "physicalFirestoreDevWrites": 0,
+        "attempted": 8,
+        "accepted": 5,
+        "ordinaryDenied": true,
+        "maxReserved": 60,
+        "reserve": 100,
+        "outcomeReadback": true,
+        "replayNewInvocations": 0,
+        "makeCredits": 0,
+        "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d5ca6a76-3f50-484d-83f5-d494ac5377d1/firestore-budget-emulator.json#1795755955514390",
+        "sha256": "afe469808eee2e01194e0c2ae49eadb9b16ee1921d212152668eb9ef88bfb820"
+      }
     }
   },
   "lastChromeConnection": {

@@ -7,8 +7,8 @@ const source=fs.readFileSync('backend/runtime/hr-live-service/server.mjs','utf8'
 const begin=source.indexOf('async function resolveHrAndProtectedPrincipal(');
 const end=source.indexOf('\nfunction runtimeMeta(',begin);
 assert.ok(begin>=0&&end>begin,'VRM-134 exact server owner helper required');
-const makeHelper=(hr,auth)=>new Function('buildSnapshot','verifiedProtectedPrincipal',
-  source.slice(begin,end)+'\nreturn resolveHrAndProtectedPrincipal;')(hr,auth);
+const makeHelper=(hr,auth)=>new Function('protectedOrStrictRead','verifiedProtectedPrincipal',
+  source.slice(begin,end)+'\nreturn resolveHrAndProtectedPrincipal;')((_req,scope,_principal,forceFresh,allowDurableRead)=>hr({scope,forceFresh,allowDurableRead}),auth);
 const snapshotRequiredBegin=source.indexOf('function protectedSnapshotRequired(');
 const snapshotRequiredEnd=source.indexOf('\nfunction runtimeMeta(',snapshotRequiredBegin);
 assert.ok(snapshotRequiredBegin>=0&&snapshotRequiredEnd>snapshotRequiredBegin,'VRM-134 protected metadata fast path required');
@@ -89,18 +89,19 @@ test('a second concurrent source change fails once without retrying or serving a
  third.resolve({revision:'third'});
 });
 
-test('VRM-134 coalesces independent protected HR and principal reads without returning before both',async()=>{
+test('VRM-134 waits for principal verification before starting a protected read',async()=>{
   const starts=[];let releaseHr,releaseAuth;
   const hrP=new Promise(r=>releaseHr=r),authP=new Promise(r=>releaseAuth=r);
   const helper=makeHelper(()=>{starts.push('hr');return hrP;},()=>{starts.push('auth');return authP;});
   const pending=helper({headers:{authorization:'Bearer synthetic'}},{tenantId:'tya',projectId:'cinepolis'},false,true);
-  assert.deepEqual(starts,['hr','auth'],'both independent operations start before first completion');
+  assert.deepEqual(starts,['auth'],'no reader before authentication');
   releaseHr({revision:'revision-safe'});
   let complete=false;pending.then(()=>{complete=true;});
   await Promise.resolve();await Promise.resolve();
   assert.equal(complete,false,'HR alone must not authorize a protected response');
   releaseAuth({uid:'exact-uid',role:'shopper'});
   const value=await pending;
+  assert.deepEqual(starts,['auth','hr']);
   assert.equal(value.current.revision,'revision-safe');
   assert.equal(value.principal.uid,'exact-uid');
   assert.equal(typeof value.timing.hrWaitMs,'number');

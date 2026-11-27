@@ -1067,3 +1067,15 @@ test('C04 failed Global read shows no monetary fallback and currency keys cannot
   const report=keys.reports[0];assert.equal(report.chart.perCurrency.__proto__.Ingreso,1.25);assert.equal(report.chart.perCurrency.constructor.Ingreso,1.25);
   assert.deepEqual(Array.from(report.chart.data,r=>r.value),[1.25,1.25]);
 });
+
+test('a paid-read replay cannot create a reconciliation when its original command receipt is missing',async()=>{
+  const db=baseDb(),options={auth:new Auth(),db,policy},cmd=command('finance.reconcile.visit');
+  const restricted=createFinanceCommandProvider({...options,replayOnly:true});
+  const before=JSON.stringify([...db.s]);
+  const denied=await restricted.execute('token',cmd);
+  assert.equal(denied.ok,false);assert.equal(JSON.stringify([...db.s]),before);
+  const live=await createFinanceCommandProvider(options).execute('token',cmd);
+  assert.equal(live.ok,true);
+  const replay=await restricted.execute('token',cmd);
+  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});

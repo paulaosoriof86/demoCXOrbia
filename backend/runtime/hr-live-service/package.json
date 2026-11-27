@@ -10,6 +10,7 @@
     "start": "node server.mjs"
   },
   "dependencies": {
+    "google-auth-library": "9.15.1",
     "firebase-admin": "13.4.0",
     "@modelcontextprotocol/sdk": "1.26.0",
     "postal-mime": "4.2.1"

@@ -1307,10 +1307,11 @@ async function runExcelCanonicalReadOnly(){
   if(native&&(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(native)||e.GITHUB_RUN_ID||e.GITHUB_ACTIONS))throw new Error('SOURCE_FAILURE:AMBIGUOUS_PAIRED_HR_EXECUTOR');
   const runId=native||e.GITHUB_RUN_ID;
   const result={schemaVersion:'cxorbia.i3.excel-canonical-readonly.v1',decision:'HOLD',sourceSha:e.FOCAL_SOURCE,sourceTree:e.FOCAL_TREE,runId,...(native?{executionProvider:'GOOGLE_CLOUD_BUILD',runAttempt:1}:{}),runtimeRevision:e.DEV_REVISION,runtimeDigest:e.RUNTIME_DIGEST,hostingVersion:e.HOSTING_VERSION_NAME,production:false,fullDomain:false,firestoreWrites:0,authWrites:0,hrWrites:0,commandPosts:0};
-  const started=Date.now(),get=async format=>{const r=await fetch(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format='+format+'&canonical='+runId+'-'+Date.now(),{headers:{'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});if(!r.ok)throw new Error('PROVIDER_FAILURE:EXCEL_CANONICAL_HTTP_'+r.status);return r.json();};
+  const {pairedHrHeaders}=await import('./cxorbia-i3-paired-hr-identity.mjs');
+  const started=Date.now(),get=async (format,probe)=>{const headers=await pairedHrHeaders(runId,probe);const r=await fetch(host+'/api/'+encodeURIComponent(tenantId)+'/'+encodeURIComponent(projectId)+'/hr-live?format='+format+'&canonical='+runId+'-'+Date.now(),{redirect:'error',headers:{...headers,'cache-control':'no-cache, no-store'},signal:AbortSignal.timeout(90000)});if(!r.ok)throw new Error('PROVIDER_FAILURE:EXCEL_CANONICAL_HTTP_'+r.status);return r.json();};
   try{
     const {validateExcelCanonicalHrObservation}=await import('./cxorbia-i3-terminal-hr-observation.mjs');
-    const before=await get('meta'),response=await get('json'),after=await get('meta');
+    const before=await get('meta','canonical-before'),response=await get('json','canonical-json'),after=await get('meta','canonical-after');
     Object.assign(result,validateExcelCanonicalHrObservation({before,response,after,tenantId,projectId}));
   }catch(error){result.error=String(error?.message||error);process.exitCode=2;}
   result.durationMs=Date.now()-started;fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

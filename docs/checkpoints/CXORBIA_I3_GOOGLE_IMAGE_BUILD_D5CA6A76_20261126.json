@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "cxorbia.i3.google-native-product-image.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "PASS_EXACT_IMAGE_BUILD_AND_REGISTRY_READBACK",
+  "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+  "sourceTree": "86adc4486fca8bda3a9f997f756142f8379912ef",
+  "project": "cxorbia-backend-dev",
+  "location": "global",
+  "serviceAccount": "projects/cxorbia-backend-dev/serviceAccounts/87461567267-compute@developer.gserviceaccount.com",
+  "sourceObject": {
+    "bucket": "cxorbia-backend-dev_cloudbuild",
+    "name": "cxorbia-i3-paired-dev/sources/5d681a6e3012d8651c39513a3fb2cc867ba2cd08/be279dc38cacee0452de0c387acdfa4df7a8261900bf85041e5676f3470e7cee.tgz",
+    "generation": "1795755223920775",
+    "sha256": "be279dc38cacee0452de0c387acdfa4df7a8261900bf85041e5676f3470e7cee",
+    "size": 5985842
+  },
+  "imageBuild": {
+    "id": "d5ca6a76-3f50-484d-83f5-d494ac5377d1",
+    "tag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-vrm154-156-5d681a6e3012-google-1795755223920775",
+    "digest": "sha256:662d8e6f53014b4d891223eb2532d075a9c230e87bcb133507e55693eddcf6e8"
+  },
+  "independentRegistryDigest": "sha256:662d8e6f53014b4d891223eb2532d075a9c230e87bcb133507e55693eddcf6e8",
+  "sourceByteReadback": {
+    "independentLocalGitArchiveSha256": "be279dc38cacee0452de0c387acdfa4df7a8261900bf85041e5676f3470e7cee",
+    "matches": true,
+    "nativeStorageSourceGenerationVerified": true
+  },
+  "nativeReceipt": {
+    "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d5ca6a76-3f50-484d-83f5-d494ac5377d1/image-readback.json#1795755373577401",
+    "sha256": "b769a06e360b343861791aae8c27e45a6b5ab5fb165f38de8549b652af7c0fc6"
+  },
+  "finishedAt": "2026-11-27T04:55:00.812185Z",
+  "installedOnCloudRun": false,
+  "rulesDeploys": 0,
+  "makeCreditsUsed": 0,
+  "production": false
+}

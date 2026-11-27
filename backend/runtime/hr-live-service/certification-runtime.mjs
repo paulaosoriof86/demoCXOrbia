@@ -122,7 +122,7 @@ async function validateExecutionPeriod(db,scope,periodId,readCurrentSnapshot){
     // Period metadata is optional. Operational periods come from the current
     // server HR snapshot, never from caller payload or an invented monthly doc.
     if(typeof readCurrentSnapshot!=='function')throw new Error('CERT_EXECUTION_PERIOD_REQUIRED');
-    const current=await readCurrentSnapshot(),snapshot=current?.snapshot;
+    const current=await readCurrentSnapshot(scope),snapshot=current?.snapshot;
     if(current?.origin!=='runtime_refresh'||!str(current?.revision)||snapshot?.sourceSafe!==true||
       snapshot.imported===true||!Array.isArray(snapshot.periods))
       throw new Error('CERT_EXECUTION_PERIOD_AUTHORITY_REQUIRED');

@@ -3,8 +3,8 @@ import {createHash} from 'node:crypto';
 export const E10 = Object.freeze({
   project: 'cxorbia-backend-dev',
   release: 'projects/cxorbia-backend-dev/releases/cloud.firestore',
-  source: 'ff9ac83ea7bbe4ad19e8faf7951ef8256be92671',
-  tree: 'dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a',
+  source: '5d681a6e3012d8651c39513a3fb2cc867ba2cd08',
+  tree: '86adc4486fca8bda3a9f997f756142f8379912ef',
   predecessor: '72874c08560addf5d0bc4a23573d65ce86481c95',
   prior: 'projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057',
   priorHash: '0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e',

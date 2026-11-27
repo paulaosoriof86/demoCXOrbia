@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-source-proof.v1",
+  "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+  "sourceTree": "86adc4486fca8bda3a9f997f756142f8379912ef",
+  "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "productParent": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+  "allowedProductFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/backend-corte4-empty-shell-guard.js",
+    "app/core/data-source.js",
+    "app/core/importador.js",
+    "app/core/router.js",
+    "app/modules/importador.js",
+    "app/modules/misvisitas.js",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-visit-import.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-admission.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/hr-live-service/server.mjs",
+    "firestore.rules"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs"
+  ],
+  "production": false,
+  "rulesAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+    "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
+    "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
+  },
+  "exactDelta": [
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-admission.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/hr-live-service/server.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_5D681A6E_SCOPE_20261126.json",
+  "scopeReceiptBlob": "389da13aaeff041e1adf652d44205121581edf03",
+  "sourceTestsPass": 334,
+  "sourceTestsFail": 0,
+  "sourceTests": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs"
+  ],
+  "sourceTestLogSha256": "ac1c4c76c386ef5939dcd445f4f8a3ce09c7b6a0779bfb0e0b97ac2392bd367f",
+  "findings": [
+    {
+      "priority": "P0_PROVEN",
+      "id": "HR_READER_COST_AND_PREAUTH",
+      "cause": "The served five-minute due request initiated 108 paid reader executions across 27 matching requests; protected selection in the prior product preceded the completed membership check."
+    }
+  ],
+  "costEvidence": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_READER_COST_20261126.json",
+    "gitBlob": "a5904f867e156fe37e49aba26b821fbf1ddf8dbd",
+    "sha256": "36c33628689dec88561f5cb79588663c24f500b853bed1a6de13eb44a3f94a19"
+  },
+  "chatDelta": {
+    "CXORBIA_CHAT_HR_QUARANTINE_FOCAL_20261126.patch": "4c6590a784cbd800a1c2db7d30d35d432eeabc9dfde91e7cc31ccd775c51f8bf",
+    "CXORBIA_CHAT_FOCAL_TESTS_COMPOSITION_HR_20261126.tap": "7a4f410aa1c21fe1e5627007f9a45d77cf766b6cad44c496e6bc4dde4f2a5b90",
+    "CXORBIA_CHAT_FOCAL_TESTS_COMPOSITION_HR_20261126.mjs": "3e67433ca817df8496d2a80f393a70c1bc5ae31ab901fcffe0215071cc60a687",
+    "CXORBIA_CHAT_DELTA_MATERIAL_COMPOSICION_COSTO_20261126.md": "6eb844aff2bf0e55f8772958c5b935ce906f3426c011b287ac024fae8bda7851"
+  },
+  "chatReferenceTests": 34,
+  "regressions": {
+    "rulesAndAdmissionOffline": 17,
+    "pairCompensationOffline": 4,
+    "strictHrClassifications": 11,
+    "consumerOffline": 96,
+    "independentA08DocumentsQuestionnaireOffline": 330
+  },
+  "physical": {
+    "nativeProductImage": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_D5CA6A76_20261126.json",
+      "gitBlob": "fb2db5791dc7522e85e468f3adeb9b80025ec75f",
+      "sha256": "1c620f55b21eae220fa59dbe9341f5c1b93f5b5bf90fed08b4aca136ae0c143c"
+    },
+    "newDevPair": false,
+    "newMakeExecutions": 0,
+    "rulesTransitions": 0,
+    "sharedPoolReserveEnforced": false
+  },
+  "remaining": [
+    "Current Make Core organization cannot enforce the verified 100-credit floor across other authorities. No purchase requested.",
+    "Do not activate the reader before verified provider protection and predecessor containment.",
+    "Served E10/D07/badge, native cold observation, propagation on real external change, E08 mailbox ACK and residual process obligations remain."
+  ],
+  "firestoreEmulator": {
+    "environment": "Google Cloud Shell, official Firestore emulator v1.19.8, localhost only",
+    "actualMakeProvider": false,
+    "physicalFirestoreDevWrites": 0,
+    "attempted": 8,
+    "accepted": 5,
+    "ordinaryDenied": true,
+    "maxReserved": 60,
+    "reserve": 100,
+    "outcomeReadback": true,
+    "replayNewInvocations": 0,
+    "makeCredits": 0,
+    "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d5ca6a76-3f50-484d-83f5-d494ac5377d1/firestore-budget-emulator.json#1795755955514390",
+    "sha256": "afe469808eee2e01194e0c2ae49eadb9b16ee1921d212152668eb9ef88bfb820"
+  }
+}

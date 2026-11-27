@@ -49,6 +49,7 @@ const sha=value=>crypto.createHash('sha256').update(typeof value==='string'?valu
 const clean=value=>Array.isArray(value)?value.map(clean):(value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,v])=>v!==undefined&&typeof v!=='function').map(([k,v])=>[k,clean(v)])):value);
 const versionOf=data=>data?.version??data?.updatedAt??data?.lastSyncedAt??'source-current';
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${command.idempotencyKey}`).slice(0,40);
+export {receiptId as operationalCommandReceiptId};
 const auditId=command=>sha(`${command.idempotencyKey}\0${command.commandType}\0${command.entityId||''}`).slice(0,40);
 
 export function validateProviderPolicy(policy={}){
@@ -752,7 +753,7 @@ export async function dispatchOperationalHrFields({db,command,result,writeField,
     ok:false,committed:false,providerAck:false,hrProviderAck:false,successUiAllowed:false,hrFieldOutcomes:outcomes};
 }
 
-async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled=false){
+async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled=false,replayOnly=false){
   const r=refs(db,command),digest=sha(clean(command));
   return db.runTransaction(async transaction=>{
     const buffered=[],mutated=new Map();
@@ -767,6 +768,7 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
     const clientContext=CLIENT_COLLABORATION[command.commandType]?await clientCollaborationContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     const prior=await tx.get(r.receipt);
     const syncContext=command.commandType==='visit.sync.confirm'?await syncReflectionContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
+    if(replayOnly&&(prior.data()?.status!=='committed'||prior.data().actorUid!==actor.uid))throw Error('OPS_REPLAY_RECEIPT_REQUIRED');
     if(prior.exists){
       const p=prior.data()||{};
       if(command.commandType==='resource.read.receipt'&&p.actorUid!==actor.uid)throw new Error('OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
@@ -1161,7 +1163,7 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
   });
 }
 
-export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision='',hrFieldJournalEnabled=false}={}){
+export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision='',hrFieldJournalEnabled=false,replayOnly=false}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('OPS_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.verifyIdToken||!db?.collection||!db?.runTransaction)throw new Error('OPS_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
@@ -1174,7 +1176,7 @@ export function createOperationalCommandProvider({auth,db,policy,hrSnapshot=null
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
       try{
         if(IMPORT_COMMANDS.includes(command.commandType))return await executeVisitImport(db,command,actor);
-        const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled);
+        const result=await transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrFieldJournalEnabled,replayOnly);
         return CLIENT_COLLABORATION[command.commandType]?await verifyClientCollaborationReadback(db,command,actor,result):result;
       }catch(error){return blocked(command,str(error?.message||error));}
     },
