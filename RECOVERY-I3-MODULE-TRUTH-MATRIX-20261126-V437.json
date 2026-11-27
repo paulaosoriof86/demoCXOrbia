@@ -108,7 +108,7 @@
     "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
     "authorityState": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "state": "HOLD_I3_GTHN_PENDING_DEV",
-    "message": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "message": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "production": false,
     "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_5D681A6E_SOURCE_20261126.json",
     "sourceProofReceiptBlob": "87bf9a96e2aee24f0c3302b73a25c721bf892ba6",
@@ -38436,7 +38436,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "nextExactAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -49177,8 +49177,8 @@
     "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT_AND_D08_27_OF_27",
     "production": false
   },
-  "updatedAt": "2026-11-27T05:13:09.707Z",
-  "exactNextAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "updatedAt": "2026-11-27T06:14:39.114Z",
+  "exactNextAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -52793,7 +52793,7 @@
       "phaseAComplete": false
     }
   },
-  "activeBlocker": "ENVIRONMENT_FAILURE_MAKE_SHARED_RESERVE_UNVERIFIED",
+  "activeBlocker": "RELEASE_COMPOSITION_FAILURE_HR_STRICT_COLD_BUDGET",
   "qaConsumerRepair20261115": {
     "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_QA_CONSUMER_COHERENCE_SCOPE_20261115.json",
     "status": "HOLD_REMOTE_EXECUTION_PENDING",
@@ -64135,7 +64135,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "exactPending": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
     "production": false
   },
@@ -64237,7 +64237,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "immediateAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -65192,9 +65192,16 @@
         "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
         "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
       },
-      "unusedCenticredits": "199400",
+      "unusedCenticredits": "199100",
       "sharedPoolReserveEnforced": false,
-      "purchaseRequested": false
+      "purchaseRequested": false,
+      "coldWindowReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_COLD_PREFLIGHT_20261127.json",
+        "gitBlob": "32331dbd6677e11315c41dd11fb97323a54be5d9",
+        "sha256": "4ad3a1a8e3f7351f68f99e9bede13f629b3af36c2fd6b3813b6c33c4fd749dff"
+      },
+      "minimumColdCredits": 66,
+      "authorizedPublicationCredits": 60
     }
   }
 }

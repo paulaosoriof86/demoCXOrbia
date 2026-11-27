@@ -4,14 +4,59 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import {E10,exactPendingRules,validateRulesSeal,validateMakeAdmission} from '../release/cxorbia-i3-e10-rules-contract.mjs';
+import {E10,exactPendingRules,validateRulesSeal,validateMakeAdmission,coldReaderMinimum} from '../release/cxorbia-i3-e10-rules-contract.mjs';
 import {pairedRules} from '../release/cxorbia-corte6-firestore-rules-deploy.mjs';
+import {resolveExcelOriginalProjectPlan} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
 
 const id='389c0a19-f9fd-4f7f-b0d2-4a5d16c9fe87';
 const newName='projects/cxorbia-backend-dev/rulesets/74a3c83c-f114-4074-8377-b8a0cd3cdb9f';
 const nativeGit=(...args)=>execFileSync('git',args,{encoding:'utf8'});
 const priorBytes=nativeGit('show',E10.predecessor+':firestore.rules');
 const targetBytes=nativeGit('show',E10.source+':firestore.rules');
+
+test('all five strict observations account for the first inventory of each workbook',()=>{
+  const options={projectId:'fixture',timeZone:'America/Guatemala',now:new Date('2026-11-27T06:01:39Z'),
+    countryPeriods:Array.from({length:2},()=>['fixture-2026-10','fixture-2026-11']),probeCount:5};
+  const plan=coldReaderMinimum(options);
+  assert.deepEqual(plan,{inventoryCalls:2,rangeCalls:4,firstProbeCalls:6,minimumCalls:22});
+  const debit=coldInstances=>(options.probeCount*plan.rangeCalls+coldInstances*plan.inventoryCalls)*3;
+  assert.deepEqual([1,2,3,4,5].map(debit),[66,72,78,84,90]);
+  assert.equal(coldReaderMinimum({...options,countryPeriods:[
+    ['fixture-2026-10','fixture-2026-11','fixture-2026-12'],['fixture-2026-10','fixture-2026-11']
+  ]}).minimumCalls,26);
+});
+
+test('the product resolver reproduces the paid call floor across one to five cold processes',async()=>{
+  const scope={tenantId:'test',projectId:'fixture'},countries=['GT','HN'],now=new Date('2026-11-27T06:01:39Z');
+  const source={mode:'external',providerType:'excel_online',readPolicy:'external_live',writePolicy:'external_read_only',periodDiscovery:'provider_auto',
+    countryBindings:countries.map(countryCode=>({countryCode,providerBindingId:'qa-'+countryCode,mappingRef:'qa-map'}))};
+  const records=new Map([['tenants/test/projects/fixture',{...scope,name:'QA window',countries,operationalSource:source}]]);
+  for(const binding of source.countryBindings){
+    const periods=['2026-10','2026-11'];
+    records.set('tenants/test/integrationSettings/'+binding.providerBindingId,{...scope,...binding,
+      enabled:true,hrWritesEnabled:false,providerType:source.providerType,readPolicy:source.readPolicy,writePolicy:source.writePolicy,
+      driveId:'drive',itemId:'book-'+binding.countryCode,periodSheets:periods.map(p=>({periodId:'fixture-'+p,
+        worksheetId:binding.countryCode+'-'+p,worksheetName:p}))});
+  }
+  const db={doc:key=>({get:async()=>({exists:records.has(key),data:()=>records.get(key),updateTime:{seconds:1,nanoseconds:0}})})};
+  const totals=[];
+  for(let cold=1;cold<=5;cold++){
+    let calls=0;
+    const processes=Array.from({length:cold},()=>new Map());
+    for(let phase=0;phase<5;phase++){
+      const plan=await resolveExcelOriginalProjectPlan({db,scope,now,inventoryCache:processes[phase%cold],
+        readInventory:async binding=>{
+          calls++;
+          const row=records.get('tenants/test/integrationSettings/'+binding.privateProvider.providerBindingId);
+          return {complete:true,inventoryHash:'b'.repeat(64),worksheets:row.periodSheets.map(s=>({id:s.worksheetId,name:s.worksheetName,visibility:'Visible'}))};
+        }});
+      assert.equal(plan.bindings.length,4);
+      for(const binding of plan.bindings)calls+=binding.privateProvider.worksheets.length;
+    }
+    totals.push(calls*3);
+  }
+  assert.deepEqual(totals,[66,72,78,84,90]);
+});
 
 function fixture(t) {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-e10-rules-'));
@@ -122,13 +167,26 @@ test('native preflight checks provider evidence and separately claims the actual
     tenantId:str('qa'),projectId:str('qa-proj'),bindingKey:str('a'.repeat(64)),spendingLimit:num(60),recoveryReserve:num(100),
     protectedAllocation:num(160),reserved:num(0),expiresAt:num(now+50000),maxCreditsPerCall:num(3),
     grants:{arrayValue:{values:kinds.map(kind=>({mapValue:{fields:{runId:str(launchTag),actor:str('google:'+uid),process:str(kind),
-      maxCalls:num(1),tickets:{arrayValue:{values:[str('c'.repeat(64))]}}}}}))}}};
+      maxCalls:num(kind==='seal-meta'?2:1),tickets:{arrayValue:{values:[str('c'.repeat(64)),str('d'.repeat(64))]}}}}}))}}};
+  const month=new Date(now).toISOString().slice(0,7);
+  const array=values=>({arrayValue:{values}}),map=fields=>({mapValue:{fields}});
+  let registry=['qa-proj-'+month];
   const opts={control,id,launchTag,serviceAccount:'projects/test/serviceAccounts/test',token:'synthetic',apply:true,
     cloud:(group)=>group==='storage'?bytes:uid,http:async(_t,verb,url,body)=>{
+      if(verb==='GET'&&url.includes('/documents/tenants/qa/projects/qa-proj?'))return {ok:true,payload:{fields:{
+        tenantId:str('qa'),countries:array([str('GT')]),operationalSource:map({providerType:str('excel_online'),
+          countryBindings:array([map({countryCode:str('GT'),providerBindingId:str('qa-binding')})])})}}};
+      if(verb==='GET'&&url.includes('/documents/tenants/qa/integrationSettings/qa-binding?'))return {ok:true,payload:{fields:{
+        tenantId:str('qa'),projectId:str('qa-proj'),countryCode:str('GT'),enabled:{booleanValue:true},
+        periodSheets:array(registry.map(p=>map({periodId:str(p)})))}}};
       if(verb==='GET')return {ok:true,payload:{updateTime:'now',fields:structuredClone(fields)}};
       assert.equal(verb,'PATCH');assert.equal(new URL(url).searchParams.get('currentDocument.updateTime'),'now');
       Object.assign(fields,body.fields);patches++;return {ok:true,payload:{}};
     }};
+  const originalRegistry=registry;
+  registry=Array(4).fill('qa-proj-'+month);
+  await assert.rejects(bindPaidReaderWindow(opts),/STRICT_COLD_BUDGET/);assert.equal(patches,0);
+  registry=originalRegistry;
   await bindPaidReaderWindow({...opts,apply:false});assert.equal(patches,0);
   await bindPaidReaderWindow(opts);await bindPaidReaderWindow(opts);assert.equal(patches,1);
   await assert.rejects(bindPaidReaderWindow({...opts,id:'another'}),/SHARED_RESERVE/);

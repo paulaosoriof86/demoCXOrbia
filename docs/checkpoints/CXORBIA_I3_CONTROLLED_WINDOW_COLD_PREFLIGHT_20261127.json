@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-dev.cold-window-preflight.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "finding": "HR_STRICT_COLD_BUDGET",
+  "controlHeadAtPreflight": "abc8fd79f13a695e87dcb6a81f2001f1dfc57bc3",
+  "observedAt": "2026-11-27T06:14:39.114Z",
+  "product": {
+    "source": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+    "tree": "86adc4486fca8bda3a9f997f756142f8379912ef",
+    "imageBuildId": "d5ca6a76-3f50-484d-83f5-d494ac5377d1",
+    "digest": "sha256:662d8e6f53014b4d891223eb2532d075a9c230e87bcb133507e55693eddcf6e8",
+    "imageStatus": "SUCCESS",
+    "matchingNativePairedRuns": 0
+  },
+  "served": {
+    "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "revision": "cxorbia-live-hr-dev-00395-lnc",
+    "trafficPercent": 100,
+    "hostingVersion": "e9a216661b686246",
+    "firestoreRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "rulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "predecessorTag": null,
+    "timeoutSeconds": 120,
+    "otherTaggedRevisions": [
+      "cxorbia-live-hr-dev-00329-xac",
+      "cxorbia-live-hr-dev-00330-fim"
+    ],
+    "taggedSource": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "otherTaggedRevisionsMakeToolboxBindings": 0
+  },
+  "make": {
+    "organizationId": 4090072,
+    "time": "2026-11-27T06:14:39.114Z",
+    "unusedCenticredits": "199100",
+    "purchasing": false,
+    "paused": false,
+    "readerScenario": 10200465,
+    "readerActive": false,
+    "team": 1975919,
+    "inventory": [
+      {
+        "id": 10199316,
+        "status": "active",
+        "incomplete": 0,
+        "next": null,
+        "trigger": "on-demand",
+        "lastFinishedRunObserved": "91a10464b3274aadaf6e0da1b377fc6e",
+        "latestStartUtc": "2026-11-26T14:45:04.385Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 10196136,
+        "status": "active",
+        "incomplete": 0,
+        "next": null,
+        "trigger": "on-demand",
+        "lastFinishedRunObserved": "fe5badde83b44fcf93c050e7276a3ebf",
+        "latestStartUtc": "2026-11-25T04:08:22.856Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 10221181,
+        "status": "active",
+        "incomplete": 0,
+        "next": null,
+        "trigger": "on-demand",
+        "lastFinishedRunObserved": "7a6c3c143f9a4e9b953b97f34bf04fd3",
+        "latestStartUtc": "2026-11-25T07:15:18.801Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 10198752,
+        "status": "active",
+        "incomplete": 0,
+        "next": "2026-11-27T18:03:02.323Z",
+        "trigger": "scheduled",
+        "lastFinishedRunObserved": "1457ca93b3244a63b17f0934ed2fbcc4",
+        "latestStartUtc": "2026-11-26T18:03:03.085Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 10198707,
+        "status": "active",
+        "incomplete": 0,
+        "next": "2026-11-27T17:57:16.501Z",
+        "trigger": "scheduled",
+        "lastFinishedRunObserved": "4ac941b1dd874b858cf2f74a5d845478",
+        "latestStartUtc": "2026-11-26T17:57:17.613Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 10196338,
+        "status": "active",
+        "incomplete": 0,
+        "next": "2026-11-27T06:33:16.096Z",
+        "trigger": "scheduled",
+        "lastFinishedRunObserved": "8aa23f7465f14005ae38d57c6e05ae2e",
+        "latestStartUtc": "2026-11-27T05:33:16.741Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 5843689,
+        "status": "active",
+        "incomplete": 0,
+        "next": "2026-11-27T16:00:00.000Z",
+        "trigger": "scheduled",
+        "lastFinishedRunObserved": "16ea578e93734d4780a7ef3354b2284b",
+        "latestStartUtc": "2026-11-26T16:00:17.433Z",
+        "pendingInLatestExecutions": 0
+      },
+      {
+        "id": 5837393,
+        "status": "active",
+        "incomplete": 0,
+        "next": "2026-11-27T16:00:00.000Z",
+        "trigger": "scheduled",
+        "lastFinishedRunObserved": "2fd002d0634b42bb890f0f5ba1aea795",
+        "latestStartUtc": "2026-11-26T16:00:09.195Z",
+        "pendingInLatestExecutions": 0
+      }
+    ],
+    "readerLastExecution": {
+      "id": 10200465,
+      "last": "2026-11-27T01:55:03.864Z",
+      "lastId": "33bdb2dfcd0a4ef08d25da06a1fafdf4",
+      "recentCount": 25,
+      "pending": 0,
+      "creditsSeen": [
+        3
+      ],
+      "lastDuration": 4259
+    },
+    "activeOnlyHasMore": false,
+    "organizationReserveEnforced": false,
+    "allowance": 60,
+    "reserve": 100,
+    "workPaidExecutions": 0,
+    "workCredits": 0,
+    "purchases": 0,
+    "suspensions": [],
+    "stageBudgetUpdates": 0,
+    "queuedCallerLimitation": "The observed history and incomplete-queue counters cover Make. New calls by external on-demand clients remain possible."
+  },
+  "nativeBinding": {
+    "source": "Firestore DEV, projected field GETs only",
+    "observedAt": "2026-11-27T06:01:39.799767Z",
+    "scope": "tya/cinepolis",
+    "periods": [
+      "2026-10",
+      "2026-11",
+      "2026-12"
+    ],
+    "registeredWorksheets": {
+      "GT": [
+        1,
+        1,
+        0
+      ],
+      "HN": [
+        1,
+        1,
+        0
+      ]
+    },
+    "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/d5ca6a76-3f50-484d-83f5-d494ac5377d1/cold-window-binding-7d786fea.json#1795759680168819",
+    "sha256": "7d786feafdd440f41b51ba4f7898e444383bab445a554232675a43ee5161079b"
+  },
+  "preflight": {
+    "probes": [
+      "seal-meta",
+      "seal-json",
+      "canonical-before",
+      "canonical-json",
+      "canonical-after"
+    ],
+    "freshRangeCallsPerProbe": 4,
+    "inventoryCallsPerColdProcess": 2,
+    "minimumCreditsPerCall": 3,
+    "minimumCalls": 22,
+    "minimumCredits": 66,
+    "maximumAuthorizedCredits": 60,
+    "creditEnvelopeForOneToFiveColdProcesses": [
+      66,
+      72,
+      78,
+      84,
+      90
+    ],
+    "scopeCondition": "Four registered worksheets. New sheets or changed scope require remeasurement. External data were not fetched and discovery of December is unverified.",
+    "verifiedAlternative": "Five distinct strict probes, up to one cold inventory per workbook per probe: up to 90 execution credits for this registry and 100 for recovery. Verified offline with the product resolver. The immutable current image caps spendingLimit at 60. A separately authorized narrowly scoped source successor would be required.",
+    "focalChange": "The existing release owner now reads the current scoped registry before claiming the DEV grant or mutating Firestore rules, rejecting an insufficient lower bound or under-sized per-phase grant."
+  },
+  "exclusivity": {
+    "onDemandExternal": [
+      10196136,
+      10221181
+    ],
+    "sameProjectQAWriter": 10199316,
+    "externalPausesApplied": false,
+    "restoreRequired": false,
+    "customerImpact": "No scenario was paused. A future hold of the two on-demand Insurance readers must retain source cursors, preserve retries upstream, and restore their prior active states. Re-read in-flight work and next schedules at opening.",
+    "runtimeCutover": "For a viable future window, keep the reader closed during cutover; verify successor digest, 100% traffic, old URL tags and drain in-flight predecessor work. Close admission and the reader before any rollback to the old revision."
+  },
+  "e08": {
+    "secretVersion": 1,
+    "secretState": "ENABLED",
+    "runtimeIdentityHasSecretLevelAccessor": true,
+    "mountedOn00395": false,
+    "secretPayloadRead": false,
+    "externalAck": false
+  },
+  "results": {
+    "priorSourcePass": 334,
+    "priorIndependentPass": 330,
+    "currentControlRulesConsumerPass": 116,
+    "testsFailed": 0,
+    "productPublications": 0,
+    "firestoreRulesTransitions": 0,
+    "newFunctionalDomainPass": false,
+    "newBuilds": 0,
+    "rollbackExecuted": false
+  },
+  "production": false,
+  "authorizationI4": false
+}

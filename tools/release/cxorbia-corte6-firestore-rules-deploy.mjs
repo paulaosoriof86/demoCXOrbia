@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
-import {E10, exactPendingRules, validateMakeAdmission} from './cxorbia-i3-e10-rules-contract.mjs';
+import {E10, exactPendingRules, validateMakeAdmission, coldReaderMinimum} from './cxorbia-i3-e10-rules-contract.mjs';
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
 const git = (...args) => execFileSync('git', args, {encoding:'utf8',maxBuffer:8*1024*1024});
 const demand = (ok, label) => { if (!ok) throw Error(label); };
@@ -193,6 +193,42 @@ export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,
     maximum+=n*integer(f.maxCreditsPerCall);return g.process?.stringValue;
   }).sort();
   demand(JSON.stringify(processes)===JSON.stringify(purposes)&&maximum<=60,fail);
+  // Check the real registry before binding the grant or changing any release.
+  // Only the relevant scope and period registry are requested from Firestore.
+  const idSafe=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(v);
+  demand(idSafe(control.tenantId)&&idSafe(control.projectId),fail);
+  const tenant='https://firestore.googleapis.com/v1/projects/'+E10.project+'/databases/(default)/documents/tenants/'+control.tenantId;
+  const readFields=async(path,mask)=>{
+    const q=new URLSearchParams(mask.map(field=>['mask.fieldPaths',field]));
+    const result=await http(token,'GET',tenant+'/'+path+'?'+q);
+    demand(result.ok&&result.payload?.fields,fail);return result.payload.fields;
+  };
+  const sourceFields=['operationalSource','routeSource'].flatMap(name=>
+    ['providerType','countryBindings','timeZone'].map(field=>name+'.'+field));
+  const project=await readFields('projects/'+control.projectId,[...sourceFields,'hrReadWindow.timeZone','timeZone','timezone','countries','tenantId','projectId']);
+  const source=(project.operationalSource||project.routeSource)?.mapValue?.fields;
+  const bindings=source?.countryBindings?.arrayValue?.values||[];
+  const countries=project.countries?.arrayValue?.values?.map(c=>c.stringValue);
+  const codes=bindings.map(v=>v.mapValue?.fields?.countryCode?.stringValue);
+  demand(project.tenantId?.stringValue===control.tenantId&&(!project.projectId||project.projectId.stringValue===control.projectId)&&
+    source?.providerType?.stringValue==='excel_online'&&Array.isArray(countries)&&countries.length>0&&
+    new Set(countries).size===countries.length&&countries.length===codes.length&&new Set(codes).size===codes.length&&codes.every(c=>countries.includes(c)),fail);
+  const countryPeriods=[];
+  for(const entry of bindings){
+    const binding=entry.mapValue.fields,ref=binding.providerBindingId?.stringValue;
+    demand(idSafe(ref),fail);
+    const row=await readFields('integrationSettings/'+ref,['projectId','tenantId','countryCode','periodSheets','enabled']);
+    demand(row.enabled?.booleanValue===true&&row.projectId?.stringValue===control.projectId&&
+      row.tenantId?.stringValue===control.tenantId&&row.countryCode?.stringValue===binding.countryCode.stringValue,fail);
+    countryPeriods.push(row.periodSheets?.arrayValue?.values?.map(v=>v.mapValue?.fields?.periodId?.stringValue));
+  }
+  const timeZone=project.hrReadWindow?.mapValue?.fields?.timeZone?.stringValue||source.timeZone?.stringValue||
+    project.timeZone?.stringValue||project.timezone?.stringValue||'UTC';
+  const min=coldReaderMinimum({projectId:control.projectId,timeZone,now:new Date(now),countryPeriods,probeCount:purposes.length});
+  demand(min.minimumCalls*integer(f.maxCreditsPerCall)<=integer(f.spendingLimit)&&plans.every(plan=>{
+    const g=plan.mapValue.fields;
+    return integer(g.maxCalls)>=(g.process.stringValue==='seal-meta'?min.firstProbeCalls:min.rangeCalls);
+  }),'RELEASE_COMPOSITION_FAILURE:HR_STRICT_COLD_BUDGET');
   if(!apply||bound)return;
   for(const v of plans)v.mapValue.fields.runId={stringValue:id};
   const q=new URLSearchParams({'currentDocument.updateTime':doc.updateTime});

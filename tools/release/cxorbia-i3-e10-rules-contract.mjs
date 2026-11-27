@@ -1,4 +1,24 @@
 import {createHash} from 'node:crypto';
+import {selectHrPeriodWindow} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
+
+// A lower bound only. Discovery of additional worksheets and later cold
+// instances can increase the number of paid calls. Never authorize from this
+// calculation alone. The run-bound Firestore grant remains authoritative.
+export function coldReaderMinimum({projectId,timeZone,now,countryPeriods,probeCount}) {
+  if (!countryPeriods.length || !Number.isSafeInteger(probeCount) || probeCount < 1)
+    throw Error('MAPPING_FAILURE:HR_READER_WINDOW_PLAN');
+  const window = selectHrPeriodWindow({projectId,timeZone,now,periodIds:[]});
+  const months = [window.previousPeriodId,window.currentPeriodId,window.nextPeriodId];
+  let rangeCalls = 0, inventoryCalls = 0;
+  for (const periods of countryPeriods) {
+    if (!Array.isArray(periods) || periods.length === 0 || periods.some(p=>typeof p !== 'string' || !p.startsWith(projectId+'-')))
+      throw Error('MAPPING_FAILURE:HR_READER_WINDOW_REGISTRY');
+    rangeCalls += periods.filter(p=>months.includes(p)).length;
+    if (months.some(p=>!periods.includes(p))) inventoryCalls++;
+  }
+  return {rangeCalls,inventoryCalls,firstProbeCalls:rangeCalls+inventoryCalls,
+    minimumCalls:probeCount*rangeCalls+inventoryCalls};
+}
 
 export const E10 = Object.freeze({
   project: 'cxorbia-backend-dev',

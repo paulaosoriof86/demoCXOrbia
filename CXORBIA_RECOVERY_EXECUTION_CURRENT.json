@@ -389,7 +389,7 @@
         "differentDenominator": true,
         "evidence": {
           "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V437.json",
-          "gitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c",
+          "gitBlob": "a08ddc9c96497c128710e24575bcc324ea2baec6",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -859,7 +859,7 @@
   },
   "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
   "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
-  "asOf": "2026-11-27T05:13:09.707Z",
+  "asOf": "2026-11-27T06:14:39.114Z",
   "iteration": "I3",
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
@@ -1138,7 +1138,7 @@
         "productionChanged": false
       }
     },
-    "immediateAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "immediateAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -1289,7 +1289,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "immediateAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -1943,7 +1943,7 @@
     "evolution": 6
   },
   "historicalNextExactActionPreS1": "S1 read-only reason/alias cohort classification, implement legacy-compatible deterministic normalizer in provider owner and bridge, run bounded GT/HN/history/Auth fixtures. Existing DEV serial materialization only after source QA; verify Stiven/Julissa Shopper role post-fix.",
-  "nextExactAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "nextExactAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -2746,7 +2746,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V437.json",
-    "gitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c"
+    "gitBlob": "a08ddc9c96497c128710e24575bcc324ea2baec6"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4813,7 +4813,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V437.json",
-    "matrixBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c",
+    "matrixBlob": "a08ddc9c96497c128710e24575bcc324ea2baec6",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -6778,11 +6778,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V437.json",
-      "gitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c"
+      "gitBlob": "a08ddc9c96497c128710e24575bcc324ea2baec6"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V764_2026-11-26.json",
-      "gitBlob": "d7b7160743f796a7bafa38e484bc66d0444f96e5"
+      "gitBlob": "ff0ad9a348005a10d81c7c4ad4ab1dbad478c2ea"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7171,7 +7171,7 @@
     "i4Authorized": false
   },
   "previousExactNextActionBeforeRun2146": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+  "exactNextAction": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
   "previousExecutionReceiptBeforeRun1983Seal": {
     "path": "CXORBIA_I3_RUN1852_POST_DEPLOY_CONSISTENCY_SEAL_2026-10-24.json",
     "kind": "RUN1852_SOURCE_F283_DEV_PASS_ADMIN_THREE_VISIT_UI_PASS_DURABLE_HR_OPERATIONAL_PARITY_P0_OPEN",
@@ -7261,7 +7261,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3: latest verified balance 1,994 Make credits. Keep reader 10200465 inactive and preserve serving 72874c08. The shared Core pool has other active on-demand consumers. Verify effective provider protection of the 100-credit reserve before opening the 60-credit window or mutating rules, Cloud Run or Hosting. No purchase request. Reuse the verified image d5ca6a76 of source 5d681a6e and existing paired job. Gate20, Gate21 and I3 remain HOLD. Production DO_NOT_TOUCH; I4 requires exact-artifact authorization.",
+    "exactPending": "I3 HOLD. The 5d681a6e job requires at least 66 Make credits for five strict probes on the registered GT/HN rolling window. Its 60-credit image cannot complete a cold run. Preserve d5ca6a76 and reader 10200465 inactive. Before considering any cross-authority pause or DEV transition, resolve the precise five-probe allowance with Dirección. Preserve the 100-credit recovery reserve, all five independent reads and the focal rules authority. No credit purchase. I4 remains unauthorized.",
     "sourceSha": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
     "production": false
   },
@@ -7664,7 +7664,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V764_2026-11-26.json",
-  "findingsLedgerExpectedGitBlob": "d7b7160743f796a7bafa38e484bc66d0444f96e5",
+  "findingsLedgerExpectedGitBlob": "ff0ad9a348005a10d81c7c4ad4ab1dbad478c2ea",
   "nextFindingId": "VRM-380",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -9871,7 +9871,7 @@
     "sourceTestsFail": 0,
     "production": false
   },
-  "updatedAt": "2026-11-27T05:13:09.707Z",
+  "updatedAt": "2026-11-27T06:14:39.114Z",
   "previousCanonicalControlBeforeVrm313": {
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
@@ -11259,7 +11259,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "0ec363ad6223871bc937438ad07ff76d30febc9c",
+  "moduleTruthExpectedGitBlob": "a08ddc9c96497c128710e24575bcc324ea2baec6",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -13348,7 +13348,7 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "ENVIRONMENT_FAILURE_MAKE_SHARED_RESERVE_UNVERIFIED",
+  "activeBlocker": "RELEASE_COMPOSITION_FAILURE_HR_STRICT_COLD_BUDGET",
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
@@ -29302,9 +29302,16 @@
         "gitBlob": "0f3619541714e5de94c511ce7b5a285bf1933c82",
         "sha256": "fb76974bda185a73a18c2512b725c0d9e61d7d14d5508d0cd2bc31bf20ad5f33"
       },
-      "unusedCenticredits": "199400",
+      "unusedCenticredits": "199100",
       "sharedPoolReserveEnforced": false,
-      "purchaseRequested": false
+      "purchaseRequested": false,
+      "coldWindowReadback": {
+        "path": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_COLD_PREFLIGHT_20261127.json",
+        "gitBlob": "32331dbd6677e11315c41dd11fb97323a54be5d9",
+        "sha256": "4ad3a1a8e3f7351f68f99e9bede13f629b3af36c2fd6b3813b6c33c4fd749dff"
+      },
+      "minimumColdCredits": 66,
+      "authorizedPublicationCredits": 60
     }
   }
 }
