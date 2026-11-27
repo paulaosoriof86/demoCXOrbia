@@ -1,0 +1,176 @@
+{
+  "intakeExamples": [
+    {
+      "name": "QA Programa Interior",
+      "client": "QA Programa Interior",
+      "countries": [
+        "PA"
+      ],
+      "currency": {
+        "PA": "PAB"
+      },
+      "modelo": "directo",
+      "honorario": {
+        "PA": 13
+      },
+      "honRecibe": {
+        "PA": 29
+      },
+      "cuestionario": {
+        "modo": "interna",
+        "url": "",
+        "visitLinkField": "questionnaireLink",
+        "label": "Cuestionario en plataforma"
+      },
+      "operationalSource": {
+        "mode": "internal",
+        "providerType": "internal_firestore",
+        "authority": "platform",
+        "readPolicy": "internal_live",
+        "writePolicy": "platform_only",
+        "periodDiscovery": "internal_native",
+        "visitLinkField": "questionnaireLink",
+        "label": "Hoja creada en plataforma",
+        "mappingRef": "internal-native-mapping"
+      },
+      "frecuencia": "mensual",
+      "periodoMedicion": "igual",
+      "ventanas": [
+        "Primera",
+        "Segunda"
+      ],
+      "scenarios": [
+        "Control",
+        "Seguimiento"
+      ],
+      "pago": {
+        "diasPago": 21,
+        "logica": "Pago ~21 días tras submitir",
+        "moneda": "local"
+      }
+    },
+    {
+      "name": "QA Programa Exterior",
+      "client": "QA Programa Exterior",
+      "countries": [
+        "CR",
+        "PA"
+      ],
+      "currency": {
+        "CR": "CRC",
+        "PA": "PAB"
+      },
+      "modelo": "delegado",
+      "honorario": {
+        "CR": 13,
+        "PA": 14
+      },
+      "honRecibe": {
+        "CR": 29,
+        "PA": 30
+      },
+      "cuestionario": {
+        "modo": "externo_visita",
+        "url": "",
+        "visitLinkField": "questionnaireLink",
+        "label": "Link por visita"
+      },
+      "operationalSource": {
+        "mode": "external",
+        "providerType": "excel_online",
+        "authority": "external_source",
+        "readPolicy": "external_live",
+        "writePolicy": "external_read_only",
+        "periodDiscovery": "provider_auto",
+        "visitLinkField": "questionnaireLink",
+        "label": "Excel Online / OneDrive (por país)",
+        "countryBindings": [
+          {
+            "countryCode": "CR",
+            "providerBindingId": "qa-book-CR",
+            "mappingRef": "qa-map-CR"
+          },
+          {
+            "countryCode": "PA",
+            "providerBindingId": "qa-book-PA",
+            "mappingRef": "qa-map-PA"
+          }
+        ]
+      },
+      "frecuencia": "mensual",
+      "periodoMedicion": "igual",
+      "ventanas": [
+        "Primera",
+        "Segunda"
+      ],
+      "scenarios": [
+        "Control",
+        "Seguimiento"
+      ],
+      "pago": {
+        "diasPago": 21,
+        "logica": "Pago ~21 días tras submitir",
+        "moneda": "local"
+      }
+    }
+  ],
+  "financialIsolation": {
+    "syntheticAccounts": 2,
+    "currencies": [
+      "PAB",
+      "CRC"
+    ],
+    "foreignProjectDebitRejected": true,
+    "wrongCurrencyRejected": true,
+    "initialBalance": 12,
+    "ownBalanceAfter": 10,
+    "otherBalanceAfter": 12,
+    "replayWrites": 0,
+    "bankOperations": 0
+  },
+  "scope": "ISOLATED_WIZARD_FIELDS_REAL_COMMAND_BOUNDARY_PROJECT_PROVIDER_SQLITE_DOUBLE",
+  "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+  "instrument": "Node VM, HTML field fixture (lxml), SQLite",
+  "wizardSubmissions": 2,
+  "isolatedWizardContexts": 2,
+  "projects": [
+    "prj-0e1102c1ad73607ad39f",
+    "prj-6659bbc191c1bd06869f"
+  ],
+  "distinctPeriodsWithSameLabel": [
+    "prj-0e1102c1ad73607ad39f-period-0df92140743b1317",
+    "prj-6659bbc191c1bd06869f-period-e9719d362a342e91"
+  ],
+  "independentReadConnection": true,
+  "replayWrites": 0,
+  "deniedShopperCreates": 2,
+  "deniedTenantCreates": 2,
+  "externalRequests": 0,
+  "makeCredits": 0,
+  "physicalDevAcceptance": false,
+  "cleanupVerified": true,
+  "command": "node tools/qa/cxorbia-i3-project-intake-isolation.cjs 7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+  "testSha256": "766c820a9d4158d35e8ced2e38eac3d8ea1d2ec92471d5f792903e1f0b313445",
+  "ownerBlobs": {
+    "app/modules/proyecto-wizard.js": {
+      "sealedPredecessor": "268824309cfe1d99a6ecb6224bb7031a01bb8c0b",
+      "successor": "268824309cfe1d99a6ecb6224bb7031a01bb8c0b"
+    },
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js": {
+      "sealedPredecessor": "c51ef80db9d341465faeaf00ab4c65e15ddad1fb",
+      "successor": "c51ef80db9d341465faeaf00ab4c65e15ddad1fb"
+    },
+    "backend/runtime/cxorbia-project-command-provider-v1.mjs": {
+      "sealedPredecessor": "cecf7b01c9be7d3bd9b4af339dc46ac25fe87af2",
+      "successor": "cecf7b01c9be7d3bd9b4af339dc46ac25fe87af2"
+    },
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs": {
+      "sealedPredecessor": "961fe3d605a37c69c9d949bb2520f8669a81a305",
+      "successor": "0c0f4831be972c7fb1caf94cd9b4d3aa7c6f2204"
+    }
+  },
+  "limits": [
+    "Synthetic principal and local SQLite document API. Field events are simulated.",
+    "Commercial account link, native Firestore ACL/HTTP, served UI, external workbook access, Shopper and Client visibility remain subject to their respective receipts."
+  ]
+}

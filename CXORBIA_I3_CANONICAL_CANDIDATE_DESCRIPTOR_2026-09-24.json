@@ -225,7 +225,7 @@
   "productTreeAuthority": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
   "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-  "findingsLedgerExpectedGitBlob": "8c55b84a253c21a6959410102ac6cb2f2cb039cb",
+  "findingsLedgerExpectedGitBlob": "ac2e2c914d933af9f996f2fc06f048b7fdd9f0eb",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -363,7 +363,7 @@
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
   "historicalExactNextActionPreS1": "NEW REAL CHROME SHOPPER ROLE E2E 2026-11-04: Stiven and Julissa login PASS. Julissa profile 10 visits/9 realized/9 submitted/7 paid, Nov active 1, Oct benefits Q205, cert valid. Stiven Admin canonical 10 vs Shopper profile/Mis Visitas/Mis Beneficios 0 reproducible crossmodule P0 MAPPING_FAILURE suspected; exact Auth→canonical alias→HR visit owner not yet proven. Julissa future Nov assigned appears in Oct history. Protected PDF read fails on isolated firebaseapp.com origin; same-origin web.app reproof required. Receipt docs/checkpoints/CXORBIA_I3_REAL_SHOPPER_STIVEN_JULISSA_ROLE_READBACK_20261104.json. Keep I3 HOLD, 5/21 MATCH, Gate20/21 HOLD, no I4 authorization, do not remerge or reset credentials. Next: prove Stiven exact crosswalk and repair one P0 owner with same-artifact QA then recheck canonical 21 module matrix. PRIOR COMPLETED CONTEXT PRESERVED: I3 HOLD 5/21 MATCH. VRM-303 single source bc685392 canonical CI run 41819202716 PASS, DEV Hosting run 41819336084 exact 11 files PASS version aed73e33f55ce916 (previous b163f88f064004e9), live Admin 94 active tile = 94 modal; visible 211=94+117, review 22, technical identity cases/aliases 275 (not 275 people/fusions); Stiven merge provider ACK, canonical profile 10 visits (9 realized, 1 ongoing). Shopper role post-merge login and Julissa pattern login still PENDING; do not reset or remerge without demonstrated AUTH_FAILURE. OCT #728 agendada, #727 realizada sin cuestionario, #733 fuera de rango, no HR-managed edits. NOV 44 visits, 26 assigned, 18 unassigned. Approved fusion cohort historical 32/83 verified, 51/83 pending; Stiven separately approved ACK, no automatic cohort recount claim. G03 historical DEV Hosting 231186c337bcd0ba verified prior only; current DEV aed73e33f55ce916, same Cloud Run revision. Independent HR live revision parity and finanzas provider/payment ACK HOLD. Continue exact role Admin/Shopper/Cliente E2E, current HR revision readback and remaining modules; Gate20/21 HOLD, I4 not authorized, production DO_NOT_TOUCH. ACTUALIZACIÓN VRM-304 04/11: source focal adjudicated-supersession 64/64 PASS, composicion 616 visitas x3 PASS; DEV y HR live mismo revision, Shopper Stiven/Julissa y beneficios/documento aún pendientes. I3 HOLD 5/21, Gate20/21 HOLD; G03 y finanzas siguen en plan congelado.",
-  "exactNextAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+  "exactNextAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3041,7 +3041,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4f3a2525172cdefff4eeb00476a04146cba01242",
+  "moduleTruthExpectedGitBlob": "856448921a969c7ce84abdc736c6e8c81ffc8e46",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -15525,7 +15525,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+    "exactPending": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
     "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
     "production": false
   },
@@ -17284,7 +17284,7 @@
     "qaContinuityGuardState": "V23_INITIAL_CONTROL_FAIL_CORRECTION_PENDING"
   },
   "priorStatusBeforeRootRun2222": "HOLD_VRM309_DEV_MATERIALIZED_ROLE_E2E_PENDING",
-  "nextExactAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+  "nextExactAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
   "i3Nov06SourceOnlyFocal": {
     "sourceSha": "a290acf84fe71891747e4dae8b62cd952e094c71",
     "predecessorDevSourceSha": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
@@ -18790,11 +18790,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-      "gitBlob": "4f3a2525172cdefff4eeb00476a04146cba01242"
+      "gitBlob": "856448921a969c7ce84abdc736c6e8c81ffc8e46"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-      "gitBlob": "8c55b84a253c21a6959410102ac6cb2f2cb039cb"
+      "gitBlob": "ac2e2c914d933af9f996f2fc06f048b7fdd9f0eb"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -36457,7 +36457,7 @@
         "productionChanged": false
       }
     },
-    "immediateAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+    "immediateAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
     "latestModuleCertificationReceipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
       "gitBlob": "710bfcc03e10070cd365d90ed52ff71f26bc72ff",
@@ -36608,7 +36608,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+    "immediateAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -38025,5 +38025,78 @@
     "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
     "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
     "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
+  },
+  "currentOriginalContractExecutionView": {
+    "view": {
+      "path": "docs/checkpoints/CXORBIA_I3_52_CONTRACT_EXECUTION_VIEW_20261127.md",
+      "gitBlob": "664aa539f006078f597b7d7413c9bb7779f64eb7",
+      "sha256": "acfb9c5fa44edf577d078fdaacaceec362a2c31cdeda42c73b06652eb14e4a6d"
+    },
+    "syntheticProjectReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_PROJECT_INTAKE_ISOLATION_20261127.json",
+      "gitBlob": "6b66f7c4375dd54e203dfee28d5b4b3bb2689452",
+      "sha256": "c06936c99921c51a30b90534051cd041ffd35de01b54cf760f8f08e51caa9fdf"
+    },
+    "originalTaskCount": 52,
+    "historicalReceiptBlobsVerified": 65,
+    "matrixVersion": "V438",
+    "ledgerVersion": "V765",
+    "currentTerminalDocumentaryTaskIds": [
+      "D01"
+    ],
+    "newFullTaskAcceptances": 0,
+    "newDomainMatches": 0,
+    "classification": "SCOPED_OFFLINE_QA_AND_HISTORICAL_EVIDENCE_ADJUDICATION",
+    "productSource": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "productSourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "I3": "HOLD",
+    "production": false,
+    "a08ScopedStorageEvidence": {
+      "receipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_D07_PDF_LIFECYCLE_AND_SCOPED_SHOPPER_READS_20261126.json",
+        "gitBlob": "eca9c0b685d4100746231dbfea32bde001d3b4a8",
+        "sha256": "d670b9b330924d278f629ee6ac5dda392853ad31564cf1306b388c6f164d3b6f"
+      },
+      "runId": "1795720617290882",
+      "scope": "One isolated synthetic PDF. Same tenant shopper with or without membership in the document project, and anonymous. Actual Firebase password sessions and authenticated Storage media transport.",
+      "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+      "storageRulesBlobInBothSources": "790798b6b170a1fd2ee882fdedea7b77e761da84",
+      "assignedShopper": {
+        "http": 200,
+        "exactPdf": true
+      },
+      "shopperOutsideProject": {
+        "http": 403,
+        "pdfBytesDelivered": false
+      },
+      "anonymous": {
+        "http": 403,
+        "pdfBytesDelivered": false
+      },
+      "fullA08": false
+    },
+    "localFinanceScope": {
+      "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+      "tasks": [
+        "C04",
+        "C05",
+        "E06"
+      ],
+      "fixtureOnly": true,
+      "readback": {
+        "syntheticAccounts": 2,
+        "currencies": [
+          "PAB",
+          "CRC"
+        ],
+        "foreignProjectDebitRejected": true,
+        "wrongCurrencyRejected": true,
+        "initialBalance": 12,
+        "ownBalanceAfter": 10,
+        "otherBalanceAfter": 12,
+        "replayWrites": 0,
+        "bankOperations": 0
+      }
+    }
   }
 }

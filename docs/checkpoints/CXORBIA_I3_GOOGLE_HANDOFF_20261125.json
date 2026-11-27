@@ -1109,6 +1109,125 @@
       "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLERS_WINDOW_READBACK_20261127.json",
       "gitBlob": "e65fb1ea2ca8a919c173e3701915469b4a895c90",
       "sha256": "3d2052e73cf5e7c475f6aad76c35d9d184f70842377d320acc76dec4e54e9a3b"
+    },
+    "originalContractsAndSyntheticIntake": {
+      "view": {
+        "path": "docs/checkpoints/CXORBIA_I3_52_CONTRACT_EXECUTION_VIEW_20261127.md",
+        "gitBlob": "664aa539f006078f597b7d7413c9bb7779f64eb7",
+        "sha256": "acfb9c5fa44edf577d078fdaacaceec362a2c31cdeda42c73b06652eb14e4a6d"
+      },
+      "syntheticProjectReceipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_PROJECT_INTAKE_ISOLATION_20261127.json",
+        "gitBlob": "6b66f7c4375dd54e203dfee28d5b4b3bb2689452",
+        "sha256": "c06936c99921c51a30b90534051cd041ffd35de01b54cf760f8f08e51caa9fdf"
+      },
+      "originalTaskCount": 52,
+      "historicalReceiptBlobsVerified": 65,
+      "matrixVersion": "V438",
+      "ledgerVersion": "V765",
+      "currentTerminalDocumentaryTaskIds": [
+        "D01"
+      ],
+      "newFullTaskAcceptances": 0,
+      "newDomainMatches": 0,
+      "classification": "SCOPED_OFFLINE_QA_AND_HISTORICAL_EVIDENCE_ADJUDICATION",
+      "productSource": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+      "productSourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+      "I3": "HOLD",
+      "production": false,
+      "a08ScopedStorageEvidence": {
+        "receipt": {
+          "path": "docs/checkpoints/CXORBIA_I3_D07_PDF_LIFECYCLE_AND_SCOPED_SHOPPER_READS_20261126.json",
+          "gitBlob": "eca9c0b685d4100746231dbfea32bde001d3b4a8",
+          "sha256": "d670b9b330924d278f629ee6ac5dda392853ad31564cf1306b388c6f164d3b6f"
+        },
+        "runId": "1795720617290882",
+        "scope": "One isolated synthetic PDF. Same tenant shopper with or without membership in the document project, and anonymous. Actual Firebase password sessions and authenticated Storage media transport.",
+        "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+        "storageRulesBlobInBothSources": "790798b6b170a1fd2ee882fdedea7b77e761da84",
+        "assignedShopper": {
+          "http": 200,
+          "exactPdf": true
+        },
+        "shopperOutsideProject": {
+          "http": 403,
+          "pdfBytesDelivered": false
+        },
+        "anonymous": {
+          "http": 403,
+          "pdfBytesDelivered": false
+        },
+        "fullA08": false
+      },
+      "localFinanceScope": {
+        "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+        "tasks": [
+          "C04",
+          "C05",
+          "E06"
+        ],
+        "fixtureOnly": true,
+        "readback": {
+          "syntheticAccounts": 2,
+          "currencies": [
+            "PAB",
+            "CRC"
+          ],
+          "foreignProjectDebitRejected": true,
+          "wrongCurrencyRejected": true,
+          "initialBalance": 12,
+          "ownBalanceAfter": 10,
+          "otherBalanceAfter": 12,
+          "replayWrites": 0,
+          "bankOperations": 0
+        }
+      }
+    },
+    "windowObservationForContractCut": {
+      "observedAtUtc": "2026-11-27T17:53:08+00:00",
+      "sharedCredits": 1951,
+      "organizationActive": true,
+      "automaticPurchasing": false,
+      "hrReaderActive": false,
+      "qaWriterActive": true,
+      "enabledScenarioCount": 8,
+      "incompleteRunsAcrossEnabledScenarios": 0,
+      "readSinceUtc": "2026-11-27T17:35:00Z",
+      "cxReaderRuns": 0,
+      "cxWriterRuns": 0,
+      "pairedDispatchesByWork": 0,
+      "makeCreditsByWork": 0,
+      "reserveDebitsByWork": 0,
+      "scenariosPausedByWork": [],
+      "reservationPhysicallyIsolated": false,
+      "latestGlobalCloudBuildObserved": "abda5252-5455-44d3-b21d-67d76126e1e3",
+      "latestBuildConclusion": "SUCCESS",
+      "recoveryWindowDecision": "HOLD_ABSOLUTE_RESERVE_NO_EQUIVALENT_ADMITTED",
+      "economicAlternative": "One observed-risk window with other consumers active requires a distinct economic decision. Verify independent reader closure on interruption, exact four-sheet registry and all ordinary admissions closed before enabling. Recalculate shared headroom, scheduled work and subscribed guardrails before each stage. Detecting pool use is not a hard reserve. On unexpected debit, stop probes, fence reader, retain the protected successor until closure is independently read; roll back using native journal, retaining protective E10 rules after possible exposure.",
+      "cloudRunObserved": {
+        "asOfUtc": "2026-11-27T17:57:11+00:00",
+        "service": "cxorbia-live-hr-dev",
+        "region": "us-central1",
+        "revision": "cxorbia-live-hr-dev-00395-lnc",
+        "trafficPercent": 100,
+        "latestRevision": true,
+        "status": "HEALTHY",
+        "source": "Authenticated Google Cloud Run revision history"
+      },
+      "scheduledConsumers": {
+        "financeDev": "2026-11-27T17:57:16.501Z",
+        "financeProd": "2026-11-27T18:03:02.323Z",
+        "financeHttps": "2026-11-27T18:33:16.096Z",
+        "assignmentsGTandHN": "2026-11-28T16:00:00.000Z",
+        "illustrativeWindowUTC": [
+          "2026-11-27T18:05:00Z",
+          "2026-11-27T18:20:00Z"
+        ],
+        "startsDueInIllustration": 0,
+        "carryInAndNewStartsRequireFreshCheck": true,
+        "windowBooked": false
+      },
+      "alternativeStopCondition": "For a monitored-risk decision only: with all competing on-demand scenarios still active, keep a cushion of 202 credits (two maximum WhatsApp runs) in addition to all scheduled or in-flight costs and the unspent probe allowance plus 100. Stop at an unexpected debit or if the floor cannot be observed or maintained. External callers can still cross that floor between samples. No absolute guarantee, no authorization inferred."
     }
   },
   "lastChromeConnection": {
@@ -1121,7 +1240,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "25 scoped obligations consumed; retire this native request. Honor remaining original process clauses.",
-    "deployment": "I3 HOLD. Reuse compiled image abda5252 for source 7f78a8fa. Read the Insurance caller handoff and readback of 27 November. Verify enforceable upstream counts for the two on-demand readers (101 credits per full WhatsApp pass and 1 per mail pass), or verify durable intake/replay of refused calls and pre-arm independent reactivation within 15 minutes. Then re-read the shared balance, scheduled margin, scoped worksheet registry and in-flight work before closing the QA writer, admitting 90+100 and using the existing paired job. Preserve 72874c08 until that window is recoverable.",
+    "deployment": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -1141,6 +1260,11 @@
       "path": "docs/checkpoints/CXORBIA_I3_INSURANCE_CALLER_HANDOFF_20261127.md",
       "gitBlob": "d895dfc50e59414abd3883904eb84e46ddf98a25",
       "sha256": "ac7c7a757b269fc7af2f8e4c3c2cf883f60b23c08c73fbf9edd6e4a287c0b259"
+    },
+    "contractActions": {
+      "path": "docs/checkpoints/CXORBIA_I3_52_CONTRACT_EXECUTION_VIEW_20261127.md",
+      "gitBlob": "664aa539f006078f597b7d7413c9bb7779f64eb7",
+      "sha256": "acfb9c5fa44edf577d078fdaacaceec362a2c31cdeda42c73b06652eb14e4a6d"
     }
   },
   "newDevDeploys": 2,
