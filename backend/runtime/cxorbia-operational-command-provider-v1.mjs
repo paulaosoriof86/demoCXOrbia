@@ -769,6 +769,7 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
     const syncContext=command.commandType==='visit.sync.confirm'?await syncReflectionContext(tx,r,command,actor,hrSnapshot,hrRevision):null;
     if(prior.exists){
       const p=prior.data()||{};
+      if(command.commandType==='resource.read.receipt'&&p.actorUid!==actor.uid)throw new Error('OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
       if((clientContext||arr(p.hrFieldEventIds).length)&&p.actorUid!==actor.uid)throw new Error('OPS_CLIENT_RECEIPT_ACTOR_DENIED');
       if(p.commandDigest!==digest)throw new Error('OPS_IDEMPOTENCY_KEY_REUSED_DIFFERENT_PAYLOAD');
       if(p.status==='committed'){
@@ -1111,7 +1112,10 @@ async function transactionExecute(db,command,actor,hrSnapshot,hrRevision,hrField
       const resource=resSnap.data()||{};if(resource.status!=='active'||str(resource.projectId)!==command.projectId)throw new Error('OPS_RESOURCE_SCOPE_MISMATCH');
       if(resource.periodId&&str(resource.periodId)!==command.periodId)throw new Error('OPS_RESOURCE_PERIOD_MISMATCH');
       const roles=arr(resource.visibleRoles).map(str);if(resource.targetAll!==true&&!roles.includes('shopper'))throw new Error('OPS_RESOURCE_SHOPPER_VISIBILITY_DENIED');
-      const revision=str(payload.resourceRevision||resource.contentRevision||resource.version||resource.updatedAt||'source-current');
+      const revision=str(resource.contentRevision||resource.version||resource.updatedAt||'source-current');
+      if(str(payload.resourceRevision)&&str(payload.resourceRevision)!==revision)throw new Error('OPS_RESOURCE_REVISION_CONFLICT');
+      const visitKeys=[resolved.logicalVisitId,resolved.durableVisitId,v.id,v.visitId,v.hrRowId].filter(Boolean).map(str);
+      if([resource.visitaId,resource.visitId,resource.assignedVisitId].filter(Boolean).some(id=>!visitKeys.includes(str(id))))throw new Error('OPS_RESOURCE_VISIT_SCOPE_MISMATCH');
       const receiptKey=sha([command.tenantId,command.projectId,command.periodId,actor.shopperId,visitId,resourceId,revision]).slice(0,36),readAt=str(payload.readAt)||now();
       const rr=r.resourceReadReceipts.doc('read-'+receiptKey);
       tx.set(rr,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,shopperId:actor.shopperId,visitId,hrRowId:str(v.hrRowId)||null,

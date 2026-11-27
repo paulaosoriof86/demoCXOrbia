@@ -151,6 +151,26 @@ window.CX = window.CX || {};
 
     /* ÚNICA función que cualquier superficie de UI (rail, topbar, diagnóstico) debe llamar para
        pintar el indicador de origen de datos — nunca deriven su propia lógica de banderas. */
+    renderTopbarBadge(){
+      const el=document.getElementById('tbDataBadge');
+      if(!el)return;
+      const badge=this.badge(),ctx=CX.backendAuth?.context?.(),authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY;
+      const uid=window.firebase?.auth?.().currentUser?.uid;
+      const confirmed=badge.status==='last_confirmed'&&Number.isFinite(Date.parse(this.hrFreshness?.sourceReadAt))&&
+        ctx?.authenticated===true&&uid&&authority?.applied===true&&authority.atomicPublication===true&&
+        authority.actorUid===uid&&authority.role===ctx.role&&authority.tenantId===ctx.tenantId&&
+        authority.projectId===CX.data?.currentProjectId&&!!authority.sourceRevision&&
+        authority.sourceRevision===CX.data?.previewMeta?.sourceRevision&&
+        CX.data?.previewMeta?.internalProjectAuthority!==true;
+      const visible=CX.session?.hasTechAccess?.()===true||confirmed;
+      el.style.display=visible?'flex':'none';
+      el.replaceChildren();
+      if(!visible)return;
+      const dot=document.createElement('span');
+      dot.className='d';dot.style.background=badge.c;dot.setAttribute('aria-hidden','true');
+      el.append(dot,document.createTextNode(' '+badge.t));
+    },
+
     badge(){
       if(this.hrFreshness?.externalReadCurrent===false&&CX.data?.previewMeta?.internalProjectAuthority!==true){
         const at=this.hrFreshness.sourceReadAt,parsed=at?new Date(at):null;

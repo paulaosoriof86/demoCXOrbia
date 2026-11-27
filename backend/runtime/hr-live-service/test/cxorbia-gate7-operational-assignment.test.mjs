@@ -577,3 +577,33 @@ test('F3 / existing causal intent is not relabelled or replaced by reconciliatio
   await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'revision-next'});
   assert.deepEqual(db.get(path).hrPendingFields.shopperId,intent);
 });
+
+test('D07 binds a confirmed resource read to the durable visit and current published revision',async()=>{
+  const f=requestCycleFixture(),resourceId='guide-qa',path='tenants/tenant-a/resources/'+resourceId;
+  const base={id:resourceId,tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',status:'active',visibleRoles:['shopper'],version:2};
+  const read=(key,revision)=>({...f.command('resource.read.receipt',1,key,{
+    resourceId,resourceRevision:revision,humanConfirmed:true
+  }),entityType:'resourceReadReceipt',entityId:resourceId});
+  f.db.seed(path,base);
+  const original=f.snapshot();
+  const stale=await f.service.execute('shopper-token',read('d07-stale','1'));
+  assert.equal(stale.providerAck,false);assert.equal(stale.code,'OPS_RESOURCE_REVISION_CONFLICT');
+  assert.equal(f.snapshot(),original);
+  for(const key of ['visitaId','visitId','assignedVisitId']){
+    f.db.seed(path,{...base,[key]:'different-visit'});
+    const before=f.snapshot();
+    const foreign=await f.service.execute('shopper-token',read('d07-foreign-'+key,'2'));
+    assert.equal(foreign.providerAck,false);assert.equal(foreign.code,'OPS_RESOURCE_VISIT_SCOPE_MISMATCH');
+    assert.equal(f.snapshot(),before);
+  }
+  f.db.seed(path,{...base,visitId:f.initial.id});
+  const command=read('d07-exact','2'),ack=await f.service.execute('shopper-token',command);
+  assert.equal(ack.providerAck,true,JSON.stringify(ack));
+  const stored=f.db.get(visitPath(f.initial.id));
+  assert.equal(stored.instructiveResourceId,resourceId);assert.equal(stored.instructiveResourceRevision,'2');
+  const result=f.snapshot(),replay=await f.service.execute('shopper-token',command);
+  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal(f.snapshot(),result);
+  const otherActor=await f.service.execute('admin-token',command);
+  assert.equal(otherActor.providerAck,false);assert.equal(otherActor.code,'OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
+  assert.equal(f.snapshot(),result);
+});

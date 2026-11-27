@@ -106,15 +106,7 @@ CX.router = {
        segundo div oculto que solo aparecía si el modo no era demo. Ambos podían mostrar información
        contradictoria (ej. "Demo comercial" fijo mientras el otro decía "Bloqueado"). Ahora un único
        elemento se pinta enteramente desde CX.dataSource.badge(). */
-    try{
-      const db=document.getElementById('tbDataBadge');
-      if(db && CX.dataSource){
-        const tech=CX.session?.hasTechAccess?.()===true;
-        const b=CX.dataSource.badge();
-        db.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;
-        db.style.display=tech?'flex':'none';
-      }
-    }catch(e){}
+    CX.dataSource?.renderTopbarBadge?.();
     /* GAP1 (paquete V113→V114): ninguna de estas ramas escribe currentPeriodId/currentProjectId
        directamente — todas pasan por CX.data.setProject(periodId), el único mutador real, que
        sincroniza AMBOS campos (currentPeriodId y currentProjectId recalculado vía programKey) y
