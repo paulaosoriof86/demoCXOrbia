@@ -79,6 +79,17 @@ const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
 if(String(mt.exactNextAction||'')!==d.exactNextAction||String(mt.nextExactAction||'')!==d.exactNextAction)
   fail('MAPPING_FAILURE:CURRENT_MODULE_TRUTH_NEXT_ACTION_DESYNC');
 const c3=d.currentC3PreterminalAudit||{};
+if(d.pendingDevSuccessor?.rulesAuthority){
+  const req=d.pendingDevSuccessor;
+  const controls=[d,p,mt,l];
+  const proofs=[...controls.map(x=>x.currentSourceProof),mt.productSource.sourceProof];
+  if(!proofs.every(x=>x?.sourceSha===req.sourceSha && x.sourceTree===req.sourceTree &&
+      x.path===req.proofReceiptPath && x.gitBlob===req.proofReceiptBlob &&
+      x.sourceTestsPass===req.sourceTestsPass && x.sourceTestsFail===0) ||
+      !controls.every(x=>x.nextPlannedBlock?.sourceSha===req.sourceSha) ||
+      [d,p,l].some(x=>x.currentMaterializationIsPredecessorOnly!==true))
+    fail('MAPPING_FAILURE:E10_PENDING_SOURCE_PROOF_ALIASES');
+}
 const pendingHostingOnly=d.pendingDevSuccessor?.state==='P0_PROVEN_PENDING_DEV_MATERIALIZATION'&&
   ['HOSTING_ONLY','RUNTIME_AND_HOSTING'].includes(d.pendingDevSuccessor.scope)&&
   d.pendingDevSuccessor.sourceSha===d.productSourceSha&&

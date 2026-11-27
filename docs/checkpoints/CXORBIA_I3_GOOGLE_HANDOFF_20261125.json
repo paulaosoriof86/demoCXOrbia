@@ -938,6 +938,53 @@
       "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_21B51607_20261126.json",
       "gitBlob": "69f295bc6c46594656c1216220987b31653010c7",
       "sha256": "0964442d1041f07c61c9c3414773c29febb40d64daf895f460541f284832ff3b"
+    },
+    "e10PairedControlPreflight": {
+      "physicalImageBuild": "21b51607-60f4-4e0a-ad69-3be4c2ce1c66",
+      "source": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+      "sourceTree": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
+      "makeCredits": 0,
+      "ruleTransitions": 0,
+      "newRuntimeRevisions": 0,
+      "newHostingVersions": 0,
+      "pairedRulesAndGuard": {
+        "runMode": "controlled offline provider tests",
+        "cases": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "regressionExistingGuardAndGoogleConsumer": {
+        "passed": 133,
+        "failed": 0
+      },
+      "previousMailboxSetupRegression": {
+        "passed": 23,
+        "failed": 0
+      },
+      "pairedRuntimeHostingCompensation": {
+        "reader": "tools/qa/cxorbia-i3-e10-pair-rollback.test.py",
+        "runMode": "authenticated-provider APIs simulated offline",
+        "passed": 4,
+        "failed": 0
+      },
+      "sourceChrome": {
+        "roles": [
+          "admin",
+          "shopper",
+          "cliente"
+        ],
+        "passed": 63,
+        "failed": 0,
+        "served": false
+      },
+      "fundingRequest": {
+        "funded": false,
+        "budgetCredits": 60,
+        "restorationReserve": 100,
+        "totalRequiredAvailable": 160,
+        "f3Physical": 0,
+        "independentEvidence": "Last full paired reader window cost 18; last manually confirmed complete fresh scope cost 12. Five HTTP observations. 60 is proposed planning cap."
+      }
     }
   },
   "lastChromeConnection": {

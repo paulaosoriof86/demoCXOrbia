@@ -225,7 +225,7 @@
   "productTreeAuthority": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
   "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V763_2026-11-26.json",
-  "findingsLedgerExpectedGitBlob": "018fb75bd9a9f44072d28c10598df9260462a7e6",
+  "findingsLedgerExpectedGitBlob": "bc9e361657d04126d8bada6215f097a82a4e3f29",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -3041,7 +3041,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "fed8acb7208dbb099252bef4473cece5aaea0a89",
+  "moduleTruthExpectedGitBlob": "f482ad63e355e8f1461a01775177bbd64c445327",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3811,11 +3811,13 @@
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "15 strict domains remain: close only uncovered B14, D08, C09/C10 and other owner-specific clauses; Benefits domain complete, prior human PASS preserved.",
   "currentSourceProof": {
-    "path": "docs/checkpoints/CXORBIA_I3_VRM378_PDF_SOURCE_20261125.json",
-    "gitBlob": "d1e4dad56ec96548c0f5e0f886a912217a56ded2",
-    "sourceSha": "235d6c28e72226f792514656fd5c47c8ba65cbee",
-    "sourceTree": "77b4de2c621560019ad043f22d90e75a508d2f79",
-    "sourceTestsPass": 167,
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FF9AC83E_SOURCE_20261126.json",
+    "gitBlob": "18a118e7716262cc5c2be20485a10e6a2ac5f526",
+    "sha256": "d6dbeac8d36fbad36760a729abc9df61bbffc0f6bb87f38a81167e70ffdbe73d",
+    "sourceSha": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+    "sourceTree": "dd29ad9f85bd426f02eeb35e4baeb8d8849acd5a",
+    "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_E10_FF9AC83E_SCOPE_20261126.json",
+    "sourceTestsPass": 109,
     "sourceTestsFail": 0,
     "production": false
   },
@@ -8049,7 +8051,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -15524,7 +15526,7 @@
       "A08_HN_PASSWORD"
     ],
     "exactPending": "I3: retain the served 72874c08 pair. At zero Make balance hold before mutation. After verified available funding for the five HR observations and recovery, use the existing Google paired job, the verified image 21b51607 and the exact E10 rules authority for ff9ac83e. Prove the scoped E10 and D07 acknowledgements from served UI, the confirmed HR badge and cold first protected request. Preserve original HR, the six MATCH, B4/B5/B6/B7 and all remaining contracts. Production DO_NOT_TOUCH. I4 requires exact-artifact authorization.",
-    "sourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "sourceSha": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
     "production": false
   },
   "previousExecutionReceiptBeforeRun1992Serialization": {
@@ -18788,11 +18790,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261126-V436.json",
-      "gitBlob": "fed8acb7208dbb099252bef4473cece5aaea0a89"
+      "gitBlob": "f482ad63e355e8f1461a01775177bbd64c445327"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V763_2026-11-26.json",
-      "gitBlob": "018fb75bd9a9f44072d28c10598df9260462a7e6"
+      "gitBlob": "bc9e361657d04126d8bada6215f097a82a4e3f29"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
