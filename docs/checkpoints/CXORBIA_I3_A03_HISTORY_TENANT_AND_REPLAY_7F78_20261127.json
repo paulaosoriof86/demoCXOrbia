@@ -1,0 +1,107 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "task": "A03",
+  "clause": "A03.keeper-uid-alias-history",
+  "acceptance": "HISTORICAL_PHYSICAL_RECEIPTS_AND_CURRENT_ISOLATED_PROVIDER_ONLY",
+  "controlParent": "1e6eb9741c0f28025f67aaab8947731a6685a42d",
+  "sources": {
+    "history2182": "09eed4f012f9ad04e49d53569aabd86bd4c832a9",
+    "cohort2216": "5b359435a2e0b71b0ab2fd5bf9c2561aa64fa947",
+    "lastSealedDev": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "candidate": "7f78a8fac2ea366860cf41211f8ebc894f7837e6"
+  },
+  "ownerGitBlobs": {
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs": {
+      "history2182": "28fe1d6c7bb89adacef98e3ed2ab2b40258f2de2",
+      "cohort2216": "d440d496e4dc2d7c33b4a7a70d11973cbd24666c",
+      "lastSealedDev": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070",
+      "candidate": "e5e6ab0bc8850d4a9f5c7a5aa9774973d1465070"
+    },
+    "app/core/shopper-credential-rule.js": {
+      "history2182": "723abba57c5fed73c1fab933150943e39ebb76e3",
+      "cohort2216": "723abba57c5fed73c1fab933150943e39ebb76e3",
+      "lastSealedDev": "723abba57c5fed73c1fab933150943e39ebb76e3",
+      "candidate": "723abba57c5fed73c1fab933150943e39ebb76e3"
+    },
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js": {
+      "history2182": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+      "cohort2216": "7b68d08357f256d736de57ff5b89bf97f397fb4f",
+      "lastSealedDev": "c788b898f63388cda55a9f20945fc67741adb3de",
+      "candidate": "d047f87a6f2a1c95ca1a13344cb5725dd3e5cb1b"
+    },
+    "backend/runtime/hr-live-service/server.mjs": {
+      "history2182": "16b4526b30d5e72ddcf9d90f193e15c2826bd3d1",
+      "cohort2216": "ade2bdddcf02c970cb52538343e21beb4719012d",
+      "lastSealedDev": "cdf2729ceb4314b6d91182dba9e56d70143a0691",
+      "candidate": "34f7f53da6854d6e7f779b4cea6b671720db85d9"
+    },
+    "firestore.rules": {
+      "history2182": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "cohort2216": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "lastSealedDev": "9001a1a39f97f8a83a8be9fcb96f5f2237da4109",
+      "candidate": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1"
+    }
+  },
+  "historicalEvidence": [
+    {
+      "receipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2182_STIVEN_PROVIDER_AND_FULL_E2E_20261105.json",
+        "gitBlob": "dab2fc4613bf2353437e22f4710bcae32cf7a88f",
+        "sha256": "f7d0ca6b4139c423e899d4a18480f021b4c5d0f1ce9c124649d22b7c44807ce0"
+      },
+      "runId": 42044986780,
+      "conclusion": "success",
+      "adminReferences": 10,
+      "shopperUniqueReferences": 10,
+      "providerAck": true,
+      "replayWrites": 0
+    },
+    {
+      "receipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_RUN2183_STIVEN_PASSWORD_PASS_AND_CLICK_AUTHORITY_TIMEOUT_20261105.json",
+        "gitBlob": "e6340891d71da0ae6d208d0fb19e4d3f9bcfedf3",
+        "sha256": "070f86b81bb6bc9cad58cc4fee35b2d4390532e62ae81f829647e18f07b74751"
+      },
+      "runId": 42047162119,
+      "conclusion": "failure",
+      "admittedClauseOnly": "ORDINARY_PASSWORD_RELOGIN_SAME_UID_AND_SHOPPER",
+      "authWrites": 0
+    },
+    {
+      "receipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_VRM309_AUTHENTICATED_KEEPERS_20_OF_20_RUN2216_20261105.json",
+        "gitBlob": "7e6d1a0a9f4dbd7f0f2cb907851ee24991fc255d",
+        "sha256": "46e4c4222c10a58b45e8aac8a427e014aa8e5fb0cffd7b5331005516a79fde4a"
+      },
+      "runId": 42150462459,
+      "passed": 20,
+      "failed": 0,
+      "scope": "PASS_SCOPED_ADMIN_GT_HN_SHOPPER_ROLE_DEV_E2E"
+    }
+  ],
+  "currentSourceTest": {
+    "owner": {
+      "path": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+      "gitBlob": "fad122ef5f9101818c2e08ea4a5f892f2ac6cbec",
+      "sha256": "c52c047a661e55aecd893ce7db50519acd5efb0c4673d90fd2b321458f1da9f5"
+    },
+    "selection": "VRM-185 / admin identity adjudication keeps",
+    "node": "v24.22.3",
+    "harness": "IN_MEMORY_SYNTHETIC",
+    "casesPassed": 1,
+    "casesFailed": 0,
+    "ownedSyntheticVisitIds": 10,
+    "identicalIdsInOtherTenant": 10,
+    "periods": 2,
+    "confirmed": [
+      "All ten owned references retain IDs, periods, state and HR-managed source data.",
+      "The ten colliding IDs in the other tenant retain their entire document.",
+      "The exact replay reports zero provider writes and preserves the complete Firestore and Auth snapshots. No new Auth account is created."
+    ],
+    "realDataWrites": 0,
+    "makeCalls": 0
+  },
+  "pending": "Compare live authorized Admin/Shopper and login dependencies on the successor on their independent artifact-bound route. The current isolated provider result does not promote A03, A02, the 52-task terminal count or Gate20/21.",
+  "production": "DO_NOT_TOUCH"
+}

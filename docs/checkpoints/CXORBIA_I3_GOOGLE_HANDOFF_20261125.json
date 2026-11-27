@@ -1256,7 +1256,32 @@
       "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48",
       "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17",
       "state": "AUTHORIZED_NOT_OPENED",
-      "independentRecoveryVerified": false
+      "independentRecoveryVerified": false,
+      "subsequentProviderObservation": {
+        "observedAtUtc": "2026-11-27T19:46:42.145Z",
+        "organizationId": 4090072,
+        "unusedCenticredits": "192100",
+        "baselineCreditsAt1927Utc": 1934,
+        "sharedDebitSinceBaseline": 13,
+        "matchedFinanceMonitorCredits": 3,
+        "unattributedSharedCredits": 10,
+        "autoPurchasing": false,
+        "readerActive": false,
+        "qaWriterActive": true,
+        "historyFromUtc": "2026-11-27T19:26:00Z",
+        "cxReaderExecutions": 0,
+        "cxWriterExecutions": 0,
+        "fiveProbesRun": 0,
+        "publicationCredits": 0,
+        "recoveryCredits": 0,
+        "windowOpened": false,
+        "note": "Read-only scenario histories cover the team’s eight enabled scenarios and the HR reader. The aggregate delta is not assigned to a caller without execution evidence."
+      }
+    },
+    "a03KeeperHistoryCarryForward": {
+      "path": "docs/checkpoints/CXORBIA_I3_A03_HISTORY_TENANT_AND_REPLAY_7F78_20261127.json",
+      "gitBlob": "b552a8f734a1bdfb29eda3e649be790d7bc4d726",
+      "sha256": "5cc377262f661317b80495e21ffa4064f5d6b330ba0386ff5a6272b1affa1f0d"
     }
   },
   "lastChromeConnection": {

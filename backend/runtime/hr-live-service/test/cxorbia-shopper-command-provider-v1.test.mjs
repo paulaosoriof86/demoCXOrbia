@@ -1029,7 +1029,14 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   db.seed('tenants/tenant-a/projects/project-a/liquidations/liq-1',{shopperId:alias,status:'pending'});
   db.seed('tenants/tenant-a/projects/project-a/postulations/post-1',{shopperId:alias,status:'active'});
   db.seed('tenants/tenant-a/projects/project-a/reservations/res-1',{shopperId:alias,status:'active'});
-  db.seed('tenants/tenant-a/projects/project-a/visits/visit-1',{shopperId:alias,hrManaged:{shopperId:alias},status:'submitted'});
+  const visits=Array.from({length:10},(_,i)=>({
+    id:'visit-'+(i+1),shopperId:alias,hrManaged:{shopperId:alias,sourceRow:i+10},
+    periodId:i<5?'project-a-2026-09':'project-a-2026-10',status:'submitted'
+  }));
+  for(const visit of visits){
+    db.seed('tenants/tenant-a/projects/project-a/visits/'+visit.id,visit);
+    db.seed('tenants/tenant-b/projects/project-a/visits/'+visit.id,visit);
+  }
   const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm185-admin-consolidation-1',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'admin_exact_identity_human_adjudication'}};
   const first=await p.execute('staff-token',command);
   assert.equal(first.ok,true,'VRM185_FIRST_RESULT='+JSON.stringify(first));assert.equal(first.providerAck,true);assert.equal(first.identityAdjudicated,true);assert.equal(first.identityConsolidated,true);assert.equal(first.retiredPrincipalCount,1);
@@ -1052,10 +1059,25 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   assert.equal(db.get('tenants/tenant-a/projects/project-a/liquidations/liq-1').shopperId,canonical);
   assert.equal(db.get('tenants/tenant-a/projects/project-a/postulations/post-1').shopperId,canonical);
   assert.equal(db.get('tenants/tenant-a/projects/project-a/reservations/res-1').shopperId,canonical);
-  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/visit-1').shopperId,canonical);
-  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/visit-1').hrManaged.shopperId,alias);
+  const verifyHistory=()=>{
+    for(const visit of visits){
+      const path='projects/project-a/visits/'+visit.id;
+      const record=db.get('tenants/tenant-a/'+path);
+      assert.equal(record.shopperId,canonical);
+      assert.equal(record.id,visit.id);
+      assert.equal(record.periodId,visit.periodId);
+      assert.equal(record.status,visit.status);
+      assert.deepEqual(record.hrManaged,visit.hrManaged);
+      assert.deepEqual(db.get('tenants/tenant-b/'+path),visit);
+    }
+  };
+  verifyHistory();
+  const beforeReplay=structuredClone({documents:db._store,accounts:auth.users});
   const second=await p.execute('staff-token',command);
   assert.equal(second.ok,true);assert.equal(second.idempotentReplay,true);assert.equal(second.providerWrites,0);assert.equal((await auth.getUser(keeperUid)).disabled,false);assert.equal((await auth.getUser(canonicalUid)).disabled,true);
+  verifyHistory();
+  assert.deepEqual({documents:db._store,accounts:auth.users},beforeReplay);
+  assert.equal(auth.created,0);
 });
 
 test('I3 P0 / corrected HR spelling must not silently change adjudicated keeper login or password on reconciliation',async()=>{
