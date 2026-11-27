@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.hr-reader-cost-evidence.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "controlHead": "378ff8a7bd4133c7621a60875f0a3bac21c3f5e8",
+  "businessDateGuatemala": "2026-11-26",
+  "servedSource": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "pendingSource": "ff9ac83ea7bbe4ad19e8faf7951ef8256be92671",
+  "guard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "make": {
+    "organization": 4090072,
+    "plan": "Core",
+    "unusedCenticredits": "0",
+    "consumedCenticredits": "1600000",
+    "paused": true,
+    "autoPurchasing": false,
+    "reader": {
+      "scenarioId": 10200465,
+      "executions": 108,
+      "credits": 324,
+      "containment": "deactivate ACK; inactive team filter returned 10200465; active filter returned no result",
+      "scope": "CXOrbia DEV on demand only"
+    },
+    "financeMonitor": {
+      "executions": 7,
+      "credits": 21,
+      "mutation": false
+    },
+    "newScenarioExecutions": 0
+  },
+  "cloudRun": {
+    "serviceRevision": "cxorbia-live-hr-dev-00395-lnc",
+    "requestCount": 61,
+    "from": "2026-11-26T19:12:40Z",
+    "through": "2026-11-27T02:13:05Z",
+    "protectedChromeDueMeta": 42,
+    "withReaderExecutions": 27,
+    "readerExecutionsPerMatchedRequest": 4,
+    "toleranceMs": 500,
+    "ambiguous": 0,
+    "unmatched": 0,
+    "kind": "full Make execution span contained in one Cloud Run request span; no historical propagated trace ID",
+    "sourceCaller": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "method": "read-only historical provider and Cloud Logging queries; GCS write once then hash pinned generation",
+    "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/hr-reader-cost-20261126/fff11485ddbc5e6acf233568af0fa5e2ce9715afd46a6326e54face9eb77d406.json#1795754000609456",
+    "sha256": "fff11485ddbc5e6acf233568af0fa5e2ce9715afd46a6326e54face9eb77d406"
+  },
+  "organizationReserveEnforced": false,
+  "purchaseRequested": false,
+  "productPublished": false,
+  "ruleTransitions": 0,
+  "production": false
+}

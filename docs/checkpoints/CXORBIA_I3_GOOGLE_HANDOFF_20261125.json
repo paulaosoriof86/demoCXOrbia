@@ -985,6 +985,14 @@
         "f3Physical": 0,
         "independentEvidence": "Last full paired reader window cost 18; last manually confirmed complete fresh scope cost 12. Five HTTP observations. 60 is proposed planning cap."
       }
+    },
+    "hrReaderEconomicContainment": {
+      "path": "docs/checkpoints/CXORBIA_I3_HR_READER_COST_20261126.json",
+      "sha256": "36c33628689dec88561f5cb79588663c24f500b853bed1a6de13eb44a3f94a19",
+      "scenario": 10200465,
+      "readerActive": false,
+      "protectedOrganizationReserve": false,
+      "makeCreditsSpentByWork": 0
     }
   },
   "lastChromeConnection": {
