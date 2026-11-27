@@ -4,7 +4,7 @@ image=${1:?Missing deployment image}
 [[ "$PROJECT" == cxorbia-backend-dev && "$SERVICE" == cxorbia-live-hr-dev && "$REGION" == us-central1 ]]
 settings="$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$FOCAL_SOURCE"
 extra=()
-if [[ "$FOCAL_SOURCE" == 5d681a6e3012d8651c39513a3fb2cc867ba2cd08 ]]; then
+if [[ "$FOCAL_SOURCE" == 7f78a8fac2ea366860cf41211f8ebc894f7837e6 ]]; then
   [[ "${CXORBIA_PAIRED_BUILD_ID:-}" =~ ^[a-f0-9-]{36}$ ]]
   settings+=",CXORBIA_E10_PAIRED_RUN=$CXORBIA_PAIRED_BUILD_ID"
 fi

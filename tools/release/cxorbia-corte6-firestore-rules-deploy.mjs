@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {execFileSync} from 'node:child_process';
+import {selectHrPeriodWindow} from '../../backend/runtime/cxorbia-excel-operational-snapshot-v1.mjs';
 import {E10, exactPendingRules, validateMakeAdmission, coldReaderMinimum} from './cxorbia-i3-e10-rules-contract.mjs';
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
 const git = (...args) => execFileSync('git', args, {encoding:'utf8',maxBuffer:8*1024*1024});
@@ -154,6 +155,37 @@ console.log(JSON.stringify({projectId:expectedProject,decision:report.decision,e
 
 }
 
+// A provider allocation or a bounded shared window must cover both the grant and recovery.
+function verifiedAllocation(o, now) {
+  if (o.providerEnforced === true && o.sharedConsumersCanDebit === false) return true;
+  const w = o.controlledWindow;
+  if (!w || w.automaticPurchasing !== false || w.organizationActive !== true ||
+      w.startsAtMs > now || !Number.isSafeInteger(w.startsAtMs) ||
+      o.expiresAtMs - w.startsAtMs > 900000 || w.readerActive !== false ||
+      !Array.isArray(w.scenarios) || w.scenarios.length !== 8 ||
+      !Number.isSafeInteger(w.availableCredits) || !Number.isSafeInteger(o.protectedCredits) ||
+      !/^[0-9a-f]{64}$/.test(w.inventoryReadbackSha256 || '')) return false;
+  const expected = new Set([10199316,10196136,10221181,10198752,10198707,10196338,5843689,5837393]);
+  let margin = 0;
+  for (const s of w.scenarios) {
+    if (!expected.delete(s.id) || s.running !== 0 || s.incomplete !== 0 ||
+        !Number.isSafeInteger(s.maximumDebit) || s.maximumDebit < 0 ||
+        !/^[0-9a-f]{64}$/.test(s.boundEvidenceSha256 || '')) return false;
+    if (s.id === 10199316) {
+      if (s.active !== false || s.maximumDebit !== 0) return false;
+    } else if ([10196136,10221181].includes(s.id) && s.active === false) {
+      if (s.previousActive !== true || s.maximumDebit !== 0 || s.upstreamReplayVerified !== true ||
+          !/^[0-9a-f]{64}$/.test(s.cursorReadbackSha256 || '') || s.restoreArmed !== true ||
+          !/^[0-9a-f]{64}$/.test(s.restoreReadbackSha256 || '') ||
+          !Number.isSafeInteger(s.pausedAtMs) || !Number.isSafeInteger(s.restoreByMs) ||
+          s.pausedAtMs > now || s.restoreByMs < o.expiresAtMs || s.restoreByMs <= now ||
+          s.restoreByMs - s.pausedAtMs > 900000) return false;
+    } else if (s.active !== true || s.maximumDebitVerified !== true) return false;
+    margin += s.maximumDebit;
+  }
+  return Number.isSafeInteger(margin) && w.availableCredits - margin >= o.protectedCredits;
+}
+
 export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,cloud,http,token,apply}){
   const fail='ENVIRONMENT_FAILURE:MAKE_SHARED_RESERVE_UNVERIFIED';
   demand(control?.state==='READY'&&control.source===E10.source&&control.readerScenarioId===10200465&&
@@ -167,8 +199,8 @@ export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,
   demand(sha(raw+'\n')===pin.sha256||sha(raw)===pin.sha256,fail);
   const observed=JSON.parse(raw),now=Date.now();
   demand(observed.organizationId===4090072&&observed.readerScenarioId===10200465&&observed.source===E10.source&&
-    observed.launchTag===launchTag&&observed.independentlyVerified===true&&observed.sharedConsumersCanDebit===false&&
-    observed.providerEnforced===true&&observed.protectedCredits>=160&&observed.recoveryReserve>=100&&
+    observed.launchTag===launchTag&&observed.independentlyVerified===true&&verifiedAllocation(observed,now)&&
+    observed.protectedCredits>=190&&observed.recoveryReserve>=100&&
     Number.isFinite(observed.observedAtMs)&&observed.observedAtMs<=now&&now-observed.observedAtMs<=600000&&
     Number.isFinite(observed.expiresAtMs)&&observed.expiresAtMs>now,fail);
   const url='https://firestore.googleapis.com/v1/projects/'+E10.project+'/databases/(default)/documents/cxorbiaProviderBudgets/dev_make_hr_reader';
@@ -181,18 +213,18 @@ export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,
   const bound=f.enabled?.booleanValue===true;
   demand(f.windowId?.stringValue===launchTag&&f.allocationReceiptSha256?.stringValue===pin.sha256&&
     f.source?.stringValue===E10.source&&f.tenantId?.stringValue===control.tenantId&&f.projectId?.stringValue===control.projectId&&
-    /^[a-f0-9]{64}$/.test(f.bindingKey?.stringValue||'')&&integer(f.spendingLimit)===60&&integer(f.recoveryReserve)===100&&
-    integer(f.protectedAllocation)>=160&&integer(f.protectedAllocation)<=observed.protectedCredits&&integer(f.reserved)===0&&
-    integer(f.expiresAt)>now&&integer(f.expiresAt)<=observed.expiresAtMs&&integer(f.maxCreditsPerCall)>=3&&
+    /^[a-f0-9]{64}$/.test(f.bindingKey?.stringValue||'')&&f.purpose?.stringValue==='paired-dev-hr-probes'&&integer(f.spendingLimit)===90&&integer(f.recoveryReserve)===100&&
+    integer(f.protectedAllocation)>=190&&integer(f.protectedAllocation)<=observed.protectedCredits&&integer(f.reserved)===0&&
+    integer(f.expiresAt)>now&&integer(f.expiresAt)<=observed.expiresAtMs&&integer(f.maxCreditsPerCall)===3&&
     plans.length===5&&/^[0-9]+$/.test(actorId),fail);
   let maximum=0;
   const processes=plans.map(plan=>{
     const g=plan.mapValue?.fields||{},n=integer(g.maxCalls),tickets=g.tickets?.arrayValue?.values||[];
     demand(g.actor?.stringValue==='google:'+actorId&&g.runId?.stringValue===(bound?id:launchTag)&&
-      Number.isSafeInteger(n)&&n>0&&tickets.length>=n&&tickets.every(t=>/^[a-f0-9]{64}$/.test(t.stringValue||'')),fail);
+      n===6&&tickets.length===n&&new Set(tickets.map(t=>t.stringValue)).size===n&&tickets.every(t=>/^[a-f0-9]{64}$/.test(t.stringValue||'')),fail);
     maximum+=n*integer(f.maxCreditsPerCall);return g.process?.stringValue;
   }).sort();
-  demand(JSON.stringify(processes)===JSON.stringify(purposes)&&maximum<=60,fail);
+  demand(JSON.stringify(processes)===JSON.stringify(purposes)&&maximum===90,fail);
   // Check the real registry before binding the grant or changing any release.
   // Only the relevant scope and period registry are requested from Firestore.
   const idSafe=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(v);
@@ -225,9 +257,14 @@ export async function bindPaidReaderWindow({control,id,launchTag,serviceAccount,
   const timeZone=project.hrReadWindow?.mapValue?.fields?.timeZone?.stringValue||source.timeZone?.stringValue||
     project.timeZone?.stringValue||project.timezone?.stringValue||'UTC';
   const min=coldReaderMinimum({projectId:control.projectId,timeZone,now:new Date(now),countryPeriods,probeCount:purposes.length});
-  demand(min.minimumCalls*integer(f.maxCreditsPerCall)<=integer(f.spendingLimit)&&plans.every(plan=>{
+  const window=selectHrPeriodWindow({projectId:control.projectId,timeZone,now:new Date(now),periodIds:[]});
+  const registered=countryPeriods.every(periods=>
+    periods.filter(p=>p===window.previousPeriodId).length===1&&
+    periods.filter(p=>p===window.currentPeriodId).length===1&&
+    !periods.includes(window.nextPeriodId));
+  demand(codes.length===2&&codes.includes('GT')&&codes.includes('HN')&&registered&&min.rangeCalls===4&&min.inventoryCalls===2&&min.firstProbeCalls*purposes.length*integer(f.maxCreditsPerCall)<=integer(f.spendingLimit)&&plans.every(plan=>{
     const g=plan.mapValue.fields;
-    return integer(g.maxCalls)>=(g.process.stringValue==='seal-meta'?min.firstProbeCalls:min.rangeCalls);
+    return integer(g.maxCalls)>=min.firstProbeCalls;
   }),'RELEASE_COMPOSITION_FAILURE:HR_STRICT_COLD_BUDGET');
   if(!apply||bound)return;
   for(const v of plans)v.mapValue.fields.runId={stringValue:id};

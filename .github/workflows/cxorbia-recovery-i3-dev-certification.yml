@@ -4487,7 +4487,7 @@ jobs:
    - if: contains(fromJSON('["HOLD_I3_F09_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM143_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM350_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_VRM358_DEV_MATERIALIZATION_REQUIRED","HOLD_I3_GTHN_PENDING_DEV"]'),env.ACTIVE_STATUS)||env.PAIR_ENV_ONLY=='true'||env.ACTIVE_STATUS=='HOLD_I3_F2_EXCEL_OPERATIONAL_READER_SOURCE_ONLY_PENDING_DEV_6_OF_21'
      run: |
       set -Eeuo pipefail
-      if [[ "$FOCAL_SOURCE" == 5d681a6e3012d8651c39513a3fb2cc867ba2cd08 ]]; then
+      if [[ "$FOCAL_SOURCE" == 7f78a8fac2ea366860cf41211f8ebc894f7837e6 ]]; then
         node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs --i3-paired preflight
       fi
       node --check tools/qa/cxorbia-i3-run2382-academy-b7-synthetic-live.mjs
@@ -4564,7 +4564,7 @@ jobs:
       if [[ "$PAIR_ENV_ONLY" != true ]]; then
       cd "$SOURCE_DIR"
       release_options=()
-      if [[ "$FOCAL_SOURCE" == 5d681a6e3012d8651c39513a3fb2cc867ba2cd08 ]]; then release_options+=(--message "CXORBIA_E10_${CXORBIA_PAIRED_BUILD_ID:?}"); fi
+      if [[ "$FOCAL_SOURCE" == 7f78a8fac2ea366860cf41211f8ebc894f7837e6 ]]; then release_options+=(--message "CXORBIA_E10_${CXORBIA_PAIRED_BUILD_ID:?}"); fi
       "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" "${release_options[@]}" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
       cd "$GITHUB_WORKSPACE"
       fi

@@ -23,8 +23,8 @@ export function coldReaderMinimum({projectId,timeZone,now,countryPeriods,probeCo
 export const E10 = Object.freeze({
   project: 'cxorbia-backend-dev',
   release: 'projects/cxorbia-backend-dev/releases/cloud.firestore',
-  source: '5d681a6e3012d8651c39513a3fb2cc867ba2cd08',
-  tree: '86adc4486fca8bda3a9f997f756142f8379912ef',
+  source: '7f78a8fac2ea366860cf41211f8ebc894f7837e6',
+  tree: '4baae7ae495d5baf9b059879ea6e5dce8e16a470',
   predecessor: '72874c08560addf5d0bc4a23573d65ce86481c95',
   prior: 'projects/cxorbia-backend-dev/rulesets/25cb3df2-fa16-4804-9124-38d0a8fac057',
   priorHash: '0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e',
@@ -36,6 +36,7 @@ export const E10 = Object.freeze({
 });
 
 export function exactPendingRules(pending, gitBlob, gitRead) {
+  if (pending.sourceSha === '5d681a6e3012d8651c39513a3fb2cc867ba2cd08') return false;
   if (pending.sourceSha !== E10.source)
     return pending.rulesDeploys === 0 && pending.rulesAuthority === undefined;
   return pending.sourceTree === E10.tree && pending.predecessorProductSourceSha === E10.predecessor &&
@@ -48,14 +49,16 @@ export function exactPendingRules(pending, gitBlob, gitRead) {
 
 export function validateRulesSeal(result, runId) {
   const proof = result.firestoreRulesTransition;
-  if (result.sourceSha !== E10.source)
+  const rulesTree = result.sourceSha === E10.source ? E10.tree :
+    result.sourceSha === '5d681a6e3012d8651c39513a3fb2cc867ba2cd08' ? '86adc4486fca8bda3a9f997f756142f8379912ef' : null;
+  if (!rulesTree)
     return result.firestoreRulesDeploys === 0 && !proof;
-  if (!proof || result.sourceTree !== E10.tree || result.firestoreRulesDeploys !== 1 ||
+  if (!proof || result.sourceTree !== rulesTree || result.firestoreRulesDeploys !== 1 ||
       result.storageRulesDeploys !== 0 || result.executionProvider !== 'GOOGLE_CLOUD_BUILD' ||
       typeof runId !== 'string' || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(runId)) return false;
   const newName = proof.after?.rulesetName || '';
   return proof.runId === runId && proof.project === E10.project && proof.release === E10.release &&
-    proof.authorityBlob === E10.authorityBlob && proof.sourceSha === E10.source && proof.sourceTree === E10.tree &&
+    proof.authorityBlob === E10.authorityBlob && proof.sourceSha === result.sourceSha && proof.sourceTree === rulesTree &&
     proof.before?.rulesetName === E10.prior && proof.before.sourceSha256 === E10.priorHash &&
     newName !== E10.prior && /^projects\/cxorbia-backend-dev\/rulesets\/[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(newName) &&
     proof.after.sourceSha256 === E10.targetHash && result.firestoreRuleset === newName &&
@@ -68,9 +71,9 @@ export function validateMakeAdmission(observation, now = Date.now()) {
   const observed = Date.parse(observation?.observedAt);
   const cents = observation?.unusedCenticredits;
   return observation?.organizationId === 4090072 && observation.automaticPurchasing === false &&
-    typeof cents === 'string' && /^[0-9]+$/.test(cents) && BigInt(cents) >= 16000n &&
+    typeof cents === 'string' && /^[0-9]+$/.test(cents) && BigInt(cents) >= 19000n &&
     Number.isFinite(observed) && now >= observed && now - observed <= 10 * 60_000 &&
     observation.sourceSha === E10.source && observation.sourceTree === E10.tree &&
-    observation.hrReadAllowance === 60 && observation.restorationReserve === 100 &&
+    observation.hrReadAllowance === 90 && observation.restorationReserve === 100 &&
     observation.concurrentWriter === false && observation.f3Debit === 0;
 }

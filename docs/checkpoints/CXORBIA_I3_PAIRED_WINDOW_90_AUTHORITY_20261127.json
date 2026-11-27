@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "cxorbia.i3.controlled-window.authority.v1",
+  "iteration": "I3",
+  "decision": "DIRECCION_90_PLUS_100_AND_CONDITIONAL_INSURANCE_15_MINUTES",
+  "controlHeadAtReceipt": "6d962b01d7b8cf28f4c9b681fa1d637ea8e4e5dc",
+  "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+  "productParent": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+  "project": "cxorbia-backend-dev",
+  "authorizedProbeCredits": 90,
+  "restorationReserve": 100,
+  "sharedMarginAdditional": true,
+  "probeIds": [
+    "seal-meta",
+    "seal-json",
+    "canonical-before",
+    "canonical-json",
+    "canonical-after"
+  ],
+  "ordinaryReads": false,
+  "f3Honduras": false,
+  "purchases": false,
+  "automaticPurchasing": false,
+  "requireFreshRegisteredSheets": true,
+  "registry": {
+    "observedAt": "2026-11-27T06:58:34.902581Z",
+    "scope": "tya/cinepolis",
+    "periods": [
+      "2026-10",
+      "2026-11",
+      "2026-12"
+    ],
+    "worksheets": {
+      "GT": [
+        1,
+        1,
+        0
+      ],
+      "HN": [
+        1,
+        1,
+        0
+      ]
+    },
+    "receipt": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/abda5252-5455-44d3-b21d-67d76126e1e3/registry-preflight#1795763882680286",
+      "sha256": "d6b9f72d47b6afbca716bfb0637bdd0a8166d0ade1f51fff6efde557954ba7a5"
+    }
+  },
+  "allowedInsurancePause": {
+    "scenarioIds": [
+      10196136,
+      10221181
+    ],
+    "maxMinutes": 15,
+    "onlyIfIndispensable": true,
+    "requires": [
+      "no active executions",
+      "source backlog retained",
+      "last processed source identifier",
+      "replay of refused calls",
+      "independent pre-armed restoration within 15 minutes"
+    ]
+  },
+  "keepActive": [
+    10198752,
+    10198707,
+    10196338,
+    5843689,
+    5837393
+  ],
+  "qaWriterMustBeClosed": 10199316,
+  "firestoreAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+    "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
+    "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
+  },
+  "predecessor": {
+    "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "revision": "cxorbia-live-hr-dev-00395-lnc",
+    "trafficPercent": 100,
+    "hostingVersion": "e9a216661b686246",
+    "firestoreRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "rulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "predecessorTag": null,
+    "timeoutSeconds": 120,
+    "otherTaggedRevisions": [
+      "cxorbia-live-hr-dev-00329-xac",
+      "cxorbia-live-hr-dev-00330-fim"
+    ],
+    "taggedSource": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "otherTaggedRevisionsMakeToolboxBindings": 0
+  },
+  "nativeProductImage": {
+    "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_ABDA5252_20261127.json",
+    "gitBlob": "2592b7eb7d6c5e4216c243a61af45b8c71f72b4e",
+    "sha256": "8ed71ef2d3f03b72475640021ab68c6c15f5cb85c3aef77fe620ea5ad66608ea"
+  },
+  "emulator": {
+    "receipt": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/abda5252-5455-44d3-b21d-67d76126e1e3/emulator-preflight#1795763877976264",
+      "sha256": "0edafe41eed688d2c7057fbeccdddf20b792e180830d9c44ad609122cb1a3eaf"
+    },
+    "project": "demo-cxorbia-hr-budget",
+    "concurrentProbes": 5,
+    "syntheticDispatches": 30,
+    "ordinaryDenied": true,
+    "reserved": 90,
+    "recovery": 100,
+    "independentReceiptReadbacks": 5,
+    "replayNewInvocations": 0,
+    "makeCredits": 0
+  },
+  "makeReadback": {
+    "observedAt": "2026-11-27T06:57:02Z",
+    "unusedCenticredits": "198800",
+    "autoPurchasing": false,
+    "organizationActive": true,
+    "activeScenarios": [
+      10199316,
+      10196136,
+      10221181,
+      10198752,
+      10198707,
+      10196338,
+      5843689,
+      5837393
+    ],
+    "readerActive": false,
+    "readerExecutionsSince": "2026-11-27T06:55:00Z",
+    "readerExecutionCount": 0,
+    "sharedReserveLocked": false
+  },
+  "providerFinding": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "modules": {
+      "10196136": [
+        "google-cloud-firestore:createDocument",
+        "green-api:LastIncomingMessages",
+        "green-api:getMessage"
+      ],
+      "10221181": [
+        "scenario-service:StartSubscenario",
+        "email:ActionGetEmails",
+        "scenario-service:ReturnData"
+      ]
+    },
+    "mailInput": "messageUid",
+    "verifiedOuterCallerDebitBound": false,
+    "verifiedUpstreamCursors": false,
+    "verifiedRejectedCallRecovery": false,
+    "deadlineRestoreArmed": false,
+    "activationOperationAcceptsDeadline": false,
+    "cloudSchedulerEnabledInDev": false,
+    "scenarioNameQueriesWithNoMatch": [
+      "restaur",
+      "reactiv",
+      "ventana",
+      "Make API"
+    ],
+    "scope": "A prior Make execution ID is distinct from the provider UID. Searches and lack of a native restore binding do not establish that no upstream inbox or controller exists."
+  },
+  "physical": {
+    "builds": 1,
+    "pairedJobDispatches": 0,
+    "firestoreRulesTransitions": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "paidProbes": 0,
+    "makeCreditsDebitedByWork": 0,
+    "newE10Records": 0,
+    "scenariosPaused": [],
+    "scenariosReactivated": [],
+    "rollbackExecuted": false
+  },
+  "i3": "HOLD",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH"
+}

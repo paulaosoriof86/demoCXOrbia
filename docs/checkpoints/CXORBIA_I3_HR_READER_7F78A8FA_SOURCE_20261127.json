@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "cxorbia.i3.paired-source-proof.v1",
+  "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+  "sourceTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+  "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
+  "productParent": "5d681a6e3012d8651c39513a3fb2cc867ba2cd08",
+  "allowedProductFiles": [
+    "app/adapters/cxorbia-command-adapter-v1.js",
+    "app/adapters/tya-live-source-inplace-apply.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "app/core/backend-corte4-empty-shell-guard.js",
+    "app/core/data-source.js",
+    "app/core/importador.js",
+    "app/core/router.js",
+    "app/modules/importador.js",
+    "app/modules/misvisitas.js",
+    "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "backend/runtime/cxorbia-visit-import.mjs",
+    "backend/runtime/hr-live-service/Dockerfile",
+    "backend/runtime/hr-live-service/certification-runtime.mjs",
+    "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "backend/runtime/hr-live-service/hr-read-admission.mjs",
+    "backend/runtime/hr-live-service/hr-read-model.mjs",
+    "backend/runtime/hr-live-service/package.json",
+    "backend/runtime/hr-live-service/server.mjs",
+    "firestore.rules"
+  ],
+  "allowedTestFiles": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs"
+  ],
+  "production": false,
+  "rulesAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+    "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
+    "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
+  },
+  "exactDelta": [
+    "backend/runtime/hr-live-service/hr-read-admission.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs"
+  ],
+  "scopeReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_7F78A8FA_SCOPE_20261127.json",
+  "scopeReceiptBlob": "6540b94351007f1355d3620fc536cfddb912e89a",
+  "sourceTestsPass": 342,
+  "sourceTestsFail": 0,
+  "sourceTests": [
+    "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-e10-visit-import.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-f3-scoped-excel-read.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model-integration.test.mjs",
+    "backend/runtime/hr-live-service/test/hr-read-model.test.mjs",
+    "tools/qa/cxorbia-i3-d07-authenticated-pdf-resource.test.mjs"
+  ],
+  "sourceTestLogSha256": "3af7b6e865fb98103e0913995f5a206af8eb0fb7a99d83573cfb60b89c4eae8a",
+  "focalAdmissionTests": 49,
+  "focalLogSha256": "8b9a8a73194738537cb3a86221dc6dd33b1820db6476c86840f5d4e2361265ae",
+  "rulesAdmissionControlsPass": 19,
+  "rulesAdmissionControlsLogSha256": "a7705cc4047f48790635c5f2720c600d594de171ea01f7d9933297d631d2b8ed",
+  "firestoreEmulator": {
+    "receipt": {
+      "uri": "gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/abda5252-5455-44d3-b21d-67d76126e1e3/emulator-preflight#1795763877976264",
+      "sha256": "0edafe41eed688d2c7057fbeccdddf20b792e180830d9c44ad609122cb1a3eaf"
+    },
+    "project": "demo-cxorbia-hr-budget",
+    "concurrentProbes": 5,
+    "syntheticDispatches": 30,
+    "ordinaryDenied": true,
+    "reserved": 90,
+    "recovery": 100,
+    "independentReceiptReadbacks": 5,
+    "replayNewInvocations": 0,
+    "makeCredits": 0
+  },
+  "findings": [
+    {
+      "priority": "P0_PROVEN",
+      "id": "HR_STRICT_COLD_BUDGET",
+      "cause": "The parent admits 60 credits. Five strict probes on the verified four sheets cost 66 to 90. The typed server-side policy now admits up to 90 for these five probes with an additional 100 held for recovery."
+    }
+  ],
+  "priorAcceptedProof": {
+    "path": "docs/checkpoints/CXORBIA_I3_HR_READER_5D681A6E_SOURCE_20261126.json",
+    "gitBlob": "87bf9a96e2aee24f0c3302b73a25c721bf892ba6",
+    "sha256": "3a14a7d7385594f35ba3f58aee39d727eaf3e06207634381e78346f46b776a84"
+  },
+  "authorization": {
+    "path": "docs/checkpoints/CXORBIA_I3_PAIRED_WINDOW_90_AUTHORITY_20261127.json",
+    "gitBlob": "1952c977a1ded192f07b51b69d878202605cc419",
+    "sha256": "aec0926639cd0c2f42dc784a4da56b9a464e94a21bd305fb7b16ddaacbaa7b3c"
+  },
+  "physical": {
+    "nativeProductImage": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_ABDA5252_20261127.json",
+      "gitBlob": "2592b7eb7d6c5e4216c243a61af45b8c71f72b4e",
+      "sha256": "8ed71ef2d3f03b72475640021ab68c6c15f5cb85c3aef77fe620ea5ad66608ea"
+    },
+    "newDevPair": false,
+    "newMakeExecutions": 0,
+    "rulesTransitions": 0,
+    "sharedPoolReserveEnforced": false
+  },
+  "remaining": [
+    "I3 HOLD. Reuse image abda5252 of 7f78a8fa. Prove a maximum debit for the two external on-demand Insurance readers or prove upstream replay and arm independent restoration in 15 minutes before pausing either. Keep the HR reader closed and the 72874c08 pair served until the full controlled window is recoverable. Revalidate current registry, budget and scheduled margin, close QA writer and use the existing paired job with the 90+100 grant, exact rules and predecessor drain. I4 not authorized.",
+    "Served E10, D07, HR badge, native cold observation, changed external revision propagation and E08 remain pending."
+  ]
+}

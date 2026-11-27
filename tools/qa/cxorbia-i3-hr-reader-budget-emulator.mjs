@@ -33,4 +33,29 @@ try{
   console.log(JSON.stringify({schemaVersion:'cxorbia.i3.hr-read-emulator.v1',project:'demo-cxorbia-hr-budget',
     attempted:8,accepted:5,ordinaryDenied:true,maxReserved:60,reserve:100,outcomeReadback:true,
     replayNewInvocations:0,transport:'synthetic',makeCredits:0,production:false}));
+  const phases=['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'];
+  const nativeRun='77a9ecaf-cb26-4af6-a713-5a7c99ecdaf5',principal='google:12345';
+  const inputs=Array.from({length:6},(_,i)=>({...input,worksheetId:'registered-'+i}));
+  const authorized=inputs.map(readerTicketKey);
+  await policy.update({purpose:'paired-dev-hr-probes',windowId:'emulator-publication',reserved:0,
+    spendingLimit:90,protectedAllocation:190,grants:phases.map(process=>({
+      process,actor:principal,runId:nativeRun,tickets:authorized,maxCalls:6}))});
+  let dispatched=0;
+  const run=(process,actor=principal)=>withReaderIdentity({...scope,actor,process,runId:nativeRun,requestId:nativeRun+'-'+process},
+    ()=>runAdmittedSnapshot({db,scope,bindingKey,work:async()=>{
+      for(const i of inputs)await admitReaderCall(i,async()=>++dispatched);
+      return {revision};
+    }}));
+  await assert.rejects(run(phases[0],'firebase:ordinary'),/WINDOW_CLOSED/);
+  await Promise.all(phases.map(phase=>run(phase)));
+  for(const phase of phases){
+    const receipt=await readReaderOutcome(db,scope,principal,phase,nativeRun,nativeRun+'-'+phase);
+    assert.equal(receipt.returned,6);
+    await assert.rejects(run(phase),/ATTEMPT_COMPLETE/);
+  }
+  const final=(await policy.get()).data();
+  assert.equal(dispatched,30);assert.equal(final.reserved,90);assert.equal(final.protectedAllocation-final.reserved,100);
+  console.log(JSON.stringify({schemaVersion:'cxorbia.i3.hr-read-emulator.v2',project:'demo-cxorbia-hr-budget',
+    concurrentProbes:5,syntheticDispatches:dispatched,ordinaryDenied:true,reserved:90,recovery:100,
+    independentReceiptReadbacks:5,replayNewInvocations:0,makeCredits:0,production:false}));
 }finally{await deleteApp(app);}

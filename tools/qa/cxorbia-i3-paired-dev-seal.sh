@@ -101,7 +101,7 @@ verify)
 set -Eeuo pipefail
 TOKEN="$(gcloud auth print-access-token)"
 curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$FOCAL_OUT/rules-after.json"
-if [[ "$FOCAL_SOURCE" == 5d681a6e3012d8651c39513a3fb2cc867ba2cd08 ]]; then
+if [[ "$FOCAL_SOURCE" == 7f78a8fac2ea366860cf41211f8ebc894f7837e6 ]]; then
   node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs --i3-paired verify
 else
   test "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-before.json")" = "$(jq -r '.rulesetName' "$FOCAL_OUT/rules-after.json")"

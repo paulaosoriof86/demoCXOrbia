@@ -63,7 +63,7 @@ function fixture(t) {
   t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   fs.writeFileSync(path.join(root,'firestore.rules'),targetBytes);
   const observation={sourceSha:E10.source,sourceTree:E10.tree,organizationId:4090072,automaticPurchasing:false,
-    unusedCenticredits:'16000',hrReadAllowance:60,restorationReserve:100,f3Debit:0,concurrentWriter:false,observedAt:new Date().toISOString()};
+    unusedCenticredits:'19000',hrReadAllowance:90,restorationReserve:100,f3Debit:0,concurrentWriter:false,observedAt:new Date().toISOString()};
   const pending={sourceSha:E10.source,sourceTree:E10.tree,predecessorProductSourceSha:E10.predecessor,scope:'RUNTIME_AND_HOSTING',
     rulesDeploys:1,storageRulesDeploys:0,rulesAuthority:{path:E10.authorityPath,gitBlob:E10.authorityBlob},
     makeEconomicControl:{state:'READY',readerScenarioId:10200465,runId:id,source:E10.source},
@@ -158,26 +158,26 @@ test('native preflight checks provider evidence and separately claims the actual
   const launchTag='synthetic-launch',uid='12345',str=stringValue=>({stringValue}),num=n=>({integerValue:String(n)}),now=Date.now();
   const kinds=['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'];
   const proof={organizationId:4090072,readerScenarioId:10200465,source:E10.source,launchTag,independentlyVerified:true,
-    sharedConsumersCanDebit:false,providerEnforced:true,protectedCredits:160,recoveryReserve:100,observedAtMs:now-1000,expiresAtMs:now+60000};
+    sharedConsumersCanDebit:false,providerEnforced:true,protectedCredits:190,recoveryReserve:100,observedAtMs:now-1000,expiresAtMs:now+60000};
   let bytes=JSON.stringify(proof),patches=0;
   const digest=()=>createHash('sha256').update(bytes).digest('hex');
   const control={state:'READY',source:E10.source,readerScenarioId:10200465,launchTag,tenantId:'qa',projectId:'qa-proj',
     providerAllocation:{uri:'gs://cxorbia-backend-dev_cloudbuild/cxorbia-i3-paired-dev/results/qa/allocation.json#123',sha256:digest()}};
   const fields={windowId:str(launchTag),allocationReceiptSha256:str(digest()),source:str(E10.source),enabled:{booleanValue:false},
-    tenantId:str('qa'),projectId:str('qa-proj'),bindingKey:str('a'.repeat(64)),spendingLimit:num(60),recoveryReserve:num(100),
-    protectedAllocation:num(160),reserved:num(0),expiresAt:num(now+50000),maxCreditsPerCall:num(3),
+    tenantId:str('qa'),projectId:str('qa-proj'),bindingKey:str('a'.repeat(64)),purpose:str('paired-dev-hr-probes'),spendingLimit:num(90),recoveryReserve:num(100),
+    protectedAllocation:num(190),reserved:num(0),expiresAt:num(now+50000),maxCreditsPerCall:num(3),
     grants:{arrayValue:{values:kinds.map(kind=>({mapValue:{fields:{runId:str(launchTag),actor:str('google:'+uid),process:str(kind),
-      maxCalls:num(kind==='seal-meta'?2:1),tickets:{arrayValue:{values:[str('c'.repeat(64)),str('d'.repeat(64))]}}}}}))}}};
+      maxCalls:num(6),tickets:{arrayValue:{values:Array.from({length:6},(_,i)=>str(String(i).repeat(64)))}}}}}))}}};
   const month=new Date(now).toISOString().slice(0,7);
   const array=values=>({arrayValue:{values}}),map=fields=>({mapValue:{fields}});
-  let registry=['qa-proj-'+month];
+  let registry=['qa-proj-'+month,'qa-proj-'+new Date(Date.UTC(new Date(now).getUTCFullYear(),new Date(now).getUTCMonth()-1,15)).toISOString().slice(0,7)];
   const opts={control,id,launchTag,serviceAccount:'projects/test/serviceAccounts/test',token:'synthetic',apply:true,
     cloud:(group)=>group==='storage'?bytes:uid,http:async(_t,verb,url,body)=>{
       if(verb==='GET'&&url.includes('/documents/tenants/qa/projects/qa-proj?'))return {ok:true,payload:{fields:{
-        tenantId:str('qa'),countries:array([str('GT')]),operationalSource:map({providerType:str('excel_online'),
-          countryBindings:array([map({countryCode:str('GT'),providerBindingId:str('qa-binding')})])})}}};
-      if(verb==='GET'&&url.includes('/documents/tenants/qa/integrationSettings/qa-binding?'))return {ok:true,payload:{fields:{
-        tenantId:str('qa'),projectId:str('qa-proj'),countryCode:str('GT'),enabled:{booleanValue:true},
+        tenantId:str('qa'),countries:array([str('GT'),str('HN')]),operationalSource:map({providerType:str('excel_online'),
+          countryBindings:array(['GT','HN'].map(c=>map({countryCode:str(c),providerBindingId:str('qa-binding-'+c)})))})}}};
+      if(verb==='GET'&&url.includes('/documents/tenants/qa/integrationSettings/qa-binding-'))return {ok:true,payload:{fields:{
+        tenantId:str('qa'),projectId:str('qa-proj'),countryCode:str(url.includes('qa-binding-HN?')?'HN':'GT'),enabled:{booleanValue:true},
         periodSheets:array(registry.map(p=>map({periodId:str(p)})))}}};
       if(verb==='GET')return {ok:true,payload:{updateTime:'now',fields:structuredClone(fields)}};
       assert.equal(verb,'PATCH');assert.equal(new URL(url).searchParams.get('currentDocument.updateTime'),'now');
@@ -193,4 +193,30 @@ test('native preflight checks provider evidence and separately claims the actual
   bytes=JSON.stringify({...proof,sharedConsumersCanDebit:true});
   control.providerAllocation.sha256=digest();fields.allocationReceiptSha256=str(digest());
   await assert.rejects(bindPaidReaderWindow(opts),/SHARED_RESERVE/);assert.equal(patches,1);
+  const scenarios=[10199316,10196136,10221181,10198752,10198707,10196338,5843689,5837393].map(id=>({
+    id,active:id!==10199316,running:0,incomplete:0,maximumDebit:id===10199316?0:3,
+    maximumDebitVerified:true,boundEvidenceSha256:'a'.repeat(64)}));
+  const bounded={...proof,sharedConsumersCanDebit:true,providerEnforced:false,controlledWindow:{
+    startsAtMs:now-1000,automaticPurchasing:false,organizationActive:true,readerActive:false,
+    inventoryReadbackSha256:'b'.repeat(64),availableCredits:211,scenarios}};
+  async function evaluate(value,wantPass){
+    bytes=JSON.stringify(value);control.providerAllocation.sha256=digest();fields.allocationReceiptSha256=str(digest());
+    if(wantPass)await bindPaidReaderWindow({...opts,apply:false});
+    else await assert.rejects(bindPaidReaderWindow({...opts,apply:false}),/SHARED_RESERVE/);
+    assert.equal(patches,1);
+  }
+  await evaluate(bounded,true);
+  for(const change of [w=>w.availableCredits=210,w=>w.scenarios.pop(),w=>w.scenarios[1].maximumDebitVerified=false,
+      w=>w.scenarios[1].running=1,w=>w.scenarios[3].active=false,w=>w.scenarios[0].active=true]){
+    const invalid=structuredClone(bounded);change(invalid.controlledWindow);await evaluate(invalid,false);
+  }
+  const paused=structuredClone(bounded);
+  Object.assign(paused.controlledWindow.scenarios[1],{active:false,previousActive:true,maximumDebit:0,
+    upstreamReplayVerified:true,cursorReadbackSha256:'e'.repeat(64),restoreArmed:true,
+    restoreReadbackSha256:'f'.repeat(64),pausedAtMs:now-1000,restoreByMs:now+120000});
+  await evaluate(paused,true);
+  for(const change of [s=>s.restoreArmed=false,s=>s.restoreByMs=now+900001,s=>s.upstreamReplayVerified=false,
+      s=>s.cursorReadbackSha256='',s=>s.restoreByMs=now+30000]){
+    const invalid=structuredClone(paused);change(invalid.controlledWindow.scenarios[1]);await evaluate(invalid,false);
+  }
 });

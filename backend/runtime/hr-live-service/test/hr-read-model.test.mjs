@@ -360,6 +360,45 @@ function budgetFixture(overrides={}){
   return {db,policy,call,submit,input,sent:()=>sent,window,scope,bindingKey};
 }
 
+function publicationFixture(){
+  const b=budgetFixture(),actor='google:1234567890',runId='389c0a19-f9fd-4f7f-b0d2-4a5d16c9fe87';
+  const phases=['seal-meta','seal-json','canonical-before','canonical-json','canonical-after'];
+  const inputs=Array.from({length:6},(_,i)=>({...b.input,worksheetId:'registered-'+i}));
+  Object.assign(b.window,{purpose:'paired-dev-hr-probes',spendingLimit:90,protectedAllocation:190,
+    grants:phases.map(process=>({actor,runId,process,maxCalls:6,tickets:inputs.map(readerTicketKey)}))});
+  const run=(process,who={},work=async()=>{
+    for(const input of inputs)await b.call(input);
+    return {revision:hash('confirmed')};
+  })=>b.submit(runId+'-'+process,work,{actor,runId,process,...who});
+  return {b,run,phases};
+}
+
+test('five independent cold probes reserve 90 and retain 100 with no replayed dispatch',async()=>{
+  const {b,run,phases}=publicationFixture();
+  await Promise.all(phases.map(phase=>run(phase)));
+  const persisted=b.db.docs.get(b.policy);
+  assert.equal(persisted.reserved,90);assert.equal(b.sent(),30);
+  assert.equal(persisted.protectedAllocation-persisted.reserved,100);
+  await assert.rejects(run(phases[0]),/ATTEMPT_COMPLETE/);assert.equal(b.sent(),30);
+});
+
+for(const [label,change] of [
+  ['absolute limit',w=>w.spendingLimit=91],['missing reserve',w=>w.protectedAllocation=189],
+  ['wrong purpose',w=>w.purpose='other'],['duplicate phase',w=>w.grants[0].process=w.grants[1].process],
+  ['ordinary grant',w=>w.grants[0].actor='firebase:ordinary'],['seventh ticket',w=>w.grants[0].maxCalls=7]
+])test('publication window denies '+label+' before spending',async()=>{
+  const {b,run}=publicationFixture();change(b.window);
+  await assert.rejects(run('seal-meta'),/WINDOW_CLOSED/);assert.equal(b.sent(),0);
+});
+
+test('ordinary requests, fabricated phase IDs and a changed purpose cannot spend the publication allowance',async()=>{
+  const {b,run}=publicationFixture();
+  await assert.rejects(run('manual-refresh',{actor:'firebase:ordinary'}),/WINDOW_CLOSED/);
+  await assert.rejects(run('seal-meta',{requestId:'different'}),/WINDOW_CLOSED/);
+  await assert.rejects(run('seal-meta',{},async()=>{const policy=b.db.docs.get(b.policy);delete policy.purpose;policy.spendingLimit=60;await b.call({...b.input,worksheetId:'registered-0'});}),/WINDOW_CLOSED/);
+  assert.equal(b.sent(),0);
+});
+
 test('five of twenty concurrent four-call envelopes fit the 60-credit ceiling; ordinary identities cannot debit the reserve',async()=>{
   const b=budgetFixture();
   const results=await Promise.allSettled(Array.from({length:20},(_,i)=>b.submit(String(i))));

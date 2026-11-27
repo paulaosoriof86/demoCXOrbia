@@ -298,7 +298,7 @@ def main():
     write(out/"build.json",{"sourceSha":source,"sourceTree":tree,"imageTag":digest_uri,
                            "requestedTag":image["tag"],"builds":0 if resume else 1,"production":False,"imageBuildId":image["id"]})
     write(out/"build-resume.json",image)
-    focal_rules = source == "5d681a6e3012d8651c39513a3fb2cc867ba2cd08"
+    focal_rules = source == "7f78a8fac2ea366860cf41211f8ebc894f7837e6"
     def rules(action):
         subprocess.run(["node","tools/release/cxorbia-corte6-firestore-rules-deploy.mjs","--i3-paired",action],check=True)
     runtime_exposure_possible = bool(resume)

@@ -13,6 +13,26 @@ export const readerTicketKey=inputs=>hash([inputs.bindingFingerprint,inputs.coun
   inputs.itemId,inputs.worksheetId,inputs.rangeAddress,inputs.operation||'range']);
 const scopeMatches=(a,b)=>a.tenantId===b.tenantId&&a.projectId===b.projectId;
 const deterministic=message=>message.match(/^(?:AUTH_FAILURE|MAPPING_FAILURE):[A-Z0-9_]+(?=:|$)/)?.[0];
+const publicationProbes=new Set(['seal-meta','seal-json','canonical-before','canonical-json','canonical-after']);
+
+// The operator may choose a smaller limit. Only the five authenticated Google
+// probes have the 90-credit ceiling. Existing independent windows retain 60.
+function permitsSpending(window,who){
+  if(!window||!whole(window.spendingLimit))return false;
+  if(window.purpose===undefined)return window.spendingLimit<=60;
+  if(window.purpose!=='paired-dev-hr-probes'||window.spendingLimit>90||
+     window.recoveryReserve!==100||window.maxCreditsPerCall!==3||
+     !whole(window.protectedAllocation)||window.protectedAllocation<window.spendingLimit+100||
+     !/^google:[0-9]+$/.test(who.actor)||!publicationProbes.has(who.process)||
+     !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(who.runId)||
+     who.requestId!==who.runId+'-'+who.process)return false;
+  const grants=window.grants;
+  return Array.isArray(grants)&&grants.length===publicationProbes.size&&
+    new Set(grants.map(g=>g?.process)).size===publicationProbes.size&&
+    grants.every(g=>g&&publicationProbes.has(g.process)&&g.runId===who.runId&&g.actor===who.actor&&
+      whole(g.maxCalls)&&g.maxCalls>=1&&g.maxCalls<=6&&Array.isArray(g.tickets)&&g.tickets.length===g.maxCalls&&
+      new Set(g.tickets).size===g.maxCalls&&g.tickets.every(k=>/^[a-f0-9]{64}$/.test(k)));
+}
 
 // Entry points derive the process and actor from verified credentials. No
 // request-supplied budget, price, binding or balance is accepted.
@@ -40,13 +60,13 @@ export async function runAdmittedSnapshot({db,scope,bindingKey,work}){
       !validId(window.windowId)||!whole(window.expiresAt)||Date.now()>=window.expiresAt||
       !Array.isArray(rule?.tickets)||!rule.tickets.length||!rule.tickets.every(k=>/^[a-f0-9]{64}$/.test(k))||!whole(rule.maxCalls)||rule.maxCalls<1||!whole(window.maxCreditsPerCall)||window.maxCreditsPerCall<3||
       !whole(window.recoveryReserve)||window.recoveryReserve<100||!whole(window.protectedAllocation)||
-      !whole(window.spendingLimit)||window.spendingLimit>60||!whole(window.reserved)||
+      !permitsSpending(window,who)||!whole(window.reserved)||
       !/^[a-f0-9]{64}$/.test(window.allocationReceiptSha256||''))deny('WINDOW_CLOSED');
     const max=rule.maxCalls*window.maxCreditsPerCall;
     const total=window.reserved+max;
     if(!Number.isSafeInteger(total)||total>window.spendingLimit||total+window.recoveryReserve>window.protectedAllocation)deny('BUDGET_EXHAUSTED');
     tx.update(policy,{reserved:total});
-    tx.create(receipt,{windowId:window.windowId,bindingKey,process:who.process,runId:who.runId,actorHash:hash(who.actor),
+    tx.create(receipt,{windowId:window.windowId,purpose:window.purpose??null,bindingKey,process:who.process,runId:who.runId,actorHash:hash(who.actor),
       tenantId:scope.tenantId,projectId:scope.projectId,maxCalls:rule.maxCalls,maxCredits:max,state:'RESERVED',calls:{},startedAt:Date.now()});
   });
   let current;
@@ -81,6 +101,7 @@ export async function admitReaderCall(inputs,send){
     const w=p.data(),a=r.data();
     if(l.data()?.quarantine?.bindingKey===ctx.bindingKey)throw Error(l.data().quarantine.code);
     if(!w||!a||w.enabled!==true||w.windowId!==a.windowId||w.bindingKey!==a.bindingKey||w.expiresAt<=Date.now()||
+      (a.purpose??null)!==(w.purpose??null)||!permitsSpending(w,ctx)||
       a.state!=='RESERVED'||!w.grants?.some(g=>g.actor===ctx.actor&&g.process===ctx.process&&g.runId===ctx.runId&&g.tickets?.includes(key)))deny('WINDOW_CLOSED');
     if(Object.hasOwn(a.calls,key)||Object.keys(a.calls).length>=a.maxCalls)deny('TICKET_UNAVAILABLE');
     tx.update(receipt,{calls:{...a.calls,[key]:'DISPATCHED'}});
