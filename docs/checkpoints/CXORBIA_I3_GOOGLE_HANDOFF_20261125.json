@@ -1227,7 +1227,29 @@
         "carryInAndNewStartsRequireFreshCheck": true,
         "windowBooked": false
       },
-      "alternativeStopCondition": "For a monitored-risk decision only: with all competing on-demand scenarios still active, keep a cushion of 202 credits (two maximum WhatsApp runs) in addition to all scheduled or in-flight costs and the unspent probe allowance plus 100. Stop at an unexpected debit or if the floor cannot be observed or maintained. External callers can still cross that floor between samples. No absolute guarantee, no authorization inferred."
+      "alternativeStopCondition": "For a monitored-risk decision only: with all competing on-demand scenarios still active, keep a cushion of 202 credits (two maximum WhatsApp runs) in addition to all scheduled or in-flight costs and the unspent probe allowance plus 100. Stop at an unexpected debit or if the floor cannot be observed or maintained. External callers can still cross that floor between samples. No absolute guarantee, no authorization inferred.",
+      "subsequentMeterReadback": {
+        "observedAtUtc": "2026-11-27T17:58Z",
+        "balanceCredits": 1944,
+        "previousBalanceCredits": 1951,
+        "changeCredits": -7,
+        "autoPurchasing": false,
+        "isPaused": false,
+        "marginAfter90Plus100BeforeOtherDebits": 1754,
+        "financeDevScenario": 10198707,
+        "financeDevExecutionId": "d5b6578a04ac4bdcb8a52c7f92932a14",
+        "financeDevStartUtc": "2026-11-27T17:57:18.156Z",
+        "financeDevConclusion": "success",
+        "financeDevCredits": 7,
+        "matchingCxReaderAndWriterRunsSince1754Utc": [
+          0,
+          0
+        ],
+        "unreservedComparativeMax18WhatsAppPasses": 1818,
+        "excessOverHeadroomEvenWithNoOtherStarts": 64,
+        "pauseApplied": false,
+        "paidProbes": 0
+      }
     }
   },
   "lastChromeConnection": {
