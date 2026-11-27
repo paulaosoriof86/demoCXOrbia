@@ -86,7 +86,7 @@ class ReaderCutoverTest(unittest.TestCase):
         self.proof=dict(runId=run,stage="enabled",project=paired.project,sourceSha=image["productSource"],
                         digest=image["digest"],scenarioId=10200465,readerActive=True,writerActive=False,
                         readerPending=0,autoPurchasing=False,independentlyObserved=True,observedAtEpoch=1000,
-                        remainingSharedMargin=3,availableCenticredits=19300,publicationCreditsUsed=0)
+                        remainingSharedMargin=3,availableCenticredits=39500,publicationCreditsUsed=0)
     def routes(self):
         def cmd(*args):
             if args[2]=="services": return json.dumps({"status":{"traffic":self.rows}})
@@ -112,16 +112,42 @@ class ReaderCutoverTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,"PREDECESSOR_TRAFFIC"):self.routes()
     def test_open_and_close_are_generation_bound(self):
         self.assertTrue(self.receipt()["uri"].endswith("#123"))
-        self.proof.update(stage="closed",readerActive=False,availableCenticredits=10300,publicationCreditsUsed=90)
+        self.proof.update(stage="closed",readerActive=False,availableCenticredits=30500,publicationCreditsUsed=90)
         self.assertEqual(self.receipt("closed",False)["publicationCreditsUsed"],90)
     def test_read_only_compensation_after_provider_debit_anomaly_still_requires_reader_off(self):
         self.proof.update(stage="closed-on-failure",readerActive=False,availableCenticredits=50,publicationCreditsUsed=91)
         self.assertEqual(self.receipt("closed-on-failure",False)["publicationCreditsUsed"],91)
         self.proof["readerActive"]=True
         with self.assertRaisesRegex(RuntimeError,"STAGE_READBACK"):self.receipt("closed-on-failure",False)
+    def test_preflight_covers_all_three_allocations_and_shared_debits(self):
+        self.proof.update(stage="funding-preflight",readerActive=False)
+        self.assertEqual(self.receipt("funding-preflight",False)["availableCenticredits"],39500)
+        original=dict(self.proof)
+        for key,value in [("availableCenticredits",39499),("remainingSharedMargin",4),
+                          ("readerActive",True),("writerActive",True),("publicationCreditsUsed",1)]:
+            with self.subTest(field=key):
+                self.proof={**original,key:value}
+                with self.assertRaisesRegex(RuntimeError,"STAGE_READBACK_funding-preflight"):
+                    self.receipt("funding-preflight",False)
+
+    def test_old_opening_balance_cannot_use_the_preventive_margin(self):
+        self.proof.update(availableCenticredits=19300)
+        with self.assertRaisesRegex(RuntimeError,"STAGE_READBACK_enabled"):
+            self.receipt()
+
+    def test_missing_independent_receipt_fails_after_work_disconnect(self):
+        missing=paired.subprocess.CompletedProcess([],1,stdout="",stderr="404 Not Found")
+        for stage in ("funding-preflight","closed-on-failure"):
+            with self.subTest(stage=stage), patch.object(paired.subprocess,"run",return_value=missing) as fetch, \
+                    patch.object(paired.time,"monotonic",side_effect=[0,3,75]), patch.object(paired.time,"sleep"):
+                with self.assertRaisesRegex(RuntimeError,"MAKE_STAGE_RECEIPT_"+stage):
+                    paired.reader_stage_receipt(stage,run,image,990,False)
+                self.assertTrue(all(call.args[0][:4]==["gcloud","storage","objects","describe"]
+                                    for call in fetch.call_args_list))
+
     def test_wrong_or_stale_make_observation_is_rejected(self):
         original=dict(self.proof)
-        for k,value in [("runId","other"),("writerActive",True),("readerPending",1),("availableCenticredits",19299),
+        for k,value in [("runId","other"),("writerActive",True),("readerPending",1),("availableCenticredits",39499),
                         ("observedAtEpoch",989),("observedAtEpoch",1011),("publicationCreditsUsed",1),("readerActive",False)]:
             with self.subTest(field=k):
                 self.proof={**original,k:value}

@@ -1,0 +1,181 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "decision": "DIRECCION_SINGLE_MONITORED_DEV_WINDOW",
+  "scope": "CURRENT_IMAGE_ONLY",
+  "issuedOn": "2026-11-27",
+  "controlHeadObserved": "149b10e195252b9c3435c3635f77478a4cd887e3",
+  "project": "cxorbia-backend-dev",
+  "job": "vrm154-156-dev-materialization",
+  "identity": {
+    "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "tree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "imageBuild": "abda5252-5455-44d3-b21d-67d76126e1e3",
+    "digest": "sha256:85d9f551441d6c07182f80393665dc55ea34c384616a08d61bc43ee0a52817aa",
+    "rulesBlob": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1",
+    "rulesSha256": "751b1074d76704a972926dcf6df8593c30ac19c5baf7a2d87d71f8b6bb52b22d",
+    "predecessorRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057"
+  },
+  "authority": {
+    "maxWindows": 1,
+    "openedByWork": 0,
+    "status": "AUTHORIZED_NOT_OPENED",
+    "maximumProbeCredits": 90,
+    "recoveryCredits": 100,
+    "preventiveMargin": 202,
+    "additionalCover": "scheduled, concurrent and pending shared debits",
+    "sharedRiskAccepted": "debits between meter observations only",
+    "probes": [
+      "seal-meta",
+      "seal-json",
+      "canonical-before",
+      "canonical-json",
+      "canonical-after"
+    ],
+    "insurance": "KEEP_ACTIVE",
+    "writer": "MUST_BE_CLOSED_BEFORE_WINDOW",
+    "predecessor": "READER_OFF_THROUGH_TRAFFIC_AND_DRAIN",
+    "stop": "unexpected debit, loss of observability or risk to recovery",
+    "autoPurchase": false,
+    "purchases": false,
+    "F3": false,
+    "production": false
+  },
+  "preflight": {
+    "guard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "organization": 4090072,
+    "team": 1975919,
+    "organizationActive": true,
+    "autoPurchasing": false,
+    "meter": [
+      {
+        "observedAtUtcMinute": "2026-11-27T19:27Z",
+        "credits": 1934
+      },
+      {
+        "observedAtUtcMinute": "2026-11-27T19:35Z",
+        "credits": 1931
+      },
+      {
+        "observedAtUtc": "2026-11-27T19:41:37.040Z",
+        "credits": 1930
+      },
+      {
+        "observedAtUtc": "2026-11-27T19:42:28.639Z",
+        "credits": 1930
+      }
+    ],
+    "knownSharedDebit": {
+      "scenario": 10196338,
+      "id": "1ce1b93511a9494392f82206d3bc81c4",
+      "startedAt": "2026-11-27T19:33:16.660Z",
+      "success": true,
+      "credits": 3
+    },
+    "unattributedCreditAtLastExecutionCensus": 1,
+    "executionHistoryFrom": "2026-11-27T19:26:00Z",
+    "historyIds": [
+      10199316,
+      10200465,
+      10196136,
+      10221181,
+      10198752,
+      10198707,
+      10196338,
+      5843689,
+      5837393
+    ],
+    "activeScenarios": [
+      10199316,
+      10196136,
+      10221181,
+      10198752,
+      10198707,
+      10196338,
+      5843689,
+      5837393
+    ],
+    "reader": {
+      "id": 10200465,
+      "active": false,
+      "loggedExecutions": 0
+    },
+    "writer": {
+      "id": 10199316,
+      "active": true,
+      "loggedExecutions": 0
+    },
+    "storedIncompleteInActiveScenarios": 0,
+    "providerQueueVerified": false,
+    "reservePhysicallyIsolated": false,
+    "latestCloudCensus": "UNVERIFIED_THIS_CUT",
+    "verifiedLastServedReceipt": {
+      "path": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
+      "gitBlob": "3bfc3b6e27260877609751c9e59f8c98343e9525",
+      "sha256": "317f4f126d4e1fd6bc5b6658bc4f0661c7d7cd9b18060a8c8eb09fe35a93425b"
+    },
+    "registryRereadThisCut": false
+  },
+  "controlResult": {
+    "owner": {
+      "path": "tools/qa/cxorbia-i3-paired-google.py",
+      "gitBlob": "e48ce1d9f207bc7b56fa3f9a6b14141b4cd63b0c",
+      "sha256": "263fff3019c004e4b0aa613b06bf08634a6016fb820e6ebeb281bb5a7f9edcd5"
+    },
+    "regressionTests": {
+      "path": "tools/qa/cxorbia-i3-e10-pair-rollback.test.py",
+      "gitBlob": "eaf6380620c7b73697dcd0214719c71a25f1d593",
+      "sha256": "e1715e74d390367317a8fe31a147b134cf17ccc3872d6d9295ff113f96940147"
+    },
+    "testsPassed": 13,
+    "newTestMethods": 3,
+    "testMode": "OFFLINE_REAL_OWNER_WITH_INJECTED_PROVIDER_IO",
+    "observations": [
+      "Old stage checks allowed 193 credits including three shared. The 202 preventive margin now applies in addition to known debits. For three further credits, 395 passes and 394.99 fails.",
+      "A fresh inactive-reader, inactive-writer funding readback is now required before rules.apply. It does not establish independent recovery.",
+      "Missing GCS close receipt after a simulated Work disconnect triggers ENVIRONMENT_FAILURE:MAKE_STAGE_RECEIPT_closed-on-failure after a 75-second virtual deadline. Calls in this path only describe a journal object. Native pair restoration is downstream of that receipt."
+    ],
+    "controlOnly": true,
+    "newProductBuilds": 0
+  },
+  "independentRecovery": {
+    "verified": false,
+    "classification": "ENVIRONMENT_FAILURE",
+    "lastObservedCause": "The native runner waits for operator-generated close evidence. No independently authenticated actuator for reader 10200465 was verified from the scoped repository and available Google session. The connected Chrome session timed out; the alternate console displayed Site Unavailable. This does not establish an IAM denial or the absence of a service binding.",
+    "resolution": "Identify an existing independently usable CXOrbia DEV service binding. Verify provider-side close and queue readback, and the native immutable close receipt while Work is disconnected, with the reader already closed where supported. Retain protective E10 rules on any possible exposure."
+  },
+  "physicalThisCut": {
+    "pairedJobDispatchedByWork": false,
+    "nativeRunId": null,
+    "probes": 0,
+    "paidReaderExecutions": 0,
+    "publicationCreditsUsed": 0,
+    "recoveryCreditsUsed": 0,
+    "providerMutationsByWork": 0,
+    "newDomainAcceptances": 0,
+    "insuranceModifications": 0
+  },
+  "contracts": {
+    "reconciliation": {
+      "path": "docs/checkpoints/CXORBIA_I3_52_CONTRACT_EXECUTION_VIEW_20261127.md",
+      "gitBlob": "664aa539f006078f597b7d7413c9bb7779f64eb7",
+      "sha256": "acfb9c5fa44edf577d078fdaacaceec362a2c31cdeda42c73b06652eb14e4a6d"
+    },
+    "newServedAcceptances": [],
+    "pending": [
+      "E10 served",
+      "D07 scoped shopper ACK",
+      "commercial HR timestamp",
+      "first protected cold recovery",
+      "changed external revision propagation",
+      "E08 secret binding and authorized external ACK",
+      "served multiproject wizard"
+    ],
+    "MiOficina": "FUTURE_SEPARATE_FROM_PHASE_A",
+    "C3": "NO_NEW_TERMINAL_ACCEPTANCE",
+    "Gate20": "HOLD",
+    "Gate21": "HOLD",
+    "I4": "NO_AUTHORIZATION",
+    "legacy": "DO_NOT_TOUCH"
+  }
+}

@@ -1250,6 +1250,13 @@
         "pauseApplied": false,
         "paidProbes": 0
       }
+    },
+    "monitoredDevWindow": {
+      "path": "docs/checkpoints/CXORBIA_I3_MONITORED_WINDOW_149B_AUTHORITY_AND_INTERRUPTION_20261127.json",
+      "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48",
+      "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17",
+      "state": "AUTHORIZED_NOT_OPENED",
+      "independentRecoveryVerified": false
     }
   },
   "lastChromeConnection": {
@@ -1262,7 +1269,7 @@
   "next": {
     "finance": "Preserve the two-session C09/C10 Finance UI, XLSX and PDF proof on the predecessor. Cover remaining roles, liquidation and HR-bound KPIs.",
     "academy": "25 scoped obligations consumed; retire this native request. Honor remaining original process clauses.",
-    "deployment": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+    "deployment": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
     "production": "Require I3 GO and Paula approval of the exact I4 artifact.",
     "f3": "Preserve the GT escenario L2 focal certification on the d727 pair and its completed cleanup. Continue only the outstanding original B14/F3 clauses. The two physical PATCHes, independent reads, replays, rejections and cleanup are sealed for this attempt.",
     "googleExecution": {
@@ -1271,9 +1278,16 @@
       "imageReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_IMAGE_BUILD_ABDA5252_20261127.json",
       "servedReceipt": "docs/checkpoints/CXORBIA_I3_GOOGLE_BUILD_6050930a-71a6-46c2-b2bc-9cce75d46099_AUTOMATIC_DEV_RECEIPT.json",
       "launchTag": "cxorbia-e10-pair-7f78a8fac2ea-85d9f551-a1",
-      "preflight": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_STAGE_READBACK_20261127.json"
+      "preflight": "docs/checkpoints/CXORBIA_I3_CONTROLLED_WINDOW_STAGE_READBACK_20261127.json",
+      "monitoredAuthority": {
+        "path": "docs/checkpoints/CXORBIA_I3_MONITORED_WINDOW_149B_AUTHORITY_AND_INTERRUPTION_20261127.json",
+        "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48",
+        "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17",
+        "state": "AUTHORIZED_NOT_OPENED",
+        "independentRecoveryVerified": false
+      }
     },
-    "recoveryOnReconnect": "Run the current canonical guard. Check currentControlledWindowReadback, currentPendingPairedDev, currentDevPhysicalPublication and the current descriptor. Re-read pending native executions before any dispatch.",
+    "recoveryOnReconnect": "Read the monitoredDevWindow receipt and run the current guard. Verify staged close and independent recovery before dispatch. Read pending native executions and refresh the shared meter, registry and queues. Keep Insurance active.",
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Preserve the exact focal Firestore blob and SHA. Reuse the successor image through the paired DEV job only once controlled-window conditions are met. Served E10 acceptance remains pending.",
     "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",

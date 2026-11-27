@@ -216,7 +216,9 @@ def reader_stage_receipt(stage,run_id,image,not_before,opening):
     require(re.fullmatch("[1-9][0-9]*",generation),"PERSISTENCE_FAILURE:MAKE_STAGE_GENERATION")
     proof=json.loads(output("gcloud","storage","cat",uri+"#"+generation))
     now=time.time()
-    required=190 if opening else 100
+    before_spend = stage in ("funding-preflight", "enabled")
+    # remainingSharedMargin covers known shared debits in addition to the fixed preventive margin.
+    required = 202 + 100 + (90 if before_spend else 0)
     compensating=stage=="closed-on-failure" and not opening
     require(proof.get("runId")==run_id and proof.get("stage")==stage and proof.get("project")==project and
             proof.get("sourceSha")==image["productSource"] and proof.get("digest")==image["digest"] and
@@ -229,10 +231,11 @@ def reader_stage_receipt(stage,run_id,image,not_before,opening):
             (compensating or proof["availableCenticredits"]>=100*(required+proof["remainingSharedMargin"])) and
             type(proof.get("publicationCreditsUsed")) is int and proof["publicationCreditsUsed"]>=0 and
             (compensating or proof["publicationCreditsUsed"]<=90) and
-            (not opening or proof["publicationCreditsUsed"]==0),
+            (not before_spend or proof["publicationCreditsUsed"]==0),
             "ENVIRONMENT_FAILURE:MAKE_STAGE_READBACK_"+stage)
     return {"uri":uri+"#"+generation,"observedAtEpoch":proof["observedAtEpoch"],
-            "availableCenticredits":proof["availableCenticredits"],"publicationCreditsUsed":proof["publicationCreditsUsed"]}
+            "availableCenticredits":proof["availableCenticredits"],"remainingSharedMargin":proof["remainingSharedMargin"],
+            "publicationCreditsUsed":proof["publicationCreditsUsed"]}
 
 
 def main():
@@ -364,6 +367,9 @@ def main():
             subprocess.run(["node","tools/qa/cxorbia-i3-paired-hr-identity.mjs","--preflight",build_id],
                            env={**os.environ,"HOSTING_URL":"https://cxorbia-backend-dev.web.app",
                                 "CXORBIA_PAIRED_BUILD_ID":build_id},check=True,stdout=subprocess.DEVNULL)
+            after = time.time()
+            checkpoint("reader-funding-preflight-required", {"readerMustBeInactive": True, "preventiveMargin": 202})
+            checkpoint("reader-funding-preflight-readback", reader_stage_receipt("funding-preflight", build_id, image, after, False))
             rules("apply")
         if not resume:
             if focal_rules:

@@ -108,7 +108,7 @@
     "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
     "authorityState": "SOURCE_ONLY_PROVEN_PENDING_RUNTIME_AND_HOSTING_DEV",
     "state": "HOLD_I3_GTHN_PENDING_DEV",
-    "message": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+    "message": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
     "production": false,
     "sourceProofReceiptPath": "docs/checkpoints/CXORBIA_I3_HR_READER_7F78A8FA_SOURCE_20261127.json",
     "sourceProofReceiptBlob": "9f4f82ebd5891771ba3a86c385ac2934273d931e",
@@ -38437,7 +38437,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+  "nextExactAction": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -49179,7 +49179,7 @@
     "production": false
   },
   "updatedAt": "2026-11-27T09:13:10.106Z",
-  "exactNextAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+  "exactNextAction": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
   "historicalActiveHeadersBeforeRun2263": {
     "currentActionReconciliation": {
       "sourceSha": "6f87531de198186ad8277564beb380cf94a09488",
@@ -64136,7 +64136,7 @@
       "FINANCE_SECOND_ADVANCE_METADATA",
       "A08_HN_PASSWORD"
     ],
-    "exactPending": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+    "exactPending": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
     "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
     "production": false
   },
@@ -64238,7 +64238,7 @@
       "G20",
       "G21"
     ],
-    "immediateAction": "I3 HOLD. Preserve compiled image abda5252 for 7f78a8fa. Use the existing controlled DEV job once 90 probe credits and 100 recovery credits are protected, or after an explicit one-window risk decision and verified interruption recovery. Keep the reader closed through predecessor drain. Refresh active jobs, shared balance, schedules, four-sheet registry and queues immediately before mutation. Leave Insurance active unless its existing pause conditions are proved. Do not repeat its caller audit. Continue the 52 original contracts through the 27 November execution view, including isolated project intake and finance, and consume only eligible receipts. After materialization, obtain cold HR, E10 served, D07 ACK, commercial HR, E08 and authorized revision-change evidence.",
+    "immediateAction": "I3 HOLD. Dirección granted one monitored DEV window for 7f78a8fa and image abda5252. Before any operational mutation, demonstrate independent Make reader shutdown and native recovery after disconnect. Keep Insurance active. Reconcile the meter, live jobs, four registered sheets, queues and schedules. Once armed, close and verify the QA writer, protect 90 publication + 100 recovery + 202 preventive credits plus shared debits, use the existing paired job and drain the predecessor before reader activation. Stop new reads on an unexplained debit, lost observability or recovery risk. Consume the five probe receipts and complete the served acceptance using the existing 52-task reconciliation.",
     "noProduction": true,
     "latestFunctionalReadback": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2588_BENEFITS_AND_CONTROL_READBACK_20261117.json",
@@ -65306,5 +65306,12 @@
         "bankOperations": 0
       }
     }
+  },
+  "currentMonitoredDevWindow": {
+    "path": "docs/checkpoints/CXORBIA_I3_MONITORED_WINDOW_149B_AUTHORITY_AND_INTERRUPTION_20261127.json",
+    "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48",
+    "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17",
+    "state": "AUTHORIZED_NOT_OPENED",
+    "independentRecoveryVerified": false
   }
 }
