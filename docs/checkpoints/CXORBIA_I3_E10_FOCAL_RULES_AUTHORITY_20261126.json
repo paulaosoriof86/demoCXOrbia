@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.i3.e10.focal-dev-rules-authority.v1",
+  "iteration": "I3",
+  "state": "HOLD",
+  "project": "cxorbia-backend-dev",
+  "release": "cloud.firestore",
+  "authorizer": "Dirección",
+  "controlHeadObserved": "666b356cdba70e5ed9b364e3944e71ba7efedf25",
+  "maximumForwardTransitions": 1,
+  "source": "feea0c340bb0054ac067e9497748702e22599bf2",
+  "sourceTree": "661611a4be6ca5e1a82f916f2543a2e384e3599b",
+  "targetRulesBlob": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1",
+  "targetRulesSha256": "751b1074d76704a972926dcf6df8593c30ac19c5baf7a2d87d71f8b6bb52b22d",
+  "preflight": {
+    "observedBy": "Google Cloud Shell, Rules API, Hosting, Cloud Run, Secret Manager and Make organization metadata",
+    "priorRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057",
+    "priorRulesSha256": "0708af825d2baaad974285acd8d72df0a7861105e453da26199f08fd5a985d3e",
+    "storageRuleset": "30db5c2c-07fe-4d6c-8be3-7de55a9f4457",
+    "source": "72874c08560addf5d0bc4a23573d65ce86481c95",
+    "tree": "f3391d57457daacc9dbb9c6a7f158ecb744571b8",
+    "build": "6050930a-71a6-46c2-b2bc-9cce75d46099",
+    "hosting": "e9a216661b686246",
+    "runtime": "cxorbia-live-hr-dev-00395-lnc",
+    "digest": "sha256:5da1a3e6844edf62628a3c8b6f95bf118a41fcc2ba1bf6ec1d7de776ebbaf9f1",
+    "activeBuilds": 0,
+    "mailboxKeyVersion1": "ENABLED",
+    "makeOrganization": 4090072,
+    "unusedCenticredits": "0",
+    "automaticPurchase": false,
+    "pairedHRFormats": [
+      "meta",
+      "json"
+    ],
+    "pairedIndependentReadbackRequired": true,
+    "previousPairedReaderCredits": 18,
+    "previousPairedWholeWindowCredits": 22,
+    "restoreReserveCredits": 100
+  },
+  "scope": {
+    "onlyExistingJob": "vrm154-156-dev-materialization",
+    "rollback": "Only this execution's verified new ruleset may be restored to the exact predecessor. Preserve pinned Hosting and runtime rollback targets.",
+    "storageRules": false,
+    "iam": false,
+    "realData": false,
+    "production": false
+  },
+  "nativeE10": "2f54ef2415ac49b2b08d7e4881bb4e30",
+  "originalRulesCases": 13,
+  "originalE10SourceTests": 104,
+  "attachmentSha256": "b4b0983107e56f724d8030e8cef1328c836e469bd285b178f200b1d0f2bf75e5",
+  "physical": {
+    "newRulesets": 0,
+    "releaseTransitions": 0,
+    "runtimeUpdates": 0,
+    "hostingUpdates": 0,
+    "makeCredits": 0,
+    "rollbackInvoked": false
+  },
+  "impediment": "ENVIRONMENT_FAILURE: Mandatory paired HR read paths can invoke the operational Make reader. Zero balance cannot fund the complete publication and recovery.",
+  "i4Authorized": false
+}

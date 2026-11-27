@@ -923,6 +923,11 @@
     "d07PdfLifecycleAndScopedShopperReads": {
       "path": "docs/checkpoints/CXORBIA_I3_D07_PDF_LIFECYCLE_AND_SCOPED_SHOPPER_READS_20261126.json",
       "gitBlob": "eca9c0b685d4100746231dbfea32bde001d3b4a8"
+    },
+    "e10FocalRulesAuthority": {
+      "path": "docs/checkpoints/CXORBIA_I3_E10_FOCAL_RULES_AUTHORITY_20261126.json",
+      "gitBlob": "ad1a88d898ba0374a3a177fc23f0c69ffce506e3",
+      "sha256": "991882c1024764a9905c083f0f73a94008705957358dfcaff1517c2ca0b53777"
     }
   },
   "lastChromeConnection": {
@@ -968,7 +973,7 @@
     },
     "recoveryOnReconnect": "Run the current canonical guard. Read docs/checkpoints/CXORBIA_I3_PORT_TECH_72874C08_20261126.json and its dated successor, if present.",
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
-    "e10": "Source feea0c34 preserves original ordinary project listings and registers source, audit and conflict records. Native ACK, password session replay and exact cleanup are verified. Compose exact rules through the existing DEV release controls before exercising the served UI.",
+    "e10": "Use the one-time exact Firestore DEV transition in confirmed.e10FocalRulesAuthority only inside the existing paired job. Before the first mutation require verified funding for its strict HR reads, recovery and the full unit. Continue source integration, access proofs and artifact preparation independently.",
     "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",
     "financeSeptember": "41/44 visit identity references verified, 3 require authoritative per-visit evidence. Amount, allocation and external bank confirmation remain independent. Use the September per-visit receipts before any financial command."
   },
