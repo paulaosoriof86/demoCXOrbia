@@ -1282,6 +1282,11 @@
       "path": "docs/checkpoints/CXORBIA_I3_A03_HISTORY_TENANT_AND_REPLAY_7F78_20261127.json",
       "gitBlob": "b552a8f734a1bdfb29eda3e649be790d7bc4d726",
       "sha256": "5cc377262f661317b80495e21ffa4064f5d6b330ba0386ff5a6272b1affa1f0d"
+    },
+    "independentReaderRecoveryInventoryAndDeadline": {
+      "path": "docs/checkpoints/CXORBIA_I3_READER_RECOVERY_IDENTITY_AND_DURABLE_DEADLINE_20261128.json",
+      "gitBlob": "3a9f61135c167dc63ba8543b73b3cfebc17f9bbe",
+      "sha256": "e596066ce41b22034883dddf558b0b62ab35056718f9efdb7a8ed661a0fc35f3"
     }
   },
   "lastChromeConnection": {
@@ -1310,9 +1315,14 @@
         "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17",
         "state": "AUTHORIZED_NOT_OPENED",
         "independentRecoveryVerified": false
+      },
+      "independentRecovery": {
+        "path": "docs/checkpoints/CXORBIA_I3_READER_RECOVERY_IDENTITY_AND_DURABLE_DEADLINE_20261128.json",
+        "gitBlob": "3a9f61135c167dc63ba8543b73b3cfebc17f9bbe",
+        "sha256": "e596066ce41b22034883dddf558b0b62ab35056718f9efdb7a8ed661a0fc35f3"
       }
     },
-    "recoveryOnReconnect": "Read the monitoredDevWindow receipt and run the current guard. Verify staged close and independent recovery before dispatch. Read pending native executions and refresh the shared meter, registry and queues. Keep Insurance active.",
+    "recoveryOnReconnect": "Read independentReaderRecoveryInventoryAndDeadline and the one-use monitored-window authority. Use the verified existing Corte 6 identity for scoped recovery if enabled. The B14 toolbox is the Excel reader. Preserve A03. Only dispatch after native close/queue evidence, funded four-sheet preflight, monitored admission compatibility and safe predecessor drain. Do not require a historic shared debit to be assigned before starting a new meter baseline.",
     "parallelHrManualRefresh": "Two protected bodies, applied revision, selected period and zero external due runs are verified in confirmed.hrPostClickAppliedAndMake. At the next genuine successor observe the first protected durable read on a cold instance. The commercial last-confirmed indicator is a separate visual residual.",
     "e10": "Preserve the exact focal Firestore blob and SHA. Reuse the successor image through the paired DEV job only once controlled-window conditions are met. Served E10 acceptance remains pending.",
     "mailbox": "Encryption key version 1 exists with verified access only on this secret for the active runtime. Replace the historical unconfigured environment hold with the pinned binding through the paired DEV owner, then obtain the private mailbox provider ACK.",

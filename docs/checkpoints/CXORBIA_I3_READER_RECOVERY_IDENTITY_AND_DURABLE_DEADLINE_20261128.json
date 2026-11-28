@@ -1,0 +1,195 @@
+{
+  "iteration": "I3",
+  "state": "HOLD",
+  "classification": "AUTH_FAILURE",
+  "controlHeadObserved": "f4be3670dd56c39cc7c42810ac571683ca185128",
+  "canonicalGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+  "oneUseAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_MONITORED_WINDOW_149B_AUTHORITY_AND_INTERRUPTION_20261127.json",
+    "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48",
+    "sha256": "8f9ad2843a6f3823b6a006fb1142704034f5c82cd4108a52fa36486f0dbacf17"
+  },
+  "windowStatus": "AUTHORIZED_NOT_OPENED",
+  "previousA03Receipt": {
+    "path": "docs/checkpoints/CXORBIA_I3_A03_HISTORY_TENANT_AND_REPLAY_7F78_20261127.json",
+    "gitBlob": "b552a8f734a1bdfb29eda3e649be790d7bc4d726",
+    "sha256": "5cc377262f661317b80495e21ffa4064f5d6b330ba0386ff5a6272b1affa1f0d"
+  },
+  "project": "cxorbia-backend-dev",
+  "candidate": {
+    "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "tree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "imageBuild": "abda5252-5455-44d3-b21d-67d76126e1e3",
+    "digest": "sha256:85d9f551441d6c07182f80393665dc55ea34c384616a08d61bc43ee0a52817aa",
+    "rulesBlob": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1",
+    "rulesSha256": "751b1074d76704a972926dcf6df8593c30ac19c5baf7a2d87d71f8b6bb52b22d",
+    "predecessorRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057"
+  },
+  "gcpMetadataOnly": {
+    "checkedOn": "2026-11-28",
+    "projectNumber": "87461567267",
+    "globalSecrets": [
+      "cxorbia-dev-b14-make-toolbox",
+      "cxorbia-dev-f3-make-toolbox",
+      "cxorbia-dev-user-mailbox-credential-key"
+    ],
+    "regionalSecretCount": 0,
+    "readerToolbox": {
+      "historicalScopeReceipt": {
+        "path": "docs/checkpoints/CXORBIA_I3_B14_MAKE_TOOLBOX_IAM_WORK_EVIDENCE_20261120.json",
+        "gitBlob": "61b1feef7680db41c4c32921cad5719388aed048",
+        "sha256": "d29560615020769696435cdea8fc75d81ee5bafacdbb1ab431714589388225a9"
+      },
+      "id": 4891,
+      "scenario": 10200465,
+      "tools": 1,
+      "methodsOnExcel": [
+        "GET",
+        "GET"
+      ],
+      "secret": "cxorbia-dev-b14-make-toolbox",
+      "versionEnabled": 1,
+      "principal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "directIamGrant": "roles/secretmanager.secretAccessor",
+      "grantResource": "reader secret only",
+      "scenarioManagementScopeVerified": false
+    },
+    "serviceAccountsAtProject": [
+      "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "87461567267-compute@developer.gserviceaccount.com",
+      "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    ],
+    "recoveryIdentityCandidate": {
+      "email": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "uniqueId": "112507526829412676643",
+      "enabled": true,
+      "userManagedKeyCount": 0,
+      "projectIamTableContainedDirectPrincipal": false,
+      "effectivePermissionsForEmergencyStop": "UNPROVEN"
+    },
+    "pairedJobIdentity": "87461567267-compute@developer.gserviceaccount.com",
+    "pairedIdentityRoleShownAtB14Secret": "inherited project Editor",
+    "schedulerAndCloudTasks": "each console presented an Enable API action; neither enabled by Work",
+    "secretValuesAccessed": false,
+    "cloudBuildHistory": {
+      "mostRecentVisible": "abda5252",
+      "nextVisible": [
+        "d5ca6a76",
+        "21b51607",
+        "6050930a"
+      ],
+      "newerPairedEntryVisible": false
+    }
+  },
+  "gitHubMetadataOnly": {
+    "liveRepositorySecretEntries": 2,
+    "matchingMakeTokenRefs": 0,
+    "environmentSecretsShown": 0,
+    "historicalWorkflowRun": 44772280105,
+    "historicalJob": 136412777751,
+    "jobLogPresenceOnly": {
+      "CXORBIA_B14_MAKE_API_TOKEN": false,
+      "CXORBIA_MAKE_API_TOKEN": false,
+      "MAKE_API_TOKEN": false,
+      "MAKE_API_KEY": false
+    }
+  },
+  "makeReadback": {
+    "observedAtUtc": "2026-11-28T19:26:37.029Z",
+    "organizationId": 4090072,
+    "teamId": 1975919,
+    "zone": "eu2.make.com",
+    "unusedCenticredits": "183000",
+    "active": true,
+    "autoPurchasing": false,
+    "reader": {
+      "id": 10200465,
+      "active": false,
+      "scheduling": "on-demand",
+      "storedIncomplete": 0
+    },
+    "writer": {
+      "id": 10199316,
+      "active": true,
+      "scheduling": "on-demand",
+      "storedIncomplete": 0
+    },
+    "completedExecutionsSince1855Utc": {
+      "reader": 0,
+      "writer": 0
+    },
+    "completeQueueAndInflightProven": false,
+    "toolboxLiveMetadataTool": "unavailable on connector",
+    "makePersonalApiPage": "sign-in; no tokens inspected",
+    "observationsBeforeWindow": true,
+    "historicalUnattributedDebitIsNotAnInWindowDebit": true
+  },
+  "deadlineTest": {
+    "mode": "GOOGLE_FIRESTORE_EMULATOR_LOOPBACK",
+    "publisherOrMakeCredentialUsed": false,
+    "emulatorVersion": "1.19.8",
+    "emulatorJarSha256": "9d43599ed6151199e8d604dc87fac51218e49e5f3a48519b1ae560bbe5e3382d",
+    "firebaseAdmin": "13.4.0",
+    "owner": "backend/runtime/hr-live-service/hr-read-admission.mjs",
+    "ownerBlob": "050a92ad6ef12e2409ccb23fc2072f471478d0ad",
+    "test": {
+      "path": "tools/qa/cxorbia-i3-hr-reader-deadline-emulator.mjs",
+      "gitBlob": "492dc160d966a3f2442ee47c87ce899075680df3",
+      "sha256": "8ccef4a8f2fc69a4071091b2f1bf8187d9fd5fba69b09d5f89eeb1e0f7d58179"
+    },
+    "run": "61613e1e-af2a-4a35-acf6-bce250923957",
+    "clock": "wall time",
+    "processes": 3,
+    "elapsedWindowMs": 15000,
+    "result": {
+      "armingProcessExited": true,
+      "admittedBeforeExpiry": 1,
+      "newCallsAfterExpiry": 0,
+      "failedAttemptReadBackInNewProcess": true,
+      "reservedSyntheticCredits": 18,
+      "recoveryReserve": 100,
+      "realMakeCalls": 0
+    },
+    "proves": "Persisted application deadline denies the next outgoing call in an already admitted attempt and a fresh caller after the arming process exits.",
+    "physicalMakeStopProven": false
+  },
+  "neededToProceed": {
+    "state": "AWAITING_SCOPED_CONTROL_IDENTITY_ENABLEMENT",
+    "requestCount": 1,
+    "target": "close-only recovery execution in existing Google Cloud Build, independent of Work and Chrome",
+    "principal": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "proposedSecret": "cxorbia-dev-make-reader-stop",
+    "maxLifetimeMinutes": 60,
+    "makeScopes": [
+      "scenarios:read",
+      "scenarios:write",
+      "organizations:read"
+    ],
+    "permittedMakeWrite": "POST https://eu2.make.com/api/v2/scenarios/10200465/stop",
+    "permittedMakeReads": "reader status, outstanding work, QA writer status and the organization meter. Missing queue evidence must block opening or compensation to unprotected traffic.",
+    "enforcement": "Run-bound, non-exportable custody for the control. API scopes alone are not per-scenario. Fail closed if only a reusable shared-team token accessible to other workloads can be supplied. No scenario-run tool, Insurance change or application IAM expansion.",
+    "revocation": "Require issuer-side expiry or independently verified provider revocation, disable the dedicated secret version and expire/remove conditional access. IAM expiry alone does not revoke a copied issuer token.",
+    "armBeforeMutation": "Verify durable deadline, provider stop and separate inactive/queue readback in the native run journal; keep existing release recovery flow and target E10 rules on possible exposure.",
+    "additionalGcpComputeEstimate": "At most USD 0.18 for a single capped 60-minute e2-medium recovery execution, apart from metered storage, logging and network.",
+    "physicalOpenRequirements": "Current four-sheet registry, closed writer, 90+100+202 plus planned shared debits, monitored balance and contained predecessor."
+  },
+  "controlCompatibility": {
+    "owner": "tools/release/cxorbia-corte6-firestore-rules-deploy.mjs",
+    "function": "verifiedAllocation",
+    "observed": "The legacy bounded-shared policy still requires maximumDebitVerified for active Insurance. The monitored exception requires an explicit evidence-bound control path on the existing owner before materialization; an estimated amount must never be marked as a verified maximum. The live gate has not been bypassed."
+  },
+  "thisCut": {
+    "qaExecutionsNew": 1,
+    "nativePairedDispatches": 0,
+    "published": false,
+    "productBuilds": 0,
+    "completedPublicationProbes": 0,
+    "publicationCredits": 0,
+    "recoveryCredits": 0,
+    "newFullOriginalContracts": 0,
+    "newRulesets": 0,
+    "providerOrIamChanges": 0,
+    "production": "DO_NOT_TOUCH",
+    "I4": "NO_AUTHORIZATION"
+  }
+}
