@@ -34631,7 +34631,7 @@
     ],
     "manualPaulaActionRequired": false
   },
-  "activeBlocker": "ENVIRONMENT_FAILURE_INSURANCE_CALLER_LIMIT_OR_PRE_ADMISSION_REPLAY_UNVERIFIED",
+  "activeBlocker": "AUTH_FAILURE_INDEPENDENT_READER_CUSTODY_AND_PROVIDER_STOP_UNVERIFIED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -35105,7 +35105,7 @@
   },
   "currentTruth": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-    "moduleTruthGitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484",
+    "moduleTruthGitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742",
     "productSourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
     "productTree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
     "moduleTruthCurrent": true,

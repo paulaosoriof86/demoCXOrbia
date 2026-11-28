@@ -225,7 +225,7 @@
   "productTreeAuthority": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
   "predecessorProductSourceSha": "72874c08560addf5d0bc4a23573d65ce86481c95",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-  "findingsLedgerExpectedGitBlob": "b9eeef7eed9d1788c01e6e1c347fde25b8dbc4fb",
+  "findingsLedgerExpectedGitBlob": "b22ffdc944acacff68d4fd36084234fe263458ee",
   "c3ExactSourceProofRunRequest20261113": {
     "iteration": "I3",
     "trigger": "[c3-preterminal-module-truth]",
@@ -248,7 +248,8 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "ENVIRONMENT_FAILURE_INSURANCE_CALLER_LIMIT_OR_PRE_ADMISSION_REPLAY_UNVERIFIED",
+  "activeBlocker": "AUTH_FAILURE_INDEPENDENT_READER_CUSTODY_AND_PROVIDER_STOP_UNVERIFIED",
+  "currentReaderRecoveryAuthorization": {"path": "docs/checkpoints/CXORBIA_I3_READER_STOP_FOCAL_AUTHORITY_20261128.json", "gitBlob": "dfef949c937fa2013daf0fcb324a6fb3da51d23b", "sha256": "4ca002f1f50cfbbeced571b8efd0fc7fb83e9b1db960970365e3bbfd4a0d049d"},
   "november2026AutomaticPeriodI3": {
     "sourceSha": "1d24d706e263f256849644f2aa3586eca7900949",
     "sourceTree": "4cb9f0792762c274c65b5817a8a565b6dee46f80",
@@ -3041,7 +3042,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484",
+  "moduleTruthExpectedGitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -18790,11 +18791,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-      "gitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484"
+      "gitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-      "gitBlob": "b9eeef7eed9d1788c01e6e1c347fde25b8dbc4fb"
+      "gitBlob": "b22ffdc944acacff68d4fd36084234fe263458ee"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",

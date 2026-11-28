@@ -1,0 +1,70 @@
+{
+  "decision": "DIRECCION_SINGLE_READER_STOP_DEV_20261128",
+  "controlParent": "9cbf6b82e2b2fc587e50d8701de1b1db6db1ea3f",
+  "project": "cxorbia-backend-dev",
+  "job": "vrm154-156-dev-materialization",
+  "identity": {
+    "source": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
+    "tree": "4baae7ae495d5baf9b059879ea6e5dce8e16a470",
+    "imageBuild": "abda5252-5455-44d3-b21d-67d76126e1e3",
+    "digest": "sha256:85d9f551441d6c07182f80393665dc55ea34c384616a08d61bc43ee0a52817aa",
+    "rulesBlob": "beb07ff0312abb617cb224dbd3c7efaaa13aa4a1",
+    "rulesSha256": "751b1074d76704a972926dcf6df8593c30ac19c5baf7a2d87d71f8b6bb52b22d",
+    "predecessorRuleset": "25cb3df2-fa16-4804-9124-38d0a8fac057"
+  },
+  "launchTag": "cxorbia-e10-pair-7f78a8fac2ea-85d9f551-a1",
+  "windowAuthority": {
+    "path": "docs/checkpoints/CXORBIA_I3_MONITORED_WINDOW_149B_AUTHORITY_AND_INTERRUPTION_20261127.json",
+    "gitBlob": "c22372cc658067912b11f58cf16a209fa2314f48"
+  },
+  "limits": {
+    "maximumPublicationMinutes": 15,
+    "maximumCredentialMinutes": 60,
+    "publicationCredits": 90,
+    "probes": 5,
+    "recoveryCredits": 100,
+    "preventiveMargin": 202,
+    "additionalCover": "all known shared scheduled, concurrent and pending debits",
+    "insurance": "KEEP_ACTIVE",
+    "readerClosedUntilPredecessorDrained": true,
+    "qaWriterClosedDuringWindow": true,
+    "automaticPurchasing": false,
+    "physicalIsolationClaim": false
+  },
+  "recovery": {
+    "identity": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "secret": "cxorbia-dev-make-reader-stop",
+    "zone": "eu2.make.com",
+    "organizationId": 4090072,
+    "readerId": 10200465,
+    "writerId": 10199316,
+    "scopes": [
+      "scenarios:read",
+      "scenarios:write",
+      "organizations:read"
+    ],
+    "soleScenarioMutation": "POST /api/v2/scenarios/10200465/stop",
+    "allowedReads": [
+      "reader status and pending execution counts",
+      "QA writer status",
+      "organization balance"
+    ],
+    "custody": "Only the verified recovery code and native execution may use the credential. Pre-arm before mutation. Close admission, stop, read back and compensate independently of Work or Chrome. Revoke at the issuer, disable the version and remove secret IAM with readback.",
+    "maximumComputeUSD": 0.18,
+    "compute": "e2-medium, plus minimal Secret Manager, storage and logging"
+  },
+  "issuanceAtDecision": {
+    "credentialIssued": false,
+    "issuedAt": null,
+    "expiresAt": null,
+    "nativeRecoveryId": null,
+    "nativePublicationId": null,
+    "windowOpened": false
+  },
+  "state": "HOLD",
+  "classification": "AUTH_FAILURE",
+  "nextAction": "Verify run-bound custody and issuer revocation. Prove physical stop and an independent queue readback in the native journal before opening the one authorized publication.",
+  "ordinaryOperationsAuthorized": false,
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false
+}

@@ -1287,6 +1287,11 @@
       "path": "docs/checkpoints/CXORBIA_I3_READER_RECOVERY_IDENTITY_AND_DURABLE_DEADLINE_20261128.json",
       "gitBlob": "3a9f61135c167dc63ba8543b73b3cfebc17f9bbe",
       "sha256": "e596066ce41b22034883dddf558b0b62ab35056718f9efdb7a8ed661a0fc35f3"
+    },
+    "currentReaderStopAuthorization": {
+      "path": "docs/checkpoints/CXORBIA_I3_READER_STOP_FOCAL_AUTHORITY_20261128.json",
+      "gitBlob": "dfef949c937fa2013daf0fcb324a6fb3da51d23b",
+      "sha256": "4ca002f1f50cfbbeced571b8efd0fc7fb83e9b1db960970365e3bbfd4a0d049d"
     }
   },
   "lastChromeConnection": {

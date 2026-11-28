@@ -389,7 +389,7 @@
         "differentDenominator": true,
         "evidence": {
           "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-          "gitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484",
+          "gitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742",
           "runId": 44826503959,
           "sourceSha": "ea0def43f653b014a271d7404df5604f2a9e2805",
           "scope": "SIX_MATCH_RETAINED_PREDECESSOR_C3__NEW_SOURCE_HOSTING_VERIFIED_C3_PENDING"
@@ -2273,7 +2273,7 @@
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": []
   },
-  "nextAuthorizationScope": "No repeat deployment or accepted tests. Existing safe DEV source and read-only verification authorized; real education/exam records are not test fixtures.",
+  "nextAuthorizationScope": "Single monitored DEV window, recovery credential and focal Firestore transition authorized. Personal issuer authentication may be needed after custody preflight.",
   "latestHumanVisualAdjudication": {
     "receiptPath": "CXORBIA_I3_SHOPPER_VISUAL_ADJUDICATION_2026-10-18.json",
     "day": "2026-10-18",
@@ -2766,7 +2766,7 @@
   },
   "moduleTruthAuthority": {
     "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-    "gitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484"
+    "gitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742"
   },
   "cumulativeControlReconciliationRun1797": {
     "receiptPath": "CXORBIA_I3_RUN1797_RECONCILIATION_CLIENT_PORTAL_HUMAN_2026-10-18.json",
@@ -4833,7 +4833,7 @@
   "activeShockModuleTruth": {
     "sourceSha": "7f78a8fac2ea366860cf41211f8ebc894f7837e6",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-    "matrixBlob": "36bdd732b52fe485750aa0358cb7c86c55806484",
+    "matrixBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742",
     "classificationCounts": {
       "DEV_HOSTING_MATERIALIZED_PENDING_FUNCTIONAL_E2E": 8,
       "MATCH": 6,
@@ -6798,11 +6798,11 @@
     "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
     "matrix": {
       "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261127-V438.json",
-      "gitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484"
+      "gitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742"
     },
     "ledger": {
       "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-      "gitBlob": "b9eeef7eed9d1788c01e6e1c347fde25b8dbc4fb"
+      "gitBlob": "b22ffdc944acacff68d4fd36084234fe263458ee"
     },
     "receipt": {
       "path": "docs/checkpoints/CXORBIA_I3_RUN2676_C3_PAIRED_DEV_AUDIT_20261122.json",
@@ -7684,7 +7684,7 @@
     "production": false
   },
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V765_2026-11-27.json",
-  "findingsLedgerExpectedGitBlob": "b9eeef7eed9d1788c01e6e1c347fde25b8dbc4fb",
+  "findingsLedgerExpectedGitBlob": "b22ffdc944acacff68d4fd36084234fe263458ee",
   "nextFindingId": "VRM-380",
   "g03CrmCompositionProviderParity20261101": {
     "findingId": "VRM-295",
@@ -11279,7 +11279,7 @@
       "production": false
     }
   },
-  "moduleTruthExpectedGitBlob": "36bdd732b52fe485750aa0358cb7c86c55806484",
+  "moduleTruthExpectedGitBlob": "32450d497ba4b70832e4eb393f2bcc5efa7d0742",
   "d08AcademyDispatchSourceProof": {
     "path": "docs/checkpoints/CXORBIA_I3_D08_ACADEMY_DISPATCH_SOURCE_PROOF_20261107.json",
     "gitBlob": "2ad9d960cb958e84368cbbd70a7e9f2fb7864d3f",
@@ -13368,7 +13368,8 @@
     "production": "DO_NOT_TOUCH",
     "actualCertificationsUnchanged": true
   },
-  "activeBlocker": "ENVIRONMENT_FAILURE_INSURANCE_CALLER_LIMIT_OR_PRE_ADMISSION_REPLAY_UNVERIFIED",
+  "activeBlocker": "AUTH_FAILURE_INDEPENDENT_READER_CUSTODY_AND_PROVIDER_STOP_UNVERIFIED",
+  "currentReaderRecoveryAuthorization": {"path": "docs/checkpoints/CXORBIA_I3_READER_STOP_FOCAL_AUTHORITY_20261128.json", "gitBlob": "dfef949c937fa2013daf0fcb324a6fb3da51d23b", "sha256": "4ca002f1f50cfbbeced571b8efd0fc7fb83e9b1db960970365e3bbfd4a0d049d"},
   "v597QaVoidCanonicalContinuity": {
     "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V597_2026-11-08.json",
     "gitBlob": "e77a25664f5d75e9f9d75985b833111f75a97fb6",
